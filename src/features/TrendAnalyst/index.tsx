@@ -1,1 +1,3 @@
-﻿export const TrendAnalyst = () => <div style={{ border: '1px dashed #ccc', padding: 10 }}>Feature: TrendAnalyst</div>;
+﻿import styles from '../shared/feature.module.scss';
+
+export const TrendAnalyst = () => <div className={styles.placeholder}>Feature: TrendAnalyst</div>;

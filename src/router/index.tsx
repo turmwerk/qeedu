@@ -3,6 +3,7 @@ import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { Spin } from 'antd';
 import MainLayout from '@/layouts/MainLayout';
 import Login from '@/pages/Auth/Login';
+import styles from './style.module.scss';
 
 // Lazy Load
 const CodeTutor = React.lazy(() => import('@/pages/Study/CodeTutor'));
@@ -11,9 +12,10 @@ const ExamDesign = React.lazy(() => import('@/pages/Teaching/ExamDesign'));
 const MajorConstruct = React.lazy(() => import('@/pages/Management/MajorConstruct'));
 const PolicyResponse = React.lazy(() => import('@/pages/Management/PolicyResponse'));
 const Collaboration = React.lazy(() => import('@/pages/Research/Collaboration'));
+const Home = React.lazy(() => import('@/pages/Home'));
 
 const LazyLoad = (comp: JSX.Element) => (
-  <Suspense fallback={<Spin size='large' style={{ display:'flex', justifyContent:'center', marginTop: 50 }} />}>{comp}</Suspense>
+  <Suspense fallback={<div className={styles.fallback}><Spin size='large' /></div>}>{comp}</Suspense>
 );
 
 const router = createBrowserRouter([
@@ -21,8 +23,8 @@ const router = createBrowserRouter([
     path: '/',
     element: <MainLayout />,
     children: [
-      { path: '/', element: <Navigate to='/study/code-tutor' replace /> },
-      { path: 'study/code-tutor', element: LazyLoad(<CodeTutor />) },
+    { path: '/', element: LazyLoad(<Home />) },
+    { path: 'study/code-tutor', element: LazyLoad(<CodeTutor />) },
       { path: 'teaching/syllabus', element: LazyLoad(<Syllabus />) },
       { path: 'teaching/exam', element: LazyLoad(<ExamDesign />) },
       { path: 'management/major', element: LazyLoad(<MajorConstruct />) },

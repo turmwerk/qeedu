@@ -1,1 +1,3 @@
-﻿export const ExamBrain = () => <div style={{ border: '1px dashed #ccc', padding: 10 }}>Feature: ExamBrain</div>;
+﻿import styles from '../shared/feature.module.scss';
+
+export const ExamBrain = () => <div className={styles.placeholder}>Feature: ExamBrain</div>;

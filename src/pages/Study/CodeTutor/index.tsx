@@ -1,10 +1,18 @@
 import React from 'react';
+import PageHeader from '@/components/base/PageHeader';
+import shared from '@/pages/shared/style.module.scss';
+import styles from './style.module.scss';
 
 const CodeTutor: React.FC = () => {
   return (
-    <div style={{padding: 24}}>
-      <h2>Code Tutor</h2>
-      <p>占位：这是 Code Tutor 页面。请根据需求实现具体功能。</p>
+    <div>
+      <PageHeader title="编程辅导" />
+      <div className={shared.content}>
+        <div className={styles.container}>
+          <h2 className={styles.title}>Code Tutor</h2>
+          <p className={styles.desc}>先占位。</p>
+        </div>
+      </div>
     </div>
   );
 };

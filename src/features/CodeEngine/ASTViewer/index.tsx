@@ -1,1 +1,3 @@
-﻿export const ASTViewer = () => <div style={{ border: '1px dashed #ccc', padding: 10 }}>Feature: ASTViewer</div>;
+﻿import styles from '../shared/feature.module.scss';
+
+export const ASTViewer = () => <div className={styles.placeholder}>Feature: ASTViewer</div>;

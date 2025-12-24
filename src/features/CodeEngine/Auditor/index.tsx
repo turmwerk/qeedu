@@ -1,1 +1,3 @@
-﻿export const Auditor = () => <div style={{ border: '1px dashed #ccc', padding: 10 }}>Feature: Auditor</div>;
+﻿import styles from '../shared/feature.module.scss';
+
+export const Auditor = () => <div className={styles.placeholder}>Feature: Auditor</div>;

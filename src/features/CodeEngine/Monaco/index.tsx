@@ -1,1 +1,3 @@
-﻿export const Monaco = () => <div style={{ border: '1px dashed #ccc', padding: 10 }}>Feature: Monaco</div>;
+﻿import styles from '../shared/feature.module.scss';
+
+export const Monaco = () => <div className={styles.placeholder}>Feature: Monaco</div>;

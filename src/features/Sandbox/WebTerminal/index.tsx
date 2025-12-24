@@ -1,1 +1,3 @@
-﻿export const WebTerminal = () => <div style={{ border: '1px dashed #ccc', padding: 10 }}>Feature: WebTerminal</div>;
+﻿import styles from '../../shared/feature.module.scss';
+
+export const WebTerminal = () => <div className={styles.placeholder}>Feature: WebTerminal</div>;

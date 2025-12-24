@@ -1,1 +1,3 @@
-﻿export const PolicySim = () => <div style={{ border: '1px dashed #ccc', padding: 10 }}>Feature: PolicySim</div>;
+﻿import styles from '../shared/feature.module.scss';
+
+export const PolicySim = () => <div className={styles.placeholder}>Feature: PolicySim</div>;

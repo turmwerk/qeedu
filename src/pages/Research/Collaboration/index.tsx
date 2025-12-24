@@ -1,10 +1,18 @@
 import React from 'react';
+import PageHeader from '@/components/base/PageHeader';
+import shared from '@/pages/shared/style.module.scss';
+import styles from './style.module.scss';
 
 const Collaboration: React.FC = () => {
   return (
-    <div style={{padding: 24}}>
-      <h2>Collaboration</h2>
-      <p>占位：科研协作页面。</p>
+    <div>
+      <PageHeader title="科研协作" />
+      <div className={shared.content}>
+        <div className={styles.container}>
+          <h2 className={styles.title}>Collaboration</h2>
+          <p className={styles.desc}>。。</p>
+        </div>
+      </div>
     </div>
   );
 };

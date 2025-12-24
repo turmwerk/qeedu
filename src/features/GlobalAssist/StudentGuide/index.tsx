@@ -1,1 +1,3 @@
-﻿export const StudentGuide = () => <div style={{ border: '1px dashed #ccc', padding: 10 }}>Feature: StudentGuide</div>;
+﻿import styles from '../../shared/feature.module.scss';
+
+export const StudentGuide = () => <div className={styles.placeholder}>Feature: StudentGuide</div>;

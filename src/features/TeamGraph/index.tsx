@@ -1,1 +1,3 @@
-﻿export const TeamGraph = () => <div style={{ border: '1px dashed #ccc', padding: 10 }}>Feature: TeamGraph</div>;
+﻿import styles from '../shared/feature.module.scss';
+
+export const TeamGraph = () => <div className={styles.placeholder}>Feature: TeamGraph</div>;
