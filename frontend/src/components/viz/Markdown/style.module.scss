@@ -1,1 +1,78 @@
-.wrap { border: 1px dashed #ccc; padding: 8px; }
+.wrap { border: 1px dashed #ccc; padding: 12px; height: 100%; box-sizing: border-box; overflow: auto; background: transparent; }
+.content { color: #3b3350; line-height: 1.8; }
+
+/* KaTeX隔离区，彻底避免父级样式影响公式布局 */
+.content .katex-isolate {
+	all: initial;
+	font-size: 1.1em;
+	color: #3b3350;
+	/* 重新引入KaTeX官方字体和样式 */
+	font-family: 'KaTeX_Main', 'Times New Roman', Times, serif;
+}
+.content h1 { font-size: 20px; margin: 0 0 12px 0; }
+.content h2 { font-size: 18px; margin: 8px 0; }
+.content ul { padding-left: 20px; }
+.content p { margin: 6px 0 10px 0; }
+.content pre { background: transparent; padding: 8px; }
+
+/* KaTeX fixes: ensure block math centers and inline math aligns with text */
+.content .katex {
+	display: inline-block;
+	line-height: normal;
+	vertical-align: middle;
+}
+
+.content .katex-display {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+	margin: 18px 0;
+	width: 100%;
+}
+
+/* Ensure katex inner HTML uses inline-block so centering works */
+.content .katex .katex-html {
+	display: inline-block;
+}
+
+/* Prevent unexpected transforms/line-height from parent rules */
+.content .katex {
+	/* Isolate KaTeX font and sizing but keep internal transforms for proper script placement */
+	font-family: 'KaTeX_Main', 'Times New Roman', Times, serif !important;
+	font-style: normal !important;
+	font-weight: normal !important;
+	font-size: 1em !important;
+	line-height: normal !important;
+	display: inline-block;
+	vertical-align: baseline;
+}
+
+.content .katex * {
+	font-family: inherit !important;
+}
+
+/* Ensure block formula is centered within its container and not affected by parent flex */
+.content > .katex-display, .content .katex-display > .katex {
+	margin-left: auto !important;
+	margin-right: auto !important;
+}
+
+/* Make sure SVG/CSS inside KaTeX scale normally */
+.content .katex svg {
+	transform: none !important;
+}
+
+/* Compatibility tweaks: adjust vlist positioning when parent styles interfere.
+	 This nudges subscripts/superscripts back toward the baseline when they render too low.
+	 If your global typography (line-height, font-size) changes, consider isolating KaTeX container instead. */
+.content .katex .vlist {
+	position: relative !important;
+	top: -0.22em !important;
+}
+
+.content .katex .baseline-fix {
+	display: none !important;
+}
+.pre { white-space: pre-wrap; word-break: break-word; margin: 0; color: #3b3350; }
+.empty { color: #888; }

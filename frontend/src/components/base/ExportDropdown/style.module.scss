@@ -1,0 +1,56 @@
+.container {
+  position: relative;
+  display: inline-block;
+}
+
+.button {
+  background: linear-gradient(180deg, #6b3fb7 0%, #4b2a85 100%);
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: box-shadow 0.2s ease;
+}
+
+.button:hover {
+  box-shadow: 0 6px 18px rgba(75, 42, 133, 0.18);
+}
+
+.menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  background: #fff;
+  border-radius: 12px;
+  padding: 8px;
+  min-width: 160px;
+  box-shadow: 0 6px 18px rgba(16, 24, 40, 0.08);
+  opacity: 0;
+  transform: translateY(-6px);
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.container:hover .menu {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.item {
+  background: transparent;
+  border: none;
+  text-align: left;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #1f1f1f;
+}
+
+.item:hover {
+  background: #f5f3ff;
+}
