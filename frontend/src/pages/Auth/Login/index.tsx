@@ -1,4 +1,4 @@
-import PageHeader from '@/components/base/PageHeader';
+import PageHeader from '@/components/PageHeader';
 import shared from '@/pages/shared/style.module.scss';
 
 export default function Login() {

@@ -1,5 +1,5 @@
 import React from 'react';
-import PageHeader from '@/components/base/PageHeader';
+import PageHeader from '@/components/PageHeader';
 import shared from '@/pages/shared/style.module.scss';
 
 const Home: React.FC = () => {

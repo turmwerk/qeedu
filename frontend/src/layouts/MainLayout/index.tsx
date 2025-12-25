@@ -4,7 +4,6 @@ import { Outlet } from 'react-router-dom';
 import styles from './style.module.scss';
 import Sider from './components/Sider';
 import Header from './components/Header';
-import AssistDrawer from './components/AssistDrawer';
 
 const { Content } = Layout;
 
@@ -18,7 +17,6 @@ const MainLayout: React.FC = () => {
           <Outlet />
         </Content>
       </Layout>
-      <AssistDrawer />
     </Layout>
   );
 };
