@@ -3,6 +3,7 @@ import PageHeader from '@/components/PageHeader';
 import styles from './style.module.scss';
 import shared from '@/pages/shared/style.module.scss';
 import Dropdown from '@/components/Dropdown';
+import { downloadMarkdown, downloadDocx, exportPdfViaPrint } from '@/utils/exportFiles';
 import MarkdownView from '@/components/MarkdownView';
 import MarkdownEditor from '@/components/MarkdownEditor';
 import Dialog from '@/components/Dialog';
@@ -26,9 +27,9 @@ const DetailPage: React.FC<{
             <Dropdown
               button="导出"
               items={[
-                { label: '导出 PDF', onClick: () => alert('PDF') },
-                { label: '导出 Docx', onClick: () => alert('Docx') },
-                { label: '导出 Markdown', onClick: () => alert('Markdown') }
+                { label: '导出 PDF', onClick: () => exportPdfViaPrint(title || 'outline', md) },
+                { label: '导出 Docx', onClick: () => downloadDocx(title || 'outline', md) },
+                { label: '导出 Markdown', onClick: () => downloadMarkdown(title || 'outline', md) }
               ]}
             />
           </div>

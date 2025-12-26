@@ -1,5 +1,13 @@
-.wrap { border: 1px dashed #ccc; padding: 12px; height: 100%; box-sizing: border-box; overflow: auto; background: transparent; }
-.content { color: #3b3350; line-height: 1.8; }
+.wrap {
+	border: none;
+	padding: 0;
+	height: 100%;
+	box-sizing: border-box;
+	overflow: auto;
+	background: transparent;
+	min-height: 0;
+}
+.content { color: #3b3350; line-height: 1.8; padding: 0; }
 
 /* KaTeX隔离区，彻底避免父级样式影响公式布局 */
 .content .katex-isolate {

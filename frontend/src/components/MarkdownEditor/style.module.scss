@@ -63,6 +63,8 @@
   gap: 16px;
   flex: 1 1 0;
   height: 100%;
+  /* allow children to scroll correctly within the grid/flex container */
+  min-height: 0;
 }
 
 .editor {
@@ -75,6 +77,8 @@
   background: #ffffff;
   box-sizing: border-box;
   overflow: auto;
+  /* important for children to be scrollable inside the grid cell */
+  min-height: 0;
 }
 
 .preview {
@@ -85,4 +89,6 @@
   overflow: auto;
   border: 1px dashed rgba(75,42,133,0.08);
   box-sizing: border-box;
+  /* ensure inner content scrolls within this box instead of expanding the sheet */
+  min-height: 0;
 }
