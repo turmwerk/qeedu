@@ -1,10 +1,11 @@
 import React from 'react';
 import PageHeader from '@/components/PageHeader';
-import styles from '../style.module.scss';
+import styles from './style.module.scss';
 import shared from '@/pages/shared/style.module.scss';
 import Dropdown from '@/components/Dropdown';
 import MarkdownView from '@/components/MarkdownView';
 import MarkdownEditor from '@/components/MarkdownEditor';
+import Dialog from '@/components/Dialog';
 
 const DetailPage: React.FC<{
   md: string;
@@ -12,13 +13,14 @@ const DetailPage: React.FC<{
   onBack: () => void;
   openFull: boolean;
   setOpenFull: (v: boolean) => void;
-}> = ({ md, setMd, onBack, openFull, setOpenFull }) => {
+  title?: string;
+}> = ({ md, setMd, onBack, openFull, setOpenFull, title }) => {
   return (
     <div>
       <PageHeader title="大纲设计" />
       <div className={shared.content}>
         <div className={styles.headerRow}>
-          <div className={styles.leftTitle}>当前大纲：课程大纲设计</div>
+          <div className={styles.leftTitle}>当前大纲：{title || '未命名课程'}</div>
           <div className={styles.rightAction}>
             <button className={styles.backBtn} onClick={onBack}>返回大纲目录</button>
             <Dropdown
@@ -35,7 +37,6 @@ const DetailPage: React.FC<{
           <div className={styles.leftPane}>
             <div className={styles.canvasCard}>
               <div className={styles.canvasHeader}>
-                <div className="titleLeft">大纲预览（Canvas/Markdown）</div>
                 <button
                   className={styles.editBtn}
                   onClick={() => setOpenFull(true)}
@@ -51,9 +52,7 @@ const DetailPage: React.FC<{
           </div>
           <div className={styles.rightPane}>
             <div className={styles.aiCard}>
-              <h3>AI 对话</h3>
-              <p className={styles.aiDesc}>预留模型接入通道，可承接生成与优化能力。</p>
-              <div className={styles.aiPlaceholder}>对话组件占位（后续实现）</div>
+              <Dialog />
             </div>
           </div>
         </div>
