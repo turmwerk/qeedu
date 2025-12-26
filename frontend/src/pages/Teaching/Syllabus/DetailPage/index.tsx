@@ -16,6 +16,7 @@ const DetailPage: React.FC<{
   setOpenFull: (v: boolean) => void;
   title?: string;
 }> = ({ md, setMd, onBack, openFull, setOpenFull, title }) => {
+  
   return (
     <div>
       <PageHeader title="大纲设计" />
@@ -37,17 +38,9 @@ const DetailPage: React.FC<{
         <div className={styles.layout}>
           <div className={styles.leftPane}>
             <div className={styles.canvasCard}>
-              <div className={styles.canvasHeader}>
-                <button
-                  className={styles.editBtn}
-                  onClick={() => setOpenFull(true)}
-                  aria-label="编辑 Markdown"
-                >
-                  编辑 Markdown
-                </button>
-              </div>
+              <div className={styles.canvasHeader} />
               <div className={styles.canvasBody}>
-                <MarkdownView value={md} />
+                <MarkdownView value={md} onChange={setMd} onFullScreen={() => setOpenFull(true)} />
               </div>
             </div>
           </div>

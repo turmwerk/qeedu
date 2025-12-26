@@ -26,7 +26,7 @@ const MarkdownEditor: React.FC<Props> = ({ value = '', onClose }) => {
 
         <div className={styles.editorWrap}>
           <div className={styles.preview}>
-            <MarkdownRender value={text} />
+            <MarkdownRender value={text} showControls={false} />
           </div>
 
           <textarea

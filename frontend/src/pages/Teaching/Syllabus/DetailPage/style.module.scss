@@ -42,6 +42,39 @@
 .canvasHeader { display:flex; justify-content:space-between; align-items:center; font-weight:700; margin-bottom:12px; }
 .canvasHeader .titleLeft { font-weight:700 }
 
+.headerActions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.showMdBtn {
+  background: #fff;
+  border: 1px solid rgba(75,42,133,0.08);
+  color: #4b2a85;
+  padding: 6px 10px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.showMdBtn:hover { background: #f5f3ff; }
+
+.rawMd {
+  width: 100%;
+  min-height: 120px;
+  height: 160px;
+  background: #fff;
+  border: 1px solid rgba(75,42,133,0.06);
+  border-radius: 6px;
+  padding: 12px;
+  color: #333;
+  margin-bottom: 12px;
+  box-sizing: border-box;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', 'Courier New', monospace;
+  font-size: 13px;
+  resize: vertical;
+}
+
 .editBtn {
   background: #fff;
   border: 1px solid rgba(75,42,133,0.08);

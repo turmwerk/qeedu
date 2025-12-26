@@ -5,18 +5,18 @@
   display: flex;
   align-items: stretch;
   justify-content: stretch;
-  padding: 24px;
+  padding: 8px;
   z-index: 1400;
 }
 
 .sheet {
   background: #ffffff;
   border-radius: 12px;
-  margin: 16px;
-  padding: 18px;
+  margin: 8px;
+  padding: 14px;
   box-shadow: 0 12px 40px rgba(16,24,40,0.12);
-  width: calc(100% - 32px);
-  height: calc(100% - 32px);
+  width: calc(100% - 16px);
+  height: calc(100% - 16px);
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
