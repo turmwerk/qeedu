@@ -1,17 +1,29 @@
+
 import React, { useState } from 'react';
 import styles from './style.module.scss';
 
+interface DialogMessage {
+  from: 'user' | 'bot';
+  text: string;
+}
 
-const STORAGE_KEY = 'syllabus_dialog_messages';
+interface DialogProps {
+  dialogId: string; // 唯一标识（如大纲id）
+  botName?: string; // 机器人名字
+  initMessage?: string; // 初始消息
+}
 
-const Dialog: React.FC = () => {
-  const [messages, setMessages] = useState<Array<{ from: 'user'|'bot'; text: string }>>(() => {
+const getStorageKey = (dialogId: string) => `dialog_messages_${dialogId}`;
+
+const Dialog: React.FC<DialogProps> & { clearDialog: (dialogId: string) => void } = ({ dialogId, botName = '对话助手', initMessage = '欢迎使用对话助手，你可以开始提问。' }) => {
+  const STORAGE_KEY = getStorageKey(dialogId);
+  const [messages, setMessages] = useState<DialogMessage[]>(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) return JSON.parse(raw);
     } catch {}
     return [
-      { from: 'bot', text: '欢迎使用大纲助手，你可以询问如何改进课程大纲。' }
+      { from: 'bot', text: initMessage }
     ];
   });
   const [input, setInput] = useState('');
@@ -21,7 +33,7 @@ const Dialog: React.FC = () => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
     } catch {}
-  }, [messages]);
+  }, [messages, STORAGE_KEY]);
 
   const send = () => {
     if (!input.trim()) return;
@@ -33,7 +45,7 @@ const Dialog: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.header}>对话助手</div>
+      <div className={styles.header}>{botName}</div>
       <div className={styles.body}>
         {messages.map((m, i) => (
           <div key={i} className={m.from === 'user' ? styles.msgUser : styles.msgBot}>{m.text}</div>
@@ -45,6 +57,12 @@ const Dialog: React.FC = () => {
       </div>
     </div>
   );
+};
+
+Dialog.clearDialog = (dialogId: string) => {
+  try {
+    localStorage.removeItem(getStorageKey(dialogId));
+  } catch {}
 };
 
 export default Dialog;

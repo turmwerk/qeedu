@@ -1,13 +1,34 @@
+/* 修复 KaTeX 数学公式下标显示问题，增强兼容性 */
+.katex, .katex * {
+	font-family: 'KaTeX_Main', 'Times New Roman', Times, serif !important;
+	line-height: 1.2 !important;
+	vertical-align: baseline !important;
+}
+
+/* 防止公式被裁剪 */
+.katex {
+	overflow: visible !important;
+}
 .wrap {
-  border: none;
-  padding: 0;
-  height: 100%;
-  box-sizing: border-box;
-  overflow: hidden;
-  background: transparent;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
+	border: none;
+	padding: 0;
+	height: 100%;
+	box-sizing: border-box;
+	/* overflow: hidden; 移除，避免裁剪公式 */
+	background: transparent;
+	min-height: 0;
+	display: flex;
+	flex-direction: column;
+}
+/* 强化 KaTeX 隔离，防止全局样式污染 */
+:global(.katex), :global(.katex *) {
+	font-family: 'KaTeX_Main', 'Times New Roman', Times, serif !important;
+	line-height: 1.2 !important;
+	vertical-align: baseline !important;
+	font-size: 1em !important;
+}
+:global(.katex) {
+	overflow: visible !important;
 }
 .content { color: #3b3350; line-height: 1.8; padding: 0; height: 100%; overflow: auto; box-sizing: border-box; }
 

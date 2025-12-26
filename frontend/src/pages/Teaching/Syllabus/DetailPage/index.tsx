@@ -15,8 +15,8 @@ const DetailPage: React.FC<{
   openFull: boolean;
   setOpenFull: (v: boolean) => void;
   title?: string;
-}> = ({ md, setMd, onBack, openFull, setOpenFull, title }) => {
-  
+  id?: string;
+}> = ({ md, setMd, onBack, openFull, setOpenFull, title, id }) => {
   return (
     <div>
       <PageHeader title="大纲设计" />
@@ -46,7 +46,12 @@ const DetailPage: React.FC<{
           </div>
           <div className={styles.rightPane}>
             <div className={styles.aiCard}>
-              <Dialog />
+              {/* 传入大纲id作为dialogId，保证唯一性 */}
+              <Dialog 
+                dialogId={id || 'default-outline'}
+                botName="大纲助手"
+                initMessage="欢迎使用大纲助手，你可以询问如何改进课程大纲。"
+              />
             </div>
           </div>
         </div>

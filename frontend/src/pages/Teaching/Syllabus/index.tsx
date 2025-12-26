@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import ListPage from './ListPage';
 import DetailPage from './DetailPage';
+import Dialog from '@/components/Dialog';
 
 type Outline = {
   id: string;
@@ -63,6 +64,8 @@ const Syllabus: React.FC = () => {
   const handleDelete = (id: string) => {
     const next = outlines.filter(o => o.id !== id);
     persist(next);
+    // 清理对应大纲的Dialog对话数据
+    Dialog.clearDialog(id);
     if (view === 'edit') setView('list');
     if (currentId === id) setCurrentId(null);
   };
@@ -87,11 +90,11 @@ const Syllabus: React.FC = () => {
   };
 
   if (view === 'edit') {
+    const currentOutline = outlines.find(o => o.id === currentId);
     return (
       <DetailPage
         md={md}
         setMd={(updated: string) => {
-          // update local md state and persist to current outline if any
           setMd(updated);
           if (currentId) {
             const next = outlines.map(o => (o.id === currentId ? { ...o, md: updated } : o));
@@ -104,7 +107,8 @@ const Syllabus: React.FC = () => {
         }}
         openFull={openFull}
         setOpenFull={setOpenFull}
-        title={outlines.find(o => o.id === currentId)?.title}
+        title={currentOutline?.title}
+        id={currentOutline?.id}
       />
     );
   }

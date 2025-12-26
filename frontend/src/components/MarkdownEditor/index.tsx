@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styles from './style.module.scss';
-import MarkdownRender from '@/components/MarkdownView';
+import MarkdownView from '@/components/MarkdownView';
 
 interface Props {
   value?: string;
@@ -26,7 +26,7 @@ const MarkdownEditor: React.FC<Props> = ({ value = '', onClose }) => {
 
         <div className={styles.editorWrap}>
           <div className={styles.preview}>
-            <MarkdownRender value={text} showControls={false} />
+            <MarkdownView value={text} showControls={false} />
           </div>
 
           <textarea
