@@ -1,0 +1,76 @@
+.container {
+  position: relative;
+  display: inline-block;
+  /* 可配置的隐藏延迟：调整此处值即可改变菜单在鼠标移出后的隐藏等待时间 */
+  --dropdown-hide-delay: 500ms;
+  --dropdown-transition-duration: 200ms;
+  /* 在按钮与菜单之间创建一个小的透明 "缓冲区"，避免鼠标移动时短暂离开造成菜单收起 */
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% - 2px);
+    height: 14px;
+    pointer-events: auto;
+  }
+}
+
+.button {
+  background: linear-gradient(180deg, #6b3fb7 0%, #4b2a85 100%);
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: box-shadow 0.2s ease;
+}
+
+.button:hover {
+  box-shadow: 0 6px 18px rgba(75, 42, 133, 0.18);
+}
+
+.menu {
+  position: absolute;
+  right: 0;
+  /* reduce gap so mouse can move from button to menu without leaving hover area */
+  top: calc(100% + 4px);
+  background: #fff;
+  border-radius: 12px;
+  padding: 8px;
+  min-width: 160px;
+  box-shadow: 0 6px 18px rgba(16, 24, 40, 0.08);
+  opacity: 0;
+  transform: translateY(-6px);
+  pointer-events: none;
+  z-index: 1;
+  /* 使用可配置变量：隐藏时有较长延迟，显示时移除延迟 */
+  transition: opacity var(--dropdown-transition-duration) ease var(--dropdown-hide-delay), transform var(--dropdown-transition-duration) ease var(--dropdown-hide-delay);
+  display: flex;
+  flex-direction: column;
+}
+
+/* show the menu immediately when hovering or focusing within the container */
+.container:hover .menu,
+.container:focus-within .menu {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+  /* 显示时立即生效：通过覆盖 transition-delay 实现 */
+  transition-delay: 0ms;
+}
+
+.item {
+  background: transparent;
+  border: none;
+  text-align: left;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #1f1f1f;
+}
+
+.item:hover {
+  background: #f5f3ff;
+}

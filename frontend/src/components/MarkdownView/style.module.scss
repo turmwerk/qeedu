@@ -1,0 +1,129 @@
+/* 修复 KaTeX 数学公式下标显示问题，增强兼容性 */
+.katex, .katex * {
+	font-family: 'KaTeX_Main', 'Times New Roman', Times, serif !important;
+	line-height: 1.2 !important;
+	vertical-align: baseline !important;
+}
+
+/* 防止公式被裁剪 */
+.katex {
+	overflow: visible !important;
+}
+.wrap {
+	border: none;
+	padding: 0;
+	height: 100%;
+	box-sizing: border-box;
+	/* overflow: hidden; 移除，避免裁剪公式 */
+	background: transparent;
+	min-height: 0;
+	display: flex;
+	flex-direction: column;
+}
+/* 强化 KaTeX 隔离，防止全局样式污染 */
+:global(.katex), :global(.katex *) {
+	font-family: 'KaTeX_Main', 'Times New Roman', Times, serif !important;
+	line-height: 1.2 !important;
+	vertical-align: baseline !important;
+	font-size: 1em !important;
+}
+:global(.katex) {
+	overflow: visible !important;
+}
+.content { color: #3b3350; line-height: 1.8; padding: 0; height: 100%; overflow: auto; box-sizing: border-box; }
+
+.controls {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 0 8px 0;
+}
+.toggleBtn, .fullBtn {
+  background: #fff;
+  border: 1px solid rgba(75,42,133,0.08);
+  color: #4b2a85;
+  padding: 6px 10px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.toggleBtn:hover, .fullBtn:hover { background: #f5f3ff; }
+
+.container { flex: 1 1 0; overflow: hidden; min-height: 0; }
+.editor { width: 100%; height: 100%; box-sizing: border-box; padding: 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', 'Courier New', monospace; font-size: 13px; border-radius: 6px; border: 1px solid rgba(75,42,133,0.06); min-height: 0; resize: vertical; overflow: auto; }
+
+/* KaTeX隔离区，彻底避免父级样式影响公式布局 */
+.content .katex-isolate {
+	all: initial;
+	font-size: 1.1em;
+	color: #3b3350;
+	/* 重新引入KaTeX官方字体和样式 */
+	font-family: 'KaTeX_Main', 'Times New Roman', Times, serif;
+}
+.content h1 { font-size: 20px; margin: 0 0 12px 0; }
+.content h2 { font-size: 18px; margin: 8px 0; }
+.content ul { padding-left: 20px; }
+.content p { margin: 6px 0 10px 0; }
+.content pre { background: transparent; padding: 8px; }
+
+/* KaTeX fixes: ensure block math centers and inline math aligns with text */
+.content .katex {
+	display: inline-block;
+	line-height: normal;
+	vertical-align: middle;
+}
+
+.content .katex-display {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+	margin: 18px 0;
+	width: 100%;
+}
+
+/* Ensure katex inner HTML uses inline-block so centering works */
+.content .katex .katex-html {
+	display: inline-block;
+}
+
+/* Prevent unexpected transforms/line-height from parent rules */
+.content .katex {
+	/* Isolate KaTeX font and sizing but keep internal transforms for proper script placement */
+	font-family: 'KaTeX_Main', 'Times New Roman', Times, serif !important;
+	font-style: normal !important;
+	font-weight: normal !important;
+	font-size: 1em !important;
+	line-height: normal !important;
+	display: inline-block;
+	vertical-align: baseline;
+}
+
+.content .katex * {
+	font-family: inherit !important;
+}
+
+/* Ensure block formula is centered within its container and not affected by parent flex */
+.content > .katex-display, .content .katex-display > .katex {
+	margin-left: auto !important;
+	margin-right: auto !important;
+}
+
+/* Make sure SVG/CSS inside KaTeX scale normally */
+.content .katex svg {
+	transform: none !important;
+}
+
+/* Compatibility tweaks: adjust vlist positioning when parent styles interfere.
+	 This nudges subscripts/superscripts back toward the baseline when they render too low.
+	 If your global typography (line-height, font-size) changes, consider isolating KaTeX container instead. */
+.content .katex .vlist {
+	position: relative !important;
+	top: -0.22em !important;
+}
+
+.content .katex .baseline-fix {
+	display: none !important;
+}
+.pre { white-space: pre-wrap; word-break: break-word; margin: 0; color: #3b3350; }
+.empty { color: #888; }

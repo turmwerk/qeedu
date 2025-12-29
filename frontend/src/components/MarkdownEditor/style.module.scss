@@ -1,0 +1,94 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15,15,20,0.28);
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+  padding: 8px;
+  z-index: 1400;
+}
+
+.sheet {
+  background: #ffffff;
+  border-radius: 12px;
+  margin: 8px;
+  padding: 14px;
+  box-shadow: 0 12px 40px rgba(16,24,40,0.12);
+  width: calc(100% - 16px);
+  height: calc(100% - 16px);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #24124a;
+  margin-bottom: 14px;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn {
+  background: transparent;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.primary {
+  background: linear-gradient(180deg, #6b3fb7 0%, #4b2a85 100%);
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.editorWrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  flex: 1 1 0;
+  height: 100%;
+  /* allow children to scroll correctly within the grid/flex container */
+  min-height: 0;
+}
+
+.editor {
+  width: 100%;
+  height: 100%;
+  padding: 18px;
+  border-radius: 8px;
+  border: 1px solid rgba(16,24,40,0.06);
+  resize: none;
+  background: #ffffff;
+  box-sizing: border-box;
+  overflow: auto;
+  /* important for children to be scrollable inside the grid cell */
+  min-height: 0;
+}
+
+.preview {
+  background: #ffffff;
+  padding: 18px;
+  border-radius: 8px;
+  height: 100%;
+  overflow: auto;
+  border: 1px dashed rgba(75,42,133,0.08);
+  box-sizing: border-box;
+  /* ensure inner content scrolls within this box instead of expanding the sheet */
+  min-height: 0;
+}

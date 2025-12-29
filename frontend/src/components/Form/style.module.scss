@@ -1,0 +1,39 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.field label {
+  display: block;
+  margin-bottom: 6px;
+  color: #333;
+  font-weight: 600;
+}
+
+.field input,
+.field textarea {
+  width: 100%;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #f0e9f8;
+}
+
+.actions {
+  margin-top: 12px;
+}
+
+.primary {
+  background: #4b2a85;
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(75,42,133,0.2);
+}
+
+.fileList { margin-top: 8px; display:flex; flex-direction:column; gap:6px; }
+.fileItem { font-size:13px; color:#444; background:#faf7ff; padding:6px 8px; border-radius:6px; border:1px solid rgba(75,42,133,0.04); }
+.rangeWrap { display:flex; align-items:center; gap:12px; }
+.rangeValue { min-width:48px; text-align:center; color:#666; }
