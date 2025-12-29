@@ -5,13 +5,44 @@
   margin-bottom: 16px;
 }
 
+.headerCard {
+  background: #fff;
+  padding: 0 16px;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(16,24,40,0.04);
+  margin-bottom: 12px;
+  height: auto;
+}
+
 .leftTitle {
   color: #4b2a85;
   font-weight: 700;
 }
 
+.titleBox {
+  background: #fbf7ff;
+  padding: 0 12px;
+  border-radius: 8px;
+}
+
 .rightAction {
 }
+
+.headerRow { align-items: center; }
+
+.titleBox { flex: 1; margin-right: 12px; }
+
+.rightAction { display:flex; align-items:center; gap:8px; }
+
+.scoreBox {
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  justify-content:center;
+  margin-right:12px;
+}
+.scoreLabel { font-size:12px; color:#666; }
+.scoreValue { font-size:20px; font-weight:800; color:#4b2a85; }
 
 .backBtn {
   background: #fff;
@@ -101,7 +132,14 @@
   padding: 18px;
   box-shadow: 0 6px 18px rgba(16,24,40,0.04);
   min-height: 520px;
+  max-height: 520px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
 }
+
+.card { background:#fff; border-radius:10px; padding:12px; box-shadow:0 1px 6px rgba(0,0,0,0.06); flex: 0 0 auto; }
 
 .aiDesc { color: #666; margin-top: 6px; }
 

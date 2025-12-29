@@ -21,18 +21,26 @@ const DetailPage: React.FC<{
     <div>
       <PageHeader title="大纲设计" />
       <div className={shared.content}>
-        <div className={styles.headerRow}>
-          <div className={styles.leftTitle}>当前大纲：{title || '未命名课程'}</div>
-          <div className={styles.rightAction}>
-            <button className={styles.backBtn} onClick={onBack}>返回大纲目录</button>
-            <Dropdown
-              button="导出"
-              items={[
-                { label: '导出 PDF', onClick: () => exportPdfViaPrint(title || 'outline', md) },
-                { label: '导出 Docx', onClick: () => downloadDocx(title || 'outline', md) },
-                { label: '导出 Markdown', onClick: () => downloadMarkdown(title || 'outline', md) }
-              ]}
-            />
+        <div className={styles.headerCard}>
+          <div className={styles.headerRow}>
+            <div className={styles.titleBox}>
+              <div className={styles.leftTitle}>当前大纲：{title || '未命名课程'}</div>
+            </div>
+            <div className={styles.rightAction}>
+              <div className={styles.scoreBox}>
+                <div className={styles.scoreLabel}>总分</div>
+                <div className={styles.scoreValue}>90</div>
+              </div>
+              <button className={styles.backBtn} onClick={onBack}>返回大纲目录</button>
+              <Dropdown
+                button="导出"
+                items={[
+                  { label: '导出 PDF', onClick: () => exportPdfViaPrint(title || 'outline', md) },
+                  { label: '导出 Docx', onClick: () => downloadDocx(title || 'outline', md) },
+                  { label: '导出 Markdown', onClick: () => downloadMarkdown(title || 'outline', md) }
+                ]}
+              />
+            </div>
           </div>
         </div>
         <div className={styles.layout}>
