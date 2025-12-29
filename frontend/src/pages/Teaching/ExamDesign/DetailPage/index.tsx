@@ -12,6 +12,12 @@ type Question = {
   id: string;
   stem: string;
   score?: number;
+  type?: string;
+  options?: string[];
+  knowledge?: string;
+  difficulty?: string;
+  cognition?: string;
+  answerAnalysis?: string;
 };
 
 const DetailPage: React.FC<{
@@ -20,6 +26,45 @@ const DetailPage: React.FC<{
   questions?: Question[];
   onBack: () => void;
 }> = ({ examId = 'default-exam', title = '未命名试卷', questions = [], onBack }) => {
+  type Exam = { id: string; title: string; createdAt: number; questions: Question[] };
+  const STORAGE_KEY = 'exam_design_exams_v1';
+
+  const loadExams = (): Exam[] => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return [];
+      return JSON.parse(raw) as Exam[];
+    } catch (e) {
+      console.warn('loadExams failed', e);
+      return [];
+    }
+  };
+
+  const saveExams = (exs: Exam[]) => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(exs));
+    } catch (e) {
+      console.warn('saveExams failed', e);
+    }
+  };
+
+  const persistExam = (nextQuestions: Question[], nextTitle?: string) => {
+    try {
+      const exs = loadExams();
+      const idx = exs.findIndex(e => e.id === examId);
+      const entry: Exam = { id: examId, title: nextTitle ?? localTitle ?? title ?? '未命名试卷', createdAt: Date.now(), questions: nextQuestions };
+      if (idx >= 0) {
+        exs[idx] = { ...exs[idx], title: entry.title, questions: nextQuestions };
+      } else {
+        exs.push(entry);
+      }
+      saveExams(exs);
+    } catch (e) {
+      console.warn('persistExam failed', e);
+    }
+  };
+
+  const [localTitle, setLocalTitle] = useState(title);
   const [selectedQuestion, setSelectedQuestion] = useState<string | null>(null);
 
   const dialogIdFor = (questionId: string | null) => {
@@ -29,6 +74,35 @@ const DetailPage: React.FC<{
 
   const [localQuestions, setLocalQuestions] = useState<Question[]>(questions);
   useEffect(() => setLocalQuestions(questions), [questions]);
+
+  // load stored exam on mount
+  useEffect(() => {
+    const exs = loadExams();
+    const found = exs.find(e => e.id === examId);
+    if (found) {
+      setLocalQuestions(found.questions || []);
+      setLocalTitle(found.title || title);
+    } else {
+      // initialize and persist a new exam
+      const newExam: Exam = { id: examId, title: title || '未命名试卷', createdAt: Date.now(), questions };
+      exs.push(newExam);
+      saveExams(exs);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // persist when questions or title change
+  useEffect(() => {
+    const exs = loadExams();
+    const idx = exs.findIndex(e => e.id === examId);
+    const examEntry: Exam = { id: examId, title: localTitle || title || '未命名试卷', createdAt: Date.now(), questions: localQuestions };
+    if (idx >= 0) {
+      exs[idx] = { ...exs[idx], title: examEntry.title, questions: examEntry.questions };
+    } else {
+      exs.push(examEntry);
+    }
+    saveExams(exs);
+  }, [localQuestions, localTitle, examId, title]);
 
   // insert modal state
   const [showInsertModal, setShowInsertModal] = useState(false);
@@ -40,6 +114,8 @@ const DetailPage: React.FC<{
   const [modalQType, setModalQType] = useState('简答');
   const [modalDifficulty, setModalDifficulty] = useState('中等');
   const [modalCognition, setModalCognition] = useState('理解');
+  const [modalOptions, setModalOptions] = useState<string[]>([]);
+  const [modalAnswerAnalysis, setModalAnswerAnalysis] = useState('');
 
   useEffect(() => {
     if (!showInsertModal) return;
@@ -47,24 +123,49 @@ const DetailPage: React.FC<{
       const q = localQuestions.find(x => x.id === editingQuestionId);
       setModalStem(q?.stem || '');
       setModalScore(q?.score ?? 5);
+      setModalKnowledge(q?.knowledge || '');
+      setModalQType(q?.type || '简答');
+      setModalDifficulty(q?.difficulty || '中等');
+      setModalCognition(q?.cognition || '理解');
+      setModalOptions(q?.options && q.options.length ? q.options.slice() : ['','']);
+      setModalAnswerAnalysis(q?.answerAnalysis || '');
     } else {
       setModalStem('');
       setModalScore(5);
+      setModalKnowledge('');
+      setModalQType('简答');
+      setModalDifficulty('中等');
+      setModalCognition('理解');
+      setModalOptions(['', '']);
+      setModalAnswerAnalysis('');
     }
   }, [showInsertModal, editingQuestionId, localQuestions]);
 
   const handleModalSubmit = () => {
-    const newQ: Question = { id: Date.now().toString(), stem: modalStem, score: modalScore };
-    setLocalQuestions(prev => {
-      if (editingQuestionId) {
-        return prev.map(p => p.id === editingQuestionId ? { ...p, stem: modalStem, score: modalScore } : p);
-      }
-      if (insertAt == null) return [...prev, newQ];
-      const idx = Math.max(0, Math.min(insertAt + 1, prev.length));
-      const copy = [...prev];
+    const newQ: Question = {
+      id: Date.now().toString(),
+      stem: modalStem,
+      score: modalScore,
+      type: modalQType,
+      options: modalOptions && modalOptions.length ? modalOptions.map(s => s.trim()).filter(Boolean) : undefined,
+      knowledge: modalKnowledge,
+      difficulty: modalDifficulty,
+      cognition: modalCognition,
+      answerAnalysis: modalAnswerAnalysis,
+    };
+    let nextQuestions: Question[];
+    if (editingQuestionId) {
+      nextQuestions = localQuestions.map(p => p.id === editingQuestionId ? { ...p, stem: modalStem, score: modalScore, type: modalQType, options: newQ.options, knowledge: modalKnowledge, difficulty: modalDifficulty, cognition: modalCognition, answerAnalysis: modalAnswerAnalysis } : p);
+    } else if (insertAt == null) {
+      nextQuestions = [...localQuestions, newQ];
+    } else {
+      const idx = Math.max(0, Math.min(insertAt + 1, localQuestions.length));
+      const copy = [...localQuestions];
       copy.splice(idx, 0, newQ);
-      return copy;
-    });
+      nextQuestions = copy;
+    }
+    setLocalQuestions(nextQuestions);
+    persistExam(nextQuestions);
     setShowInsertModal(false);
     setEditingQuestionId(null);
     setInsertAt(null);
@@ -129,14 +230,30 @@ const DetailPage: React.FC<{
                         <div className={styles.qTags}>数据结构 中等 选择</div>
                       </div>
                       <div className={styles.qContent}>
-                        <div className={styles.qStem}>{q.stem}</div>
+                        <div className={styles.qStem}>
+                          {q.stem}
+                          {q.options && q.options.length > 0 && (
+                            <ul className={styles.optionsList}>
+                              {q.options.map((opt, i) => (
+                                <li key={i} className={styles.optionItem}>{String.fromCharCode(65 + i)}. {opt}</li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
                         <div className={styles.qActions} onClick={e => e.stopPropagation()}>
                           <div className={styles.qMeta}>分值 <input type="number" value={q.score ?? 5} onChange={(e) => {
                             const v = Number(e.target.value || 0);
-                            setLocalQuestions(prev => prev.map(p => p.id === q.id ? { ...p, score: v } : p));
+                            const next = localQuestions.map(p => p.id === q.id ? { ...p, score: v } : p);
+                            setLocalQuestions(next);
+                            persistExam(next);
                           }} className={styles.scoreInput} /></div>
                           <button className={styles.modifyBtn} onClick={() => { setEditingQuestionId(q.id); setInsertAt(idx - 1); setShowInsertModal(true); }}>修改</button>
-                          <button className={styles.deleteBtn} onClick={() => { setLocalQuestions(prev => prev.filter(p => p.id !== q.id)); if (selectedQuestion === q.id) setSelectedQuestion(null); }}>删除</button>
+                          <button className={styles.deleteBtn} onClick={() => {
+                            const next = localQuestions.filter(p => p.id !== q.id);
+                            setLocalQuestions(next);
+                            persistExam(next);
+                            if (selectedQuestion === q.id) setSelectedQuestion(null);
+                          }}>删除</button>
                         </div>
                       </div>
                     </div>
@@ -150,6 +267,10 @@ const DetailPage: React.FC<{
                         <div className={styles.analysisBox}>
                           <div className={styles.analysisTitle}>难度分析</div>
                           <div className={styles.analysisContent}>偏基础概念，适合作为入门或热身题。</div>
+                        </div>
+                        <div className={styles.analysisBox}>
+                          <div className={styles.analysisTitle}>答案分析</div>
+                          <div className={styles.analysisContent}>{q.answerAnalysis || '暂无答案分析。'}</div>
                         </div>
                       </div>
                     )}
@@ -250,7 +371,9 @@ const DetailPage: React.FC<{
                               showToast('请先在左侧试卷中选择要替换的题目');
                               return;
                             }
-                            setLocalQuestions((prev) => prev.map((q) => q.id === selectedQuestion ? { ...q, stem: r.stem } : q));
+                            const next = localQuestions.map((qq) => qq.id === selectedQuestion ? { ...qq, stem: r.stem } : qq);
+                            setLocalQuestions(next);
+                            persistExam(next);
                           }}
                         >替换</button>
                       </div>
@@ -289,7 +412,7 @@ const DetailPage: React.FC<{
                     </div>
                     <div>
                       <div style={{ marginBottom: 6 }}>题型</div>
-                      <select value={modalQType} onChange={e => setModalQType(e.target.value)} style={{ width: '100%', padding: '8px', borderRadius: 8, border: '1px solid #eee' }}>
+                      <select value={modalQType} onChange={e => { const v = e.target.value; setModalQType(v); if (v === '选择' && modalOptions.length < 2) setModalOptions(['', '']); }} style={{ width: '100%', padding: '8px', borderRadius: 8, border: '1px solid #eee' }}>
                         <option>简答</option>
                         <option>选择</option>
                         <option>填空</option>
@@ -316,6 +439,26 @@ const DetailPage: React.FC<{
                         <option>分析</option>
                       </select>
                     </div>
+                  </div>
+                  {modalQType === '选择' && (
+                    <div style={{ marginTop: 8 }}>
+                      <div style={{ marginBottom: 6 }}>选项</div>
+                      {modalOptions.map((opt, i) => (
+                        <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 6 }}>
+                          <div style={{ width: 28, textAlign: 'center', fontWeight: 700 }}>{String.fromCharCode(65 + i)}</div>
+                          <input value={opt} onChange={e => setModalOptions(prev => { const copy = [...prev]; copy[i] = e.target.value; return copy; })} placeholder={`选项 ${String.fromCharCode(65 + i)}`} style={{ flex: 1, padding: 8, borderRadius: 8, border: '1px solid #eee' }} />
+                          <button className={styles.deleteBtn} onClick={() => setModalOptions(prev => prev.length > 1 ? prev.filter((_, idx) => idx !== i) : prev)}>删除</button>
+                        </div>
+                      ))}
+                      <div>
+                        <button className={styles.insertBtn} onClick={() => setModalOptions(prev => [...prev, ''])}>+ 添加选项</button>
+                      </div>
+                    </div>
+                  )}
+
+                  <div style={{ marginTop: 8 }}>
+                    <div style={{ marginBottom: 6 }}>答案分析</div>
+                    <textarea value={modalAnswerAnalysis} onChange={e => setModalAnswerAnalysis(e.target.value)} rows={3} style={{ width: '100%', padding: '8px', borderRadius: 8, border: '1px solid #eee' }} />
                   </div>
                 </div>
                 <div style={{ width: 360, marginLeft: 16 }}>

@@ -1,11 +1,14 @@
 .container {
+  position: relative;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   margin-bottom: 20px;
+  padding: 6px 0; /* 防止被上方遮挡，增加一点间距 */
 }
 
 .left {
+  text-align: center;
 }
 
 .title {
@@ -20,7 +23,10 @@
 }
 
 .right {
+  position: absolute;
+  right: 0;
   display: flex;
   gap: 8px;
   align-items: center;
+  z-index: 2;
 }

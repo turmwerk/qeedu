@@ -3,16 +3,20 @@ import ListPage from './ListPage';
 import DetailPage from './DetailPage';
 import Dialog from '@/components/Dialog';
 
-type Question = { id: string; stem: string; score?: number };
+type Question = {
+  id: string;
+  stem: string;
+  score?: number;
+  type?: string;
+  options?: string[];
+  knowledge?: string;
+  difficulty?: string;
+  cognition?: string;
+  answerAnalysis?: string;
+};
 type Exam = { id: string; title: string; questions: Question[]; createdAt?: number };
 
-const STORAGE_KEY = 'exam_design_exams';
-
-const ExampleQuestions = (): Question[] => [
-  { id: 'q1', stem: '下列哪个属于监督学习任务？', score: 5 },
-  { id: 'q2', stem: 'SQL 中用于过滤的子句是？', score: 5 },
-  { id: 'q3', stem: '线程与进程相比，最大的区别是？', score: 5 }
-];
+const STORAGE_KEY = 'exam_design_exams_v1';
 
 const ExamDesign: React.FC = () => {
   const [exams, setExams] = useState<Exam[]>([]);
@@ -36,7 +40,7 @@ const ExamDesign: React.FC = () => {
   const handleCreate = (payload: Record<string, any>) => {
     const id = Date.now().toString();
     const name = payload.name || '未命名试卷';
-    const item: Exam = { id, title: name, questions: ExampleQuestions(), createdAt: Date.now() };
+    const item: Exam = { id, title: name, questions: [], createdAt: Date.now() };
     const next = [item, ...exams];
     persist(next);
     setCurrentId(id);
@@ -74,7 +78,17 @@ const ExamDesign: React.FC = () => {
         examId={current?.id}
         title={current?.title}
         questions={current?.questions}
-        onBack={() => { setView('list'); setCurrentId(null); }}
+        onBack={() => {
+          // 切回列表时重新加载 localStorage
+          try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (raw) setExams(JSON.parse(raw));
+          } catch (e) {
+            console.error('load exams', e);
+          }
+          setView('list');
+          setCurrentId(null);
+        }}
       />
     );
   }

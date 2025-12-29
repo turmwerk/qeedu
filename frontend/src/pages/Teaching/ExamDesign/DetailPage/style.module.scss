@@ -132,6 +132,10 @@
 .insertWrap { display:flex; justify-content:center; margin:6px 0; }
 .insertBtn { background: transparent; border: 1px dashed rgba(75,42,133,0.08); color:#4b2a85; padding:4px 10px; border-radius:8px; cursor:pointer; font-size:13px; }
 
+.optionsList { margin-top:8px; list-style:none; padding:0; }
+.optionItem { padding:6px 8px; border-radius:8px; background: #fff; border:1px solid rgba(0,0,0,0.03); margin-bottom:6px; }
+.deleteBtn { background: #fff; border: 1px solid rgba(200,30,30,0.08); color:#c21e1e; padding:6px 8px; border-radius:8px; cursor:pointer; }
+
 /* modal */
 .modalOverlay { position:fixed; left:0; top:0; right:0; bottom:0; background: rgba(0,0,0,0.35); display:flex; align-items:center; justify-content:center; z-index:1200; }
 .modalContent { width:920px; max-width:92%; background:#fff; border-radius:10px; padding:18px; box-shadow:0 10px 40px rgba(16,24,40,0.2); }
