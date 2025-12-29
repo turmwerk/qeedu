@@ -5,6 +5,7 @@ import styles from './style.module.scss';
 import Dialog from '@/components/Dialog';
 import Dropdown from '@/components/Dropdown';
 import Form from '@/components/Form';
+import ToastContainer, { showToast } from '@/components/Toast';
 import { downloadMarkdown, downloadDocx, exportPdfViaPrint } from '@/utils/exportFiles';
 
 type Question = {
@@ -84,6 +85,7 @@ const DetailPage: React.FC<{
 
   return (
     <div>
+      <ToastContainer />
       <PageHeader title="试卷设计" />
       <div className={shared.content}>
         <div className={styles.headerCard}>
@@ -245,7 +247,7 @@ const DetailPage: React.FC<{
                           className={styles.recReplaceBtn}
                           onClick={() => {
                             if (!selectedQuestion) {
-                              window.alert('请先在左侧试卷中选择要替换的题目');
+                              showToast('请先在左侧试卷中选择要替换的题目');
                               return;
                             }
                             setLocalQuestions((prev) => prev.map((q) => q.id === selectedQuestion ? { ...q, stem: r.stem } : q));
