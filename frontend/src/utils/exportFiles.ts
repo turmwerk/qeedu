@@ -80,15 +80,15 @@ export async function downloadDocx(filename: string, markdown: string) {
     const tag = el.tagName.toLowerCase();
 
     if (tag === 'h1' || tag === 'h2' || tag === 'h3' || tag === 'h4' || tag === 'h5' || tag === 'h6') {
-      const levelMap: Record<string, HeadingLevel> = {
+      const levelMap = {
         h1: HeadingLevel.HEADING_1,
         h2: HeadingLevel.HEADING_2,
         h3: HeadingLevel.HEADING_3,
         h4: HeadingLevel.HEADING_4,
         h5: HeadingLevel.HEADING_5,
         h6: HeadingLevel.HEADING_6,
-      };
-      const level = levelMap[tag] || HeadingLevel.HEADING_1;
+      } as const;
+      const level = (levelMap as Record<string, any>)[tag] || HeadingLevel.HEADING_1;
       // 为避免 Word 模板对 Heading 使用蓝色样式，显式设置 TextRun 颜色为黑色。
       const text = (el.textContent || '').trim();
       const run = new TextRun({ text, bold: true, color: '000000' });
