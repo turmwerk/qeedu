@@ -1,0 +1,16 @@
+.headerRow { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+.leftTitle { font-weight:600; }
+.rightAction .backBtn { padding:6px 12px; }
+.layout { display:flex; gap:16px; }
+.leftPane { flex: 1; }
+.rightPane { width:360px; display:flex; flex-direction:column; gap:12px; }
+.paperCard { background:#fff; border-radius:10px; box-shadow:0 1px 6px rgba(0,0,0,0.06); padding:12px; }
+.paperHeader { font-weight:700; margin-bottom:8px; }
+.paperBody { display:flex; flex-direction:column; gap:8px; }
+.question { padding:10px; border-radius:8px; background:#fafafa; cursor:pointer; display:flex; justify-content:space-between; }
+.qStem { color:#333; }
+.qMeta { color:#888; }
+.card { background:#fff; border-radius:10px; padding:12px; box-shadow:0 1px 6px rgba(0,0,0,0.06); }
+.cardTitle { font-weight:700; margin-bottom:8px; }
+.cardBody { color:#666; }
+.empty { color:#999; padding:20px; text-align:center; }
