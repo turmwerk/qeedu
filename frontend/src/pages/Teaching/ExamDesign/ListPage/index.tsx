@@ -97,7 +97,7 @@ const ListPage: React.FC<{
               aria-valuemax={100}
               aria-valuenow={Math.round(p1)}
               onMouseDown={(e) => { e.preventDefault(); dragging.current = 'p1'; }}
-              onTouchStart={(e) => { dragging.current = 'p1'; }}
+              onTouchStart={() => { dragging.current = 'p1'; }}
               style={{ position: 'absolute', top: '50%', transform: 'translate(-50%,-50%)', left: `${p1}%`, width: 18, height: 18, borderRadius: 9, background: '#fff', border: '4px solid #6b2fb1', boxShadow: '0 4px 12px rgba(0,0,0,0.12)', cursor: 'grab' }}
             />
             <div
@@ -106,7 +106,7 @@ const ListPage: React.FC<{
               aria-valuemax={100}
               aria-valuenow={Math.round(p2)}
               onMouseDown={(e) => { e.preventDefault(); dragging.current = 'p2'; }}
-              onTouchStart={(e) => { dragging.current = 'p2'; }}
+              onTouchStart={() => { dragging.current = 'p2'; }}
               style={{ position: 'absolute', top: '50%', transform: 'translate(-50%,-50%)', left: `${p2}%`, width: 18, height: 18, borderRadius: 9, background: '#fff', border: '4px solid #6b2fb1', boxShadow: '0 4px 12px rgba(0,0,0,0.12)', cursor: 'grab' }}
             />
           </div>
