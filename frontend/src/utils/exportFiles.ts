@@ -45,21 +45,19 @@ export async function downloadDocx(filename: string, markdown: string) {
       const tag = el.tagName.toLowerCase();
 
       if (tag === 'strong' || tag === 'b') {
-        el.childNodes.forEach((c) => {
-          makeRunsFromNode(c).forEach(r => { r.bold = true; runs.push(r); });
-        });
+        const txt = el.textContent || '';
+        if (txt.trim() !== '') runs.push(new TextRun({ text: txt, bold: true }));
         return runs;
       }
       if (tag === 'em' || tag === 'i') {
-        el.childNodes.forEach((c) => {
-          makeRunsFromNode(c).forEach(r => { r.italics = true; runs.push(r); });
-        });
+        const txt = el.textContent || '';
+        if (txt.trim() !== '') runs.push(new TextRun({ text: txt, italics: true } as any));
         return runs;
       }
       if (tag === 'code' && el.parentElement && el.parentElement.tagName.toLowerCase() !== 'pre') {
         // inline code
         const txt = el.textContent || '';
-        runs.push(new TextRun({ text: txt, font: 'Courier New', shading: { type: 'clear', color: 'auto', fill: 'f5f5f5' } }));
+        runs.push(new TextRun({ text: txt, font: 'Courier New', shading: { type: 'clear', color: 'auto', fill: 'f5f5f5' } } as any));
         return runs;
       }
       if (tag === 'br') {
@@ -82,7 +80,15 @@ export async function downloadDocx(filename: string, markdown: string) {
     const tag = el.tagName.toLowerCase();
 
     if (tag === 'h1' || tag === 'h2' || tag === 'h3' || tag === 'h4' || tag === 'h5' || tag === 'h6') {
-      const level = { h1: HeadingLevel.HEADING_1, h2: HeadingLevel.HEADING_2, h3: HeadingLevel.HEADING_3, h4: HeadingLevel.HEADING_4, h5: HeadingLevel.HEADING_5, h6: HeadingLevel.HEADING_6 }[tag as keyof any];
+      const levelMap: Record<string, HeadingLevel> = {
+        h1: HeadingLevel.HEADING_1,
+        h2: HeadingLevel.HEADING_2,
+        h3: HeadingLevel.HEADING_3,
+        h4: HeadingLevel.HEADING_4,
+        h5: HeadingLevel.HEADING_5,
+        h6: HeadingLevel.HEADING_6,
+      };
+      const level = levelMap[tag] || HeadingLevel.HEADING_1;
       // 为避免 Word 模板对 Heading 使用蓝色样式，显式设置 TextRun 颜色为黑色。
       const text = (el.textContent || '').trim();
       const run = new TextRun({ text, bold: true, color: '000000' });
