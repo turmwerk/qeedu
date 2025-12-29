@@ -3,6 +3,7 @@ import { RouterProvider } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
 import zhCN from 'antd/locale/zh_CN';
 import router from './router';
+import ToastContainer from '@/components/Toast';
 
 const App: React.FC = () => {
   return (
@@ -21,6 +22,7 @@ const App: React.FC = () => {
       }}
     >
       <RouterProvider router={router} />
+      <ToastContainer />
     </ConfigProvider>
   );
 };

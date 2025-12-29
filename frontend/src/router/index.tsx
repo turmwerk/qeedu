@@ -3,6 +3,7 @@ import { createBrowserRouter } from 'react-router-dom';
 import { Spin } from 'antd';
 import MainLayout from '@/layouts/MainLayout';
 import Login from '@/pages/Auth/Login';
+import Resister from '@/pages/Auth/Resister';
 import styles from './style.module.scss';
 
 // Lazy Load
@@ -33,5 +34,6 @@ const router = createBrowserRouter([
     ]
   },
   { path: '/login', element: <Login /> }
+  ,{ path: '/register', element: <Resister /> }
 ]);
 export default router;
