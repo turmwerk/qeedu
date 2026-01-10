@@ -7,6 +7,7 @@
   justify-content: stretch;
   padding: 8px;
   z-index: 1400;
+  animation: overlayFade 0.24s ease;
 }
 
 .sheet {
@@ -20,6 +21,7 @@
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+  animation: sheetPop 0.28s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .header {
@@ -42,19 +44,33 @@
 
 .btn {
   background: transparent;
-  border: none;
+  border: 1px solid var(--brand-border);
   padding: 8px 14px;
   border-radius: 8px;
   cursor: pointer;
+  color: var(--brand-accent);
+  transition: box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.btn:hover {
+  background: var(--brand-accent-soft);
+  border-color: var(--brand-accent);
+  box-shadow: var(--brand-shadow);
 }
 
 .primary {
-  background: linear-gradient(180deg, #6b3fb7 0%, #4b2a85 100%);
+  background: var(--brand-accent);
   color: #fff;
   border: none;
   padding: 8px 14px;
   border-radius: 8px;
   cursor: pointer;
+  transition: box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.primary:hover {
+  background: var(--brand-accent-strong);
+  box-shadow: var(--brand-shadow);
 }
 
 .editorWrap {
@@ -87,8 +103,18 @@
   border-radius: 8px;
   height: 100%;
   overflow: auto;
-  border: 1px dashed rgba(75,42,133,0.08);
+  border: 1px dashed var(--brand-border);
   box-sizing: border-box;
   /* ensure inner content scrolls within this box instead of expanding the sheet */
   min-height: 0;
+}
+
+@keyframes overlayFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes sheetPop {
+  from { opacity: 0; transform: translateY(10px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }

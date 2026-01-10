@@ -13,11 +13,11 @@
 }
 .toast {
   pointer-events: auto;
-  background: linear-gradient(90deg,#7b3be8,#cf7bff);
+  background: var(--brand-accent);
   color: #fff;
   padding: 10px 14px;
   border-radius: 22px;
-  box-shadow: 0 8px 24px rgba(123,59,232,0.18);
+  box-shadow: var(--brand-shadow);
   font-weight: 600;
   min-width: 120px;
   max-width: 640px;

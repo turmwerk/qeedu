@@ -6,6 +6,7 @@ import List from '@/components/List';
 import listStyles from '@/components/List/style.module.scss';
 import Form from '@/components/Form';
 import Model from '@/components/Model';
+import ConfirmDialog from '@/components/ConfirmDialog';
 
 type ExamItem = {
   id: string;
@@ -22,6 +23,9 @@ const ListPage: React.FC<{
   onRename: (id: string, newName: string) => void;
 }> = ({ items, onEdit, onCreate, onDelete, onRename }) => {
   const [open, setOpen] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [confirmDeleteTitle, setConfirmDeleteTitle] = useState<string>('');
   // DifficultyPicker with two draggable knobs controlling boundaries between easy|medium|hard
   const DifficultyPicker: React.FC<{ value: any; onChange: (v: any) => void }> = ({ value, onChange }) => {
     const init = value || { easy: 30, medium: 50, hard: 20 };
@@ -166,7 +170,14 @@ const ListPage: React.FC<{
                   actions={[
                     { label: '继续编辑', onClick: (item: any) => onEdit(item.id), className: listStyles.btnEdit },
                     { label: '重命名', isRename: true, onClick: (item: any, newName?: string) => newName && onRename(item.id, newName), className: listStyles.btnRename },
-                    { label: '删除', onClick: (item: any) => onDelete(item.id), className: listStyles.btnDanger }
+                    {
+                      label: '删除',
+                      onClick: (item: any) => {
+                        setConfirmDeleteId(item.id);
+                        setConfirmDeleteTitle(item.title || '未命名试卷');
+                      },
+                      className: listStyles.btnDanger,
+                    }
                   ]}
                   emptyText="暂无试卷。"
                 />
@@ -180,8 +191,8 @@ const ListPage: React.FC<{
         <div>
           <p style={{ color: '#666' }}>填写试卷基本信息以便快速生成试卷初稿。</p>
           <div style={{ marginTop: 12 }}>
-            <Form
-              fields={[
+              <Form
+                fields={[
                 { name: 'name', label: '试卷标题', placeholder: '例如： 期末考试 2025', defaultValue: '未命名试卷' },
                 { name: 'content', label: '考察内容', type: 'textarea', placeholder: '例如： 操作系统、数据库', rows: 6 },
                 { name: 'materials', label: '相关资料', type: 'file', multiple: true, accept: '.pdf,.docx,.pptx' },
@@ -191,13 +202,41 @@ const ListPage: React.FC<{
                 { name: 'fill_count', label: '填空', type: 'number', defaultValue: 0 },
                 { name: 'program_count', label: '编程', type: 'number', defaultValue: 0 },
                 { name: 'essay_count', label: '论述', type: 'number', defaultValue: 0 }
-              ]}
-              submitText="生成初稿"
-              onSubmit={(values) => { onCreate(values); setOpen(false); }}
-            />
+                ]}
+                submitText="生成初稿"
+                submitLoading={isCreating}
+                submitLoadingText="生成中"
+                submitDisabled={isCreating}
+                onSubmit={(values) => {
+                  if (isCreating) return;
+                  setIsCreating(true);
+                  setTimeout(() => {
+                    onCreate(values);
+                    setOpen(false);
+                    setIsCreating(false);
+                  }, 600);
+                }}
+              />
           </div>
         </div>
       </Model>
+
+      <ConfirmDialog
+        open={!!confirmDeleteId}
+        title="删除试卷"
+        description={`确认删除「${confirmDeleteTitle}」吗？此操作不可恢复。`}
+        confirmText="确认删除"
+        danger
+        onCancel={() => {
+          setConfirmDeleteId(null);
+          setConfirmDeleteTitle('');
+        }}
+        onConfirm={() => {
+          if (confirmDeleteId) onDelete(confirmDeleteId);
+          setConfirmDeleteId(null);
+          setConfirmDeleteTitle('');
+        }}
+      />
     </div>
   );
 };

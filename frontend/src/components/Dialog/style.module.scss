@@ -1,8 +1,25 @@
-.container { display:flex; flex-direction:column; gap:12px; }
-.header { font-weight:700; color:#2d1b4f; }
-.body { min-height:300px; background:#faf7ff; border-radius:8px; padding:12px; display:flex; flex-direction:column; gap:8px; overflow:auto; max-height:420px; }
-.msgUser { align-self:flex-end; background:#1e90ff; color:#fff; padding:8px 12px; border-radius:12px; max-width:80%; }
+.container { display:flex; flex-direction:column; gap:12px; height:100%; min-height:0; }
+.header { font-weight:700; color: var(--brand-text); }
+.body { flex: 1 1 0; min-height:0; background: var(--brand-accent-soft); border-radius:8px; padding:12px; display:flex; flex-direction:column; gap:8px; overflow:auto; max-height:none; }
+.msgUser { align-self:flex-end; background: var(--brand-accent); color:#fff; padding:8px 12px; border-radius:12px; max-width:80%; }
 .msgBot { align-self:flex-start; background:#f1f0fb; color:#2d1b4f; padding:8px 12px; border-radius:12px; max-width:80%; }
+.msgPending { align-self:flex-start; background:#f1f0fb; color:#2d1b4f; padding:10px 12px; border-radius:12px; display:flex; gap:6px; animation: pendingIn 0.8s ease; }
+.dot { width:6px; height:6px; border-radius:50%; background:#6b4da6; display:inline-block; animation: dotPulse 1.4s infinite cubic-bezier(0.4, 0, 0.2, 1); }
+.dot:nth-child(2) { animation-delay: 1.44s; }
+.dot:nth-child(3) { animation-delay: 0.72s; }
 .footer { display:flex; gap:8px; }
-.footer input { flex:1; padding:8px 10px; border-radius:6px; border:1px solid rgba(0,0,0,0.08); }
-.footer button { padding:8px 12px; border-radius:6px; background:#4b2a85; color:#fff; border:none; cursor:pointer; }
+.footer input { flex:1; padding:8px 10px; border-radius:6px; border:1px solid var(--brand-border); }
+.footer button { padding:8px 12px; border-radius:6px; background: var(--brand-accent); color:#fff; border:none; cursor:pointer; transition: background 0.2s ease, box-shadow 0.2s ease; }
+.footer button:disabled { opacity: 0.6; cursor: default; box-shadow: none; }
+.footer input:disabled { background: #f7f4fb; color: #7b6d92; }
+.footer button:hover { background: var(--brand-accent-strong); box-shadow: var(--brand-shadow); }
+
+@keyframes dotPulse {
+  0%, 70%, 100% { transform: translateY(1px) scale(0.7); opacity: 0.4; }
+  35% { transform: translateY(-2px) scale(1); opacity: 1; }
+}
+
+@keyframes pendingIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
