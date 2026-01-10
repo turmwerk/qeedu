@@ -1,7 +1,12 @@
 .form {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px 20px;
+}
+
+.field {
   display: flex;
   flex-direction: column;
-  gap: 12px;
 }
 
 .field label {
@@ -12,11 +17,138 @@
 }
 
 .field input,
+.field select,
 .field textarea {
   width: 100%;
   padding: 8px;
   border-radius: 8px;
   border: 1px solid var(--brand-border);
+}
+
+.tableForm {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  background-color: var(--brand-border);
+  border: 1px solid var(--brand-border);
+  border-bottom: 0; /* Let last border be handled by container or gap? Standard is usually border all around */
+  border-bottom: 1px solid var(--brand-border);
+}
+
+.tableField {
+  display: flex;
+  flex-direction: row;
+  background-color: #fff;
+  align-items: stretch;
+  min-height: 48px;
+}
+
+.tableField label {
+  display: flex;
+  align-items: center;
+  width: 130px;
+  padding: 0 16px;
+  background-color: #fafafa;
+  margin-bottom: 0;
+  color: #333;
+  font-weight: 500;
+  font-size: 14px;
+  border-right: 1px solid var(--brand-border);
+  flex-shrink: 0;
+}
+
+.tableField input,
+.tableField select,
+.tableField textarea {
+  width: 100%;
+  border: none;
+  border-radius: 0;
+  padding: 10px 14px;
+  background: transparent;
+  outline: none;
+}
+
+.tableField input:focus,
+.tableField select:focus,
+.tableField textarea:focus {
+  background: #fff;
+  box-shadow: inset 0 0 0 2px var(--brand-accent-soft);
+}
+
+.fileWrap {
+  width: 100%;
+}
+.fileButtonWrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.fileButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f0f7ff;
+  color: #0066cc;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+.fileButton:hover {
+  background: #e0efff;
+}
+.fileButton input {
+  display: none;
+}
+.fileIcon {
+  font-size: 14px;
+}
+.fileHint {
+  font-size: 12px;
+  color: #999;
+}
+.fileList {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.fileItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f9f9f9;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #333;
+}
+.fileName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.fileSize {
+  color: #999;
+  margin-left: 8px;
+}
+
+.fileRemove {
+  background: none;
+  border: none;
+  color: #999;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  padding: 0 4px;
+  margin-left: 8px;
+  transition: color 0.2s;
+}
+
+.fileRemove:hover {
+  color: #ff4d4f;
 }
 
 .actions {

@@ -7,7 +7,7 @@ import 'highlight.js/styles/github.css';
 import styles from './style.module.scss';
 
 const md = new MarkdownIt({
-	html: false,
+	html: true,
  	linkify: true,
  	typographer: true,
     highlight: function (str: string, lang: string) {

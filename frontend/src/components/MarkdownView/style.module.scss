@@ -66,7 +66,49 @@
 	font-family: 'KaTeX_Main', 'Times New Roman', Times, serif;
 }
 .content h1 { font-size: 20px; margin: 0 0 12px 0; }
-.content h2 { font-size: 18px; margin: 8px 0; }
+.content h2 {
+  font-size: 18px;
+  margin: 24px 0 16px 0;
+  font-weight: 700;
+  color: var(--brand-text);
+  border-left: 4px solid var(--brand-accent);
+  padding-left: 10px;
+  line-height: 1.4;
+}
+
+.content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 24px;
+  font-size: 14px;
+}
+
+.content th, .content td {
+  border: 1px solid var(--brand-border);
+  padding: 10px 12px;
+  text-align: left;
+  line-height: 1.5;
+  color: var(--brand-text);
+  white-space: pre-wrap; /* 保留换行符 */
+}
+
+.content th {
+  background-color: var(--brand-accent-soft);
+  font-weight: 600;
+}
+
+/* 让表格的第一列和第三列（属性列）显示背景色，模拟卡片式表格 */
+.content table td:nth-child(1),
+.content table td:nth-child(3) {
+  background-color: var(--brand-accent-soft);
+  font-weight: 600;
+}
+
+.content td strong {
+  display: block;
+  font-weight: 600;
+  color: var(--brand-text);
+}
 .content ul { padding-left: 20px; }
 .content p { margin: 6px 0 10px 0; }
 .content pre { background: transparent; padding: 8px; }

@@ -84,15 +84,15 @@ const ListPage: React.FC<{
     }, [p1, p2]);
 
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-        <div style={{ padding: '6px 12px', borderRadius: 8, background: '#fbf7ff' }}>
-          <div ref={barRef} style={{ height: 12, background: '#f0e7ff', borderRadius: 8, position: 'relative' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: '4px 0' }}>
+        <div style={{ padding: '4px 12px', borderRadius: 8, background: '#fbf7ff', maxWidth: 400 }}>
+          <div ref={barRef} style={{ height: 8, background: '#f0e7ff', borderRadius: 4, position: 'relative' }}>
             {/* easy segment */}
-            <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${p1}%`, background: '#6b2fb1', borderRadius: 8 }} />
+            <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${p1}%`, background: '#6b2fb1', borderRadius: '4px 0 0 4px' }} />
             {/* medium segment */}
             <div style={{ position: 'absolute', left: `${p1}%`, top: 0, bottom: 0, width: `${p2 - p1}%`, background: '#b080ff' }} />
             {/* hard segment */}
-            <div style={{ position: 'absolute', left: `${p2}%`, top: 0, bottom: 0, right: 0, background: '#e9ddff', borderRadius: 8 }} />
+            <div style={{ position: 'absolute', left: `${p2}%`, top: 0, bottom: 0, right: 0, background: '#e9ddff', borderRadius: '0 4px 4px 0' }} />
 
             {/* knobs */}
             <div
@@ -102,7 +102,7 @@ const ListPage: React.FC<{
               aria-valuenow={Math.round(p1)}
               onMouseDown={(e) => { e.preventDefault(); dragging.current = 'p1'; }}
               onTouchStart={() => { dragging.current = 'p1'; }}
-              style={{ position: 'absolute', top: '50%', transform: 'translate(-50%,-50%)', left: `${p1}%`, width: 18, height: 18, borderRadius: 9, background: '#fff', border: '4px solid #6b2fb1', boxShadow: '0 4px 12px rgba(0,0,0,0.12)', cursor: 'grab' }}
+              style={{ position: 'absolute', top: '50%', transform: 'translate(-50%,-50%)', left: `${p1}%`, width: 14, height: 14, borderRadius: 4, background: '#fff', border: '3px solid #6b2fb1', boxShadow: '0 2px 6px rgba(0,0,0,0.12)', cursor: 'grab', zIndex: 10 }}
             />
             <div
               role="slider"
@@ -111,33 +111,20 @@ const ListPage: React.FC<{
               aria-valuenow={Math.round(p2)}
               onMouseDown={(e) => { e.preventDefault(); dragging.current = 'p2'; }}
               onTouchStart={() => { dragging.current = 'p2'; }}
-              style={{ position: 'absolute', top: '50%', transform: 'translate(-50%,-50%)', left: `${p2}%`, width: 18, height: 18, borderRadius: 9, background: '#fff', border: '4px solid #6b2fb1', boxShadow: '0 4px 12px rgba(0,0,0,0.12)', cursor: 'grab' }}
+              style={{ position: 'absolute', top: '50%', transform: 'translate(-50%,-50%)', left: `${p2}%`, width: 14, height: 14, borderRadius: 4, background: '#fff', border: '3px solid #6b2fb1', boxShadow: '0 2px 6px rgba(0,0,0,0.12)', cursor: 'grab', zIndex: 10 }}
             />
           </div>
         </div>
 
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          <label style={{ minWidth: 60 }}>简单</label>
-          <input type="number" value={Math.round(p1)} onChange={e => {
-            const val = Number(e.target.value || 0);
-            const np1 = clamp(val, 0, p2 - 1);
-            setP1(np1);
-            updateFromPositions(np1, p2);
-          }} style={{ width: 72 }} />
-          <label style={{ minWidth: 60 }}>中等</label>
-          <input type="number" value={Math.round(p2 - p1)} onChange={e => {
-            const val = Number(e.target.value || 0);
-            const np2 = clamp(p1 + val, p1 + 1, 100);
-            setP2(np2);
-            updateFromPositions(p1, np2);
-          }} style={{ width: 72 }} />
-          <label style={{ minWidth: 60 }}>困难</label>
-          <input type="number" value={Math.round(100 - p2)} onChange={e => {
-            const val = Number(e.target.value || 0);
-            const np2 = clamp(100 - val, p1 + 1, 100);
-            setP2(np2);
-            updateFromPositions(p1, np2);
-          }} style={{ width: 72 }} />
+          <label style={{ fontSize: 13, color: '#666' }}>简单</label>
+          <span style={{ fontSize: 14, fontWeight: 'bold' }}>{Math.round(p1)}%</span>
+          <div style={{ width: 1, height: 12, background: '#eee' }} />
+          <label style={{ fontSize: 13, color: '#666' }}>中等</label>
+          <span style={{ fontSize: 14, fontWeight: 'bold' }}>{Math.round(p2 - p1)}%</span>
+          <div style={{ width: 1, height: 12, background: '#eee' }} />
+          <label style={{ fontSize: 13, color: '#666' }}>困难</label>
+          <span style={{ fontSize: 14, fontWeight: 'bold' }}>{Math.round(100 - p2)}%</span>
         </div>
       </div>
     );
@@ -187,21 +174,26 @@ const ListPage: React.FC<{
         </div>
       </div>
 
-      <Model visible={open} title="新建试卷" onClose={() => setOpen(false)}>
+      <Model visible={open} title="新建试卷" width={1000} onClose={() => setOpen(false)}>
         <div>
           <p style={{ color: '#666' }}>填写试卷基本信息以便快速生成试卷初稿。</p>
           <div style={{ marginTop: 12 }}>
               <Form
+                mode="table"
                 fields={[
-                { name: 'name', label: '试卷标题', placeholder: '例如： 期末考试 2025', defaultValue: '未命名试卷' },
-                { name: 'content', label: '考察内容', type: 'textarea', placeholder: '例如： 操作系统、数据库', rows: 6 },
-                { name: 'materials', label: '相关资料', type: 'file', multiple: true, accept: '.pdf,.docx,.pptx' },
-                { name: 'difficulty', label: '难度预设比例', defaultValue: { easy: 30, medium: 50, hard: 20 }, render: (value, onChange) => <DifficultyPicker value={value} onChange={onChange} /> },
-                { name: 'choose_count', label: '选择', type: 'number', defaultValue: 10 },
-                { name: 'short_count', label: '简答', type: 'number', defaultValue: 4 },
-                { name: 'fill_count', label: '填空', type: 'number', defaultValue: 0 },
-                { name: 'program_count', label: '编程', type: 'number', defaultValue: 0 },
-                { name: 'essay_count', label: '论述', type: 'number', defaultValue: 0 }
+                { name: 'name', label: '试卷标题', placeholder: '例如： 期末考试 2025', defaultValue: '未命名试卷', span: 2 },
+                { name: 'difficulty', label: '难度预设比例', defaultValue: { easy: 30, medium: 50, hard: 20 }, render: (value, onChange) => <DifficultyPicker value={value} onChange={onChange} />, span: 2 },
+                
+                { name: 'choose_count', label: '选择题数量', type: 'number', defaultValue: 10, span: 1 },
+                { name: 'short_count', label: '简答题数量', type: 'number', defaultValue: 4, span: 1 },
+                
+                { name: 'fill_count', label: '填空题数量', type: 'number', defaultValue: 0, span: 1 },
+                { name: 'program_count', label: '编程题数量', type: 'number', defaultValue: 0, span: 1 },
+                
+                { name: 'essay_count', label: '论述题数量', type: 'number', defaultValue: 0, span: 2 },
+
+                { name: 'content', label: '考察内容', type: 'textarea', placeholder: '例如： 操作系统、数据库', rows: 6, span: 2 },
+                { name: 'materials', label: '相关资料', type: 'file', multiple: true, accept: '.pdf,.docx,.pptx', span: 2 },
                 ]}
                 submitText="生成初稿"
                 submitLoading={isCreating}

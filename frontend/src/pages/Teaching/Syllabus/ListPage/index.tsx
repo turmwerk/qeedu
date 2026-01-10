@@ -72,27 +72,56 @@ const ListPage: React.FC<{
         </div>
       </div>
 
-      <Model visible={open} title="新建课程大纲" onClose={() => setOpen(false)}>
+      <Model visible={open} title="新建课程大纲" width={1000} onClose={() => setOpen(false)}>
         <div>
           <p style={{ color: '#666' }}>简要表单保证必填槽位，然后进入双栏协作。</p>
           <div style={{ marginTop: 12 }}>
             <Form
+              mode="table"
               fields={[
-                { name: 'name', label: '课程名称', placeholder: '例如： 现代操作系统' },
-                { name: 'subject', label: '学科', placeholder: '例如： 计算机科学与技术' },
-                { name: 'level', label: '学生层级', type: 'select', options: [
-                  { label: '请选择', value: '' },
-                  { label: '大一大二基础课', value: 'freshman' },
-                  { label: '高年级', value: 'senior' },
-                  { label: '研究生', value: 'postgrad' },
-                  { label: '其他', value: 'other' }
-                ] },
-                { name: 'prereq', label: '先修背景', placeholder: '例如： C 语言基础、数据结构' },
-                { name: 'goals', label: '教学目标', type: 'textarea', placeholder: '例如： 掌握虚拟化与容器技术' },
-                { name: 'weeks', label: '周数 / 学时', type: 'number', defaultValue: 16 },
-                { name: 'ratio', label: '理论 / 实践比例', placeholder: '例如： 70/30' },
-                { name: 'notes', label: '备注', type: 'textarea', placeholder: '可填写课程特殊说明' },
-                { name: 'materials', label: '课程资料', type: 'file' }
+                { name: 'name', label: '课程名称', placeholder: '例如： 机器学习导论', span: 1 },
+                { name: 'englishName', label: '英文课程名', placeholder: '例如： Introduction to ML', span: 1 },
+                
+                { name: 'courseId', label: '课程号', placeholder: '例如： 90111205', span: 1 },
+                { name: 'unit', label: '开课单位', placeholder: '例如： 计算机学院', span: 1 },
+                
+                { name: 'responsible', label: '课程负责人', placeholder: '例如： 张三', span: 1 },
+                { name: 'writerName', label: '大纲填写人', placeholder: '例如： 张三', span: 1 },
+                
+                { name: 'publicElectiveCategory', label: '通识公选类别', placeholder: '如：自然科学类' },
+                { name: 'generalEducationCategory', label: '通修课程类别', placeholder: '如：计算机基础' },
+                
+                { name: 'collegeCourseCategory', label: '院内课程分类', placeholder: '如：专业核心课' },
+                { name: 'courseCategory', label: '课程类别', placeholder: '如：学科基础课程', defaultValue: '学科基础课程' },
+                
+                { name: 'courseLevel', label: '课程层次', placeholder: '如：本科生' },
+                { name: 'courseStatus', label: '课程状态', placeholder: '如：运行中', defaultValue: '运行中' },
+                
+                { name: 'theoryPracticeType', label: '理论/实践', placeholder: '如：理论+实验课程', defaultValue: '理论+实验课程' },
+                { name: 'examType', label: '考试类型', type: 'select', options: [{ label: '闭卷', value: '闭卷' }, { label: '开卷', value: '开卷' }, { label: '大作业', value: '大作业' }], defaultValue: '闭卷' },
+                
+                { name: 'crossSemester', label: '跨学期课程', type: 'select', options: [{ label: '否', value: '否' }, { label: '是', value: '是' }], defaultValue: '否' },
+                { name: 'credits', label: '学分', type: 'number', defaultValue: 3 },
+                
+                { name: 'totalHours', label: '总学时', type: 'number', defaultValue: 48 },
+                { name: 'theoryHours', label: '理论学时', type: 'number', defaultValue: 32 },
+                
+                { name: 'practiceHours', label: '实践学时', type: 'number', defaultValue: 16 },
+                { name: 'experimentHours', label: '实验学时', type: 'number', defaultValue: 0 },
+                
+                { name: 'intensiveWeeks', label: '集中实践周数', type: 'number', defaultValue: 0 },
+                { name: 'isEnglish', label: '全英文授课', type: 'select', options: [{ label: '否', value: '否' }, { label: '是', value: '是' }], defaultValue: '否' },
+                
+                { name: 'isBilingual', label: '双语授课', type: 'select', options: [{ label: '否', value: '否' }, { label: '是', value: '是' }], defaultValue: '否', span: 2 }, 
+
+                { name: 'goals', label: '课程育人目标', type: 'textarea', placeholder: '简述课程育人目标', rows: 4, span: 2 },
+                { name: 'teachingGoals', label: '课程教学目标', type: 'textarea', placeholder: '简述课程教学目标', rows: 4, span: 2 },
+                { name: 'alignmentGoals', label: '与培养目标契合度', type: 'textarea', placeholder: '与学校本科人才培养目标的契合关系', rows: 3, span: 2 },
+                { name: 'intro', label: '课程简介', type: 'textarea', placeholder: '课程简介', rows: 4, span: 2 },
+                { name: 'textbooks', label: '教材', type: 'textarea', placeholder: '教材信息', span: 2 },
+                { name: 'references', label: '参考资料', type: 'textarea', placeholder: '参考资料信息', span: 2 },
+                { name: 'grading', label: '成绩构成', type: 'textarea', placeholder: '成绩构成说明', span: 2 },
+                { name: 'notes', label: '备注', type: 'textarea', span: 2 },
               ]}
               submitText="生成初稿"
               submitLoading={isCreating}

@@ -43,6 +43,6 @@
 .body {
   padding: 18px 20px;
   /* 限制弹窗主体高度并允许滚动，防止内容纵向撑开整个页面 */
-  max-height: calc(80vh - 72px);
+  max-height: calc(90vh - 72px);
   overflow: auto;
 }
