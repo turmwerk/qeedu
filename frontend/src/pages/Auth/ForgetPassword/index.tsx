@@ -47,12 +47,36 @@ function EyeIcon({ on }: { on: boolean }) {
   );
 }
 
-export default function Login() {
+export default function ForgetPassword() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [showPassword2, setShowPassword2] = useState(false);
 
   const fields: FormField[] = [
-    { name: 'account', label: '用户名或邮箱', placeholder: '用户名或邮箱' },
+    { name: 'email', label: '邮箱', placeholder: '邮箱' },
+    {
+      name: 'emailCode',
+      label: '邮箱验证码',
+      placeholder: '邮箱验证码',
+      render: (value, onChange) => (
+        <div className={styles.codeWrap}>
+          <input
+            className={styles.codeInput}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder="邮箱验证码"
+            autoComplete="one-time-code"
+          />
+          <button
+            type="button"
+            className={styles.sendBtn}
+            onClick={() => showToast('验证码发送未实现')}
+          >
+            发送
+          </button>
+        </div>
+      ),
+    },
     {
       name: 'password',
       label: '密码',
@@ -65,7 +89,7 @@ export default function Login() {
             value={value}
             onChange={(e) => onChange(e.target.value)}
             placeholder="密码"
-            autoComplete="current-password"
+            autoComplete="new-password"
           />
           <button
             type="button"
@@ -78,27 +102,52 @@ export default function Login() {
         </div>
       ),
     },
+    {
+      name: 'password2',
+      label: '再次输入密码',
+      placeholder: '再次输入密码',
+      render: (value, onChange) => (
+        <div className={styles.inputWrap}>
+          <input
+            className={styles.input}
+            type={showPassword2 ? 'text' : 'password'}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder="再次输入密码"
+            autoComplete="new-password"
+          />
+          <button
+            type="button"
+            className={styles.suffixIconBtn}
+            onClick={() => setShowPassword2(v => !v)}
+            aria-label={showPassword2 ? '隐藏密码' : '显示密码'}
+          >
+            <EyeIcon on={showPassword2} />
+          </button>
+        </div>
+      ),
+    },
   ];
 
-  const handleSubmit = (values: Record<string, any>) => {
-    // 登录未实现
-    console.log('login', values);
-    showToast('登录功能未接入，使用“游客模式”进入首页');
+  const handleSubmit = (values: Record<string, unknown>) => {
+    console.log('forget-password', values);
+    showToast('重置密码未实现');
   };
 
   return (
     <div className={styles.overlay}>
       <div className={styles.box}>
         <button className={styles.close} onClick={() => navigate('/')}>×</button>
+
         <div className={styles.header}>
-          <div className={styles.title}>登录</div>
+          <div className={styles.title}>忘记密码</div>
         </div>
 
         <div className={styles.content}>
           <Form
             fields={fields}
             onSubmit={handleSubmit}
-            submitText="登录"
+            submitText="重置密码"
             submitClassName={styles.primary}
             fieldClassName={styles.formField}
             className={styles.form}
@@ -107,9 +156,7 @@ export default function Login() {
 
         <div className={styles.footerBar}>
           <div className={styles.footerLeft}>
-            <button className={styles.footerLink} onClick={() => navigate('/register')}>注册</button>
-            <span className={styles.footerSep}>|</span>
-            <button className={styles.footerLink} onClick={() => navigate('/forget-password')}>忘记密码</button>
+            <button className={styles.footerLink} onClick={() => navigate('/login')}>返回登录</button>
           </div>
         </div>
       </div>

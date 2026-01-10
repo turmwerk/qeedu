@@ -4,6 +4,7 @@ import { Spin } from 'antd';
 import MainLayout from '@/layouts/MainLayout';
 import Login from '@/pages/Auth/Login';
 import Resister from '@/pages/Auth/Resister';
+import ForgetPassword from '@/pages/Auth/ForgetPassword';
 import styles from './style.module.scss';
 
 // Lazy Load
@@ -33,7 +34,8 @@ const router = createBrowserRouter([
       { path: 'research/collaboration', element: LazyLoad(<Collaboration />) },
     ]
   },
-  { path: '/login', element: <Login /> }
-  ,{ path: '/register', element: <Resister /> }
+  { path: '/login', element: <Login /> },
+  { path: '/register', element: <Resister /> },
+  { path: '/forget-password', element: <ForgetPassword /> },
 ]);
 export default router;

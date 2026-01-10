@@ -4,7 +4,7 @@ import styles from './style.module.scss';
 export interface FormField {
   name: string;
   label: React.ReactNode;
-  type?: 'text' | 'textarea' | 'number' | 'select' | 'file' | 'range' | 'checkbox';
+  type?: 'text' | 'password' | 'textarea' | 'number' | 'select' | 'file' | 'range' | 'checkbox';
   placeholder?: string;
   defaultValue?: any;
   /** 当 type === 'select' 时提供选项 */

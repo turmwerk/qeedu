@@ -9,6 +9,7 @@
   -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
 }
+
 .box {
   width: 520px;
   max-width: calc(100% - 40px);
@@ -18,6 +19,7 @@
   padding: 22px 22px 18px 22px;
   position: relative;
 }
+
 .close {
   position: absolute;
   right: 12px;
@@ -54,7 +56,7 @@
   position: relative;
 }
 
-/* 仿第二张图：输入框只显示 placeholder，label 仍保留用于可访问性 */
+/* 输入框只显示 placeholder，label 仍保留用于可访问性 */
 .formField label {
   position: absolute;
   width: 1px;
@@ -165,7 +167,6 @@
   background: var(--brand-accent-strong);
 }
 
-
 .footerBar {
   padding: 6px 26px 0 26px;
   display: flex;
@@ -192,19 +193,16 @@
   text-decoration: underline;
 }
 
-.footerSep {
-  color: rgba(0,0,0,0.3);
-}
 .primary {
-  width:100%;
-  height:56px;
+  width: 100%;
+  height: 56px;
   background: var(--brand-accent);
-  color:#fff;
-  border:none;
-  border-radius:10px;
-  font-size:18px;
-  font-weight:800;
-  cursor:pointer;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 18px;
+  font-weight: 800;
+  cursor: pointer;
   box-shadow: var(--brand-shadow);
   transition: background 0.2s ease, box-shadow 0.2s ease;
 }
@@ -212,8 +210,4 @@
 .primary:hover {
   background: var(--brand-accent-strong);
   box-shadow: var(--brand-shadow);
-}
-
-.divider {
-  height:1px; background: rgba(0,0,0,0.08); margin: 18px 0 12px 0;
 }
