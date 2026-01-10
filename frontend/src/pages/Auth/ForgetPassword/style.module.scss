@@ -14,7 +14,7 @@
   width: 520px;
   max-width: calc(100% - 40px);
   background: #fff;
-  border-radius: 16px;
+  border-radius: 0;
   box-shadow: 0 10px 40px rgba(0,0,0,0.12);
   padding: 22px 22px 18px 22px;
   position: relative;
@@ -49,6 +49,8 @@
 }
 
 .form {
+  display: flex;
+  flex-direction: column;
   gap: 14px;
 }
 
@@ -75,7 +77,8 @@
   width: 100%;
   height: 56px;
   padding: 0 16px;
-  border-radius: 10px;
+  box-sizing: border-box;
+  border-radius: 0;
   border: 1px solid var(--brand-border);
   background: #fff;
   font-size: 16px;
@@ -88,26 +91,46 @@
 }
 
 .inputWrap {
-  position: relative;
   width: 100%;
+  display: flex;
+  align-items: stretch;
+  box-sizing: border-box;
+  border-radius: 0;
+  border: 1px solid var(--brand-border);
+  background: #fff;
+  overflow: hidden;
+  position: relative;
 }
 
 .input {
-  width: 100%;
   height: 56px;
-  padding: 0 56px 0 16px;
-  border-radius: 10px;
-  border: 1px solid var(--brand-border);
-  background: #fff;
+  width: 100%;
+  padding: 0 16px;
+  padding-right: 56px;
+  box-sizing: border-box;
+  border: none;
+  border-radius: 0;
+  background: transparent;
   font-size: 16px;
   outline: none;
+}
+
+.input:focus,
+.input:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* hide built-in Edge/IE clear & reveal to avoid double icons */
+.input::-ms-reveal,
+.input::-ms-clear {
+  display: none;
 }
 
 .suffixIconBtn {
   position: absolute;
   right: 0;
   top: 0;
-  transform: none;
   border: none;
   background: transparent;
   color: var(--brand-muted);
@@ -118,13 +141,27 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 0 10px 10px 0;
+  box-sizing: border-box;
+  box-shadow: none;
+  outline: none;
+  border-radius: 0;
   line-height: 0;
+  transform: none;
+  transition: none;
+}
+
+.suffixIconBtn:focus,
+.suffixIconBtn:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  transform: none;
 }
 
 .suffixIconBtn:hover {
-  background: rgba(0,0,0,0.04);
+  background: transparent;
   color: var(--brand-accent);
+  box-shadow: none;
+  transform: none;
 }
 
 .eyeIcon {
@@ -132,30 +169,36 @@
 }
 
 .codeWrap {
-  position: relative;
   width: 100%;
+  display: flex;
+  align-items: stretch;
+  box-sizing: border-box;
+  border-radius: 0;
+  border: 1px solid var(--brand-border);
+  background: #fff;
+  overflow: hidden;
 }
 
 .codeInput {
-  width: 100%;
   height: 56px;
-  padding: 0 110px 0 16px;
-  border-radius: 10px;
-  border: 1px solid var(--brand-border);
-  background: #fff;
+  flex: 1;
+  width: 100%;
+  padding: 0 16px;
+  box-sizing: border-box;
+  border: none;
+  border-radius: 0;
+  background: transparent;
   font-size: 16px;
   outline: none;
 }
 
 .sendBtn {
-  position: absolute;
-  right: 0;
-  top: 0;
   height: 56px;
   min-width: 96px;
   padding: 0 18px;
+  box-sizing: border-box;
   border: none;
-  border-radius: 0 10px 10px 0;
+  border-radius: 0;
   background: var(--brand-accent);
   color: #fff;
   font-size: 16px;
@@ -170,7 +213,7 @@
 .footerBar {
   padding: 6px 26px 0 26px;
   display: flex;
-  justify-content: flex-start;
+  justify-content: space-between;
   align-items: center;
 }
 
@@ -191,6 +234,12 @@
 
 .footerLink:hover {
   text-decoration: underline;
+  transform: none;
+}
+
+.footerRight {
+  display: inline-flex;
+  align-items: center;
 }
 
 .primary {
@@ -199,15 +248,24 @@
   background: var(--brand-accent);
   color: #fff;
   border: none;
-  border-radius: 10px;
+  border-radius: 0;
   font-size: 18px;
   font-weight: 800;
   cursor: pointer;
   box-shadow: var(--brand-shadow);
   transition: background 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
 }
 
 .primary:hover {
   background: var(--brand-accent-strong);
   box-shadow: var(--brand-shadow);
+}
+
+.actionIcon {
+  display: inline-block;
+  flex: 0 0 auto;
 }

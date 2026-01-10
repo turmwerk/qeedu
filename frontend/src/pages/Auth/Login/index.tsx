@@ -47,9 +47,48 @@ function EyeIcon({ on }: { on: boolean }) {
   );
 }
 
+function EnterIcon() {
+  return (
+    <svg
+      className={styles.actionIcon}
+      width="28"
+      height="28"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M4 12h10"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M11 7l5 5-5 5"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M20 4h-4M20 4v16M20 20h-4"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export default function Login() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+
+  const goGuest = () => {
+    showToast('使用“游客模式”进入首页');
+    navigate('/');
+  };
 
   const fields: FormField[] = [
     { name: 'account', label: '用户名或邮箱', placeholder: '用户名或邮箱' },
@@ -80,7 +119,7 @@ export default function Login() {
     },
   ];
 
-  const handleSubmit = (values: Record<string, any>) => {
+  const handleSubmit = (values: Record<string, unknown>) => {
     // 登录未实现
     console.log('login', values);
     showToast('登录功能未接入，使用“游客模式”进入首页');
@@ -89,16 +128,20 @@ export default function Login() {
   return (
     <div className={styles.overlay}>
       <div className={styles.box}>
-        <button className={styles.close} onClick={() => navigate('/')}>×</button>
         <div className={styles.header}>
-          <div className={styles.title}>登录</div>
+          <div className={styles.title}>nju-edu-ai</div>
         </div>
 
         <div className={styles.content}>
           <Form
             fields={fields}
             onSubmit={handleSubmit}
-            submitText="登录"
+            submitText={
+              <>
+                <EnterIcon />
+                <span>登录</span>
+              </>
+            }
             submitClassName={styles.primary}
             fieldClassName={styles.formField}
             className={styles.form}
@@ -110,6 +153,10 @@ export default function Login() {
             <button className={styles.footerLink} onClick={() => navigate('/register')}>注册</button>
             <span className={styles.footerSep}>|</span>
             <button className={styles.footerLink} onClick={() => navigate('/forget-password')}>忘记密码</button>
+          </div>
+
+          <div className={styles.footerRight}>
+            <button className={styles.footerLink} onClick={goGuest}>游客模式</button>
           </div>
         </div>
       </div>

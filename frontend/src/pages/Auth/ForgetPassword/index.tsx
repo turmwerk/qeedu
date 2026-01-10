@@ -47,10 +47,49 @@ function EyeIcon({ on }: { on: boolean }) {
   );
 }
 
+function EnterIcon() {
+  return (
+    <svg
+      className={styles.actionIcon}
+      width="28"
+      height="28"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M4 12h10"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M11 7l5 5-5 5"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M20 4h-4M20 4v16M20 20h-4"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export default function ForgetPassword() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showPassword2, setShowPassword2] = useState(false);
+
+  const goGuest = () => {
+    showToast('使用“游客模式”进入首页');
+    navigate('/');
+  };
 
   const fields: FormField[] = [
     { name: 'email', label: '邮箱', placeholder: '邮箱' },
@@ -137,17 +176,20 @@ export default function ForgetPassword() {
   return (
     <div className={styles.overlay}>
       <div className={styles.box}>
-        <button className={styles.close} onClick={() => navigate('/')}>×</button>
-
         <div className={styles.header}>
-          <div className={styles.title}>忘记密码</div>
+          <div className={styles.title}>nju-edu-ai</div>
         </div>
 
         <div className={styles.content}>
           <Form
             fields={fields}
             onSubmit={handleSubmit}
-            submitText="重置密码"
+            submitText={
+              <>
+                <EnterIcon />
+                <span>重置密码</span>
+              </>
+            }
             submitClassName={styles.primary}
             fieldClassName={styles.formField}
             className={styles.form}
@@ -157,6 +199,10 @@ export default function ForgetPassword() {
         <div className={styles.footerBar}>
           <div className={styles.footerLeft}>
             <button className={styles.footerLink} onClick={() => navigate('/login')}>返回登录</button>
+          </div>
+
+          <div className={styles.footerRight}>
+            <button className={styles.footerLink} onClick={goGuest}>游客模式</button>
           </div>
         </div>
       </div>
