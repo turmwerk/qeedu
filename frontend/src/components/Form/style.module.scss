@@ -16,7 +16,7 @@
   width: 100%;
   padding: 8px;
   border-radius: 8px;
-  border: 1px solid #f0e9f8;
+  border: 1px solid var(--brand-border);
 }
 
 .actions {
@@ -24,16 +24,62 @@
 }
 
 .primary {
-  background: #4b2a85;
+  background: var(--brand-accent);
   color: #fff;
   border: none;
   padding: 8px 14px;
   border-radius: 20px;
   cursor: pointer;
-  box-shadow: 0 8px 20px rgba(75,42,133,0.2);
+  box-shadow: var(--brand-shadow);
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.primary:hover {
+  background: var(--brand-accent-strong);
+  box-shadow: var(--brand-shadow);
+}
+
+.loadingText {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.loadingDots {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.loadingDots span {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #fff;
+  opacity: 0.4;
+  animation: dotPulse 1s ease-in-out infinite;
+}
+
+.loadingDots span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.loadingDots span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes dotPulse {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 0.9;
+    transform: translateY(-2px);
+  }
 }
 
 .fileList { margin-top: 8px; display:flex; flex-direction:column; gap:6px; }
-.fileItem { font-size:13px; color:#444; background:#faf7ff; padding:6px 8px; border-radius:6px; border:1px solid rgba(75,42,133,0.04); }
+.fileItem { font-size:13px; color:#444; background: var(--brand-accent-soft); padding:6px 8px; border-radius:6px; border:1px solid rgba(75,42,133,0.04); }
 .rangeWrap { display:flex; align-items:center; gap:12px; }
 .rangeValue { min-width:48px; text-align:center; color:#666; }

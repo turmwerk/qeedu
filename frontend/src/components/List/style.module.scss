@@ -10,15 +10,24 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: rgba(75,42,133,0.06);
+  background: var(--brand-accent-soft);
   padding: 12px;
   border-radius: 10px;
+  border: 1px solid transparent;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.item:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--brand-shadow);
+  border-color: var(--brand-accent);
+  background: #fff;
 }
 
 .index {
   width: 40px;
   text-align: center;
-  color: #6b5aa3;
+  color: var(--brand-accent);
   font-weight: 700;
   margin-right: 12px;
 }
@@ -44,12 +53,18 @@
 
 .btn {
   background: #fff;
-  border: 1px solid rgba(75,42,133,0.08);
-  color: #4b2a85;
+  border: 1px solid var(--brand-border);
+  color: var(--brand-accent);
   padding: 6px 10px;
   border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
+}
+
+.btn:hover {
+  background: var(--brand-accent-soft);
+  border-color: var(--brand-accent);
+  box-shadow: var(--brand-shadow);
 }
 
 .btnDanger {
@@ -83,28 +98,28 @@
 
 .btnEdit {
   composes: btn;
-  background: linear-gradient(180deg, #1e90ff 0%, #1677d2 100%);
+  background: var(--brand-accent);
   color: #fff;
   border: none;
 }
 
 .btnEdit:hover {
-  opacity: 0.95;
+  background: var(--brand-accent-strong);
 }
 
 .btnRename {
   composes: btn;
-  background: #f6f7fb;
-  color: #4b2a85;
+  background: var(--brand-accent-soft);
+  color: var(--brand-accent);
 }
 
 .btnRename:hover {
-  background: #eef0fb;
+  background: var(--brand-accent-faint);
 }
 
 .empty {
   padding: 18px;
   border-radius: 10px;
-  background: rgba(75,42,133,0.03);
+  background: var(--brand-accent-soft);
   color: #666;
 }

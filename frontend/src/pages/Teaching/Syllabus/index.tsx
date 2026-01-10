@@ -109,6 +109,7 @@ const Syllabus: React.FC = () => {
         setOpenFull={setOpenFull}
         title={currentOutline?.title}
         id={currentOutline?.id}
+        onRename={(id, newName) => handleRename(id, newName)}
       />
     );
   }

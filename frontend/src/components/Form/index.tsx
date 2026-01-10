@@ -29,6 +29,12 @@ export interface FormProps {
   fields: FormField[];
   onSubmit: (values: Record<string, any>) => void;
   submitText?: React.ReactNode;
+  /** 提交中状态 */
+  submitLoading?: boolean;
+  /** 提交中展示文案 */
+  submitLoadingText?: React.ReactNode;
+  /** 禁用提交按钮 */
+  submitDisabled?: boolean;
   /** 可选：覆盖表单根容器 class */
   className?: string;
   /** 可选：覆盖字段容器 class */
@@ -39,7 +45,18 @@ export interface FormProps {
   submitStyle?: React.CSSProperties;
 }
 
-const Form: React.FC<FormProps> = ({ fields, onSubmit, submitText = '提交', className, fieldClassName, submitClassName, submitStyle }) => {
+const Form: React.FC<FormProps> = ({
+  fields,
+  onSubmit,
+  submitText = '提交',
+  submitLoading,
+  submitLoadingText,
+  submitDisabled,
+  className,
+  fieldClassName,
+  submitClassName,
+  submitStyle,
+}) => {
   const [values, setValues] = useState(() => {
     const v: Record<string, any> = {};
     fields.forEach(f => {
@@ -136,7 +153,26 @@ const Form: React.FC<FormProps> = ({ fields, onSubmit, submitText = '提交', cl
         </div>
       ))}
       <div className={styles.actions}>
-        <button className={submitClassName ? `${styles.primary} ${submitClassName}` : styles.primary} type="submit" style={submitStyle}>{submitText}</button>
+        <button
+          className={submitClassName ? `${styles.primary} ${submitClassName}` : styles.primary}
+          type="submit"
+          style={submitStyle}
+          disabled={!!submitDisabled || !!submitLoading}
+          aria-busy={!!submitLoading}
+        >
+          {submitLoading ? (
+            <span className={styles.loadingText}>
+              {submitLoadingText ?? submitText}
+              <span className={styles.loadingDots}>
+                <span />
+                <span />
+                <span />
+              </span>
+            </span>
+          ) : (
+            submitText
+          )}
+        </button>
       </div>
     </form>
   );

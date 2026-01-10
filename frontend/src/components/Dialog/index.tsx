@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styles from './style.module.scss';
 
 interface DialogMessage {
@@ -27,6 +27,8 @@ const Dialog: React.FC<DialogProps> & { clearDialog: (dialogId: string) => void 
     ];
   });
   const [input, setInput] = useState('');
+  const [pending, setPending] = useState(false);
+  const bodyRef = useRef<HTMLDivElement | null>(null);
 
   // 持久化消息
   React.useEffect(() => {
@@ -35,25 +37,49 @@ const Dialog: React.FC<DialogProps> & { clearDialog: (dialogId: string) => void 
     } catch {}
   }, [messages, STORAGE_KEY]);
 
+  useEffect(() => {
+    const body = bodyRef.current;
+    if (!body) return;
+    body.scrollTop = body.scrollHeight;
+  }, [messages, pending]);
+
   const send = () => {
-    if (!input.trim()) return;
-    setMessages(m => [...m, { from: 'user', text: input }]);
-    const reply = `已收到：${input}`;
-    setTimeout(() => setMessages(m => [...m, { from: 'bot', text: reply }]), 600);
+    if (!input.trim() || pending) return;
+    const text = input;
+    setMessages(m => [...m, { from: 'user', text }]);
     setInput('');
+    setPending(true);
+    const reply = `已收到：${text}`;
+    setTimeout(() => {
+      setMessages(m => [...m, { from: 'bot', text: reply }]);
+      setPending(false);
+    }, 600);
   };
 
   return (
     <div className={styles.container}>
       <div className={styles.header}>{botName}</div>
-      <div className={styles.body}>
+      <div ref={bodyRef} className={styles.body}>
         {messages.map((m, i) => (
           <div key={i} className={m.from === 'user' ? styles.msgUser : styles.msgBot}>{m.text}</div>
         ))}
+        {pending && (
+          <div className={styles.msgPending}>
+            <span className={styles.dot} />
+            <span className={styles.dot} />
+            <span className={styles.dot} />
+          </div>
+        )}
       </div>
       <div className={styles.footer}>
-        <input value={input} onChange={e => setInput(e.target.value)} placeholder="输入消息，回车发送" onKeyDown={e => { if (e.key === 'Enter') send(); }} />
-        <button onClick={send}>发送</button>
+        <input
+          value={input}
+          onChange={e => setInput(e.target.value)}
+          placeholder={pending ? '对方输入中...' : '输入消息，回车发送'}
+          onKeyDown={e => { if (e.key === 'Enter') send(); }}
+          disabled={pending}
+        />
+        <button onClick={send} disabled={pending}>发送</button>
       </div>
     </div>
   );

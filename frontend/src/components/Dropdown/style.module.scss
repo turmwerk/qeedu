@@ -17,18 +17,19 @@
 }
 
 .button {
-  background: linear-gradient(180deg, #6b3fb7 0%, #4b2a85 100%);
+  background: var(--brand-accent);
   color: #fff;
   border: none;
   padding: 8px 16px;
   border-radius: 20px;
   cursor: pointer;
   font-weight: 600;
-  transition: box-shadow 0.2s ease;
+  transition: box-shadow 0.2s ease, background 0.2s ease;
 }
 
 .button:hover {
-  box-shadow: 0 6px 18px rgba(75, 42, 133, 0.18);
+  background: var(--brand-accent-strong);
+  box-shadow: var(--brand-shadow);
 }
 
 .menu {
@@ -72,5 +73,5 @@
 }
 
 .item:hover {
-  background: #f5f3ff;
+  background: var(--brand-accent-soft);
 }
