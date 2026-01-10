@@ -20,10 +20,35 @@
   justify-content: space-between;
   align-items: center;
   box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  border: 1px solid transparent;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
   cursor: pointer;
+}
+
+.item:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--brand-shadow);
+  border-color: var(--brand-accent);
+  background: #fff;
 }
 .title { font-weight: 600; }
 .actions button { margin-left: 8px; }
+
+.actions button {
+  background: #fff;
+  border: 1px solid var(--brand-border);
+  color: var(--brand-accent);
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.actions button:hover {
+  background: var(--brand-accent-soft);
+  border-color: var(--brand-accent);
+  box-shadow: var(--brand-shadow);
+}
 .empty { color: #888; padding: 20px; text-align: center; }
 
 .meta { margin-top: 6px; display:flex; gap:12px; align-items:center; }

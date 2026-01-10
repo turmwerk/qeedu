@@ -6,6 +6,7 @@ import List from '@/components/List';
 import listStyles from '@/components/List/style.module.scss';
 import Form from '@/components/Form';
 import Model from '@/components/Model';
+import ConfirmDialog from '@/components/ConfirmDialog';
 
 type Outline = {
   id: string;
@@ -23,6 +24,9 @@ const ListPage: React.FC<{
   onRename: (id: string, newName: string) => void;
 }> = ({ items, onEdit, onCreate, onDelete, onRename }) => {
   const [open, setOpen] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [confirmDeleteTitle, setConfirmDeleteTitle] = useState<string>('');
   return (
     <div>
       <PageHeader title="大纲设计" />
@@ -51,7 +55,14 @@ const ListPage: React.FC<{
                   actions={[
                     { label: '继续编辑', onClick: (item: any) => onEdit(item.id), className: listStyles.btnEdit },
                     { label: '重命名', isRename: true, onClick: (item: any, newName?: string) => newName && onRename(item.id, newName), className: listStyles.btnRename },
-                    { label: '删除', onClick: (item: any) => onDelete(item.id), className: listStyles.btnDanger }
+                    {
+                      label: '删除',
+                      onClick: (item: any) => {
+                        setConfirmDeleteId(item.id);
+                        setConfirmDeleteTitle(item.title || '未命名课程');
+                      },
+                      className: listStyles.btnDanger,
+                    }
                   ]}
                   emptyText="暂无课程大纲。"
                 />
@@ -84,11 +95,39 @@ const ListPage: React.FC<{
                 { name: 'materials', label: '课程资料', type: 'file' }
               ]}
               submitText="生成初稿"
-              onSubmit={(values) => { onCreate(values as any); setOpen(false); }}
+              submitLoading={isCreating}
+              submitLoadingText="生成中"
+              submitDisabled={isCreating}
+              onSubmit={(values) => {
+                if (isCreating) return;
+                setIsCreating(true);
+                setTimeout(() => {
+                  onCreate(values as any);
+                  setOpen(false);
+                  setIsCreating(false);
+                }, 600);
+              }}
             />
           </div>
         </div>
       </Model>
+
+      <ConfirmDialog
+        open={!!confirmDeleteId}
+        title="删除课程大纲"
+        description={`确认删除「${confirmDeleteTitle}」吗？此操作不可恢复。`}
+        confirmText="确认删除"
+        danger
+        onCancel={() => {
+          setConfirmDeleteId(null);
+          setConfirmDeleteTitle('');
+        }}
+        onConfirm={() => {
+          if (confirmDeleteId) onDelete(confirmDeleteId);
+          setConfirmDeleteId(null);
+          setConfirmDeleteTitle('');
+        }}
+      />
     </div>
   );
 };

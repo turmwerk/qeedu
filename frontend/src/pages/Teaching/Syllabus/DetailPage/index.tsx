@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PageHeader from '@/components/PageHeader';
 import styles from './style.module.scss';
 import shared from '@/pages/shared/style.module.scss';
@@ -16,16 +16,33 @@ const DetailPage: React.FC<{
   setOpenFull: (v: boolean) => void;
   title?: string;
   id?: string;
-}> = ({ md, setMd, onBack, openFull, setOpenFull, title, id }) => {
+  onRename?: (id: string, title: string) => void;
+}> = ({ md, setMd, onBack, openFull, setOpenFull, title, id, onRename }) => {
+  const [localTitle, setLocalTitle] = useState(title || '');
+
+  useEffect(() => {
+    setLocalTitle(title || '');
+  }, [title]);
+
+  const handleTitleChange = (next: string) => {
+    setLocalTitle(next);
+    if (id && onRename) onRename(id, next);
+  };
+
+  const displayTitle = localTitle || title || '未命名课程';
   return (
     <div>
       <PageHeader title="大纲设计" />
       <div className={shared.content}>
         <div className={styles.headerCard}>
           <div className={styles.headerRow}>
-            <div className={styles.titleBox}>
-              <div className={styles.leftTitle}>当前大纲：{title || '未命名课程'}</div>
-            </div>
+            <input
+              className={styles.titleInputLarge}
+              type="text"
+              value={localTitle}
+              onChange={(event) => handleTitleChange(event.target.value)}
+              placeholder="未命名课程"
+            />
             <div className={styles.rightAction}>
               <div className={styles.scoreBox}>
                 <div className={styles.scoreLabel}>总分</div>
@@ -35,9 +52,9 @@ const DetailPage: React.FC<{
               <Dropdown
                 button="导出"
                 items={[
-                  { label: '导出 PDF', onClick: () => exportPdfViaPrint(title || 'outline', md) },
-                  { label: '导出 Docx', onClick: () => downloadDocx(title || 'outline', md) },
-                  { label: '导出 Markdown', onClick: () => downloadMarkdown(title || 'outline', md) }
+                  { label: '导出 PDF', onClick: () => exportPdfViaPrint(displayTitle, md) },
+                  { label: '导出 Docx', onClick: () => downloadDocx(displayTitle, md) },
+                  { label: '导出 Markdown', onClick: () => downloadMarkdown(displayTitle, md) }
                 ]}
               />
             </div>

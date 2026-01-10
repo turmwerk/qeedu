@@ -48,7 +48,7 @@ export const Markdown: React.FC<{
                             </div>
                         )}
 
-                        <div className={styles.container}>
+                        <div className={`${styles.container} ${showRaw ? styles.containerRaw : styles.containerRender}`}>
                             {showRaw ? (
                                 onChange ? (
                                     <textarea className={styles.editor} value={value} onChange={(e) => onChange(e.target.value)} />
