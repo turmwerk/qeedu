@@ -2,7 +2,6 @@
 import { Layout } from 'antd';
 import { Outlet, useNavigate } from 'react-router-dom';
 import styles from './style.module.scss';
-import Sider from './components/Sider';
 import Header from './components/Header';
 
 const { Content } = Layout;
@@ -24,13 +23,11 @@ const MainLayout: React.FC = () => {
   }, [navigate]);
   return (
     <Layout className={styles.root}>
-      <Sider />
-      <Layout>
+      
+      <Content className={styles.content}>
         <Header />
-        <Content className={styles.content}>
-          <Outlet />
-        </Content>
-      </Layout>
+        <Outlet />
+      </Content>
     </Layout>
   );
 };

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import PageHeader from '@/components/PageHeader';
 import styles from '../style.module.scss';
 import shared from '@/pages/shared/style.module.scss';
 import List from '@/components/List';
@@ -29,7 +28,6 @@ const ListPage: React.FC<{
   const [confirmDeleteTitle, setConfirmDeleteTitle] = useState<string>('');
   return (
     <div>
-      <PageHeader title="大纲设计" />
       <div className={shared.content}>
         <div className={styles.layout}>
           <div className={styles.leftPane}>

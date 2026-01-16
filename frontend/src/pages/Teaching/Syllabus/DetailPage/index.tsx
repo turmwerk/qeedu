@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import PageHeader from '@/components/PageHeader';
 import styles from './style.module.scss';
 import shared from '@/pages/shared/style.module.scss';
 import Dropdown from '@/components/Dropdown';
@@ -32,7 +31,6 @@ const DetailPage: React.FC<{
   const displayTitle = localTitle || title || '未命名课程';
   return (
     <div>
-      <PageHeader title="大纲设计" />
       <div className={shared.content}>
         <div className={styles.headerCard}>
           <div className={styles.headerRow}>

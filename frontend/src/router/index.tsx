@@ -9,6 +9,10 @@ import styles from './style.module.scss';
 
 // Lazy Load
 const CodeTutor = React.lazy(() => import('@/pages/Study/CodeTutor'));
+const StudyHub = React.lazy(() => import('@/pages/Study'));
+const TeachingHub = React.lazy(() => import('@/pages/Teaching'));
+const ResearchHub = React.lazy(() => import('@/pages/Research'));
+const ManagementHub = React.lazy(() => import('@/pages/Management'));
 const Syllabus = React.lazy(() => import('@/pages/Teaching/Syllabus'));
 const ExamDesign = React.lazy(() => import('@/pages/Teaching/ExamDesign'));
 const MajorConstruct = React.lazy(() => import('@/pages/Management/MajorConstruct'));
@@ -26,6 +30,10 @@ const router = createBrowserRouter([
     element: <MainLayout />,
     children: [
     { path: '/', element: LazyLoad(<Home />) },
+    { path: 'study', element: LazyLoad(<StudyHub />) },
+    { path: 'teaching', element: LazyLoad(<TeachingHub />) },
+    { path: 'research', element: LazyLoad(<ResearchHub />) },
+    { path: 'management', element: LazyLoad(<ManagementHub />) },
     { path: 'study/code-tutor', element: LazyLoad(<CodeTutor />) },
       { path: 'teaching/syllabus', element: LazyLoad(<Syllabus />) },
       { path: 'teaching/exam', element: LazyLoad(<ExamDesign />) },

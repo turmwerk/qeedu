@@ -1,5 +1,4 @@
 import React, { useState, useEffect, type DragEvent } from 'react';
-import PageHeader from '@/components/PageHeader';
 import shared from '@/pages/shared/style.module.scss';
 import styles from './style.module.scss';
 import Dialog from '@/components/Dialog';
@@ -309,7 +308,6 @@ const DetailPage: React.FC<{
   return (
     <><div>
       <ToastContainer />
-      <PageHeader title="试卷设计" />
       <div className={shared.content}>
         <div className={styles.headerCard}>
           <div className={styles.headerRow}>
