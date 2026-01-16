@@ -1,7 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ReadOutlined, ExperimentOutlined, ControlOutlined, TeamOutlined } from '@ant-design/icons';
-import PageHeader from '@/components/PageHeader';
 import shared from '@/pages/shared/style.module.scss';
 import styles from './style.module.scss';
 

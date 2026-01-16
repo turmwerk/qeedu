@@ -12,23 +12,17 @@ type Feature = {
 };
 
 type Props = {
-  title: string;
   headline: string;
   subtitle: string;
   placeholder: string;
   features: Feature[];
-  backTo?: string;
-  icon?: React.ReactNode;
 };
 
 const ModuleHub: React.FC<Props> = ({
-  title,
   headline,
   subtitle,
   placeholder,
   features,
-  backTo = '/',
-  icon,
 }) => {
   const navigate = useNavigate();
 

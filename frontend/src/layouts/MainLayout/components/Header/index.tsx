@@ -15,7 +15,6 @@ import {
   ArrowLeftOutlined,
   UserOutlined
 } from '@ant-design/icons';
-import PageHeader from '@/components/PageHeader';
 import styles from './style.module.scss';
 
 const { Header } = Layout;
