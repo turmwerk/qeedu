@@ -1,6 +1,5 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import PageHeader from '@/components/PageHeader';
 import shared from '@/pages/shared/style.module.scss';
 import styles from './ModuleHub.module.scss';
 

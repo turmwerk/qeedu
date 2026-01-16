@@ -10,7 +10,10 @@ import {
   BookOutlined,
   FormOutlined,
   BuildOutlined,
-  NotificationOutlined 
+  NotificationOutlined,
+  HomeOutlined,
+  ArrowLeftOutlined,
+  UserOutlined
 } from '@ant-design/icons';
 import PageHeader from '@/components/PageHeader';
 import styles from './style.module.scss';
@@ -19,7 +22,7 @@ const { Header } = Layout;
 
 // 路由配置：根据路由路径返回对应的标题和icon
 const routeConfig: Record<string, { title: string; icon?: React.ReactNode }> = {
-  '/': { title: 'nju-edu-ai-system' },
+  '/': { title: '南京大学 · 智能教学', icon: <HomeOutlined /> },
   '/study': { title: '南京大学 · 助学模块', icon: <ReadOutlined /> },
   '/study/code-tutor': { title: '编程辅导', icon: <CodeOutlined /> },
   '/teaching': { title: '南京大学 · 助教模块', icon: <ExperimentOutlined /> },
@@ -42,37 +45,38 @@ const MainHeader: React.FC = () => {
 
   return (
     <Header className={styles.header}>
-      <div className={styles.brandArea}>
-        <h1 className={styles.mainTitle}>nju-edu-ai-system</h1>
-        <p className={styles.subTitle}>南京大学教育大模型</p>
+      <div className={styles.leftArea}>
+        {currentConfig.icon && <span className={styles.titleIcon}>{currentConfig.icon}</span>}
+        <h1 className={styles.title}>{currentConfig.title}</h1>
       </div>
-      
-      {!isHomePage && (
-        <div className={styles.pageHeaderWrapper}>
-          <PageHeader 
-            title={currentConfig.title}
-            icon={currentConfig.icon}
-          >
-            <button 
-              className={styles.backBtn}
-              onClick={() => navigate(-1)}
-            >
-              返回
-            </button>
-          </PageHeader>
-        </div>
-      )}
-      
-      {isHomePage && (
-        <div className={styles.actionArea}>
+      <div className={styles.rightArea}>
+        {!isHomePage && (
           <button 
-            className={styles.loginBtn}
+            className={styles.iconBtn}
+            onClick={() => navigate('/')}
+          >
+            <HomeOutlined />
+            <span>首页</span>
+          </button>
+        )}
+        {isHomePage ? (
+          <button 
+            className={styles.iconBtn}
             onClick={() => navigate('/login')}
           >
-            登录 / 注册
+            <UserOutlined />
+            <span>登录 / 注册</span>
           </button>
-        </div>
-      )}
+        ) : (
+          <button 
+            className={styles.iconBtn}
+            onClick={() => navigate(-1)}
+          >
+            <ArrowLeftOutlined />
+            <span>返回</span>
+          </button>
+        )}
+      </div>
     </Header>
   );
 };

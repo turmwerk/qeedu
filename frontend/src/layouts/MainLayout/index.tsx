@@ -23,9 +23,8 @@ const MainLayout: React.FC = () => {
   }, [navigate]);
   return (
     <Layout className={styles.root}>
-      
+      <Header />
       <Content className={styles.content}>
-        <Header />
         <Outlet />
       </Content>
     </Layout>

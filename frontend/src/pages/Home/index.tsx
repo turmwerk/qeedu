@@ -42,8 +42,8 @@ const Home: React.FC = () => {
     <div className={styles.homePage}>
       <div className={shared.content}>
         <div className={styles.hero}>
-          <h1 className={styles.heroTitle}>你好，XX（名字），有什么可以帮到你？</h1>
-          <div className={styles.heroSubtitle}>助学 · 助教 · 助研 · 助管</div>
+          <h1 className={styles.heroTitle}>nju-edu-ai-system</h1>
+          <div className={styles.heroSubtitle}>南京大学教育大模型</div>
           <div className={styles.prompt}>
             <span className={styles.promptIcon} aria-hidden="true">≡</span>
             <input
