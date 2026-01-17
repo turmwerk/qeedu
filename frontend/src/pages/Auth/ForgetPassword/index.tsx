@@ -3,12 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import Form from '@/components/Form';
 import { showToast } from '@/components/Toast';
 import type { FormField } from '@/components/Form';
-import styles from './style.module.scss';
 
 function EyeIcon({ on }: { on: boolean }) {
   return (
     <svg
-      className={styles.eyeIcon}
+      className="block"
       width="20"
       height="20"
       viewBox="0 0 24 24"
@@ -50,7 +49,7 @@ function EyeIcon({ on }: { on: boolean }) {
 function EnterIcon() {
   return (
     <svg
-      className={styles.actionIcon}
+      className="inline-block flex-[0_0_auto]"
       width="28"
       height="28"
       viewBox="0 0 24 24"
@@ -98,9 +97,9 @@ export default function ForgetPassword() {
       label: '邮箱验证码',
       placeholder: '邮箱验证码',
       render: (value, onChange) => (
-        <div className={styles.codeWrap}>
+        <div className="w-full flex items-stretch box-border border border-[var(--brand-border)] bg-white overflow-hidden">
           <input
-            className={styles.codeInput}
+            className="h-[56px] flex-1 w-full px-4 box-border border-0 bg-transparent text-[16px] outline-none"
             value={value}
             onChange={(e) => onChange(e.target.value)}
             placeholder="邮箱验证码"
@@ -108,7 +107,7 @@ export default function ForgetPassword() {
           />
           <button
             type="button"
-            className={styles.sendBtn}
+            className="h-[56px] min-w-[96px] px-[18px] box-border border-0 bg-[var(--brand-accent)] text-white text-[16px] font-bold cursor-pointer hover:bg-[var(--brand-accent-strong)]"
             onClick={() => showToast('验证码发送未实现')}
           >
             发送
@@ -121,9 +120,9 @@ export default function ForgetPassword() {
       label: '密码',
       placeholder: '密码',
       render: (value, onChange) => (
-        <div className={styles.inputWrap}>
+        <div className="w-full flex items-stretch box-border border border-[var(--brand-border)] bg-white overflow-hidden relative">
           <input
-            className={styles.input}
+            className="h-[56px] w-full px-4 pr-[56px] box-border border-0 bg-transparent text-[16px] outline-none"
             type={showPassword ? 'text' : 'password'}
             value={value}
             onChange={(e) => onChange(e.target.value)}
@@ -132,7 +131,7 @@ export default function ForgetPassword() {
           />
           <button
             type="button"
-            className={styles.suffixIconBtn}
+            className="absolute right-0 top-0 border-0 bg-transparent text-[var(--brand-muted)] cursor-pointer w-[56px] h-[56px] p-0 inline-flex items-center justify-center box-border shadow-none outline-none leading-none"
             onClick={() => setShowPassword(v => !v)}
             aria-label={showPassword ? '隐藏密码' : '显示密码'}
           >
@@ -146,9 +145,9 @@ export default function ForgetPassword() {
       label: '再次输入密码',
       placeholder: '再次输入密码',
       render: (value, onChange) => (
-        <div className={styles.inputWrap}>
+        <div className="w-full flex items-stretch box-border border border-[var(--brand-border)] bg-white overflow-hidden relative">
           <input
-            className={styles.input}
+            className="h-[56px] w-full px-4 pr-[56px] box-border border-0 bg-transparent text-[16px] outline-none"
             type={showPassword2 ? 'text' : 'password'}
             value={value}
             onChange={(e) => onChange(e.target.value)}
@@ -157,7 +156,7 @@ export default function ForgetPassword() {
           />
           <button
             type="button"
-            className={styles.suffixIconBtn}
+            className="absolute right-0 top-0 border-0 bg-transparent text-[var(--brand-muted)] cursor-pointer w-[56px] h-[56px] p-0 inline-flex items-center justify-center box-border shadow-none outline-none leading-none"
             onClick={() => setShowPassword2(v => !v)}
             aria-label={showPassword2 ? '隐藏密码' : '显示密码'}
           >
@@ -174,13 +173,13 @@ export default function ForgetPassword() {
   };
 
   return (
-    <div className={styles.overlay}>
-      <div className={styles.box}>
-        <div className={styles.header}>
-          <div className={styles.title}>nju-edu-ai</div>
+    <div className="fixed inset-0 bg-[rgba(0,0,0,0.08)] flex items-center justify-center z-[1000] backdrop-blur-[4px]">
+      <div className="w-[520px] max-w-[calc(100%-40px)] bg-white shadow-[0_10px_40px_rgba(0,0,0,0.12)] px-[22px] pt-[22px] pb-[18px] relative">
+        <div className="py-3 pb-1.5 text-center">
+          <div className="text-[44px] leading-[1.05] font-extrabold text-[var(--brand-text)] tracking-[0.02em]">nju-edu-ai</div>
         </div>
 
-        <div className={styles.content}>
+        <div className="px-[26px] pt-[18px] pb-[10px]">
           <Form
             fields={fields}
             onSubmit={handleSubmit}
@@ -190,19 +189,19 @@ export default function ForgetPassword() {
                 <span>重置密码</span>
               </>
             }
-            submitClassName={styles.primary}
-            fieldClassName={styles.formField}
-            className={styles.form}
+            submitClassName="w-full h-[56px] bg-[var(--brand-accent)] text-white border-0 text-[18px] font-extrabold cursor-pointer shadow-[var(--brand-shadow)] transition-[background,box-shadow] flex items-center justify-center gap-3.5 hover:bg-[var(--brand-accent-strong)]"
+            fieldClassName="relative [&>label]:sr-only"
+            className="flex flex-col gap-3.5"
           />
         </div>
 
-        <div className={styles.footerBar}>
-          <div className={styles.footerLeft}>
-            <button className={styles.footerLink} onClick={() => navigate('/login')}>返回登录</button>
+        <div className="px-[26px] pt-1.5 flex justify-between items-center">
+          <div className="inline-flex gap-3 items-center">
+            <button className="bg-transparent border-0 text-[var(--brand-accent)] cursor-pointer px-0.5 py-1.5 text-[16px] hover:underline" onClick={() => navigate('/login')}>返回登录</button>
           </div>
 
-          <div className={styles.footerRight}>
-            <button className={styles.footerLink} onClick={goGuest}>游客模式</button>
+          <div className="inline-flex items-center">
+            <button className="bg-transparent border-0 text-[var(--brand-accent)] cursor-pointer px-0.5 py-1.5 text-[16px] hover:underline" onClick={goGuest}>游客模式</button>
           </div>
         </div>
       </div>

@@ -1,8 +1,5 @@
 import React, { useState } from 'react';
-import styles from '../style.module.scss';
-import shared from '@/pages/shared/style.module.scss';
 import List from '@/components/List';
-import listStyles from '@/components/List/style.module.scss';
 import Form from '@/components/Form';
 import Model from '@/components/Model';
 import ConfirmDialog from '@/components/ConfirmDialog';
@@ -40,6 +37,12 @@ const ListPage: React.FC<{
       setP1(v.easy);
       setP2(v.easy + v.medium);
     }, [value]);
+
+    React.useEffect(() => {
+      if (!barRef.current) return;
+      barRef.current.style.setProperty('--p1', String(p1));
+      barRef.current.style.setProperty('--p2', String(p2));
+    }, [p1, p2]);
 
     const clamp = (n: number, a = 0, b = 100) => Math.max(a, Math.min(b, n));
 
@@ -83,85 +86,89 @@ const ListPage: React.FC<{
     }, [p1, p2]);
 
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: '4px 0' }}>
-        <div style={{ padding: '4px 12px', borderRadius: 8, background: '#fbf7ff', maxWidth: 400 }}>
-          <div ref={barRef} style={{ height: 8, background: '#f0e7ff', borderRadius: 4, position: 'relative' }}>
-            {/* easy segment */}
-            <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${p1}%`, background: '#6b2fb1', borderRadius: '4px 0 0 4px' }} />
-            {/* medium segment */}
-            <div style={{ position: 'absolute', left: `${p1}%`, top: 0, bottom: 0, width: `${p2 - p1}%`, background: '#b080ff' }} />
-            {/* hard segment */}
-            <div style={{ position: 'absolute', left: `${p2}%`, top: 0, bottom: 0, right: 0, background: '#e9ddff', borderRadius: '0 4px 4px 0' }} />
+      <div className="flex flex-col gap-1.5 py-1">
+        <style>{`
+          .difficulty-bar {
+            position: relative;
+            height: 8px;
+            background: #f0e7ff;
+            border-radius: 4px;
+          }
+          .difficulty-seg-easy { position: absolute; left: 0; top: 0; bottom: 0; width: calc(var(--p1) * 1%); background: #6b2fb1; border-radius: 4px 0 0 4px; }
+          .difficulty-seg-medium { position: absolute; left: calc(var(--p1) * 1%); top: 0; bottom: 0; width: calc((var(--p2) - var(--p1)) * 1%); background: #b080ff; }
+          .difficulty-seg-hard { position: absolute; left: calc(var(--p2) * 1%); top: 0; bottom: 0; right: 0; background: #e9ddff; border-radius: 0 4px 4px 0; }
+          .difficulty-knob { position: absolute; top: 50%; transform: translate(-50%,-50%); width: 14px; height: 14px; border-radius: 4px; background: #fff; border: 3px solid #6b2fb1; box-shadow: 0 2px 6px rgba(0,0,0,0.12); cursor: grab; z-index: 10; }
+          .difficulty-knob.p1 { left: calc(var(--p1) * 1%); }
+          .difficulty-knob.p2 { left: calc(var(--p2) * 1%); }
+        `}</style>
+        <div className="px-3 py-1 rounded-lg bg-[#fbf7ff] max-w-[400px]">
+          <div ref={barRef} className="difficulty-bar">
+            <div className="difficulty-seg-easy" />
+            <div className="difficulty-seg-medium" />
+            <div className="difficulty-seg-hard" />
 
-            {/* knobs */}
             <div
-              role="slider"
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-valuenow={Math.round(p1)}
               onMouseDown={(e) => { e.preventDefault(); dragging.current = 'p1'; }}
               onTouchStart={() => { dragging.current = 'p1'; }}
-              style={{ position: 'absolute', top: '50%', transform: 'translate(-50%,-50%)', left: `${p1}%`, width: 14, height: 14, borderRadius: 4, background: '#fff', border: '3px solid #6b2fb1', boxShadow: '0 2px 6px rgba(0,0,0,0.12)', cursor: 'grab', zIndex: 10 }}
+              className="difficulty-knob p1"
+              title="拖动调整简单比例"
             />
             <div
-              role="slider"
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-valuenow={Math.round(p2)}
               onMouseDown={(e) => { e.preventDefault(); dragging.current = 'p2'; }}
               onTouchStart={() => { dragging.current = 'p2'; }}
-              style={{ position: 'absolute', top: '50%', transform: 'translate(-50%,-50%)', left: `${p2}%`, width: 14, height: 14, borderRadius: 4, background: '#fff', border: '3px solid #6b2fb1', boxShadow: '0 2px 6px rgba(0,0,0,0.12)', cursor: 'grab', zIndex: 10 }}
+              className="difficulty-knob p2"
+              title="拖动调整中等比例"
             />
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          <label style={{ fontSize: 13, color: '#666' }}>简单</label>
-          <span style={{ fontSize: 14, fontWeight: 'bold' }}>{Math.round(p1)}%</span>
-          <div style={{ width: 1, height: 12, background: '#eee' }} />
-          <label style={{ fontSize: 13, color: '#666' }}>中等</label>
-          <span style={{ fontSize: 14, fontWeight: 'bold' }}>{Math.round(p2 - p1)}%</span>
-          <div style={{ width: 1, height: 12, background: '#eee' }} />
-          <label style={{ fontSize: 13, color: '#666' }}>困难</label>
-          <span style={{ fontSize: 14, fontWeight: 'bold' }}>{Math.round(100 - p2)}%</span>
+        <div className="flex gap-3 items-center">
+          <label className="text-[13px] text-[#666]">简单</label>
+          <span className="text-[14px] font-bold">{Math.round(p1)}%</span>
+          <div className="w-px h-3 bg-[#eee]" />
+          <label className="text-[13px] text-[#666]">中等</label>
+          <span className="text-[14px] font-bold">{Math.round(p2 - p1)}%</span>
+          <div className="w-px h-3 bg-[#eee]" />
+          <label className="text-[13px] text-[#666]">困难</label>
+          <span className="text-[14px] font-bold">{Math.round(100 - p2)}%</span>
         </div>
       </div>
     );
   };
   return (
     <div>
-      <div className={shared.content}>
-        <div className={styles.layout}>
-          <div className={styles.leftPane}>
-            <div className={styles.canvasCard}>
-              <div className={styles.canvasHeader}>
-                <div className="titleLeft">已创建的试卷 ({items.length})</div>
+      <div className="p-6 text-[#444]">
+        <div className="grid grid-cols-1 gap-5 items-start">
+          <div>
+            <div className="bg-white rounded-xl p-[18px] shadow-[0_6px_18px_rgba(16,24,40,0.04)] min-h-[520px]">
+              <div className="flex justify-between items-center font-bold mb-3">
+                <div className="text-[var(--brand-accent)] font-bold">已创建的试卷 ({items.length})</div>
                 <div>
-                  <button className={styles.editBtn} onClick={() => setOpen(true)}>新建试卷</button>
+                  <button className="bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1.5 rounded-xl cursor-pointer font-semibold transition-[background,border-color,box-shadow] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)]" onClick={() => setOpen(true)}>新建试卷</button>
                 </div>
               </div>
-              <div style={{ padding: 12 }}>
+              <div className="p-3">
                 <List
                   items={items}
                   keyExtractor={(i: any) => i.id}
                   editable={{ getValue: (i: any) => i.title }}
                   renderItem={(item: any) => <>
-                    <div className={styles.title}>{item.title}</div>
-                    <div className={styles.meta}>
-                      {item.subtitle && <span className={styles.subtitle}>{item.subtitle}</span>}
-                      {item.createdAt && <span className={styles.time}>{new Date(item.createdAt).toLocaleString()}</span>}
+                    <div className="font-bold text-[#2d1b4f]">{item.title}</div>
+                    <div className="mt-1.5 flex gap-3 items-center">
+                      {item.subtitle && <span className="text-[#888]">{item.subtitle}</span>}
+                      {item.createdAt && <span className="text-[#999] text-[12px]">{new Date(item.createdAt).toLocaleString()}</span>}
                     </div>
                   </>}
                   actions={[
-                    { label: '继续编辑', onClick: (item: any) => onEdit(item.id), className: listStyles.btnEdit },
-                    { label: '重命名', isRename: true, onClick: (item: any, newName?: string) => newName && onRename(item.id, newName), className: listStyles.btnRename },
+                    { label: '继续编辑', onClick: (item: any) => onEdit(item.id), className: 'bg-[var(--brand-accent)] text-white border-0 px-2.5 py-1.5 rounded-lg cursor-pointer font-semibold hover:bg-[var(--brand-accent-strong)]' },
+                    { label: '重命名', isRename: true, onClick: (item: any, newName?: string) => newName && onRename(item.id, newName), className: 'bg-[var(--brand-accent-soft)] text-[var(--brand-accent)] border border-[var(--brand-border)] px-2.5 py-1.5 rounded-lg cursor-pointer font-semibold hover:bg-[var(--brand-accent-faint)]' },
                     {
                       label: '删除',
                       onClick: (item: any) => {
                         setConfirmDeleteId(item.id);
                         setConfirmDeleteTitle(item.title || '未命名试卷');
                       },
-                      className: listStyles.btnDanger,
+                      className: 'bg-white border border-[rgba(200,30,30,0.16)] text-[#b02a37] px-2.5 py-1.5 rounded-lg cursor-pointer font-semibold hover:bg-[#ffecec] hover:border-[#f1a1a1]'
                     }
                   ]}
                   emptyText="暂无试卷。"
@@ -174,8 +181,8 @@ const ListPage: React.FC<{
 
       <Model visible={open} title="新建试卷" width={1000} onClose={() => setOpen(false)}>
         <div>
-          <p style={{ color: '#666' }}>填写试卷基本信息以便快速生成试卷初稿。</p>
-          <div style={{ marginTop: 12 }}>
+          <p className="text-[#666]">填写试卷基本信息以便快速生成试卷初稿。</p>
+          <div className="mt-3">
               <Form
                 mode="table"
                 fields={[

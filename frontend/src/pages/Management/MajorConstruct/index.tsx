@@ -1,14 +1,12 @@
 import React from 'react';
-import shared from '@/pages/shared/style.module.scss';
-import styles from './style.module.scss';
 
 const MajorConstruct: React.FC = () => {
   return (
     <div>
-      <div className={shared.content}>
-        <div className={styles.container}>
-          <h2 className={styles.title}>Major Construct</h2>
-          <p className={styles.desc}>占位。</p>
+      <div className="p-6 text-[#444]">
+        <div className="p-6">
+          <h2 className="m-0 mb-3 text-[20px]">Major Construct</h2>
+          <p className="text-[#666]">占位。</p>
         </div>
       </div>
     </div>

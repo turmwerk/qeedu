@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import styles from './style.module.scss';
 
 export interface ListAction<T = any> {
   label: React.ReactNode;
@@ -29,24 +28,25 @@ function List<T = any>({ items, renderItem, actions, emptyText, editable, keyExt
   const [editingValue, setEditingValue] = useState<string>('');
 
   if (!items || items.length === 0) {
-    return <div className={styles.empty}>{emptyText || '暂无数据'}</div>;
+    return <div className="p-[18px] rounded-[10px] bg-[var(--brand-accent-soft)] text-[#666]">{emptyText || '暂无数据'}</div>;
   }
 
   return (
-    <div className={styles.list}>
+    <div className="flex flex-col gap-3 max-h-[420px] overflow-auto">
       {items.map((item, idx) => {
         const rawKey = keyExtractor ? keyExtractor(item) : idx;
         const key = String(rawKey);
         const isEditing = editingKey === key;
 
         return (
-          <div key={key} className={styles.item}>
-            <div className={styles.index}>{idx + 1}</div>
-            <div className={styles.content}>
+          <div key={key} className="flex justify-between items-center bg-[var(--brand-accent-soft)] p-3 rounded-[10px] border border-transparent transition-[box-shadow,border-color,background] hover:shadow-[var(--brand-shadow)] hover:border-[var(--brand-accent)] hover:bg-white">
+            <div className="w-10 text-center text-[var(--brand-accent)] font-bold mr-3">{idx + 1}</div>
+            <div className="flex-1">
               {isEditing ? (
-                <div className={styles.editRow}>
+                <div className="flex items-center">
                   <input
-                    className={styles.editInput}
+                    className="w-[420px] px-2.5 py-2 rounded-md border border-[rgba(0,0,0,0.12)] mr-2"
+                    aria-label="重命名"
                     value={editingValue}
                     onChange={(e) => setEditingValue(e.target.value)}
                     onKeyDown={(e) => {
@@ -67,14 +67,14 @@ function List<T = any>({ items, renderItem, actions, emptyText, editable, keyExt
             </div>
 
             {(!isEditing && actions && actions.length > 0) && (
-              <div className={styles.actions}>
+              <div className="flex gap-2">
                 {actions.map((action, i) => {
                   // 对于重命名动作，List 自行切换到编辑模式并填充初始值
                   if (action.isRename) {
                     return (
                       <button
                         key={i}
-                        className={action.className || styles.btn}
+                        className={action.className || 'bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1.5 rounded-lg cursor-pointer font-semibold hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)]'}
                         onClick={() => {
                           const start = editable ? editable.getValue(item) : '';
                           setEditingValue(start);
@@ -89,7 +89,7 @@ function List<T = any>({ items, renderItem, actions, emptyText, editable, keyExt
                   return (
                     <button
                       key={i}
-                      className={action.className || styles.btn}
+                      className={action.className || 'bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1.5 rounded-lg cursor-pointer font-semibold hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)]'}
                       onClick={() => action.onClick(item)}
                     >
                       {action.label}
@@ -100,16 +100,16 @@ function List<T = any>({ items, renderItem, actions, emptyText, editable, keyExt
             )}
 
             {isEditing && (
-              <div className={styles.editActions}>
+              <div className="flex gap-2">
                 <button
-                  className={styles.btn}
+                  className="bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1.5 rounded-lg cursor-pointer font-semibold hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)]"
                   onClick={() => {
                     const renameAction = actions?.find(a => a.isRename);
                     if (renameAction) renameAction.onClick(item, editingValue);
                     setEditingKey(null);
                   }}
                 >确定</button>
-                <button className={styles.btn} onClick={() => setEditingKey(null)}>取消</button>
+                <button className="bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1.5 rounded-lg cursor-pointer font-semibold hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)]" onClick={() => setEditingKey(null)}>取消</button>
               </div>
             )}
           </div>

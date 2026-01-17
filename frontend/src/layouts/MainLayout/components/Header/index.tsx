@@ -15,7 +15,6 @@ import {
   ArrowLeftOutlined,
   UserOutlined
 } from '@ant-design/icons';
-import styles from './style.module.scss';
 
 const { Header } = Layout;
 
@@ -43,15 +42,15 @@ const MainHeader: React.FC = () => {
   const currentConfig = routeConfig[location.pathname] || { title: 'nju-edu-ai-system' };
 
   return (
-    <Header className={styles.header}>
-      <div className={styles.leftArea}>
-        {currentConfig.icon && <span className={styles.titleIcon}>{currentConfig.icon}</span>}
-        <h1 className={styles.title}>{currentConfig.title}</h1>
+    <Header className="bg-[linear-gradient(135deg,rgba(255,255,255,0.9)_0%,rgba(250,245,255,0.85)_50%,rgba(240,248,255,0.9)_100%)] backdrop-blur-[20px] shadow-[0_4px_24px_rgba(98,54,255,0.08)] border-b border-[rgba(75,42,133,0.08)] py-2 px-10 flex items-center justify-between relative z-[100]">
+      <div className="flex items-center gap-3">
+        {currentConfig.icon && <span className="text-[24px] text-[#6236ff] flex items-center">{currentConfig.icon}</span>}
+        <h1 className="m-0 text-[20px] font-bold text-[#1a1a1a]">{currentConfig.title}</h1>
       </div>
-      <div className={styles.rightArea}>
+      <div className="flex items-center gap-4">
         {!isHomePage && (
           <button 
-            className={styles.iconBtn}
+            className="flex items-center gap-1.5 px-4 py-1.5 text-sm font-medium text-[#1a1a1a] bg-transparent border-0 cursor-pointer rounded-lg transition-all hover:text-[#6236ff] hover:bg-[rgba(98,54,255,0.05)]"
             onClick={() => navigate('/')}
           >
             <HomeOutlined />
@@ -60,7 +59,7 @@ const MainHeader: React.FC = () => {
         )}
         {isHomePage ? (
           <button 
-            className={styles.iconBtn}
+            className="flex items-center gap-1.5 px-4 py-1.5 text-sm font-medium text-[#1a1a1a] bg-transparent border-0 cursor-pointer rounded-lg transition-all hover:text-[#6236ff] hover:bg-[rgba(98,54,255,0.05)]"
             onClick={() => navigate('/login')}
           >
             <UserOutlined />
@@ -68,7 +67,7 @@ const MainHeader: React.FC = () => {
           </button>
         ) : (
           <button 
-            className={styles.iconBtn}
+            className="flex items-center gap-1.5 px-4 py-1.5 text-sm font-medium text-[#1a1a1a] bg-transparent border-0 cursor-pointer rounded-lg transition-all hover:text-[#6236ff] hover:bg-[rgba(98,54,255,0.05)]"
             onClick={() => navigate(-1)}
           >
             <ArrowLeftOutlined />

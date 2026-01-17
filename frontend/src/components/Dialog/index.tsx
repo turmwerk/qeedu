@@ -1,6 +1,5 @@
 
 import React, { useEffect, useRef, useState } from 'react';
-import styles from './style.module.scss';
 
 interface DialogMessage {
   from: 'user' | 'bot';
@@ -57,29 +56,57 @@ const Dialog: React.FC<DialogProps> & { clearDialog: (dialogId: string) => void 
   };
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>{botName}</div>
-      <div ref={bodyRef} className={styles.body}>
+    <div className="flex flex-col gap-3 h-full min-h-0">
+      <style>{`
+        @keyframes dialogDotPulse {
+          0%, 70%, 100% { transform: translateY(1px) scale(0.7); opacity: 0.4; }
+          35% { transform: translateY(-2px) scale(1); opacity: 1; }
+        }
+        @keyframes dialogPendingIn {
+          from { opacity: 0; transform: translateY(6px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .dialog-pending { animation: dialogPendingIn 0.8s ease; }
+        .dialog-dot { animation: dialogDotPulse 1.4s infinite cubic-bezier(0.4, 0, 0.2, 1); }
+        .dialog-dot.delay-1 { animation-delay: 1.44s; }
+        .dialog-dot.delay-2 { animation-delay: 0.72s; }
+      `}</style>
+      <div className="font-bold text-[var(--brand-text)]">{botName}</div>
+      <div ref={bodyRef} className="flex-1 min-h-0 bg-[var(--brand-accent-soft)] rounded-lg p-3 flex flex-col gap-2 overflow-auto">
         {messages.map((m, i) => (
-          <div key={i} className={m.from === 'user' ? styles.msgUser : styles.msgBot}>{m.text}</div>
+          <div
+            key={i}
+            className={m.from === 'user'
+              ? 'self-end bg-[var(--brand-accent)] text-white px-3 py-2 rounded-xl max-w-[80%]'
+              : 'self-start bg-[#f1f0fb] text-[#2d1b4f] px-3 py-2 rounded-xl max-w-[80%]'}
+          >
+            {m.text}
+          </div>
         ))}
         {pending && (
-          <div className={styles.msgPending}>
-            <span className={styles.dot} />
-            <span className={styles.dot} />
-            <span className={styles.dot} />
+          <div className="dialog-pending self-start bg-[#f1f0fb] text-[#2d1b4f] px-3 py-2 rounded-xl flex gap-1.5">
+            <span className="dialog-dot w-1.5 h-1.5 rounded-full bg-[#6b4da6] inline-block" />
+            <span className="dialog-dot delay-1 w-1.5 h-1.5 rounded-full bg-[#6b4da6] inline-block" />
+            <span className="dialog-dot delay-2 w-1.5 h-1.5 rounded-full bg-[#6b4da6] inline-block" />
           </div>
         )}
       </div>
-      <div className={styles.footer}>
+      <div className="flex gap-2">
         <input
           value={input}
           onChange={e => setInput(e.target.value)}
           placeholder={pending ? '对方输入中...' : '输入消息，回车发送'}
           onKeyDown={e => { if (e.key === 'Enter') send(); }}
           disabled={pending}
+          className="flex-1 px-2.5 py-2 rounded-md border border-[var(--brand-border)] disabled:bg-[#f7f4fb] disabled:text-[#7b6d92]"
         />
-        <button onClick={send} disabled={pending}>发送</button>
+        <button
+          onClick={send}
+          disabled={pending}
+          className="px-3 py-2 rounded-md bg-[var(--brand-accent)] text-white border-0 cursor-pointer transition-[background,box-shadow] hover:bg-[var(--brand-accent-strong)] hover:shadow-[var(--brand-shadow)] disabled:opacity-60 disabled:cursor-default"
+        >
+          发送
+        </button>
       </div>
     </div>
   );

@@ -1,6 +1,4 @@
 import React, { useState, useEffect, type DragEvent } from 'react';
-import shared from '@/pages/shared/style.module.scss';
-import styles from './style.module.scss';
 import Dialog from '@/components/Dialog';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import Dropdown from '@/components/Dropdown';
@@ -308,23 +306,30 @@ const DetailPage: React.FC<{
   return (
     <><div>
       <ToastContainer />
-      <div className={shared.content}>
-        <div className={styles.headerCard}>
-          <div className={styles.headerRow}>
+      <style>{`
+        @keyframes analysisReveal {
+          from { opacity: 0; transform: translateY(6px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .analysis-reveal { animation: analysisReveal 0.32s cubic-bezier(0.22, 1, 0.36, 1); }
+      `}</style>
+      <div className="p-6 text-[#444]">
+        <div className="bg-white px-2 py-1.5 rounded-[10px] shadow-[0_1px_6px_rgba(16,24,40,0.04)] mb-3">
+          <div className="flex justify-between items-center gap-2.5">
             <input
-              className={styles.titleInputLarge}
+              className="flex-1 border border-transparent bg-[#f0ebf6] rounded-xl px-3 py-2 text-[18px] font-bold text-[#4b2a85] min-h-[40px] focus:outline-none focus:border-[#4b2a85] focus:shadow-[0_0_0_3px_rgba(75,42,133,0.18)]"
               type="text"
               value={localTitle}
               onChange={(event) => setLocalTitle(event.target.value)}
               placeholder="未命名试卷"
             />
-            <div className={styles.rightAction}>
-              <div className={styles.scoreBox}>
-                <div className={styles.scoreLabel}>总分</div>
-                <div className={styles.scoreValue}>{previewTotalScore}</div>
+            <div className="flex items-center gap-3">
+              <div className="flex flex-col items-start justify-center gap-0.5 mr-2">
+                <div className="text-[12px] text-[#6b6b6b] font-semibold">总分</div>
+                <div className="text-[22px] font-extrabold text-[#4b2a85] leading-none">{previewTotalScore}</div>
               </div>
-              <button className={styles.backBtn} onClick={onBack}>返回试卷列表</button>
-              <button className={styles.previewBtn} onClick={() => setPreviewOpen(true)}>试卷预览</button>
+              <button className="bg-white border-2 border-[#7a54c4] text-[#7a54c4] px-3 py-1.5 rounded-xl cursor-pointer font-bold text-[14px] transition-[background,box-shadow,transform] hover:bg-[#f3eefb] hover:shadow-[0_8px_18px_rgba(75,42,133,0.12)] hover:-translate-y-[1px]" onClick={onBack}>返回试卷列表</button>
+              <button className="bg-white border-2 border-[#7a54c4] text-[#7a54c4] px-3 py-1.5 rounded-xl cursor-pointer font-bold text-[14px] transition-[background,box-shadow,transform] hover:bg-[#f3eefb] hover:shadow-[0_8px_18px_rgba(75,42,133,0.12)] hover:-translate-y-[1px]" onClick={() => setPreviewOpen(true)}>试卷预览</button>
               <Dropdown
                 button="导出"
                 items={[
@@ -335,52 +340,50 @@ const DetailPage: React.FC<{
             </div>
           </div>
         </div>
-        <div className={styles.layout}>
-          <div className={styles.leftPane}>
-            <div className={styles.paperArea}>
-              <div className={styles.paperCard}>
-                <div className={styles.paperHeader}>试卷</div>
-                <div className={styles.paperBody}>
-                  {localQuestions.length === 0 && <div className={styles.empty}>当前试卷暂无题目</div>}
+        <div className="grid grid-cols-[1fr_360px] gap-5 items-start max-[980px]:grid-cols-1">
+          <div>
+            <div className="flex flex-col gap-3">
+              <div className="bg-white rounded-xl shadow-[0_6px_18px_rgba(16,24,40,0.06)] p-3 min-h-[640px] max-h-[640px] overflow-y-auto">
+                <div className="font-bold mb-2.5 text-[var(--brand-text)]">试卷</div>
+                <div className="flex flex-col gap-3">
+                  {localQuestions.length === 0 && <div className="text-[#999] p-5 text-center">当前试卷暂无题目</div>}
                   {localQuestions.map((q, idx) => (
-                    <div key={q.id} className={styles.questionStack}>
+                    <div key={q.id} className="flex flex-col gap-2.5">
                       <div
-                        className={`${styles.questionCard} ${selectedQuestion === q.id ? styles.selectedCard : ''} ${draggingId === q.id ? styles.draggingCard : ''}`}
+                        className={`bg-white rounded-[14px] border border-[rgba(75,42,133,0.1)] shadow-[0_8px_18px_rgba(16,24,40,0.06)] p-3 flex flex-col gap-2.5 cursor-grab transition-[transform,box-shadow,border-color] relative hover:-translate-y-[1px] hover:shadow-[0_12px_24px_rgba(75,42,133,0.12)] hover:border-[rgba(75,42,133,0.2)] ${selectedQuestion === q.id ? 'border-[rgba(75,42,133,0.3)] shadow-[0_0_0_3px_rgba(123,59,232,0.12)]' : ''} ${draggingId === q.id ? 'opacity-65 scale-[0.98]' : ''}`}
                         onClick={() => setSelectedQuestion((prev) => (prev === q.id ? null : q.id))}
-                        role="button"
-                        tabIndex={0}
                         draggable
                         onDragStart={handleDragStart(q.id)}
                         onDragEnd={handleDragEnd}
                         onDragOver={handleDragOver}
                         onDrop={handleDropOnItem(q.id)}
                       >
-                        <div className={styles.cardHeader}>
-                          <div className={styles.cardIndex}>#{idx + 1}</div>
-                          <div className={styles.cardMeta}>
-                            <span>{q.knowledge || '未标注'}</span>
-                            <span>{q.difficulty || '中等'}</span>
-                            <span>{q.type || '简答'}</span>
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="font-bold text-[var(--brand-accent)]">#{idx + 1}</div>
+                          <div className="flex flex-wrap gap-1.5 text-[#6b4da6] text-[12px] flex-1">
+                            <span className="bg-[var(--brand-accent-soft)] px-2 py-0.5 rounded-full">{q.knowledge || '未标注'}</span>
+                            <span className="bg-[var(--brand-accent-soft)] px-2 py-0.5 rounded-full">{q.difficulty || '中等'}</span>
+                            <span className="bg-[var(--brand-accent-soft)] px-2 py-0.5 rounded-full">{q.type || '简答'}</span>
                           </div>
-                          <span className={styles.dragHandle} aria-hidden="true">
+                          <span className="text-[16px] text-[rgba(75,42,133,0.5)] tracking-[1px]" aria-hidden="true">
                             ⋮⋮
                           </span>
                         </div>
-                        <div className={styles.cardStem}>
+                        <div className="text-[#2a2038] leading-[1.6] text-[14px]">
                           {q.stem}
                           {q.options && q.options.length > 0 && (
-                            <ul className={styles.optionsList}>
+                            <ul className="mt-2 list-none p-0">
                               {q.options.map((opt, i) => (
-                                <li key={i} className={styles.optionItem}>
+                                <li key={i} className="p-1.5 rounded-lg bg-white border border-[rgba(0,0,0,0.03)] mb-1.5">
                                   {String.fromCharCode(65 + i)}. {opt}
                                 </li>
                               ))}
                             </ul>
                           )}
                         </div>
-                        <div className={styles.cardFooter} onClick={(e) => e.stopPropagation()}>
-                          <div className={styles.cardActions}>
-                            <label className={styles.scoreLabel}>
+                        <div className="flex items-center justify-end gap-2.5 flex-wrap" onClick={(e) => e.stopPropagation()}>
+                          <div className="flex gap-2 items-center">
+                            <label className="flex items-center gap-1.5 text-[#666] text-[13px]">
                               分值
                               <input
                                 type="number"
@@ -392,10 +395,10 @@ const DetailPage: React.FC<{
                                   setLocalQuestions(next);
                                   persistExam(next);
                                 } }
-                                className={styles.scoreInput} />
+                                className="w-[64px] px-1.5 py-1 rounded-md border border-[#eee]" />
                             </label>
                             <button
-                              className={styles.modifyBtn}
+                              className="bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-2 py-1.5 rounded-lg cursor-pointer transition-[background,border-color,box-shadow] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)]"
                               onClick={() => {
                                 setEditingQuestionId(q.id);
                                 setInsertAt(idx - 1);
@@ -405,7 +408,7 @@ const DetailPage: React.FC<{
                               修改
                             </button>
                             <button
-                              className={styles.deleteBtn}
+                              className="bg-white border border-[rgba(200,30,30,0.16)] text-[#c21e1e] px-2 py-1.5 rounded-lg cursor-pointer transition-[background,border-color,box-shadow] hover:bg-[#fff1f2] hover:border-[rgba(200,30,30,0.35)] hover:shadow-[0_8px_18px_rgba(200,30,30,0.15)]"
                               onClick={() => {
                                 openConfirm({
                                   title: '删除题目',
@@ -428,27 +431,27 @@ const DetailPage: React.FC<{
                       </div>
 
                       {selectedQuestion === q.id && (
-                        <div className={styles.analysisWrap}>
-                          <div className={styles.analysisBox}>
-                            <div className={styles.analysisTitle}>知识点分析</div>
-                            <div className={styles.analysisContent}>
+                        <div className="analysis-reveal flex flex-col gap-2.5 my-2">
+                          <div className="bg-white rounded-xl p-3.5 border border-[rgba(123,59,232,0.08)] shadow-[0_1px_6px_rgba(0,0,0,0.03)]">
+                            <div className="font-bold text-[#2b1650] mb-2">知识点分析</div>
+                            <div className="text-[#4b4b4b] text-[14px] leading-[1.6]">
                               当前题目覆盖「数据库」，建议搭配相邻知识点，扩展覆盖范围。
                             </div>
                           </div>
-                          <div className={styles.analysisBox}>
-                            <div className={styles.analysisTitle}>难度分析</div>
-                            <div className={styles.analysisContent}>偏基础概念，适合作为入门或热身题。</div>
+                          <div className="bg-white rounded-xl p-3.5 border border-[rgba(123,59,232,0.08)] shadow-[0_1px_6px_rgba(0,0,0,0.03)]">
+                            <div className="font-bold text-[#2b1650] mb-2">难度分析</div>
+                            <div className="text-[#4b4b4b] text-[14px] leading-[1.6]">偏基础概念，适合作为入门或热身题。</div>
                           </div>
-                          <div className={styles.analysisBox}>
-                            <div className={styles.analysisTitle}>答案分析</div>
-                            <div className={styles.analysisContent}>{q.answerAnalysis || '暂无答案分析。'}</div>
+                          <div className="bg-white rounded-xl p-3.5 border border-[rgba(123,59,232,0.08)] shadow-[0_1px_6px_rgba(0,0,0,0.03)]">
+                            <div className="font-bold text-[#2b1650] mb-2">答案分析</div>
+                            <div className="text-[#4b4b4b] text-[14px] leading-[1.6]">{q.answerAnalysis || '暂无答案分析。'}</div>
                           </div>
                         </div>
                       )}
 
-                      <div className={styles.insertWrap}>
+                      <div className="flex justify-center my-1.5">
                         <button
-                          className={styles.insertBtn}
+                          className="bg-transparent border border-dashed border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1 rounded-lg cursor-pointer text-[13px] transition-[background,border-color] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)]"
                           onClick={() => {
                             setInsertAt(idx);
                             setEditingQuestionId(null);
@@ -462,9 +465,9 @@ const DetailPage: React.FC<{
                   ))}
                   {/* 如果试卷为空，显示插入按钮 */}
                   {localQuestions.length === 0 && (
-                    <div className={styles.insertWrap}>
+                    <div className="flex justify-center my-1.5">
                       <button
-                        className={styles.insertBtn}
+                        className="bg-transparent border border-dashed border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1 rounded-lg cursor-pointer text-[13px] transition-[background,border-color] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)]"
                         onClick={() => {
                           setInsertAt(-1);
                           setEditingQuestionId(null);
@@ -479,78 +482,78 @@ const DetailPage: React.FC<{
               </div>
             </div>
           </div>
-          <div className={styles.rightPane}>
-            <div className={styles.aiCard}>
-              <div className={styles.panelWrap}>
-                <div className={styles.qualityCard}>
-                    <div className={styles.cardTitle}>试卷质量画像</div>
+          <div>
+            <div className="bg-white rounded-xl p-[18px] shadow-[0_6px_18px_rgba(16,24,40,0.04)] min-h-[640px] max-h-[640px] flex flex-col gap-3 overflow-y-auto relative">
+              <div className="flex flex-col gap-3">
+                <div className="bg-white rounded-[10px] p-3 shadow-[0_1px_6px_rgba(0,0,0,0.06)] min-h-[320px]">
+                    <div className="font-bold mb-2">试卷质量画像</div>
 
-                    <div className={styles.qualitySummary}>
-                      <div className={styles.qualityBox}>
-                        <div className={styles.qualityHint}>综合评价</div>
-                        <div className={styles.qualityResult}>
-                          <div className={styles.qualityStatus}>可用</div>
-                          <div className={styles.qualityAdvice}></div>
+                    <div className="mb-3">
+                      <div className="bg-[var(--brand-accent-soft)] p-3 rounded-lg flex items-center gap-3">
+                        <div className="text-[#666] text-[12px]">综合评价</div>
+                        <div className="flex flex-col">
+                          <div className="text-[var(--brand-accent)] font-bold text-[14px]">可用</div>
+                          <div className="text-[#6b4da6] text-[12px] mt-1"></div>
                         </div>
                       </div>
                     </div>
 
-                    <div className={styles.coverageRow}>
-                      <div className={styles.coverageLabel}>覆盖度</div>
-                      <div className={styles.coverageBarWrap}>
-                        <div className={styles.coverageBar}><div className={styles.coverageFill} style={{ width: '83%' }} /></div>
+                    <div className="flex items-center gap-3">
+                      <div className="text-[#666] w-[64px]">覆盖度</div>
+                      <div className="flex-1">
+                        <div className="bg-[#efe9fb] h-2 rounded-lg overflow-hidden"><div className="bg-[var(--brand-accent)] h-full rounded-lg w-[83%]" /></div>
                       </div>
-                      <div className={styles.coveragePercent}>83%</div>
+                      <div className="w-[44px] text-right text-[var(--brand-accent)] font-bold">83%</div>
                     </div>
 
-                    <div className={styles.difficultyRow}>
-                      <div className={styles.diffLabel}>难度结构</div>
-                      <div className={styles.diffText}>合理</div>
+                    <div className="flex justify-between items-center mt-2 text-[#666]">
+                      <div>难度结构</div>
+                      <div>合理</div>
                     </div>
-                    <div className={styles.diffPercents}>
+                    <div className="flex gap-[18px] text-[#666] mt-1.5 text-[13px]">
                       <div>易 30%</div>
                       <div>中 50%</div>
                       <div>难 20%</div>
                     </div>
 
-                    <div className={styles.metricsRow}>
-                      <div className={styles.metric}>
-                        <div className={styles.metricLabel}>区分度</div>
-                        <div className={styles.metricValue}>0.42</div>
-                        <div className={styles.metricText}>良好</div>
+                    <div className="flex justify-between mt-3">
+                      <div className="flex flex-col gap-1.5 items-start">
+                        <div className="text-[#666] text-[12px]">区分度</div>
+                        <div className="font-bold text-[var(--brand-accent)] text-[16px]">0.42</div>
+                        <div className="text-[#666] text-[12px]">良好</div>
                       </div>
-                      <div className={styles.metric}>
-                        <div className={styles.metricLabel}>信度</div>
-                        <div className={styles.metricValue}>0.78</div>
-                        <div className={styles.metricText}>可接受</div>
+                      <div className="flex flex-col gap-1.5 items-start">
+                        <div className="text-[#666] text-[12px]">信度</div>
+                        <div className="font-bold text-[var(--brand-accent)] text-[16px]">0.78</div>
+                        <div className="text-[#666] text-[12px]">可接受</div>
                       </div>
                     </div>
                 </div>
 
-                <div className={styles.structureCard}>
-                    <div className={styles.structureHeader}>
-                      <div className={styles.cardTitle}>试卷概览</div>
+                <div className="bg-white rounded-[10px] p-3 shadow-[0_1px_6px_rgba(0,0,0,0.06)]">
+                    <div className="flex items-center border-b border-dashed border-[var(--brand-border)] pb-2 mb-2.5">
+                      <div className="font-bold mb-2">试卷概览</div>
                     </div>
-                    <div className={styles.structureBody}>
-                      <div className={styles.structureRow}>
-                        <div className={styles.structureLabel}>题型分布</div>
-                        <div className={styles.structureValue}>{formatCounts(typeCounts)}</div>
+                    <div className="flex flex-col gap-2.5">
+                      <div className="flex gap-3 items-start">
+                        <div className="min-w-[72px] text-[#666] text-[12px]">题型分布</div>
+                        <div className="text-[var(--brand-text)] text-[13px] leading-[1.6]">{formatCounts(typeCounts)}</div>
                       </div>
-                      <div className={styles.structureRow}>
-                        <div className={styles.structureLabel}>难度分布</div>
-                        <div className={styles.structureValue}>{formatCounts(difficultyCounts)}</div>
+                      <div className="flex gap-3 items-start">
+                        <div className="min-w-[72px] text-[#666] text-[12px]">难度分布</div>
+                        <div className="text-[var(--brand-text)] text-[13px] leading-[1.6]">{formatCounts(difficultyCounts)}</div>
                       </div>
-                      <div className={styles.structureRow}>
-                        <div className={styles.structureLabel}>知识点覆盖</div>
-                        <div className={styles.knowledgeTags}>
+                      <div className="flex gap-3 items-start">
+                        <div className="min-w-[72px] text-[#666] text-[12px]">知识点覆盖</div>
+                        <div className="flex flex-wrap gap-2">
                           {knowledgeEntries.length ? (
                             knowledgeEntries.map(([label, count]) => (
-                              <span key={label} className={styles.knowledgeTag}>
+                              <span key={label} className="bg-[var(--brand-accent-soft)] text-[#6b4da6] px-2 py-1 rounded-full text-[12px]">
                                 {label} ×{count}
                               </span>
                             ))
                           ) : (
-                            <span className={styles.knowledgeEmpty}>暂无</span>
+                            <span className="text-[var(--brand-muted)] text-[13px]">暂无</span>
                           )}
                         </div>
                       </div>
@@ -559,14 +562,14 @@ const DetailPage: React.FC<{
               </div>
 
               {recommendMounted && (
-                <div className={`${styles.recommendOverlay} ${!recommendVisible ? styles.recommendHidden : ''}`}>
-                  <div className={styles.recommendWrap}>
-                    <div className={styles.recommendCard}>
-                      <div className={styles.cardTitle}>
+                <div className={`absolute inset-[18px] bg-white rounded-xl flex flex-col gap-3 z-[2] transition-[opacity,transform] shadow-[0_6px_18px_rgba(16,24,40,0.08)] will-change-[transform,opacity] ${!recommendVisible ? 'opacity-0 translate-y-[18px] pointer-events-none' : 'opacity-100 translate-y-0'}`}>
+                  <div className="flex flex-col gap-3 flex-1 min-h-0 overflow-auto">
+                    <div className="bg-white rounded-[10px] p-3 shadow-[0_1px_6px_rgba(0,0,0,0.06)] relative">
+                      <div className="font-bold mb-2">
                         推荐变题
                       </div>
                       <button
-                        className={styles.switchBtn}
+                        className="absolute top-2 right-2 bg-transparent border border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1.5 rounded-[16px] cursor-pointer font-semibold transition-[background,border-color,box-shadow] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)]"
                         onClick={() => {
                           // 简单模拟换一换：在两个备选集中切换或打乱
                           setRecList((prev) => {
@@ -576,17 +579,17 @@ const DetailPage: React.FC<{
                         }}
                       >换一换</button>
 
-                      <div className={styles.recommendList}>
+                      <div className="flex flex-col gap-3 mt-2">
                         {recList.map((r) => (
-                          <div key={r.id} className={styles.recItem}>
-                            <div className={styles.recHeader}>
-                              <div className={styles.recTags}>
+                          <div key={r.id} className="bg-[#fbf7ff] rounded-xl p-3 flex flex-col gap-3">
+                            <div className="flex justify-between items-center">
+                              <div className="flex gap-2 text-[#888] text-[12px]">
                                 {r.tags.map((t) => (
-                                  <span key={t} className={styles.recTag}>{t}</span>
+                                  <span key={t} className="bg-[var(--brand-accent-soft)] px-2 py-1 rounded-lg text-[#6b4da6]">{t}</span>
                                 ))}
                               </div>
                               <button
-                                className={styles.recReplaceBtn}
+                                className="bg-[var(--brand-accent)] text-white border-0 px-3 py-1.5 rounded-xl cursor-pointer font-bold text-[13px] transition-[background,box-shadow] hover:bg-[var(--brand-accent-strong)] hover:shadow-[var(--brand-shadow)]"
                                 onClick={() => {
                                   const next = localQuestions.map((qq) => qq.id === selectedQuestion ? { ...qq, stem: r.stem } : qq);
                                   setLocalQuestions(next);
@@ -594,14 +597,14 @@ const DetailPage: React.FC<{
                                 }}
                               >替换</button>
                             </div>
-                            <div className={styles.recStem}>{r.stem}</div>
+                            <div className="text-[#222] font-semibold mt-2">{r.stem}</div>
                           </div>
                         ))}
                       </div>
                     </div>
 
-                    <div className={`${styles.card} ${styles.dialogCard}`}>
-                      <div className={styles.dialogBody}>
+                    <div className="bg-white rounded-[10px] p-3 shadow-[0_1px_6px_rgba(0,0,0,0.06)] flex flex-col h-[360px] min-h-0">
+                      <div className="h-full flex flex-col min-h-0">
                         <Dialog
                           dialogId={dialogIdFor(selectedQuestion)}
                           botName="题目助手"
@@ -618,24 +621,24 @@ const DetailPage: React.FC<{
       </div>
 
       {showInsertModal && (
-        <div className={styles.modalOverlay} onClick={() => setShowInsertModal(false)}>
-          <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
-            <div className={styles.modalColumns}>
-              <div style={{ flex: 1 }}>
-                <h3 style={{ marginTop: 0 }}>{editingQuestionId ? '修改题目' : '生成插入题目'}</h3>
-                <div style={{ marginBottom: 8 }}>
-                  <div style={{ marginBottom: 6 }}>题干</div>
-                  <textarea value={modalStem} onChange={e => setModalStem(e.target.value)} rows={5} style={{ width: '100%' }} />
+        <div className="fixed inset-0 bg-[rgba(0,0,0,0.35)] flex items-center justify-center z-[1200]" onClick={() => setShowInsertModal(false)}>
+          <div className="w-[920px] max-w-[92%] bg-white rounded-[10px] p-[18px] shadow-[0_10px_40px_rgba(16,24,40,0.2)]" onClick={e => e.stopPropagation()}>
+            <div className="flex gap-3">
+              <div className="flex-1">
+                <h3 className="mt-0">{editingQuestionId ? '修改题目' : '生成插入题目'}</h3>
+                <div className="mb-2">
+                  <div className="mb-1.5">题干</div>
+                  <textarea value={modalStem} onChange={e => setModalStem(e.target.value)} rows={5} className="w-full" aria-label="题干" />
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <div style={{ marginBottom: 6 }}>知识点</div>
-                    <input value={modalKnowledge} onChange={e => setModalKnowledge(e.target.value)} placeholder="例如：数据库" style={{ width: '100%', padding: '8px', borderRadius: 8, border: '1px solid #eee' }} />
+                    <div className="mb-1.5">知识点</div>
+                    <input value={modalKnowledge} onChange={e => setModalKnowledge(e.target.value)} placeholder="例如：数据库" className="w-full p-2 rounded-lg border border-[#eee]" aria-label="知识点" />
                   </div>
                   <div>
-                    <div style={{ marginBottom: 6 }}>题型</div>
-                    <select value={modalQType} onChange={e => { const v = e.target.value; setModalQType(v); if (v === '选择' && modalOptions.length < 2) setModalOptions(['', '']); } } style={{ width: '100%', padding: '8px', borderRadius: 8, border: '1px solid #eee' }}>
+                    <div className="mb-1.5">题型</div>
+                    <select value={modalQType} onChange={e => { const v = e.target.value; setModalQType(v); if (v === '选择' && modalOptions.length < 2) setModalOptions(['', '']); } } className="w-full p-2 rounded-lg border border-[#eee]" aria-label="题型">
                       <option>简答</option>
                       <option>选择</option>
                       <option>填空</option>
@@ -644,18 +647,18 @@ const DetailPage: React.FC<{
                   </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 8 }}>
+                <div className="grid grid-cols-2 gap-2 mt-2">
                   <div>
-                    <div style={{ marginBottom: 6 }}>难度</div>
-                    <select value={modalDifficulty} onChange={e => setModalDifficulty(e.target.value)} style={{ width: '100%', padding: '8px', borderRadius: 8, border: '1px solid #eee' }}>
+                    <div className="mb-1.5">难度</div>
+                    <select value={modalDifficulty} onChange={e => setModalDifficulty(e.target.value)} className="w-full p-2 rounded-lg border border-[#eee]" aria-label="难度">
                       <option>简单</option>
                       <option>中等</option>
                       <option>困难</option>
                     </select>
                   </div>
                   <div>
-                    <div style={{ marginBottom: 6 }}>认知层次</div>
-                    <select value={modalCognition} onChange={e => setModalCognition(e.target.value)} style={{ width: '100%', padding: '8px', borderRadius: 8, border: '1px solid #eee' }}>
+                    <div className="mb-1.5">认知层次</div>
+                    <select value={modalCognition} onChange={e => setModalCognition(e.target.value)} className="w-full p-2 rounded-lg border border-[#eee]" aria-label="认知层次">
                       <option>记忆</option>
                       <option>理解</option>
                       <option>应用</option>
@@ -664,14 +667,14 @@ const DetailPage: React.FC<{
                   </div>
                 </div>
                 {modalQType === '选择' && (
-                  <div style={{ marginTop: 8 }}>
-                    <div style={{ marginBottom: 6 }}>选项</div>
+                  <div className="mt-2">
+                    <div className="mb-1.5">选项</div>
                     {modalOptions.map((opt, i) => (
-                      <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 6 }}>
-                        <div style={{ width: 28, textAlign: 'center', fontWeight: 700 }}>{String.fromCharCode(65 + i)}</div>
-                        <input value={opt} onChange={e => setModalOptions(prev => { const copy = [...prev]; copy[i] = e.target.value; return copy; })} placeholder={`选项 ${String.fromCharCode(65 + i)}`} style={{ flex: 1, padding: 8, borderRadius: 8, border: '1px solid #eee' }} />
+                      <div key={i} className="flex gap-2 items-center mb-1.5">
+                        <div className="w-7 text-center font-bold">{String.fromCharCode(65 + i)}</div>
+                        <input value={opt} onChange={e => setModalOptions(prev => { const copy = [...prev]; copy[i] = e.target.value; return copy; })} placeholder={`选项 ${String.fromCharCode(65 + i)}`} className="flex-1 p-2 rounded-lg border border-[#eee]" aria-label={`选项 ${String.fromCharCode(65 + i)}`} />
                         <button
-                          className={styles.deleteBtn}
+                          className="bg-white border border-[rgba(200,30,30,0.16)] text-[#c21e1e] px-2 py-1.5 rounded-lg cursor-pointer transition-[background,border-color,box-shadow] hover:bg-[#fff1f2] hover:border-[rgba(200,30,30,0.35)] hover:shadow-[0_8px_18px_rgba(200,30,30,0.15)]"
                           onClick={() => {
                             openConfirm({
                               title: '删除选项',
@@ -689,33 +692,33 @@ const DetailPage: React.FC<{
                       </div>
                     ))}
                     <div>
-                      <button className={styles.insertBtn} onClick={() => setModalOptions(prev => [...prev, ''])}>+ 添加选项</button>
+                      <button className="bg-transparent border border-dashed border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1 rounded-lg cursor-pointer text-[13px] transition-[background,border-color] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)]" onClick={() => setModalOptions(prev => [...prev, ''])}>+ 添加选项</button>
                     </div>
                   </div>
                 )}
 
-                <div style={{ marginTop: 8 }}>
-                  <div style={{ marginBottom: 6 }}>答案分析</div>
-                  <textarea value={modalAnswerAnalysis} onChange={e => setModalAnswerAnalysis(e.target.value)} rows={3} style={{ width: '100%', padding: '8px', borderRadius: 8, border: '1px solid #eee' }} />
+                <div className="mt-2">
+                  <div className="mb-1.5">答案分析</div>
+                  <textarea value={modalAnswerAnalysis} onChange={e => setModalAnswerAnalysis(e.target.value)} rows={3} className="w-full p-2 rounded-lg border border-[#eee]" aria-label="答案分析" />
                 </div>
               </div>
-              <div style={{ width: 360, marginLeft: 16 }}>
-                <div className={styles.cardTitle}>对话记录</div>
-                <div className={`${styles.card} ${styles.modalDialogCard}`} style={{ marginTop: 8 }}>
-                  <div className={`${styles.cardBody} ${styles.modalDialogBody}`}>
+              <div className="w-[360px] ml-4">
+                <div className="font-bold mb-2">对话记录</div>
+                <div className="bg-white rounded-[10px] p-3 shadow-[0_1px_6px_rgba(0,0,0,0.06)] flex flex-col h-[360px] mt-2">
+                  <div className="flex-1 flex flex-col min-h-0 text-[#666]">
                     <Dialog dialogId={`${examId}-gen`} botName="生成助手" initMessage="在此与模型对话以协助生成题目。" />
                   </div>
                 </div>
               </div>
             </div>
-            <div className={styles.modalActions}>
-              <button className={styles.generateBtn} onClick={() => {
+            <div className="flex justify-end gap-2 mt-3">
+              <button className="bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-3 py-2 rounded-lg cursor-pointer transition-[background,border-color,box-shadow] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)]" onClick={() => {
                 const base = modalKnowledge ? `基于「${modalKnowledge}」` : '';
                 const gen = `${base}${modalQType}题：请描述 ${modalKnowledge || '相关'} 的核心概念。`;
                 setModalStem(gen);
               } }>生成题目</button>
-              <button onClick={() => { handleModalSubmit(); } } className={styles.confirmBtn}>{editingQuestionId ? '保存修改' : '确认加入'}</button>
-              <button onClick={() => setShowInsertModal(false)} className={styles.modalCloseBtn}>取消</button>
+              <button onClick={() => { handleModalSubmit(); } } className="bg-[var(--brand-accent)] text-white border-0 px-3.5 py-2 rounded-[18px] cursor-pointer shadow-[var(--brand-shadow)] transition-[background,box-shadow] hover:bg-[var(--brand-accent-strong)]">{editingQuestionId ? '保存修改' : '确认加入'}</button>
+              <button onClick={() => setShowInsertModal(false)} className="bg-transparent border border-[var(--brand-border)] text-[var(--brand-accent)] px-3 py-1.5 rounded-lg cursor-pointer transition-[background,border-color,box-shadow] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)]">取消</button>
             </div>
           </div>
         </div>
@@ -735,7 +738,7 @@ const DetailPage: React.FC<{
       />
 
       <Model visible={previewOpen} title="试卷预览" onClose={() => setPreviewOpen(false)}>
-        <div className={styles.previewModal}>
+        <div className="h-[520px] min-h-[320px] max-h-[70vh]">
           <MarkdownView value={examMarkdown} showControls={false} />
         </div>
       </Model>

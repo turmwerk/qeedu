@@ -2,7 +2,6 @@ import React from 'react';
 import { Layout, Menu } from 'antd';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { HomeOutlined, CodeOutlined, BookOutlined, FormOutlined, BuildOutlined, NotificationOutlined, TeamOutlined } from '@ant-design/icons';
-import styles from './style.module.scss';
 
 const { Sider } = Layout;
 
@@ -40,8 +39,8 @@ const MainSider: React.FC = () => {
   }
 
   return (
-    <Sider className={styles.sider}>
-      <div className={styles.logo}>NJU EDU</div>
+    <Sider className="shadow-[2px_0_8px_0_rgba(29,35,41,0.05)]">
+      <div className="h-8 m-4 bg-[rgba(255,255,255,0.2)] text-white font-bold text-[16px] leading-8 text-center rounded-md whitespace-nowrap overflow-hidden">NJU EDU</div>
       <Menu
         theme="dark"
         mode="inline"

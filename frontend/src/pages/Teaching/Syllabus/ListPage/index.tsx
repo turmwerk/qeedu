@@ -1,8 +1,5 @@
 import React, { useState } from 'react';
-import styles from '../style.module.scss';
-import shared from '@/pages/shared/style.module.scss';
 import List from '@/components/List';
-import listStyles from '@/components/List/style.module.scss';
 import Form from '@/components/Form';
 import Model from '@/components/Model';
 import ConfirmDialog from '@/components/ConfirmDialog';
@@ -28,38 +25,38 @@ const ListPage: React.FC<{
   const [confirmDeleteTitle, setConfirmDeleteTitle] = useState<string>('');
   return (
     <div>
-      <div className={shared.content}>
-        <div className={styles.layout}>
-          <div className={styles.leftPane}>
-            <div className={styles.canvasCard}>
-              <div className={styles.canvasHeader}>
-                <div className="titleLeft">已创建的大纲 ({items.length})</div>
+      <div className="p-6 text-[#444]">
+        <div className="grid grid-cols-1 gap-5 items-start">
+          <div>
+            <div className="bg-white rounded-xl p-[18px] shadow-[0_6px_18px_rgba(16,24,40,0.04)] min-h-[520px]">
+              <div className="flex justify-between items-center font-bold mb-3">
+                <div className="text-[var(--brand-accent)] font-bold">已创建的大纲 ({items.length})</div>
                 <div>
-                  <button className={styles.editBtn} onClick={() => setOpen(true)}>新建大纲</button>
+                  <button className="bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1.5 rounded-xl cursor-pointer font-semibold transition-[background,border-color,box-shadow] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)]" onClick={() => setOpen(true)}>新建大纲</button>
                 </div>
               </div>
-              <div style={{ padding: 12 }}>
+              <div className="p-3">
                 <List
                   items={items}
                   keyExtractor={(i: any) => i.id}
                   editable={{ getValue: (i: any) => i.title }}
                   renderItem={(item: any) => <>
-                    <div className={styles.title}>{item.title}</div>
-                    <div className={styles.meta}>
-                      {item.subtitle && <span className={styles.subtitle}>{item.subtitle}</span>}
-                      {item.createdAt && <span className={styles.time}>{new Date(item.createdAt).toLocaleString()}</span>}
+                    <div className="font-bold text-[#2d1b4f]">{item.title}</div>
+                    <div className="mt-1.5 flex gap-3 items-center">
+                      {item.subtitle && <span className="text-[#888]">{item.subtitle}</span>}
+                      {item.createdAt && <span className="text-[#999] text-[12px]">{new Date(item.createdAt).toLocaleString()}</span>}
                     </div>
                   </>}
                   actions={[
-                    { label: '继续编辑', onClick: (item: any) => onEdit(item.id), className: listStyles.btnEdit },
-                    { label: '重命名', isRename: true, onClick: (item: any, newName?: string) => newName && onRename(item.id, newName), className: listStyles.btnRename },
+                    { label: '继续编辑', onClick: (item: any) => onEdit(item.id), className: 'bg-[var(--brand-accent)] text-white border-0 px-2.5 py-1.5 rounded-lg cursor-pointer font-semibold hover:bg-[var(--brand-accent-strong)]' },
+                    { label: '重命名', isRename: true, onClick: (item: any, newName?: string) => newName && onRename(item.id, newName), className: 'bg-[var(--brand-accent-soft)] text-[var(--brand-accent)] border border-[var(--brand-border)] px-2.5 py-1.5 rounded-lg cursor-pointer font-semibold hover:bg-[var(--brand-accent-faint)]' },
                     {
                       label: '删除',
                       onClick: (item: any) => {
                         setConfirmDeleteId(item.id);
                         setConfirmDeleteTitle(item.title || '未命名课程');
                       },
-                      className: listStyles.btnDanger,
+                      className: 'bg-white border border-[rgba(200,30,30,0.16)] text-[#b02a37] px-2.5 py-1.5 rounded-lg cursor-pointer font-semibold hover:bg-[#ffecec] hover:border-[#f1a1a1]'
                     }
                   ]}
                   emptyText="暂无课程大纲。"
@@ -72,8 +69,8 @@ const ListPage: React.FC<{
 
       <Model visible={open} title="新建课程大纲" width={1000} onClose={() => setOpen(false)}>
         <div>
-          <p style={{ color: '#666' }}>简要表单保证必填槽位，然后进入双栏协作。</p>
-          <div style={{ marginTop: 12 }}>
+          <p className="text-[#666]">简要表单保证必填槽位，然后进入双栏协作。</p>
+          <div className="mt-3">
             <Form
               mode="table"
               fields={[

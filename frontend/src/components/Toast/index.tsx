@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
-import styles from './style.module.scss';
 
 type ToastItem = { id: number; message: React.ReactNode; duration: number };
 
@@ -31,9 +30,20 @@ const ToastContainer: React.FC = () => {
   if (typeof document === 'undefined') return null;
 
   return ReactDOM.createPortal(
-    <div className={styles.toastRoot}>
+    <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-2 z-[9999] pointer-events-none items-center justify-center">
+      <style>{`
+        @keyframes toastIn {
+          from { transform: translateY(8px) scale(0.98); opacity: 0; }
+          to { transform: translateY(0) scale(1); opacity: 1; }
+        }
+        .toast-item { animation: toastIn 240ms ease-out; }
+      `}</style>
       {toasts.map(t => (
-        <div key={t.id} className={styles.toast} role="status">
+        <div
+          key={t.id}
+          className="toast-item pointer-events-auto bg-[var(--brand-accent)] text-white px-3.5 py-2.5 rounded-[22px] shadow-[var(--brand-shadow)] font-semibold min-w-[120px] max-w-[640px] text-center"
+          role="status"
+        >
           {t.message}
         </div>
       ))}

@@ -5,7 +5,6 @@ import MainLayout from '@/layouts/MainLayout';
 import Login from '@/pages/Auth/Login';
 import Resister from '@/pages/Auth/Resister';
 import ForgetPassword from '@/pages/Auth/ForgetPassword';
-import styles from './style.module.scss';
 
 // Lazy Load
 const CodeTutor = React.lazy(() => import('@/pages/Study/CodeTutor'));
@@ -21,7 +20,7 @@ const Collaboration = React.lazy(() => import('@/pages/Research/Collaboration'))
 const Home = React.lazy(() => import('@/pages/Home'));
 
 const LazyLoad = (comp: React.ReactElement) => (
-  <Suspense fallback={<div className={styles.fallback}><Spin size='large' /></div>}>{comp}</Suspense>
+  <Suspense fallback={<div className="flex justify-center mt-12"><Spin size='large' /></div>}>{comp}</Suspense>
 );
 
 const router = createBrowserRouter([

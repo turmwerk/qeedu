@@ -1,7 +1,6 @@
 ﻿import React, { useEffect } from 'react';
 import { Layout } from 'antd';
 import { Outlet, useNavigate } from 'react-router-dom';
-import styles from './style.module.scss';
 import Header from './components/Header';
 
 const { Content } = Layout;
@@ -22,9 +21,9 @@ const MainLayout: React.FC = () => {
     }
   }, [navigate]);
   return (
-    <Layout className={styles.root}>
+    <Layout className="min-h-screen">
       <Header />
-      <Content className={styles.content}>
+      <Content className="m-0">
         <Outlet />
       </Content>
     </Layout>

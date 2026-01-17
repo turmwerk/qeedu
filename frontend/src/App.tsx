@@ -21,8 +21,29 @@ const App: React.FC = () => {
         },
       }}
     >
-      <RouterProvider router={router} />
-      <ToastContainer />
+      <style>{`
+        :root {
+          --brand-accent: #4b2a85;
+          --brand-accent-strong: #3b1a6a;
+          --brand-accent-soft: rgba(75, 42, 133, 0.08);
+          --brand-accent-faint: rgba(75, 42, 133, 0.16);
+          --brand-border: rgba(75, 42, 133, 0.18);
+          --brand-shadow: 0 10px 24px rgba(75, 42, 133, 0.16);
+          --brand-text: #2b1650;
+          --brand-muted: #666;
+          --brand-bg: #f5f3fb;
+        }
+        .app-root {
+          min-height: 100vh;
+          background: var(--brand-bg);
+          color: var(--brand-text);
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+      `}</style>
+      <div className="app-root">
+        <RouterProvider router={router} />
+        <ToastContainer />
+      </div>
     </ConfigProvider>
   );
 };
