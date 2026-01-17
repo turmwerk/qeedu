@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { BookOutlined, SortAscendingOutlined, SortDescendingOutlined, EditOutlined, DeleteOutlined, CheckOutlined } from "@ant-design/icons";
-import Dropdown from "@/components/Dropdown";
 import ConfirmDialog from "@/components/ConfirmDialog";
 
 type Outline = {
@@ -76,15 +75,6 @@ const Sider: React.FC<Props> = ({ open, onClose }) => {
 		);
 	};
 
-	const onMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
-		if (!isDragging.current) return;
-		onDrag(event.clientX);
-	};
-
-	const onTouchMove = (event: React.TouchEvent<HTMLDivElement>) => {
-		if (!isDragging.current) return;
-		onDrag(event.touches[0].clientX);
-	};
 
 	useEffect(() => {
 		const onWindowMove = (event: MouseEvent) => {
