@@ -93,7 +93,7 @@ export const Markdown: React.FC<{
         </div>
       )}
 
-      <div className="flex-1 overflow-hidden min-h-0" data-oid="cclwx20">
+      <div className="flex-1 min-h-0 overflow-hidden" data-oid="cclwx20">
         {showRaw ? (
           onChange ? (
             <textarea
@@ -113,7 +113,7 @@ export const Markdown: React.FC<{
           )
         ) : value ? (
           <div
-            className="content fade-slide"
+            className="content fade-slide flex-1 min-h-0 overflow-y-auto"
             dangerouslySetInnerHTML={{ __html: html }}
             data-oid="f6t.rff"
           />

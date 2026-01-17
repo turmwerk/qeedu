@@ -10,7 +10,7 @@ type PageShellProps = {
 const PageShell: React.FC<PageShellProps> = ({ children }) => {
   return (
     <div
-      className="relative min-h-[calc(100vh-80px)] bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50 overflow-hidden"
+      className="relative h-[calc(100vh-80px)] min-h-0 flex flex-col bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50 overflow-hidden"
       data-oid="m2e-jxo"
     >
       <div
@@ -39,7 +39,7 @@ const PageShell: React.FC<PageShellProps> = ({ children }) => {
           66% { transform: translate(-20px, 20px) scale(0.9); }
         }
       `}</style>
-      <div className="relative z-10 pt-3 pb-6 px-6" data-oid="zobt:l.">
+      <div className="relative z-10 pt-3 pb-6 px-6 flex-1 min-h-0" data-oid="zobt:l.">
         {children}
       </div>
     </div>

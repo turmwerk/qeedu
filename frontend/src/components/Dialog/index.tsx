@@ -59,7 +59,7 @@ const Dialog: React.FC<DialogProps> & {
   };
 
   return (
-    <div className="flex flex-col gap-3 h-full min-h-0" data-oid="zx6bwsx">
+    <div className="flex flex-col gap-3 h-full min-h-0 overflow-hidden" data-oid="zx6bwsx">
       <style data-oid=":8h575.">{`
         @keyframes dialogDotPulse {
           0%, 70%, 100% { transform: translateY(1px) scale(0.7); opacity: 0.4; }
@@ -79,7 +79,7 @@ const Dialog: React.FC<DialogProps> & {
       </div>
       <div
         ref={bodyRef}
-        className="flex-1 min-h-0 bg-[var(--brand-accent-soft)] rounded-lg p-3 flex flex-col gap-2 overflow-auto"
+        className="flex-1 min-h-0 bg-[var(--brand-accent-soft)] rounded-lg p-3 flex flex-col gap-2 overflow-y-auto"
         data-oid="3i9rwq-"
       >
         {messages.map((m, i) => (

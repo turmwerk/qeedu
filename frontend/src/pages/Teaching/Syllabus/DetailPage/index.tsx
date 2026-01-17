@@ -64,14 +64,14 @@ const DetailPage: React.FC<{
 
   const displayTitle = localTitle || title || "未命名课程";
   return (
-    <div data-oid="d:u9nn:">
-      <div className="p-6 text-[#444]" data-oid="4sxypj2">
+    <div className="h-full min-h-0 w-full" data-oid="d:u9nn:">
+      <div className="p-0 text-[#444] h-full min-h-0 flex flex-col" data-oid="4sxypj2">
         <div
-          className="bg-white px-2 py-1.5 rounded-[10px] shadow-[0_1px_6px_rgba(16,24,40,0.04)] mb-3"
+          className="bg-white px-0 py-2 shadow-[0_1px_6px_rgba(16,24,40,0.04)] flex-shrink-0 z-10"
           data-oid="ooya:-g"
         >
           <div
-            className="flex justify-between items-center gap-2.5"
+            className="flex justify-between items-center gap-2.5 px-0"
             data-oid="iut9jk:"
           >
             <input
@@ -131,7 +131,7 @@ const DetailPage: React.FC<{
         </div>
         <div
           ref={wrapRef}
-          className="grid items-stretch gap-0"
+          className="grid items-stretch gap-0 flex-1 min-h-0 p-0 overflow-hidden h-full"
           style={{ gridTemplateColumns: columns }}
           onMouseMove={onMouseMove}
           onMouseUp={stopDrag}
@@ -141,24 +141,23 @@ const DetailPage: React.FC<{
           data-oid="wc6ybz5"
         >
           <div
-            className="bg-white/40 backdrop-blur-[16px] rounded-xl p-[18px] shadow-[0_8px_32px_rgba(147,51,234,0.12)] border border-white/40 min-h-[520px] h-[calc(100vh-260px)] max-h-[760px] flex flex-col"
+            className="flex flex-col h-full min-h-0 bg-white overflow-hidden"
             data-oid="nfm:-9n"
           >
             <div
-              className="flex justify-between items-center font-bold mb-3"
+              className="flex justify-between items-center font-bold mb-0"
               data-oid="ybrwo3s"
             />
 
-            <div
-              className="bg-white p-4 rounded-lg flex-1 min-h-0 overflow-auto"
-              data-oid="l8gcb7j"
-            >
-              <MarkdownView
-                value={md}
-                onChange={setMd}
-                onFullScreen={() => setOpenFull(true)}
-                data-oid="-tf1lud"
-              />
+            <div className="flex-1 min-h-0 overflow-hidden p-4" data-oid="l8gcb7j">
+              <div className="h-full min-h-0" data-oid="as3o8_c">
+                <MarkdownView
+                  value={md}
+                  onChange={setMd}
+                  onFullScreen={() => setOpenFull(true)}
+                  data-oid="-tf1lud"
+                />
+              </div>
             </div>
           </div>
 
@@ -176,16 +175,20 @@ const DetailPage: React.FC<{
           </div>
 
           <div
-            className="bg-white/40 backdrop-blur-[16px] rounded-xl p-[18px] shadow-[0_8px_32px_rgba(147,51,234,0.12)] border border-white/40 min-h-[520px] h-[calc(100vh-260px)] max-h-[760px] flex flex-col gap-3 overflow-y-auto transition-all hover:-translate-y-[2px] hover:shadow-[0_16px_40px_rgba(147,51,234,0.2)] hover:border-purple-200"
+            className="bg-white h-full flex flex-col min-h-0 overflow-hidden"
             data-oid="giihwlj"
           >
-            {/* 传入大纲id作为dialogId，保证唯一性 */}
-            <Dialog
-              dialogId={id || "default-outline"}
-              botName="大纲助手"
-              initMessage="欢迎使用大纲助手，你可以询问如何改进课程大纲。"
-              data-oid="rva1_cl"
-            />
+            <div className="flex-1 min-h-0 overflow-hidden p-4">
+              <div className="h-full min-h-0" data-oid="bub8x6d">
+                {/* 传入大纲id作为dialogId，保证唯一性 */}
+                <Dialog
+                  dialogId={id || "default-outline"}
+                  botName="大纲助手"
+                  initMessage="欢迎使用大纲助手，你可以询问如何改进课程大纲。"
+                  data-oid="rva1_cl"
+                />
+              </div>
+            </div>
           </div>
         </div>
         {openFull && (

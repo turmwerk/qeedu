@@ -68,6 +68,12 @@ const Sider: React.FC<Props> = ({ open, onClose }) => {
 		if (!isDragging.current) return;
 		const clamped = Math.min(420, Math.max(220, clientX));
 		setWidth(clamped);
+		// 通知 MarkdownEditor 宽度变化
+		window.dispatchEvent(
+			new CustomEvent("syllabus-sider-width", {
+				detail: { width: clamped },
+			})
+		);
 	};
 
 	const onMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -110,6 +116,14 @@ const Sider: React.FC<Props> = ({ open, onClose }) => {
 		[actualWidth]
 	);
 
+	useEffect(() => {
+		window.dispatchEvent(
+			new CustomEvent("syllabus-sider-width", {
+				detail: { width: actualWidth },
+			})
+		);
+	}, [actualWidth]);
+
 	const sortedItems = useMemo(() => {
 		const next = [...items];
 		if (sortBy === "name") {
@@ -123,7 +137,7 @@ const Sider: React.FC<Props> = ({ open, onClose }) => {
 
 	return (
 		<div
-			className="relative h-screen z-[120] transition-all duration-300 ease-out overflow-hidden"
+			className="relative h-screen z-[10000] transition-all duration-300 ease-out overflow-hidden"
 			style={style}
 			data-oid="syllabus-sider"
 		>

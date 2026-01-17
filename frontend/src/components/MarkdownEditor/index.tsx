@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { MenuOutlined } from "@ant-design/icons";
 
 import MarkdownView from "@/components/MarkdownView";
 
@@ -12,6 +13,33 @@ const MarkdownEditor: React.FC<Props> = ({ value = "", onClose }) => {
   const [split, setSplit] = useState(50);
   const isDragging = useRef(false);
   const wrapRef = useRef<HTMLDivElement | null>(null);
+  const [siderOpen, setSiderOpen] = useState(false);
+  const [siderWidth, setSiderWidth] = useState(300);
+
+  useEffect(() => {
+    // 获取初始 sider 状态并监听状态变化
+    const handleSiderState = (event: Event) => {
+      const detail = (event as CustomEvent<{ open: boolean }>).detail;
+      setSiderOpen(detail.open);
+    };
+    const handleSiderWidth = (event: Event) => {
+      const detail = (event as CustomEvent<{ width: number }>).detail;
+      setSiderWidth(detail.width);
+    };
+    window.addEventListener("syllabus-sider-state", handleSiderState as EventListener);
+    window.addEventListener("syllabus-sider-width", handleSiderWidth as EventListener);
+    window.dispatchEvent(new Event("get-syllabus-sider-state"));
+    
+    return () => {
+      window.removeEventListener("syllabus-sider-state", handleSiderState as EventListener);
+      window.removeEventListener("syllabus-sider-width", handleSiderWidth as EventListener);
+    };
+  }, []);
+
+  const handleToggleSider = () => {
+    window.dispatchEvent(new Event("toggle-syllabus-sider"));
+    setSiderOpen((v) => !v);
+  };
 
   useEffect(() => {
     document.documentElement.setAttribute("data-canvas-open", "true");
@@ -50,22 +78,36 @@ const MarkdownEditor: React.FC<Props> = ({ value = "", onClose }) => {
   const columns = useMemo(() => `${split}% 6px ${100 - split}%`, [split]);
 
   return (
-    <div
-      className="fixed inset-0 z-[9999] bg-black/40 backdrop-blur-sm flex items-stretch justify-center p-0"
-      role="dialog"
-      aria-modal="true"
-      data-oid="kupzl1n"
-    >
-      <div
-        className="w-full h-full max-w-none max-h-none rounded-none bg-white/90 border border-white/60 shadow-2xl backdrop-blur-xl overflow-hidden flex flex-col"
-        data-oid="4z5ik1d"
-      >
+    <div className="fixed inset-0 z-[9999] flex min-h-0 items-stretch">
+      {/* 左侧 Sider 占位 - 宽度与 MainLayout 的 Sider 同步 */}
+      <div 
+        style={{ width: siderOpen ? siderWidth : 0 }} 
+        className="flex-shrink-0 h-full transition-all duration-300 ease-out" 
+      />
+      
+      {/* 画布编辑区域 */}
+      <div className="flex-1 flex flex-col bg-black/40 backdrop-blur-sm min-h-0 h-full">
         <div
-          className="flex items-center justify-between gap-4 px-6 py-2 border-b border-white/40 bg-gradient-to-r from-white/70 via-purple-50/60 to-indigo-50/60 shadow-[0_10px_30px_rgba(124,58,237,0.08)]"
+          className="w-full h-full bg-white/90 border border-white/60 shadow-2xl backdrop-blur-xl overflow-hidden flex flex-col min-h-0"
+          data-oid="4z5ik1d"
+        >
+        <div
+          className="flex items-center justify-between gap-4 px-4 py-2 border-b border-white/40 bg-gradient-to-r from-white/70 via-purple-50/60 to-indigo-50/60 shadow-[0_10px_30px_rgba(124,58,237,0.08)]"
           data-oid="rgqi2cx"
         >
-          <div className="text-lg font-semibold text-gray-900" data-oid="rue9-_q">
-            画布编辑
+          <div className="flex items-center gap-3">
+            {!siderOpen && (
+              <button
+                className="flex items-center justify-center w-9 h-9 rounded-lg bg-white/60 border border-white/60 shadow-[0_6px_18px_rgba(124,58,237,0.18)] text-[#5b35b7] hover:brightness-110 transition"
+                onClick={handleToggleSider}
+                aria-label="打开侧边栏"
+              >
+                <MenuOutlined />
+              </button>
+            )}
+            <div className="text-lg font-semibold text-gray-900" data-oid="rue9-_q">
+              画布编辑
+            </div>
           </div>
           <div className="flex items-center gap-2" data-oid="o.thfwc">
             <button
@@ -87,7 +129,7 @@ const MarkdownEditor: React.FC<Props> = ({ value = "", onClose }) => {
 
         <div
           ref={wrapRef}
-          className="grid p-0 bg-gradient-to-br from-white/60 via-purple-50/40 to-blue-50/40 flex-1 min-h-0"
+          className="grid p-0 bg-gradient-to-br from-white/60 via-purple-50/40 to-blue-50/40 flex-1 min-h-0 overflow-hidden"
           style={{ gridTemplateColumns: columns }}
           onMouseMove={onMouseMove}
           onMouseUp={stopDrag}
@@ -97,14 +139,16 @@ const MarkdownEditor: React.FC<Props> = ({ value = "", onClose }) => {
           data-oid="cxj8ddf"
         >
           <div
-            className="border border-purple-200/40 bg-white/70 p-5 shadow-[0_10px_30px_rgba(124,58,237,0.12)] overflow-auto min-h-0 h-full"
+            className="border border-purple-200/40 bg-white/70 shadow-[0_10px_30px_rgba(124,58,237,0.12)] min-h-0 h-full overflow-hidden"
             data-oid="0wsywgy"
           >
-            <MarkdownView
-              value={text}
-              showControls={false}
-              data-oid="6c4gr3x"
-            />
+            <div className="h-full overflow-auto p-5">
+              <MarkdownView
+                value={text}
+                showControls={false}
+                data-oid="6c4gr3x"
+              />
+            </div>
           </div>
 
           <div
@@ -127,6 +171,7 @@ const MarkdownEditor: React.FC<Props> = ({ value = "", onClose }) => {
             data-oid="elbgi1-"
           />
         </div>
+      </div>
       </div>
     </div>
   );

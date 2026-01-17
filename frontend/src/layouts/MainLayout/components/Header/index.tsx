@@ -67,9 +67,10 @@ const routeConfig: Record<string, { title: string; icon?: React.ReactNode }> = {
   },
 };
 
-const MainHeader: React.FC<{ onToggleSider?: () => void; showSiderToggle?: boolean }> = ({
+const MainHeader: React.FC<{ onToggleSider?: () => void; showSiderToggle?: boolean; siderOpen?: boolean }> = ({
   onToggleSider,
   showSiderToggle,
+  siderOpen,
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -82,11 +83,11 @@ const MainHeader: React.FC<{ onToggleSider?: () => void; showSiderToggle?: boole
 
   return (
     <Header
-      className="main-header bg-white/40 backdrop-blur-[32px] shadow-[0_20px_60px_rgba(147,51,234,0.2),0_0_0_1px_rgba(255,255,255,0.5)_inset] border-b border-white/30 py-2 px-10 flex items-center justify-between relative z-[100] leading-[20px] h-[56px]"
+      className="main-header bg-white/40 backdrop-blur-[32px] shadow-[0_20px_60px_rgba(147,51,234,0.2),0_0_0_1px_rgba(255,255,255,0.5)_inset] border-b border-white/30 py-2 px-4 flex items-center justify-between relative z-[100] leading-[20px] h-[56px]"
       data-oid="hoa5tyk"
     >
       <div className="flex items-center gap-3" data-oid="40dtg53">
-        {showSiderToggle && (
+        {showSiderToggle && !siderOpen && (
           <button
             className="flex items-center justify-center w-9 h-9 rounded-lg bg-white/60 border border-white/60 shadow-[0_6px_18px_rgba(124,58,237,0.18)] text-[#5b35b7] hover:brightness-110 transition"
             onClick={onToggleSider}
