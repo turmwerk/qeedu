@@ -124,6 +124,20 @@ const Sider: React.FC<Props> = ({ open, onClose }) => {
 		);
 	}, [actualWidth]);
 
+	useEffect(() => {
+		const handleGetWidth = () => {
+			window.dispatchEvent(
+				new CustomEvent("syllabus-sider-width", {
+					detail: { width: actualWidth },
+				})
+			);
+		};
+		window.addEventListener("get-syllabus-sider-width", handleGetWidth);
+		return () => {
+			window.removeEventListener("get-syllabus-sider-width", handleGetWidth);
+		};
+	}, [actualWidth]);
+
 	const sortedItems = useMemo(() => {
 		const next = [...items];
 		if (sortBy === "name") {

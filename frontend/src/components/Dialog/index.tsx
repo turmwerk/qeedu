@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
 interface DialogMessage {
   from: "user" | "bot";
@@ -20,10 +20,10 @@ const Dialog: React.FC<DialogProps> & {
   botName = "对话助手",
   initMessage = "欢迎使用对话助手，你可以开始提问。",
 }) => {
-  const STORAGE_KEY = getStorageKey(dialogId);
+  const storageKey = useMemo(() => getStorageKey(dialogId), [dialogId]);
   const [messages, setMessages] = useState<DialogMessage[]>(() => {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
+      const raw = localStorage.getItem(storageKey);
       if (raw) return JSON.parse(raw);
     } catch {}
     return [{ from: "bot", text: initMessage }];
@@ -35,9 +35,22 @@ const Dialog: React.FC<DialogProps> & {
   // 持久化消息
   React.useEffect(() => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+      localStorage.setItem(storageKey, JSON.stringify(messages));
     } catch {}
-  }, [messages, STORAGE_KEY]);
+  }, [messages, storageKey]);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(storageKey);
+      if (raw) {
+        setMessages(JSON.parse(raw));
+        return;
+      }
+    } catch {}
+    setMessages([{ from: "bot", text: initMessage }]);
+    setInput("");
+    setPending(false);
+  }, [storageKey, initMessage]);
 
   useEffect(() => {
     const body = bodyRef.current;

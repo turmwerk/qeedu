@@ -29,12 +29,17 @@ const MarkdownEditor: React.FC<Props> = ({ value = "", onClose }) => {
     window.addEventListener("syllabus-sider-state", handleSiderState as EventListener);
     window.addEventListener("syllabus-sider-width", handleSiderWidth as EventListener);
     window.dispatchEvent(new Event("get-syllabus-sider-state"));
+    window.dispatchEvent(new Event("get-syllabus-sider-width"));
     
     return () => {
       window.removeEventListener("syllabus-sider-state", handleSiderState as EventListener);
       window.removeEventListener("syllabus-sider-width", handleSiderWidth as EventListener);
     };
   }, []);
+
+  useEffect(() => {
+    setText(value);
+  }, [value]);
 
   const handleToggleSider = () => {
     window.dispatchEvent(new Event("toggle-syllabus-sider"));
