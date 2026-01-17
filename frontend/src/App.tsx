@@ -1,9 +1,9 @@
-import React from 'react';
-import { RouterProvider } from 'react-router-dom';
-import { ConfigProvider } from 'antd';
-import zhCN from 'antd/locale/zh_CN';
-import router from './router';
-import ToastContainer from '@/components/Toast';
+import React from "react";
+import { RouterProvider } from "react-router-dom";
+import { ConfigProvider } from "antd";
+import zhCN from "antd/locale/zh_CN";
+import router from "./router";
+import ToastContainer from "@/components/Toast";
 
 const App: React.FC = () => {
   return (
@@ -11,17 +11,18 @@ const App: React.FC = () => {
       locale={zhCN}
       theme={{
         token: {
-          colorPrimary: '#6236FF', // 南大紫
+          colorPrimary: "#6236FF", // 南大紫
           borderRadius: 6,
         },
         components: {
           Layout: {
-            siderBg: '#001529',
+            siderBg: "#001529",
           },
         },
       }}
+      data-oid="g3uwo.t"
     >
-      <style>{`
+      <style data-oid="bf_-q_z">{`
         :root {
           --brand-accent: #4b2a85;
           --brand-accent-strong: #3b1a6a;
@@ -40,9 +41,9 @@ const App: React.FC = () => {
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
         }
       `}</style>
-      <div className="app-root">
-        <RouterProvider router={router} />
-        <ToastContainer />
+      <div className="app-root" data-oid="p4vlg_w">
+        <RouterProvider router={router} data-oid="39ik16v" />
+        <ToastContainer data-oid="wudi7e5" />
       </div>
     </ConfigProvider>
   );

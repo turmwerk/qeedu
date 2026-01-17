@@ -1,6 +1,6 @@
-import React from 'react';
-import { TeamOutlined } from '@ant-design/icons';
-import ModuleHub from '@/pages/shared/ModuleHub';
+import React from "react";
+import { TeamOutlined } from "@ant-design/icons";
+import ModuleHub from "@/pages/shared/ModuleHub";
 
 const ResearchHub: React.FC = () => {
   return (
@@ -10,13 +10,14 @@ const ResearchHub: React.FC = () => {
       placeholder="你想怎么用助研？例如：协作安排 / 资料归档"
       features={[
         {
-          key: 'collaboration',
-          title: '科研协作',
-          desc: '协同沟通、任务对齐、材料归档。',
-          to: '/research/collaboration',
-          icon: <TeamOutlined />,
+          key: "collaboration",
+          title: "科研协作",
+          desc: "协同沟通、任务对齐、材料归档。",
+          to: "/research/collaboration",
+          icon: <TeamOutlined data-oid="1ux_w27" />,
         },
       ]}
+      data-oid="zl63wec"
     />
   );
 };

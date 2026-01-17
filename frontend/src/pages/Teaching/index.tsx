@@ -1,6 +1,6 @@
-import React from 'react';
-import { FormOutlined, BookOutlined } from '@ant-design/icons';
-import ModuleHub from '@/pages/shared/ModuleHub';
+import React from "react";
+import { FormOutlined, BookOutlined } from "@ant-design/icons";
+import ModuleHub from "@/pages/shared/ModuleHub";
 
 const TeachingHub: React.FC = () => {
   return (
@@ -10,20 +10,21 @@ const TeachingHub: React.FC = () => {
       placeholder="你想怎么用助教？例如：生成一份算法期末试卷"
       features={[
         {
-          key: 'exam-design',
-          title: '试卷设计',
-          desc: '快速搭建题型组合并输出大题。',
-          to: '/teaching/exam',
-          icon: <FormOutlined />,
+          key: "exam-design",
+          title: "试卷设计",
+          desc: "快速搭建题型组合并输出大题。",
+          to: "/teaching/exam",
+          icon: <FormOutlined data-oid="u.yjbbr" />,
         },
         {
-          key: 'syllabus',
-          title: '大纲生成',
-          desc: '匹配教学目标与考核内容。',
-          to: '/teaching/syllabus',
-          icon: <BookOutlined />,
+          key: "syllabus",
+          title: "大纲生成",
+          desc: "匹配教学目标与考核内容。",
+          to: "/teaching/syllabus",
+          icon: <BookOutlined data-oid="_swv0qp" />,
         },
       ]}
+      data-oid="ahxrm9d"
     />
   );
 };

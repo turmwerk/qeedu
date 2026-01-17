@@ -1,38 +1,47 @@
-import React, { useState } from 'react';
-import MarkdownIt from 'markdown-it';
-import mk from 'markdown-it-katex';
-import hljs from 'highlight.js';
-import 'katex/dist/katex.min.css';
-import 'highlight.js/styles/github.css';
+import React, { useState } from "react";
+import MarkdownIt from "markdown-it";
+import mk from "markdown-it-katex";
+import hljs from "highlight.js";
+import "katex/dist/katex.min.css";
+import "highlight.js/styles/github.css";
 
 const md = new MarkdownIt({
-	html: true,
- 	linkify: true,
- 	typographer: true,
-    highlight: function (str: string, lang: string) {
-        if (lang && hljs.getLanguage(lang)) {
-            try {
-                return '<pre class="hljs"><code>' + hljs.highlight(str, { language: lang }).value + '</code></pre>';
-            } catch (__) {}
-        }
-        return '<pre class="hljs"><code>' + md.utils.escapeHtml(str) + '</code></pre>';
+  html: true,
+  linkify: true,
+  typographer: true,
+  highlight: function (str: string, lang: string) {
+    if (lang && hljs.getLanguage(lang)) {
+      try {
+        return (
+          '<pre class="hljs"><code>' +
+          hljs.highlight(str, { language: lang }).value +
+          "</code></pre>"
+        );
+      } catch (__) {}
     }
+    return (
+      '<pre class="hljs"><code>' + md.utils.escapeHtml(str) + "</code></pre>"
+    );
+  },
 }).use(mk as any);
 
 export const Markdown: React.FC<{
-    value?: string;
-    onChange?: (v: string) => void;
-    onFullScreen?: () => void;
-    showControls?: boolean;
-}> = ({ value = '', onChange, onFullScreen, showControls = true }) => {
-        const [showRaw, setShowRaw] = useState(false);
-        let html = value ? md.render(value) : '';
-        // 用正则为所有.katex外层加.katex-isolate类
-        html = html.replace(/class="katex(?!-)/g, 'class="katex katex-isolate');
+  value?: string;
+  onChange?: (v: string) => void;
+  onFullScreen?: () => void;
+  showControls?: boolean;
+}> = ({ value = "", onChange, onFullScreen, showControls = true }) => {
+  const [showRaw, setShowRaw] = useState(false);
+  let html = value ? md.render(value) : "";
+  // 用正则为所有.katex外层加.katex-isolate类
+  html = html.replace(/class="katex(?!-)/g, 'class="katex katex-isolate');
 
-        return (
-                <div className="markdown-view border-0 p-0 h-full box-border bg-transparent min-h-0 flex flex-col">
-                        <style>{`
+  return (
+    <div
+      className="markdown-view border-0 p-0 h-full box-border bg-transparent min-h-0 flex flex-col"
+      data-oid="e0jucw2"
+    >
+      <style data-oid="ghf.b4-">{`
                           .markdown-view .katex, .markdown-view .katex * {
                             font-family: 'KaTeX_Main', 'Times New Roman', Times, serif !important;
                             line-height: 1.2 !important;
@@ -63,39 +72,59 @@ export const Markdown: React.FC<{
                                                     @keyframes fadeSlide { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
                                                     .fade-slide { animation: fadeSlide 0.24s ease; }
                         `}</style>
-                        {showControls && (
-                            <div className="flex justify-end gap-2 pt-3 pb-2">
-                                    <button
-                                        className="bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1.5 rounded-xl cursor-pointer font-semibold transition-[background,border-color,box-shadow,transform] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)] active:translate-y-[1px] active:scale-[0.98]"
-                                        onClick={() => setShowRaw(v => !v)}
-                                    >
-                                        {showRaw ? '渲染 Markdown' : '显示 Markdown'}
-                                    </button>
-                                    {onFullScreen && (
-                                        <button className="bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1.5 rounded-xl cursor-pointer font-semibold transition-[background,border-color,box-shadow,transform] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)] active:translate-y-[1px] active:scale-[0.98]" onClick={onFullScreen}>全屏编辑</button>
-                                    )}
-                            </div>
-                        )}
+      {showControls && (
+        <div className="flex justify-end gap-2 pt-3 pb-2" data-oid="4l:pe-u">
+          <button
+            className="bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1.5 rounded-xl cursor-pointer font-semibold transition-[background,border-color,box-shadow,transform] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)] active:translate-y-[1px] active:scale-[0.98]"
+            onClick={() => setShowRaw((v) => !v)}
+            data-oid="-cwnu.l"
+          >
+            {showRaw ? "渲染 Markdown" : "显示 Markdown"}
+          </button>
+          {onFullScreen && (
+            <button
+              className="bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1.5 rounded-xl cursor-pointer font-semibold transition-[background,border-color,box-shadow,transform] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)] active:translate-y-[1px] active:scale-[0.98]"
+              onClick={onFullScreen}
+              data-oid="4umb1l1"
+            >
+              全屏编辑
+            </button>
+          )}
+        </div>
+      )}
 
-                        <div className="flex-1 overflow-hidden min-h-0">
-                            {showRaw ? (
-                                onChange ? (
-                                    <textarea className="fade-slide w-full h-full box-border p-3 font-mono text-[13px] rounded-md border border-[var(--brand-border)] min-h-0 resize-y overflow-auto" value={value} onChange={(e) => onChange(e.target.value)} aria-label="Markdown 编辑" />
-                                ) : (
-                                    <pre className="fade-slide w-full h-full box-border p-3 font-mono text-[13px] rounded-md border border-[var(--brand-border)] min-h-0 resize-y overflow-auto">
-                                        {value}
-                                    </pre>
-                                )
-                            ) : (
-                                (value) ? (
-                                    <div className="content fade-slide" dangerouslySetInnerHTML={{ __html: html }} />
-                                ) : (
-                                    <div className="empty fade-slide">空的 Markdown</div>
-                                )
-                            )}
-                        </div>
-                </div>
-        );
+      <div className="flex-1 overflow-hidden min-h-0" data-oid="cclwx20">
+        {showRaw ? (
+          onChange ? (
+            <textarea
+              className="fade-slide w-full h-full box-border p-3 font-mono text-[13px] rounded-md border border-[var(--brand-border)] min-h-0 resize-y overflow-auto"
+              value={value}
+              onChange={(e) => onChange(e.target.value)}
+              aria-label="Markdown 编辑"
+              data-oid="1fida20"
+            />
+          ) : (
+            <pre
+              className="fade-slide w-full h-full box-border p-3 font-mono text-[13px] rounded-md border border-[var(--brand-border)] min-h-0 resize-y overflow-auto"
+              data-oid="fw9vofw"
+            >
+              {value}
+            </pre>
+          )
+        ) : value ? (
+          <div
+            className="content fade-slide"
+            dangerouslySetInnerHTML={{ __html: html }}
+            data-oid="f6t.rff"
+          />
+        ) : (
+          <div className="empty fade-slide" data-oid="xxehnqg">
+            空的 Markdown
+          </div>
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default Markdown;

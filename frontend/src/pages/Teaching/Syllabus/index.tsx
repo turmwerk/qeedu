@@ -1,7 +1,50 @@
-import React, { useEffect, useState } from 'react';
-import ListPage from './ListPage';
-import DetailPage from './DetailPage';
-import Dialog from '@/components/Dialog';
+import React, { useEffect, useState } from "react";
+import ListPage from "./ListPage";
+import DetailPage from "./DetailPage";
+import Dialog from "@/components/Dialog";
+
+type PageShellProps = {
+  children: React.ReactNode;
+};
+
+const PageShell: React.FC<PageShellProps> = ({ children }) => {
+  return (
+    <div
+      className="relative min-h-[calc(100vh-80px)] bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50 overflow-hidden"
+      data-oid="m2e-jxo"
+    >
+      <div
+        className="absolute inset-0 overflow-hidden pointer-events-none"
+        data-oid="ubda76f"
+      >
+        <div
+          className="absolute w-[600px] h-[600px] rounded-full bg-gradient-to-r from-purple-300/30 to-blue-300/30 blur-[120px] -top-48 -left-48 animate-[float_20s_ease-in-out_infinite]"
+          data-oid="n2:nuro"
+        />
+
+        <div
+          className="absolute w-[500px] h-[500px] rounded-full bg-gradient-to-r from-pink-300/30 to-purple-300/30 blur-[100px] top-1/4 -right-32 animate-[float_25s_ease-in-out_infinite_reverse]"
+          data-oid="lc:5m-n"
+        />
+
+        <div
+          className="absolute w-[400px] h-[400px] rounded-full bg-gradient-to-r from-blue-300/25 to-indigo-300/25 blur-[90px] bottom-0 left-1/3 animate-[float_22s_ease-in-out_infinite]"
+          data-oid="gbzf5bv"
+        />
+      </div>
+      <style data-oid="-8cd:8b">{`
+        @keyframes float {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          33% { transform: translate(30px, -30px) scale(1.1); }
+          66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+      `}</style>
+      <div className="relative z-10 pt-3 pb-6 px-6" data-oid="zobt:l.">
+        {children}
+      </div>
+    </div>
+  );
+};
 
 type Outline = {
   id: string;
@@ -11,7 +54,7 @@ type Outline = {
   createdAt?: number;
 };
 
-const STORAGE_KEY = 'syllabus_outlines';
+const STORAGE_KEY = "syllabus_outlines";
 
 const Syllabus: React.FC = () => {
   const exampleMd = `# 课程大纲
@@ -95,7 +138,7 @@ const Syllabus: React.FC = () => {
 `;
   const [md, setMd] = useState(exampleMd);
   const [openFull, setOpenFull] = useState(false);
-  const [view, setView] = useState<'list' | 'edit'>('list');
+  const [view, setView] = useState<"list" | "edit">("list");
   const [outlines, setOutlines] = useState<Outline[]>([]);
   const [currentId, setCurrentId] = useState<string | null>(null);
 
@@ -104,7 +147,7 @@ const Syllabus: React.FC = () => {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) setOutlines(JSON.parse(raw));
     } catch (e) {
-      console.error('load outlines', e);
+      console.error("load outlines", e);
     }
   }, []);
 
@@ -113,47 +156,47 @@ const Syllabus: React.FC = () => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
     } catch (e) {
-      console.error('save outlines', e);
+      console.error("save outlines", e);
     }
   };
 
   const handleCreate = (payload: Record<string, any>) => {
     const id = Date.now().toString();
-    const name = payload.name || '未命名课程';
-    const englishName = payload.englishName || 'Untitled Course';
-    const courseId = payload.courseId || '00000000';
-    const unit = payload.unit || '计算机学院';
-    const responsible = payload.responsible || '待定';
-    
+    const name = payload.name || "未命名课程";
+    const englishName = payload.englishName || "Untitled Course";
+    const courseId = payload.courseId || "00000000";
+    const unit = payload.unit || "计算机学院";
+    const responsible = payload.responsible || "待定";
+
     // Default values if not provided
     const credits = payload.credits || 3;
     const totalHours = payload.totalHours || 48;
     const theoryHours = payload.theoryHours || 32;
-    const practiceHours = payload.practiceHours || (totalHours - theoryHours);
+    const practiceHours = payload.practiceHours || totalHours - theoryHours;
     const experimentHours = payload.experimentHours || 0;
     const intensiveWeeks = payload.intensiveWeeks || 0;
     const weeklyHours = (totalHours / 16).toFixed(1);
 
-    const goals = payload.goals || '暂无目标';
-    const teachingGoals = payload.teachingGoals || '...';
-    const alignmentGoals = payload.alignmentGoals || '...';
-    const intro = payload.intro || '...';
-    const textbooks = payload.textbooks || '...';
-    const references = payload.references || '...';
-    const grading = payload.grading || '...';
+    const goals = payload.goals || "暂无目标";
+    const teachingGoals = payload.teachingGoals || "...";
+    const alignmentGoals = payload.alignmentGoals || "...";
+    const intro = payload.intro || "...";
+    const textbooks = payload.textbooks || "...";
+    const references = payload.references || "...";
+    const grading = payload.grading || "...";
 
-    const publicElectiveCategory = payload.publicElectiveCategory || '--';
-    const generalEducationCategory = payload.generalEducationCategory || '--';
-    const collegeCourseCategory = payload.collegeCourseCategory || '--';
-    const courseLevel = payload.courseLevel || '--';
-    const theoryPracticeType = payload.theoryPracticeType || '理论+实验课程';
-    const examType = payload.examType || '闭卷';
-    const writerName = payload.writerName || '--';
-    const courseCategory = payload.courseCategory || '学科基础课程';
-    const courseStatus = payload.courseStatus || '运行中';
-    const crossSemester = payload.crossSemester || '否';
-    const isEnglish = payload.isEnglish || '否';
-    const isBilingual = payload.isBilingual || '否';
+    const publicElectiveCategory = payload.publicElectiveCategory || "--";
+    const generalEducationCategory = payload.generalEducationCategory || "--";
+    const collegeCourseCategory = payload.collegeCourseCategory || "--";
+    const courseLevel = payload.courseLevel || "--";
+    const theoryPracticeType = payload.theoryPracticeType || "理论+实验课程";
+    const examType = payload.examType || "闭卷";
+    const writerName = payload.writerName || "--";
+    const courseCategory = payload.courseCategory || "学科基础课程";
+    const courseStatus = payload.courseStatus || "运行中";
+    const crossSemester = payload.crossSemester || "否";
+    const isEnglish = payload.isEnglish || "否";
+    const isBilingual = payload.isBilingual || "否";
 
     const mdText = `# ${name}
 
@@ -274,82 +317,100 @@ const Syllabus: React.FC = () => {
   </tr>
   <tr>
     <td>备注</td>
-    <td colspan="3">${payload.notes || ''}</td>
+    <td colspan="3">${payload.notes || ""}</td>
   </tr>
 </table>
 `;
 
-    const item: Outline = { id, title: name, subtitle: unit, md: mdText, createdAt: Date.now() };
+    const item: Outline = {
+      id,
+      title: name,
+      subtitle: unit,
+      md: mdText,
+      createdAt: Date.now(),
+    };
     const next = [item, ...outlines];
     persist(next);
     setMd(mdText);
     setCurrentId(id);
-    setView('edit');
+    setView("edit");
   };
 
   const handleDelete = (id: string) => {
-    const next = outlines.filter(o => o.id !== id);
+    const next = outlines.filter((o) => o.id !== id);
     persist(next);
     // 清理对应大纲的Dialog对话数据
     Dialog.clearDialog(id);
-    if (view === 'edit') setView('list');
+    if (view === "edit") setView("list");
     if (currentId === id) setCurrentId(null);
   };
 
   const handleEdit = (id: string) => {
-    const found = outlines.find(o => o.id === id);
+    const found = outlines.find((o) => o.id === id);
     if (found) {
       setMd(found.md);
       setCurrentId(id);
-      setView('edit');
+      setView("edit");
     }
   };
 
   const handleRename = (id: string, newName?: string) => {
     if (!newName) return;
-    const found = outlines.find(o => o.id === id);
+    const found = outlines.find((o) => o.id === id);
     if (!found) return;
     if (newName && newName !== found.title) {
-      const next = outlines.map(o => (o.id === id ? { ...o, title: newName } : o));
+      const next = outlines.map((o) =>
+        o.id === id ? { ...o, title: newName } : o,
+      );
       persist(next);
     }
   };
 
-  if (view === 'edit') {
-    const currentOutline = outlines.find(o => o.id === currentId);
+  if (view === "edit") {
+    const currentOutline = outlines.find((o) => o.id === currentId);
     return (
-      <DetailPage
-        md={md}
-        setMd={(updated: string) => {
-          setMd(updated);
-          if (currentId) {
-            const next = outlines.map(o => (o.id === currentId ? { ...o, md: updated } : o));
-            persist(next);
-          }
-        }}
-        onBack={() => {
-          setOpenFull(false);
-          setView('list');
-        }}
-        openFull={openFull}
-        setOpenFull={setOpenFull}
-        title={currentOutline?.title}
-        id={currentOutline?.id}
-        onRename={(id, newName) => handleRename(id, newName)}
-      />
+      <PageShell data-oid="7ut1p8i">
+        <DetailPage
+          md={md}
+          setMd={(updated: string) => {
+            setMd(updated);
+            if (currentId) {
+              const next = outlines.map((o) =>
+                o.id === currentId ? { ...o, md: updated } : o,
+              );
+              persist(next);
+            }
+          }}
+          onBack={() => {
+            setOpenFull(false);
+            setView("list");
+          }}
+          openFull={openFull}
+          setOpenFull={setOpenFull}
+          title={currentOutline?.title}
+          id={currentOutline?.id}
+          onRename={(id, newName) => handleRename(id, newName)}
+          data-oid="ov3eqbg"
+        />
+      </PageShell>
     );
   }
   return (
-    <ListPage
-      items={outlines}
-      onEdit={(id?: string) => {
-        if (id) handleEdit(id);
-        else setView('edit');
-      }}
-      onCreate={handleCreate}
-      onDelete={(id?: string) => id && handleDelete(id)}
-      onRename={(id?: string, newName?: string) => id && handleRename(id, newName)}
-    />
+    <PageShell data-oid="2-:yi8t">
+      <ListPage
+        items={outlines}
+        onEdit={(id?: string) => {
+          if (id) handleEdit(id);
+          else setView("edit");
+        }}
+        onCreate={handleCreate}
+        onDelete={(id?: string) => id && handleDelete(id)}
+        onRename={(id?: string, newName?: string) =>
+          id && handleRename(id, newName)
+        }
+        data-oid="zf4txpt"
+      />
+    </PageShell>
   );
 };
 

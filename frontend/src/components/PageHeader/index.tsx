@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 type Props = {
   title?: React.ReactNode;
@@ -9,17 +9,39 @@ type Props = {
 
 const PageHeader: React.FC<Props> = ({ title, subtitle, icon, children }) => {
   return (
-    <div className="relative flex justify-center items-center mb-5 py-1.5">
-      <div className="text-center">
+    <div
+      className="relative flex justify-center items-center mb-5 py-1.5"
+      data-oid="ysa6uvg"
+    >
+      <div className="text-center" data-oid="5mbd9fq">
         {title && (
-          <h2 className="text-[var(--brand-accent)] font-bold m-0 flex items-center gap-2 justify-center">
-            {icon && <span className="flex items-center text-[20px] text-[var(--brand-accent)]">{icon}</span>}
+          <h2
+            className="text-[var(--brand-accent)] font-bold m-0 flex items-center gap-2 justify-center"
+            data-oid="e.06gxh"
+          >
+            {icon && (
+              <span
+                className="flex items-center text-[20px] text-[var(--brand-accent)]"
+                data-oid="a7ra8b1"
+              >
+                {icon}
+              </span>
+            )}
             {title}
           </h2>
         )}
-        {subtitle && <div className="text-[#666] mt-1.5">{subtitle}</div>}
+        {subtitle && (
+          <div className="text-[#666] mt-1.5" data-oid="ewjr_1m">
+            {subtitle}
+          </div>
+        )}
       </div>
-      <div className="absolute right-0 flex gap-2 items-center z-[2]">{children}</div>
+      <div
+        className="absolute right-0 flex gap-2 items-center z-[2]"
+        data-oid="sxuyqhr"
+      >
+        {children}
+      </div>
     </div>
   );
 };
