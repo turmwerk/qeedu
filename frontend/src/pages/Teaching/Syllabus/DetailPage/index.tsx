@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import Dropdown from "@/components/Dropdown";
 import {
   downloadMarkdown,
@@ -20,6 +20,9 @@ const DetailPage: React.FC<{
   onRename?: (id: string, title: string) => void;
 }> = ({ md, setMd, onBack, openFull, setOpenFull, title, id, onRename }) => {
   const [localTitle, setLocalTitle] = useState(title || "");
+  const [split, setSplit] = useState(68);
+  const isDragging = useRef(false);
+  const wrapRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     setLocalTitle(title || "");
@@ -29,6 +32,35 @@ const DetailPage: React.FC<{
     setLocalTitle(next);
     if (id && onRename) onRename(id, next);
   };
+
+  const startDrag = () => {
+    isDragging.current = true;
+  };
+
+  const stopDrag = () => {
+    isDragging.current = false;
+  };
+
+  const onDrag = (clientX: number) => {
+    const wrap = wrapRef.current;
+    if (!wrap) return;
+    const rect = wrap.getBoundingClientRect();
+    const next = ((clientX - rect.left) / rect.width) * 100;
+    const clamped = Math.min(80, Math.max(40, next));
+    setSplit(clamped);
+  };
+
+  const onMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (!isDragging.current) return;
+    onDrag(event.clientX);
+  };
+
+  const onTouchMove = (event: React.TouchEvent<HTMLDivElement>) => {
+    if (!isDragging.current) return;
+    onDrag(event.touches[0].clientX);
+  };
+
+  const columns = useMemo(() => `${split}% 6px ${100 - split}%`, [split]);
 
   const displayTitle = localTitle || title || "未命名课程";
   return (
@@ -98,45 +130,62 @@ const DetailPage: React.FC<{
           </div>
         </div>
         <div
-          className="grid grid-cols-[1fr_360px] gap-5 items-start max-[980px]:grid-cols-1"
+          ref={wrapRef}
+          className="grid items-stretch gap-0"
+          style={{ gridTemplateColumns: columns }}
+          onMouseMove={onMouseMove}
+          onMouseUp={stopDrag}
+          onMouseLeave={stopDrag}
+          onTouchMove={onTouchMove}
+          onTouchEnd={stopDrag}
           data-oid="wc6ybz5"
         >
-          <div data-oid="gg1ic6e">
+          <div
+            className="bg-white/40 backdrop-blur-[16px] rounded-xl p-[18px] shadow-[0_8px_32px_rgba(147,51,234,0.12)] border border-white/40 min-h-[520px] h-[calc(100vh-260px)] max-h-[760px] flex flex-col"
+            data-oid="nfm:-9n"
+          >
             <div
-              className="bg-white/40 backdrop-blur-[16px] rounded-xl p-[18px] shadow-[0_8px_32px_rgba(147,51,234,0.12)] border border-white/40 min-h-[520px] h-[calc(100vh-260px)] max-h-[760px] flex flex-col"
-              data-oid="nfm:-9n"
-            >
-              <div
-                className="flex justify-between items-center font-bold mb-3"
-                data-oid="ybrwo3s"
-              />
+              className="flex justify-between items-center font-bold mb-3"
+              data-oid="ybrwo3s"
+            />
 
-              <div
-                className="bg-white p-4 rounded-lg flex-1 min-h-0 overflow-auto"
-                data-oid="l8gcb7j"
-              >
-                <MarkdownView
-                  value={md}
-                  onChange={setMd}
-                  onFullScreen={() => setOpenFull(true)}
-                  data-oid="-tf1lud"
-                />
-              </div>
+            <div
+              className="bg-white p-4 rounded-lg flex-1 min-h-0 overflow-auto"
+              data-oid="l8gcb7j"
+            >
+              <MarkdownView
+                value={md}
+                onChange={setMd}
+                onFullScreen={() => setOpenFull(true)}
+                data-oid="-tf1lud"
+              />
             </div>
           </div>
-          <div data-oid="s3y6gbu">
-            <div
-              className="bg-white/40 backdrop-blur-[16px] rounded-xl p-[18px] shadow-[0_8px_32px_rgba(147,51,234,0.12)] border border-white/40 min-h-[520px] h-[calc(100vh-260px)] max-h-[760px] flex flex-col gap-3 overflow-y-auto transition-all hover:-translate-y-[2px] hover:shadow-[0_16px_40px_rgba(147,51,234,0.2)] hover:border-purple-200"
-              data-oid="giihwlj"
-            >
-              {/* 传入大纲id作为dialogId，保证唯一性 */}
-              <Dialog
-                dialogId={id || "default-outline"}
-                botName="大纲助手"
-                initMessage="欢迎使用大纲助手，你可以询问如何改进课程大纲。"
-                data-oid="rva1_cl"
-              />
-            </div>
+
+          <div
+            className="relative"
+            onMouseDown={startDrag}
+            onTouchStart={startDrag}
+            role="separator"
+            aria-label="Resize panes"
+            aria-orientation="vertical"
+            data-oid="g75ffu_"
+          >
+            <div className="absolute inset-y-6 left-1/2 -translate-x-1/2 w-[2px] rounded-full bg-purple-300/70" />
+            <div className="absolute inset-0 cursor-col-resize" />
+          </div>
+
+          <div
+            className="bg-white/40 backdrop-blur-[16px] rounded-xl p-[18px] shadow-[0_8px_32px_rgba(147,51,234,0.12)] border border-white/40 min-h-[520px] h-[calc(100vh-260px)] max-h-[760px] flex flex-col gap-3 overflow-y-auto transition-all hover:-translate-y-[2px] hover:shadow-[0_16px_40px_rgba(147,51,234,0.2)] hover:border-purple-200"
+            data-oid="giihwlj"
+          >
+            {/* 传入大纲id作为dialogId，保证唯一性 */}
+            <Dialog
+              dialogId={id || "default-outline"}
+              botName="大纲助手"
+              initMessage="欢迎使用大纲助手，你可以询问如何改进课程大纲。"
+              data-oid="rva1_cl"
+            />
           </div>
         </div>
         {openFull && (

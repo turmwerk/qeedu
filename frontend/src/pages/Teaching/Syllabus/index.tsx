@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import ListPage from "./ListPage";
 import DetailPage from "./DetailPage";
 import Dialog from "@/components/Dialog";
@@ -155,6 +155,7 @@ const Syllabus: React.FC = () => {
     setOutlines(next);
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      window.dispatchEvent(new Event("syllabus-outlines-updated"));
     } catch (e) {
       console.error("save outlines", e);
     }
@@ -345,14 +346,43 @@ const Syllabus: React.FC = () => {
     if (currentId === id) setCurrentId(null);
   };
 
-  const handleEdit = (id: string) => {
+  const handleEdit = useCallback(
+    (id: string) => {
     const found = outlines.find((o) => o.id === id);
     if (found) {
       setMd(found.md);
       setCurrentId(id);
       setView("edit");
     }
-  };
+    },
+    [outlines]
+  );
+
+  useEffect(() => {
+    if (!currentId) return;
+    window.dispatchEvent(
+      new CustomEvent("syllabus-current-id", { detail: { id: currentId } })
+    );
+  }, [currentId]);
+
+  useEffect(() => {
+    const onSelect = (event: Event) => {
+      const detail = (event as CustomEvent<{ id?: string }>).detail;
+      if (detail?.id) handleEdit(detail.id);
+    };
+    const onDelete = (event: Event) => {
+      const detail = (event as CustomEvent<{ id?: string }>).detail;
+      if (detail?.id) {
+        handleDelete(detail.id);
+      }
+    };
+    window.addEventListener("syllabus-outline-select", onSelect as EventListener);
+    window.addEventListener("syllabus-outline-delete", onDelete as EventListener);
+    return () => {
+      window.removeEventListener("syllabus-outline-select", onSelect as EventListener);
+      window.removeEventListener("syllabus-outline-delete", onDelete as EventListener);
+    };
+  }, [handleEdit]);
 
   const handleRename = (id: string, newName?: string) => {
     if (!newName) return;

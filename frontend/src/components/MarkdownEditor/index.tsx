@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
 import MarkdownView from "@/components/MarkdownView";
 
@@ -12,6 +12,13 @@ const MarkdownEditor: React.FC<Props> = ({ value = "", onClose }) => {
   const [split, setSplit] = useState(50);
   const isDragging = useRef(false);
   const wrapRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-canvas-open", "true");
+    return () => {
+      document.documentElement.removeAttribute("data-canvas-open");
+    };
+  }, []);
 
   const startDrag = () => {
     isDragging.current = true;
@@ -54,7 +61,7 @@ const MarkdownEditor: React.FC<Props> = ({ value = "", onClose }) => {
         data-oid="4z5ik1d"
       >
         <div
-          className="flex items-center justify-between gap-4 px-6 py-4 border-b border-white/40"
+          className="flex items-center justify-between gap-4 px-6 py-2 border-b border-white/40 bg-gradient-to-r from-white/70 via-purple-50/60 to-indigo-50/60 shadow-[0_10px_30px_rgba(124,58,237,0.08)]"
           data-oid="rgqi2cx"
         >
           <div className="text-lg font-semibold text-gray-900" data-oid="rue9-_q">
@@ -90,7 +97,7 @@ const MarkdownEditor: React.FC<Props> = ({ value = "", onClose }) => {
           data-oid="cxj8ddf"
         >
           <div
-            className="rounded-l-xl border border-purple-200/40 bg-white/70 p-5 shadow-[0_10px_30px_rgba(124,58,237,0.12)] overflow-auto min-h-[320px] max-h-[68vh]"
+            className="border border-purple-200/40 bg-white/70 p-5 shadow-[0_10px_30px_rgba(124,58,237,0.12)] overflow-auto min-h-0 h-full"
             data-oid="0wsywgy"
           >
             <MarkdownView
@@ -114,7 +121,7 @@ const MarkdownEditor: React.FC<Props> = ({ value = "", onClose }) => {
           </div>
 
           <textarea
-            className="min-h-0 w-full resize-none border border-purple-200/50 bg-white/80 p-5 text-sm text-gray-800 shadow-[0_10px_30px_rgba(124,58,237,0.12)] outline-none transition focus:ring-2 focus:ring-purple-400/60"
+            className="min-h-0 h-full w-full resize-none border border-purple-200/50 bg-white/80 p-5 text-sm text-gray-800 shadow-[0_10px_30px_rgba(124,58,237,0.12)] outline-none transition focus:ring-2 focus:ring-purple-400/60"
             value={text}
             onChange={(e) => setText(e.target.value)}
             data-oid="elbgi1-"

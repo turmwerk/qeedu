@@ -1,13 +1,15 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Layout } from "antd";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Header from "./components/Header";
+import Sider from "./components/Sider";
 
 const { Content } = Layout;
 
 const MainLayout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [siderOpen, setSiderOpen] = useState(false);
 
   useEffect(() => {
     // 首次访问站点时引导至登录（仅一次，保存在 localStorage）
@@ -24,11 +26,14 @@ const MainLayout: React.FC = () => {
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   }, [location.pathname]);
+
+  const showSiderToggle = useMemo(
+    () => location.pathname.startsWith("/teaching/syllabus"),
+    [location.pathname]
+  );
+
   return (
-    <Layout
-      className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50 relative"
-      data-oid="g.x1dlh"
-    >
+    <div className="flex min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50 relative">
       {/* 全局流动光球背景 */}
       <div
         className="fixed inset-0 overflow-hidden pointer-events-none z-0"
@@ -56,11 +61,22 @@ const MainLayout: React.FC = () => {
           66% { transform: translate(-30px, 30px) scale(0.85); }
         }
       `}</style>
-      <Header data-oid="d8-wqm." />
-      <Content className="m-0 relative z-10 h-[813px]" data-oid="gzlcfm-">
-        <Outlet data-oid="giq3cbp" />
-      </Content>
-    </Layout>
+      
+      {/* 左侧栏 */}
+      <Sider open={siderOpen && showSiderToggle} onClose={() => setSiderOpen(false)} />
+      
+      {/* 右侧内容区域 */}
+      <Layout className="flex-1 relative z-10" style={{ minHeight: '100vh' }}>
+        <Header
+          onToggleSider={() => setSiderOpen((v) => !v)}
+          showSiderToggle={showSiderToggle}
+          data-oid="d8-wqm."
+        />
+        <Content className="m-0 relative z-10" data-oid="gzlcfm-">
+          <Outlet data-oid="giq3cbp" />
+        </Content>
+      </Layout>
+    </div>
   );
 };
 
