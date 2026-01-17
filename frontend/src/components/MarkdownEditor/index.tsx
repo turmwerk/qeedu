@@ -87,7 +87,7 @@ const MarkdownEditor: React.FC<Props> = ({ value = "", onClose }) => {
       {/* 左侧 Sider 占位 - 宽度与 MainLayout 的 Sider 同步 */}
       <div 
         style={{ width: siderOpen ? siderWidth : 0 }} 
-        className="flex-shrink-0 h-full transition-all duration-300 ease-out" 
+        className="flex-shrink-0 h-full transition-all duration-120 ease-out" 
       />
       
       {/* 画布编辑区域 */}

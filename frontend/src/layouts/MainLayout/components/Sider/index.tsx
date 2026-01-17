@@ -151,7 +151,7 @@ const Sider: React.FC<Props> = ({ open, onClose }) => {
 
 	return (
 		<div
-			className="relative h-screen z-[10000] transition-all duration-300 ease-out overflow-hidden"
+			className="relative h-screen z-[10000] transition-all duration-200 ease-out overflow-hidden"
 			style={style}
 			data-oid="syllabus-sider"
 		>

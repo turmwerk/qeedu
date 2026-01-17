@@ -5,9 +5,11 @@ import Dialog from "@/components/Dialog";
 
 type PageShellProps = {
   children: React.ReactNode;
+  contentClassName?: string;
 };
 
-const PageShell: React.FC<PageShellProps> = ({ children }) => {
+const PageShell: React.FC<PageShellProps> = ({ children, contentClassName }) => {
+  const contentClass = contentClassName ?? "pt-3 pb-6 px-6";
   return (
     <div
       className="relative h-[calc(100vh-80px)] min-h-0 flex flex-col bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50 overflow-hidden"
@@ -39,7 +41,7 @@ const PageShell: React.FC<PageShellProps> = ({ children }) => {
           66% { transform: translate(-20px, 20px) scale(0.9); }
         }
       `}</style>
-      <div className="relative z-10 pt-3 pb-6 px-6 flex-1 min-h-0" data-oid="zobt:l.">
+      <div className={`relative z-10 flex-1 min-h-0 ${contentClass}`} data-oid="zobt:l.">
         {children}
       </div>
     </div>
@@ -399,7 +401,7 @@ const Syllabus: React.FC = () => {
   if (view === "edit") {
     const currentOutline = outlines.find((o) => o.id === currentId);
     return (
-      <PageShell data-oid="7ut1p8i">
+      <PageShell contentClassName="p-0" data-oid="7ut1p8i">
         <DetailPage
           md={md}
           setMd={(updated: string) => {
