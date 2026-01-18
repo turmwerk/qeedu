@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { BookOutlined, FormOutlined } from "@ant-design/icons";
 import { Layout } from "antd";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Header from "./components/Header";
@@ -9,7 +10,8 @@ const { Content } = Layout;
 const MainLayout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [siderOpen, setSiderOpen] = useState(false);
+  const [syllabusSiderOpen, setSyllabusSiderOpen] = useState(false);
+  const [examSiderOpen, setExamSiderOpen] = useState(false);
 
   useEffect(() => {
     // 首次访问站点时引导至登录（仅一次，保存在 localStorage）
@@ -28,10 +30,9 @@ const MainLayout: React.FC = () => {
   }, [location.pathname]);
 
   useEffect(() => {
-    const handleToggleSider = () => {
-      setSiderOpen((v) => {
+    const handleToggleSyllabusSider = () => {
+      setSyllabusSiderOpen((v) => {
         const newState = !v;
-        // 立即通知所有监听者新的状态
         setTimeout(() => {
           window.dispatchEvent(
             new CustomEvent("syllabus-sider-state", {
@@ -42,39 +43,83 @@ const MainLayout: React.FC = () => {
         return newState;
       });
     };
-    const handleGetState = () => {
+    const handleGetSyllabusState = () => {
       window.dispatchEvent(
         new CustomEvent("syllabus-sider-state", {
-          detail: { open: siderOpen },
+          detail: { open: syllabusSiderOpen },
         })
       );
     };
-    window.addEventListener("toggle-syllabus-sider", handleToggleSider);
-    window.addEventListener("get-syllabus-sider-state", handleGetState);
-    return () => {
-      window.removeEventListener("toggle-syllabus-sider", handleToggleSider);
-      window.removeEventListener("get-syllabus-sider-state", handleGetState);
+    const handleToggleExamSider = () => {
+      setExamSiderOpen((v) => {
+        const newState = !v;
+        setTimeout(() => {
+          window.dispatchEvent(
+            new CustomEvent("exam-sider-state", {
+              detail: { open: newState },
+            })
+          );
+        }, 0);
+        return newState;
+      });
     };
-  }, [siderOpen]);
+    const handleGetExamState = () => {
+      window.dispatchEvent(
+        new CustomEvent("exam-sider-state", {
+          detail: { open: examSiderOpen },
+        })
+      );
+    };
+    window.addEventListener("toggle-syllabus-sider", handleToggleSyllabusSider);
+    window.addEventListener("get-syllabus-sider-state", handleGetSyllabusState);
+    window.addEventListener("toggle-exam-sider", handleToggleExamSider);
+    window.addEventListener("get-exam-sider-state", handleGetExamState);
+    return () => {
+      window.removeEventListener(
+        "toggle-syllabus-sider",
+        handleToggleSyllabusSider
+      );
+      window.removeEventListener(
+        "get-syllabus-sider-state",
+        handleGetSyllabusState
+      );
+      window.removeEventListener("toggle-exam-sider", handleToggleExamSider);
+      window.removeEventListener("get-exam-sider-state", handleGetExamState);
+    };
+  }, [examSiderOpen, syllabusSiderOpen]);
 
   useEffect(() => {
     window.dispatchEvent(
       new CustomEvent("syllabus-sider-state", {
-        detail: { open: siderOpen },
+        detail: { open: syllabusSiderOpen },
       })
     );
-  }, [siderOpen]);
+  }, [syllabusSiderOpen]);
 
+  useEffect(() => {
+    window.dispatchEvent(
+      new CustomEvent("exam-sider-state", {
+        detail: { open: examSiderOpen },
+      })
+    );
+  }, [examSiderOpen]);
+
+  const isSyllabusDetail =
+    location.pathname.startsWith("/teaching/syllabus") &&
+    location.pathname !== "/teaching/syllabus/ListPage";
+  const isExamDetail = location.pathname === "/teaching/exam/DetailPage";
   const showSiderToggle = useMemo(
-    () =>
-      location.pathname.startsWith("/teaching/syllabus") &&
-      location.pathname !== "/teaching/syllabus/ListPage",
-    [location.pathname]
+    () => isSyllabusDetail || isExamDetail,
+    [isExamDetail, isSyllabusDetail]
   );
+  const activeSiderOpen = isExamDetail ? examSiderOpen : syllabusSiderOpen;
 
   useEffect(() => {
     if (location.pathname === "/teaching/syllabus/ListPage") {
-      setSiderOpen(false);
+      setSyllabusSiderOpen(false);
+    }
+    if (location.pathname === "/teaching/exam/ListPage") {
+      setExamSiderOpen(false);
     }
   }, [location.pathname]);
 
@@ -109,14 +154,43 @@ const MainLayout: React.FC = () => {
       `}</style>
       
       {/* 左侧栏 */}
-      <Sider open={siderOpen && showSiderToggle} onClose={() => setSiderOpen(false)} />
+      <Sider
+        open={syllabusSiderOpen && isSyllabusDetail}
+        onClose={() => setSyllabusSiderOpen(false)}
+        storageKey="syllabus_outlines"
+        title="大纲列表"
+        icon={<BookOutlined />}
+        updatedEventName="syllabus-outlines-updated"
+        currentIdEventName="syllabus-current-id"
+        selectEventName="syllabus-outline-select"
+        deleteEventName="syllabus-outline-delete"
+        widthEventName="syllabus-sider-width"
+        getWidthEventName="get-syllabus-sider-width"
+      />
+      <Sider
+        open={examSiderOpen && isExamDetail}
+        onClose={() => setExamSiderOpen(false)}
+        storageKey="exam_design_exams_v1"
+        title="试卷列表"
+        icon={<FormOutlined />}
+        updatedEventName="exam-exams-updated"
+        currentIdEventName="exam-current-id"
+        selectEventName="exam-exam-select"
+        deleteEventName="exam-exam-delete"
+        widthEventName="exam-sider-width"
+        getWidthEventName="get-exam-sider-width"
+      />
       
       {/* 右侧内容区域 */}
       <Layout className="flex-1 relative z-10 flex flex-col min-h-0 h-full">
         <Header
-          onToggleSider={() => setSiderOpen((v) => !v)}
+          onToggleSider={() =>
+            isExamDetail
+              ? setExamSiderOpen((v) => !v)
+              : setSyllabusSiderOpen((v) => !v)
+          }
           showSiderToggle={showSiderToggle}
-          siderOpen={siderOpen}
+          siderOpen={activeSiderOpen}
           data-oid="d8-wqm."
         />
         <Content className="m-0 p-0 relative z-10 flex-1 min-h-0" data-oid="gzlcfm-">

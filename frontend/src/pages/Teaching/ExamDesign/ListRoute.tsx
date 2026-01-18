@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ListPage from "./ListPage";
 import Dialog from "@/components/Dialog";
@@ -27,27 +27,22 @@ const CURRENT_KEY = "exam_design_current_id";
 
 const ListRoute: React.FC = () => {
   const navigate = useNavigate();
-  const [exams, setExams] = useState<Exam[]>([]);
-
-  const loadExams = useCallback(() => {
+  const [exams, setExams] = useState<Exam[]>(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) setExams(JSON.parse(raw));
-      else setExams([]);
+      if (raw) return JSON.parse(raw) as Exam[];
+      return [];
     } catch (e) {
       console.error("load exams", e);
-      setExams([]);
+      return [];
     }
-  }, []);
-
-  useEffect(() => {
-    loadExams();
-  }, [loadExams]);
+  });
 
   const persist = useCallback((next: Exam[]) => {
     setExams(next);
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      window.dispatchEvent(new Event("exam-exams-updated"));
     } catch (e) {
       console.error("save exams", e);
     }
@@ -56,13 +51,21 @@ const ListRoute: React.FC = () => {
   const setCurrentId = useCallback((id: string) => {
     try {
       localStorage.setItem(CURRENT_KEY, id);
-    } catch {}
+      window.dispatchEvent(
+        new CustomEvent("exam-current-id", { detail: { id } })
+      );
+    } catch (e) {
+      console.warn("set current exam id failed", e);
+    }
   }, []);
 
   const handleCreate = useCallback(
-    (payload: Record<string, any>) => {
+    (payload: Record<string, unknown>) => {
       const id = Date.now().toString();
-      const name = payload.name || "未命名试卷";
+      const name =
+        typeof payload.name === "string" && payload.name.trim()
+          ? payload.name
+          : "未命名试卷";
       const item: Exam = {
         id,
         title: name,
@@ -87,13 +90,17 @@ const ListRoute: React.FC = () => {
         if (target) {
           target.questions.forEach((q) => Dialog.clearDialog(`${id}-q-${q.id}`));
         }
-      } catch {}
+      } catch (e) {
+        console.warn("clear exam dialogs failed", e);
+      }
       try {
         const currentId = localStorage.getItem(CURRENT_KEY);
         if (currentId === id) {
           localStorage.removeItem(CURRENT_KEY);
         }
-      } catch {}
+      } catch (e) {
+        console.warn("clear current exam id failed", e);
+      }
     },
     [exams, persist]
   );

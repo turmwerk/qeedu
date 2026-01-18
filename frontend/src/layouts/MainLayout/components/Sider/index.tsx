@@ -1,8 +1,8 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { BookOutlined, SortAscendingOutlined, SortDescendingOutlined, EditOutlined, DeleteOutlined, CheckOutlined } from "@ant-design/icons";
 import ConfirmDialog from "@/components/ConfirmDialog";
 
-type Outline = {
+type SiderItem = {
 	id: string;
 	title: string;
 	createdAt?: number;
@@ -11,12 +11,33 @@ type Outline = {
 type Props = {
 	open: boolean;
 	onClose: () => void;
+	storageKey: string;
+	title: string;
+	icon?: React.ReactNode;
+	updatedEventName: string;
+	currentIdEventName: string;
+	selectEventName: string;
+	deleteEventName: string;
+	widthEventName: string;
+	getWidthEventName: string;
 };
 
-const STORAGE_KEY = "syllabus_outlines";
-
-const Sider: React.FC<Props> = ({ open, onClose }) => {
-	const [items, setItems] = useState<Outline[]>([]);
+const Sider: React.FC<Props> = ({
+	open,
+	onClose,
+	storageKey,
+	title,
+	icon,
+	updatedEventName,
+	currentIdEventName,
+	selectEventName,
+	deleteEventName,
+	widthEventName,
+	getWidthEventName,
+}) => {
+	const [items, setItems] = useState<SiderItem[]>([]);
+	const widthId = useId().replace(/[:]/g, "");
+	const widthClass = `sider-width-${widthId}`;
 	const [selectedId, setSelectedId] = useState<string | null>(null);
 	const [sortBy, setSortBy] = useState<"time" | "name">("time");
 	const [order, setOrder] = useState<"asc" | "desc">("asc");
@@ -29,8 +50,21 @@ const Sider: React.FC<Props> = ({ open, onClose }) => {
 	useEffect(() => {
 		const load = () => {
 			try {
-				const raw = localStorage.getItem(STORAGE_KEY);
-				if (raw) setItems(JSON.parse(raw));
+				const raw = localStorage.getItem(storageKey);
+				if (raw) {
+					const parsed = JSON.parse(raw) as Array<
+						SiderItem & Record<string, unknown>
+					>;
+					setItems(
+						parsed.map((item) => ({
+							id: item.id,
+							title: item.title,
+							createdAt: item.createdAt,
+						})),
+					);
+				} else {
+					setItems([]);
+				}
 			} catch {
 				setItems([]);
 			}
@@ -43,37 +77,37 @@ const Sider: React.FC<Props> = ({ open, onClose }) => {
 			if (detail?.id) setSelectedId(detail.id);
 		};
 		window.addEventListener("storage", onStorage);
-		window.addEventListener("syllabus-outlines-updated", onCustom as EventListener);
-		window.addEventListener("syllabus-current-id", onSelect as EventListener);
+		window.addEventListener(updatedEventName, onCustom as EventListener);
+		window.addEventListener(currentIdEventName, onSelect as EventListener);
 		return () => {
 			window.removeEventListener("storage", onStorage);
+			window.removeEventListener(updatedEventName, onCustom as EventListener);
 			window.removeEventListener(
-				"syllabus-outlines-updated",
-				onCustom as EventListener
+				currentIdEventName,
+				onSelect as EventListener
 			);
-			window.removeEventListener("syllabus-current-id", onSelect as EventListener);
 		};
+	}, [storageKey, updatedEventName, currentIdEventName]);
+
+	const startDrag = useCallback(() => {
+		isDragging.current = true;
 	}, []);
 
-	const startDrag = () => {
-		isDragging.current = true;
-	};
-
-	const stopDrag = () => {
+	const stopDrag = useCallback(() => {
 		isDragging.current = false;
-	};
+	}, []);
 
-	const onDrag = (clientX: number) => {
+	const onDrag = useCallback((clientX: number) => {
 		if (!isDragging.current) return;
 		const clamped = Math.min(420, Math.max(220, clientX));
 		setWidth(clamped);
 		// 通知 MarkdownEditor 宽度变化
 		window.dispatchEvent(
-			new CustomEvent("syllabus-sider-width", {
+			new CustomEvent(widthEventName, {
 				detail: { width: clamped },
 			})
 		);
-	};
+	}, [widthEventName]);
 
 
 	useEffect(() => {
@@ -98,35 +132,35 @@ const Sider: React.FC<Props> = ({ open, onClose }) => {
 			window.removeEventListener("touchmove", onWindowTouchMove);
 			window.removeEventListener("touchend", onWindowTouchEnd);
 		};
-	}, []);
+	}, [onDrag, stopDrag]);
 
 	const actualWidth = open ? width : 0;
-	const style = useMemo(
-		() => ({ width: actualWidth, minWidth: actualWidth }),
-		[actualWidth]
+	const widthStyle = useMemo(
+		() => `.${widthClass} { width: ${actualWidth}px; min-width: ${actualWidth}px; }`,
+		[actualWidth, widthClass]
 	);
 
 	useEffect(() => {
 		window.dispatchEvent(
-			new CustomEvent("syllabus-sider-width", {
+			new CustomEvent(widthEventName, {
 				detail: { width: actualWidth },
 			})
 		);
-	}, [actualWidth]);
+	}, [actualWidth, widthEventName]);
 
 	useEffect(() => {
 		const handleGetWidth = () => {
 			window.dispatchEvent(
-				new CustomEvent("syllabus-sider-width", {
+				new CustomEvent(widthEventName, {
 					detail: { width: actualWidth },
 				})
 			);
 		};
-		window.addEventListener("get-syllabus-sider-width", handleGetWidth);
+		window.addEventListener(getWidthEventName, handleGetWidth);
 		return () => {
-			window.removeEventListener("get-syllabus-sider-width", handleGetWidth);
+			window.removeEventListener(getWidthEventName, handleGetWidth);
 		};
-	}, [actualWidth]);
+	}, [actualWidth, getWidthEventName, widthEventName]);
 
 	const sortedItems = useMemo(() => {
 		const next = [...items];
@@ -141,17 +175,17 @@ const Sider: React.FC<Props> = ({ open, onClose }) => {
 
 	return (
 		<div
-			className="relative h-screen z-[10000] transition-all duration-200 ease-out overflow-hidden"
-			style={style}
+			className={`relative h-screen z-[10000] transition-all duration-200 ease-out overflow-hidden ${widthClass}`}
 			data-oid="syllabus-sider"
 		>
+			<style data-oid="sider-width">{widthStyle}</style>
 			<div className="h-full bg-white/70 backdrop-blur-[18px] shadow-[0_12px_40px_rgba(124,58,237,0.2)] border-r border-white/60 flex flex-col">
 				<div className="flex items-center justify-between px-4 py-3 border-b border-white/50">
 					<div className="flex items-center gap-2 font-bold text-[#2d1b4f]">
 						<span className="w-7 h-7 rounded-lg bg-white/80 border border-white/60 shadow-[0_6px_18px_rgba(124,58,237,0.18)] flex items-center justify-center text-[#5b35b7]">
-							<BookOutlined />
+							{icon || <BookOutlined />}
 						</span>
-						大纲列表
+						{title}
 					</div>
 					<div className="flex items-center gap-2">
 						<div className="relative group">
@@ -197,7 +231,9 @@ const Sider: React.FC<Props> = ({ open, onClose }) => {
 				</div>
 				<div className="flex-1 overflow-y-auto p-3 space-y-2">
 					{items.length === 0 && (
-						<div className="text-[#7d6b9a] text-sm px-2 py-4">暂无课程大纲</div>
+						<div className="text-[#7d6b9a] text-sm px-2 py-4">
+							暂无{title}
+						</div>
 					)}
 					{sortedItems.map((item, index) => (
 						<div
@@ -209,7 +245,7 @@ const Sider: React.FC<Props> = ({ open, onClose }) => {
 							}`}
 							onClick={() =>
 								window.dispatchEvent(
-									new CustomEvent("syllabus-outline-select", {
+									new CustomEvent(selectEventName, {
 										detail: { id: item.id },
 									})
 								)
@@ -221,14 +257,16 @@ const Sider: React.FC<Props> = ({ open, onClose }) => {
 									value={editingTitle}
 									onChange={(e) => setEditingTitle(e.target.value)}
 									onClick={(e) => e.stopPropagation()}
+									placeholder="输入名称"
+									title="重命名"
 									onBlur={() => {
 										if (editingTitle.trim()) {
 											const updated = items.map((o) =>
 												o.id === item.id ? { ...o, title: editingTitle.trim() } : o
 											);
-											localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+											localStorage.setItem(storageKey, JSON.stringify(updated));
 											setItems(updated);
-											window.dispatchEvent(new Event("syllabus-outlines-updated"));
+											window.dispatchEvent(new Event(updatedEventName));
 										}
 										setEditingId(null);
 									}}
@@ -293,14 +331,14 @@ const Sider: React.FC<Props> = ({ open, onClose }) => {
 			<ConfirmDialog
 				open={deleteConfirm.open}
 				title="确认删除"
-				description={`确定要删除大纲"${deleteConfirm.title}"吗？删除后无法恢复。`}
+				description={`确定要删除"${deleteConfirm.title}"吗？删除后无法恢复。`}
 				confirmText="删除"
 				cancelText="取消"
 				danger
 				onConfirm={() => {
 					if (deleteConfirm.id) {
 						window.dispatchEvent(
-							new CustomEvent("syllabus-outline-delete", {
+							new CustomEvent(deleteEventName, {
 								detail: { id: deleteConfirm.id },
 							})
 						);

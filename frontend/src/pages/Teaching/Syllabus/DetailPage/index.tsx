@@ -1,11 +1,11 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Dropdown from "@/components/Dropdown";
 import {
   downloadMarkdown,
   downloadDocx,
   exportPdfViaPrint,
 } from "@/utils/exportFiles";
-import MarkdownView from "@/components/MarkdownView";
+import MarkdownView, { SplitSiderLayout } from "@/components/MarkdownView";
 import MarkdownEditor from "@/components/MarkdownEditor";
 import Dialog from "@/components/Dialog";
 
@@ -20,9 +20,6 @@ const DetailPage: React.FC<{
   onRename?: (id: string, title: string) => void;
 }> = ({ md, setMd, onBack, openFull, setOpenFull, title, id, onRename }) => {
   const [localTitle, setLocalTitle] = useState(title || "");
-  const [split, setSplit] = useState(68);
-  const isDragging = useRef(false);
-  const wrapRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     setLocalTitle(title || "");
@@ -32,35 +29,6 @@ const DetailPage: React.FC<{
     setLocalTitle(next);
     if (id && onRename) onRename(id, next);
   };
-
-  const startDrag = () => {
-    isDragging.current = true;
-  };
-
-  const stopDrag = () => {
-    isDragging.current = false;
-  };
-
-  const onDrag = (clientX: number) => {
-    const wrap = wrapRef.current;
-    if (!wrap) return;
-    const rect = wrap.getBoundingClientRect();
-    const next = ((clientX - rect.left) / rect.width) * 100;
-    const clamped = Math.min(80, Math.max(40, next));
-    setSplit(clamped);
-  };
-
-  const onMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (!isDragging.current) return;
-    onDrag(event.clientX);
-  };
-
-  const onTouchMove = (event: React.TouchEvent<HTMLDivElement>) => {
-    if (!isDragging.current) return;
-    onDrag(event.touches[0].clientX);
-  };
-
-  const columns = useMemo(() => `${split}% 6px ${100 - split}%`, [split]);
 
   const displayTitle = localTitle || title || "未命名课程";
   return (
@@ -129,55 +97,33 @@ const DetailPage: React.FC<{
             </div>
           </div>
         </div>
-        <div
-          ref={wrapRef}
-          className="grid items-stretch gap-0 flex-1 min-h-0 p-0 overflow-hidden h-full"
-          style={{ gridTemplateColumns: columns }}
-          onMouseMove={onMouseMove}
-          onMouseUp={stopDrag}
-          onMouseLeave={stopDrag}
-          onTouchMove={onTouchMove}
-          onTouchEnd={stopDrag}
-          data-oid="wc6ybz5"
-        >
-          <div
-            className="flex flex-col h-full min-h-0 bg-white overflow-hidden"
-            data-oid="nfm:-9n"
-          >
-            <div
-              className="flex justify-between items-center font-bold mb-0"
-              data-oid="ybrwo3s"
-            />
+        <SplitSiderLayout
+          className="p-0"
+          leftClassName="flex flex-col h-full min-h-0 bg-white overflow-hidden"
+          rightClassName="bg-white h-full flex flex-col min-h-0 overflow-hidden"
+          left={
+            <>
+              <div
+                className="flex justify-between items-center font-bold mb-0"
+                data-oid="ybrwo3s"
+              />
 
-            <div className="flex-1 min-h-0 overflow-hidden p-4" data-oid="l8gcb7j">
-              <div className="h-full min-h-0" data-oid="as3o8_c">
-                <MarkdownView
-                  value={md}
-                  onChange={setMd}
-                  onFullScreen={() => setOpenFull(true)}
-                  data-oid="-tf1lud"
-                />
+              <div
+                className="flex-1 min-h-0 overflow-hidden p-4"
+                data-oid="l8gcb7j"
+              >
+                <div className="h-full min-h-0" data-oid="as3o8_c">
+                  <MarkdownView
+                    value={md}
+                    onChange={setMd}
+                    onFullScreen={() => setOpenFull(true)}
+                    data-oid="-tf1lud"
+                  />
+                </div>
               </div>
-            </div>
-          </div>
-
-          <div
-            className="relative"
-            onMouseDown={startDrag}
-            onTouchStart={startDrag}
-            role="separator"
-            aria-label="Resize panes"
-            aria-orientation="vertical"
-            data-oid="g75ffu_"
-          >
-            <div className="absolute inset-y-6 left-1/2 -translate-x-1/2 w-[2px] rounded-full bg-purple-300/70" />
-            <div className="absolute inset-0 cursor-col-resize" />
-          </div>
-
-          <div
-            className="bg-white h-full flex flex-col min-h-0 overflow-hidden"
-            data-oid="giihwlj"
-          >
+            </>
+          }
+          right={
             <div className="flex-1 min-h-0 overflow-hidden p-4">
               <div className="h-full min-h-0" data-oid="bub8x6d">
                 {/* 传入大纲id作为dialogId，保证唯一性 */}
@@ -190,8 +136,9 @@ const DetailPage: React.FC<{
                 />
               </div>
             </div>
-          </div>
-        </div>
+          }
+          data-oid="wc6ybz5"
+        />
         {openFull && (
           <MarkdownEditor
             value={md}

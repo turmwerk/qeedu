@@ -85,12 +85,14 @@ const MainHeader: React.FC<{ onToggleSider?: () => void; showSiderToggle?: boole
   const isHomePage = location.pathname === "/";
 
   const backRouteMap: Record<string, string> = {
-    "/teaching/exam/DetailPage": "/teaching/exam/ListPage",
     "/teaching/exam/ListPage": "/teaching",
-    "/teaching/syllabus/DetailPage": "/teaching/syllabus/ListPage",
     "/teaching/syllabus/ListPage": "/teaching",
   };
-  const backTarget = backRouteMap[location.pathname];
+  const backTarget = location.pathname.startsWith("/teaching/exam/DetailPage")
+    ? "/teaching/exam/ListPage"
+    : location.pathname.startsWith("/teaching/syllabus/DetailPage")
+      ? "/teaching/syllabus/ListPage"
+      : backRouteMap[location.pathname];
 
   // 获取当前路由的配置
   const currentConfig = routeConfig[location.pathname] || {

@@ -1,9 +1,11 @@
-import React, { useState, useEffect, type DragEvent } from "react";
+import React, { useCallback, useState, useEffect, type DragEvent } from "react";
+import { useNavigate } from "react-router-dom";
+import { MenuOutlined } from "@ant-design/icons";
 import Dialog from "@/components/Dialog";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import Dropdown from "@/components/Dropdown";
 import Model from "@/components/Model";
-import MarkdownView from "@/components/MarkdownView";
+import MarkdownView, { SplitSiderLayout } from "@/components/MarkdownView";
 import ToastContainer from "@/components/Toast";
 import {
   downloadMarkdown,
@@ -34,6 +36,7 @@ const DetailPage: React.FC<{
   questions = [],
   onBack,
 }) => {
+  const navigate = useNavigate();
   type Exam = {
     id: string;
     title: string;
@@ -42,7 +45,9 @@ const DetailPage: React.FC<{
   };
   const STORAGE_KEY = "exam_design_exams_v1";
 
-  const loadExams = (): Exam[] => {
+  const [localTitle, setLocalTitle] = useState(title);
+
+  const loadExams = useCallback((): Exam[] => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return [];
@@ -51,17 +56,17 @@ const DetailPage: React.FC<{
       console.warn("loadExams failed", e);
       return [];
     }
-  };
+  }, []);
 
-  const saveExams = (exs: Exam[]) => {
+  const saveExams = useCallback((exs: Exam[]) => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(exs));
     } catch (e) {
       console.warn("saveExams failed", e);
     }
-  };
+  }, []);
 
-  const persistExam = (nextQuestions: Question[], nextTitle?: string) => {
+  const persistExam = useCallback((nextQuestions: Question[], nextTitle?: string) => {
     try {
       const exs = loadExams();
       const idx = exs.findIndex((e) => e.id === examId);
@@ -81,17 +86,16 @@ const DetailPage: React.FC<{
         exs.push(entry);
       }
       saveExams(exs);
+      window.dispatchEvent(new Event("exam-exams-updated"));
     } catch (e) {
       console.warn("persistExam failed", e);
     }
-  };
+  }, [examId, loadExams, saveExams, localTitle, title]);
 
-  const [localTitle, setLocalTitle] = useState(title);
   const [selectedQuestion, setSelectedQuestion] = useState<string | null>(null);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
-  const [recommendMounted, setRecommendMounted] = useState(false);
-  const [recommendVisible, setRecommendVisible] = useState(false);
+  const [siderOpen, setSiderOpen] = useState(false);
   const [confirmState, setConfirmState] = useState<{
     title: string;
     description?: string;
@@ -105,21 +109,22 @@ const DetailPage: React.FC<{
     return examId;
   };
 
+  const recommendActive = !!selectedQuestion;
+
   useEffect(() => {
-    const duration = 320;
-    let hideTimer: number | undefined;
-    if (selectedQuestion) {
-      setRecommendMounted(true);
-      setRecommendVisible(false);
-      requestAnimationFrame(() => setRecommendVisible(true));
-    } else {
-      setRecommendVisible(false);
-      hideTimer = window.setTimeout(() => setRecommendMounted(false), duration);
-    }
-    return () => {
-      if (hideTimer) window.clearTimeout(hideTimer);
+    const handleState = (event: Event) => {
+      const detail = (event as CustomEvent<{ open?: boolean }>).detail;
+      setSiderOpen(!!detail?.open);
     };
-  }, [selectedQuestion]);
+    window.addEventListener("exam-sider-state", handleState as EventListener);
+    window.dispatchEvent(new Event("get-exam-sider-state"));
+    return () => {
+      window.removeEventListener(
+        "exam-sider-state",
+        handleState as EventListener,
+      );
+    };
+  }, []);
 
   const openConfirm = (payload: {
     title: string;
@@ -130,50 +135,14 @@ const DetailPage: React.FC<{
   }) => setConfirmState(payload);
 
   const [localQuestions, setLocalQuestions] = useState<Question[]>(questions);
-  useEffect(() => setLocalQuestions(questions), [questions]);
 
-  // load stored exam on mount
-  useEffect(() => {
-    const exs = loadExams();
-    const found = exs.find((e) => e.id === examId);
-    if (found) {
-      setLocalQuestions(found.questions || []);
-      setLocalTitle(found.title || title);
-    } else {
-      // initialize and persist a new exam
-      const newExam: Exam = {
-        id: examId,
-        title: title || "未命名试卷",
-        createdAt: Date.now(),
-        questions,
-      };
-      exs.push(newExam);
-      saveExams(exs);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // persist when questions or title change
-  useEffect(() => {
-    const exs = loadExams();
-    const idx = exs.findIndex((e) => e.id === examId);
-    const examEntry: Exam = {
-      id: examId,
-      title: localTitle || title || "未命名试卷",
-      createdAt: Date.now(),
-      questions: localQuestions,
-    };
-    if (idx >= 0) {
-      exs[idx] = {
-        ...exs[idx],
-        title: examEntry.title,
-        questions: examEntry.questions,
-      };
-    } else {
-      exs.push(examEntry);
-    }
-    saveExams(exs);
-  }, [localQuestions, localTitle, examId, title]);
+  const handleTitleChange = useCallback(
+    (next: string) => {
+      setLocalTitle(next);
+      persistExam(localQuestions, next);
+    },
+    [localQuestions, persistExam]
+  );
 
   // insert modal state
   const [showInsertModal, setShowInsertModal] = useState(false);
@@ -190,31 +159,37 @@ const DetailPage: React.FC<{
   const [modalOptions, setModalOptions] = useState<string[]>([]);
   const [modalAnswerAnalysis, setModalAnswerAnalysis] = useState("");
 
-  useEffect(() => {
-    if (!showInsertModal) return;
-    if (editingQuestionId) {
-      const q = localQuestions.find((x) => x.id === editingQuestionId);
-      setModalStem(q?.stem || "");
-      setModalScore(q?.score ?? 5);
-      setModalKnowledge(q?.knowledge || "");
-      setModalQType(q?.type || "简答");
-      setModalDifficulty(q?.difficulty || "中等");
-      setModalCognition(q?.cognition || "理解");
-      setModalOptions(
-        q?.options && q.options.length ? q.options.slice() : ["", ""],
-      );
-      setModalAnswerAnalysis(q?.answerAnalysis || "");
-    } else {
-      setModalStem("");
-      setModalScore(5);
-      setModalKnowledge("");
-      setModalQType("简答");
-      setModalDifficulty("中等");
-      setModalCognition("理解");
-      setModalOptions(["", ""]);
-      setModalAnswerAnalysis("");
-    }
-  }, [showInsertModal, editingQuestionId, localQuestions]);
+  const openInsertModal = useCallback(
+    (payload: { at: number | null; editingId?: string | null }) => {
+      const nextId = payload.editingId ?? null;
+      setInsertAt(payload.at);
+      setEditingQuestionId(nextId);
+      if (nextId) {
+        const q = localQuestions.find((x) => x.id === nextId);
+        setModalStem(q?.stem || "");
+        setModalScore(q?.score ?? 5);
+        setModalKnowledge(q?.knowledge || "");
+        setModalQType(q?.type || "简答");
+        setModalDifficulty(q?.difficulty || "中等");
+        setModalCognition(q?.cognition || "理解");
+        setModalOptions(
+          q?.options && q.options.length ? q.options.slice() : ["", ""],
+        );
+        setModalAnswerAnalysis(q?.answerAnalysis || "");
+      } else {
+        setModalStem("");
+        setModalScore(5);
+        setModalKnowledge("");
+        setModalQType("简答");
+        setModalDifficulty("中等");
+        setModalCognition("理解");
+        setModalOptions(["", ""]);
+        setModalAnswerAnalysis("");
+      }
+      setShowInsertModal(true);
+    },
+    [localQuestions]
+  );
 
   const handleModalSubmit = () => {
     const newQ: Question = {
@@ -386,6 +361,11 @@ const DetailPage: React.FC<{
 
   const [recList, setRecList] = useState(initialRecs);
 
+  const handleBack = useCallback(() => {
+    onBack();
+    navigate("/teaching/exam/ListPage");
+  }, [navigate, onBack]);
+
   return (
     <>
       <div data-oid="vqmja1r">
@@ -397,25 +377,40 @@ const DetailPage: React.FC<{
         }
         .analysis-reveal { animation: analysisReveal 0.32s cubic-bezier(0.22, 1, 0.36, 1); }
       `}</style>
-        <div className="p-6 text-[#444]" data-oid="j-6j29_">
+        <div
+          className="p-0 text-[#444] h-full min-h-0 flex flex-col"
+          data-oid="j-6j29_"
+        >
           <div
-            className="bg-white px-2 py-1.5 rounded-[10px] shadow-[0_1px_6px_rgba(16,24,40,0.04)] mb-3"
+            className="bg-white px-0 py-2 shadow-[0_1px_6px_rgba(16,24,40,0.04)] flex-shrink-0 z-10"
             data-oid="uqiyav_"
           >
             <div
-              className="flex justify-between items-center gap-2.5"
+              className="flex justify-between items-center gap-2.5 px-0"
               data-oid="81m1vpn"
             >
               <input
                 className="flex-1 border border-transparent bg-[#f0ebf6] rounded-xl px-3 py-2 text-[18px] font-bold text-[#4b2a85] min-h-[40px] focus:outline-none focus:border-[#4b2a85] focus:shadow-[0_0_0_3px_rgba(75,42,133,0.18)]"
                 type="text"
                 value={localTitle}
-                onChange={(event) => setLocalTitle(event.target.value)}
+                onChange={(event) => handleTitleChange(event.target.value)}
                 placeholder="未命名试卷"
                 data-oid="81u59z5"
               />
 
               <div className="flex items-center gap-3" data-oid="fkowqs5">
+                {!siderOpen && (
+                  <button
+                    className="flex items-center justify-center w-9 h-9 rounded-lg bg-white/60 border border-white/60 shadow-[0_6px_18px_rgba(124,58,237,0.18)] text-[#5b35b7] hover:brightness-110 transition"
+                    onClick={() =>
+                      window.dispatchEvent(new Event("toggle-exam-sider"))
+                    }
+                    aria-label="打开侧边栏"
+                    data-oid="sider-toggle-exam"
+                  >
+                    <MenuOutlined />
+                  </button>
+                )}
                 <div
                   className="flex flex-col items-start justify-center gap-0.5 mr-2"
                   data-oid="1cj8vf:"
@@ -435,7 +430,7 @@ const DetailPage: React.FC<{
                 </div>
                 <button
                   className="bg-white border-2 border-[#7a54c4] text-[#7a54c4] px-3 py-1.5 rounded-xl cursor-pointer font-bold text-[14px] transition-[background,box-shadow,transform] hover:bg-[#f3eefb] hover:shadow-[0_8px_18px_rgba(75,42,133,0.12)] hover:-translate-y-[1px]"
-                  onClick={onBack}
+                  onClick={handleBack}
                   data-oid="69nuaqq"
                 >
                   返回试卷列表
@@ -480,287 +475,287 @@ const DetailPage: React.FC<{
               </div>
             </div>
           </div>
-          <div
-            className="grid grid-cols-[1fr_360px] gap-5 items-start max-[980px]:grid-cols-1"
-            data-oid="uewgnt."
-          >
-            <div data-oid=":ugrgg3">
-              <div className="flex flex-col gap-3" data-oid="kpt222u">
-                <div
-                  className="bg-white rounded-xl shadow-[0_6px_18px_rgba(16,24,40,0.06)] p-3 min-h-[640px] max-h-[640px] overflow-y-auto"
-                  data-oid="7_pgxtm"
-                >
+          <SplitSiderLayout
+            className="p-0"
+            leftClassName="flex flex-col h-full min-h-0 bg-white overflow-hidden"
+            rightClassName="bg-white h-full flex flex-col min-h-0 overflow-hidden"
+            left={
+              <div data-oid=":ugrgg3">
+                <div className="flex flex-col gap-3" data-oid="kpt222u">
                   <div
-                    className="font-bold mb-2.5 text-[var(--brand-text)]"
-                    data-oid="-0oot4h"
+                    className="bg-white rounded-xl shadow-[0_6px_18px_rgba(16,24,40,0.06)] p-3 flex-1 min-h-0 overflow-y-auto"
+                    data-oid="7_pgxtm"
                   >
-                    试卷
-                  </div>
-                  <div className="flex flex-col gap-3" data-oid="2uf_.d.">
-                    {localQuestions.length === 0 && (
-                      <div
-                        className="text-[#999] p-5 text-center"
-                        data-oid="y-e06rw"
-                      >
-                        当前试卷暂无题目
-                      </div>
-                    )}
-                    {localQuestions.map((q, idx) => (
-                      <div
-                        key={q.id}
-                        className="flex flex-col gap-2.5"
-                        data-oid="2vthdly"
-                      >
+                    <div
+                      className="font-bold mb-2.5 text-[var(--brand-text)]"
+                      data-oid="-0oot4h"
+                    >
+                      试卷
+                    </div>
+                    <div className="flex flex-col gap-3" data-oid="2uf_.d.">
+                      {localQuestions.length === 0 && (
                         <div
-                          className={`bg-white rounded-[14px] border border-[rgba(75,42,133,0.1)] shadow-[0_8px_18px_rgba(16,24,40,0.06)] p-3 flex flex-col gap-2.5 cursor-grab transition-[transform,box-shadow,border-color] relative hover:-translate-y-[1px] hover:shadow-[0_12px_24px_rgba(75,42,133,0.12)] hover:border-[rgba(75,42,133,0.2)] ${selectedQuestion === q.id ? "border-[rgba(75,42,133,0.3)] shadow-[0_0_0_3px_rgba(123,59,232,0.12)]" : ""} ${draggingId === q.id ? "opacity-65 scale-[0.98]" : ""}`}
-                          onClick={() =>
-                            setSelectedQuestion((prev) =>
-                              prev === q.id ? null : q.id,
-                            )
-                          }
-                          draggable
-                          onDragStart={handleDragStart(q.id)}
-                          onDragEnd={handleDragEnd}
-                          onDragOver={handleDragOver}
-                          onDrop={handleDropOnItem(q.id)}
-                          data-oid="67.ukz-"
+                          className="text-[#999] p-5 text-center"
+                          data-oid="y-e06rw"
+                        >
+                          当前试卷暂无题目
+                        </div>
+                      )}
+                      {localQuestions.map((q, idx) => (
+                        <div
+                          key={q.id}
+                          className="flex flex-col gap-2.5"
+                          data-oid="2vthdly"
                         >
                           <div
-                            className="flex items-center justify-between gap-2"
-                            data-oid="dgsz-d4"
+                            className={`bg-white rounded-[14px] border border-[rgba(75,42,133,0.1)] shadow-[0_8px_18px_rgba(16,24,40,0.06)] p-3 flex flex-col gap-2.5 cursor-grab transition-[transform,box-shadow,border-color] relative hover:-translate-y-[1px] hover:shadow-[0_12px_24px_rgba(75,42,133,0.12)] hover:border-[rgba(75,42,133,0.2)] ${selectedQuestion === q.id ? "border-[rgba(75,42,133,0.3)] shadow-[0_0_0_3px_rgba(123,59,232,0.12)]" : ""} ${draggingId === q.id ? "opacity-65 scale-[0.98]" : ""}`}
+                            onClick={() =>
+                              setSelectedQuestion((prev) =>
+                                prev === q.id ? null : q.id,
+                              )
+                            }
+                            draggable
+                            onDragStart={handleDragStart(q.id)}
+                            onDragEnd={handleDragEnd}
+                            onDragOver={handleDragOver}
+                            onDrop={handleDropOnItem(q.id)}
+                            data-oid="67.ukz-"
                           >
                             <div
-                              className="font-bold text-[var(--brand-accent)]"
-                              data-oid="2s9n0_v"
+                              className="flex items-center justify-between gap-2"
+                              data-oid="dgsz-d4"
                             >
-                              #{idx + 1}
+                              <div
+                                className="font-bold text-[var(--brand-accent)]"
+                                data-oid="2s9n0_v"
+                              >
+                                #{idx + 1}
+                              </div>
+                              <div
+                                className="flex flex-wrap gap-1.5 text-[#6b4da6] text-[12px] flex-1"
+                                data-oid="mfs0jof"
+                              >
+                                <span
+                                  className="bg-[var(--brand-accent-soft)] px-2 py-0.5 rounded-full"
+                                  data-oid="rt9twv."
+                                >
+                                  {q.knowledge || "未标注"}
+                                </span>
+                                <span
+                                  className="bg-[var(--brand-accent-soft)] px-2 py-0.5 rounded-full"
+                                  data-oid="ji22tbf"
+                                >
+                                  {q.difficulty || "中等"}
+                                </span>
+                                <span
+                                  className="bg-[var(--brand-accent-soft)] px-2 py-0.5 rounded-full"
+                                  data-oid="glxxpa2"
+                                >
+                                  {q.type || "简答"}
+                                </span>
+                              </div>
+                              <span
+                                className="text-[16px] text-[rgba(75,42,133,0.5)] tracking-[1px]"
+                                aria-hidden="true"
+                                data-oid="d_6z::v"
+                              >
+                                ⋮⋮
+                              </span>
                             </div>
                             <div
-                              className="flex flex-wrap gap-1.5 text-[#6b4da6] text-[12px] flex-1"
-                              data-oid="mfs0jof"
+                              className="text-[#2a2038] leading-[1.6] text-[14px]"
+                              data-oid="8mxap_8"
                             >
-                              <span
-                                className="bg-[var(--brand-accent-soft)] px-2 py-0.5 rounded-full"
-                                data-oid="rt9twv."
-                              >
-                                {q.knowledge || "未标注"}
-                              </span>
-                              <span
-                                className="bg-[var(--brand-accent-soft)] px-2 py-0.5 rounded-full"
-                                data-oid="ji22tbf"
-                              >
-                                {q.difficulty || "中等"}
-                              </span>
-                              <span
-                                className="bg-[var(--brand-accent-soft)] px-2 py-0.5 rounded-full"
-                                data-oid="glxxpa2"
-                              >
-                                {q.type || "简答"}
-                              </span>
+                              {q.stem}
+                              {q.options && q.options.length > 0 && (
+                                <ul
+                                  className="mt-2 list-none p-0"
+                                  data-oid="gvrimrr"
+                                >
+                                  {q.options.map((opt, i) => (
+                                    <li
+                                      key={i}
+                                      className="p-1.5 rounded-lg bg-white border border-[rgba(0,0,0,0.03)] mb-1.5"
+                                      data-oid="urpa82s"
+                                    >
+                                      {String.fromCharCode(65 + i)}. {opt}
+                                    </li>
+                                  ))}
+                                </ul>
+                              )}
                             </div>
-                            <span
-                              className="text-[16px] text-[rgba(75,42,133,0.5)] tracking-[1px]"
-                              aria-hidden="true"
-                              data-oid="d_6z::v"
-                            >
-                              ⋮⋮
-                            </span>
-                          </div>
-                          <div
-                            className="text-[#2a2038] leading-[1.6] text-[14px]"
-                            data-oid="8mxap_8"
-                          >
-                            {q.stem}
-                            {q.options && q.options.length > 0 && (
-                              <ul
-                                className="mt-2 list-none p-0"
-                                data-oid="gvrimrr"
-                              >
-                                {q.options.map((opt, i) => (
-                                  <li
-                                    key={i}
-                                    className="p-1.5 rounded-lg bg-white border border-[rgba(0,0,0,0.03)] mb-1.5"
-                                    data-oid="urpa82s"
-                                  >
-                                    {String.fromCharCode(65 + i)}. {opt}
-                                  </li>
-                                ))}
-                              </ul>
-                            )}
-                          </div>
-                          <div
-                            className="flex items-center justify-end gap-2.5 flex-wrap"
-                            onClick={(e) => e.stopPropagation()}
-                            data-oid="zdnnsht"
-                          >
                             <div
-                              className="flex gap-2 items-center"
-                              data-oid="9q0vh6x"
+                              className="flex items-center justify-end gap-2.5 flex-wrap"
+                              onClick={(e) => e.stopPropagation()}
+                              data-oid="zdnnsht"
                             >
-                              <label
-                                className="flex items-center gap-1.5 text-[#666] text-[13px]"
-                                data-oid="e4b:1za"
+                              <div
+                                className="flex gap-2 items-center"
+                                data-oid="9q0vh6x"
                               >
-                                分值
-                                <input
-                                  type="number"
-                                  value={q.score ?? 5}
-                                  onChange={(e) => {
-                                    const v = Number(e.target.value || 0);
-                                    const next = localQuestions.map((p) =>
-                                      p.id === q.id ? { ...p, score: v } : p,
-                                    );
-                                    setLocalQuestions(next);
-                                    persistExam(next);
-                                  }}
-                                  className="w-[64px] px-1.5 py-1 rounded-md border border-[#eee]"
-                                  data-oid="ut2gof0"
-                                />
-                              </label>
-                              <button
-                                className="bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-2 py-1.5 rounded-lg cursor-pointer transition-[background,border-color,box-shadow] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)]"
-                                onClick={() => {
-                                  setEditingQuestionId(q.id);
-                                  setInsertAt(idx - 1);
-                                  setShowInsertModal(true);
-                                }}
-                                data-oid="j:aycuw"
-                              >
-                                修改
-                              </button>
-                              <button
-                                className="bg-white border border-[rgba(200,30,30,0.16)] text-[#c21e1e] px-2 py-1.5 rounded-lg cursor-pointer transition-[background,border-color,box-shadow] hover:bg-[#fff1f2] hover:border-[rgba(200,30,30,0.35)] hover:shadow-[0_8px_18px_rgba(200,30,30,0.15)]"
-                                onClick={() => {
-                                  openConfirm({
-                                    title: "删除题目",
-                                    description:
-                                      "确认删除该题目吗？此操作不可恢复。",
-                                    confirmText: "确认删除",
-                                    danger: true,
-                                    onConfirm: () => {
-                                      const next = localQuestions.filter(
-                                        (p) => p.id !== q.id,
+                                <label
+                                  className="flex items-center gap-1.5 text-[#666] text-[13px]"
+                                  data-oid="e4b:1za"
+                                >
+                                  分值
+                                  <input
+                                    type="number"
+                                    value={q.score ?? 5}
+                                    onChange={(e) => {
+                                      const v = Number(e.target.value || 0);
+                                      const next = localQuestions.map((p) =>
+                                        p.id === q.id ? { ...p, score: v } : p,
                                       );
                                       setLocalQuestions(next);
                                       persistExam(next);
-                                      if (selectedQuestion === q.id)
-                                        setSelectedQuestion(null);
-                                    },
-                                  });
-                                }}
-                                data-oid="hn43k9m"
-                              >
-                                删除
-                              </button>
+                                    }}
+                                    className="w-[64px] px-1.5 py-1 rounded-md border border-[#eee]"
+                                    data-oid="ut2gof0"
+                                  />
+                                </label>
+                                <button
+                                  className="bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-2 py-1.5 rounded-lg cursor-pointer transition-[background,border-color,box-shadow] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)]"
+                                  onClick={() => {
+                                    openInsertModal({
+                                      at: idx - 1,
+                                      editingId: q.id,
+                                    });
+                                  }}
+                                  data-oid="j:aycuw"
+                                >
+                                  修改
+                                </button>
+                                <button
+                                  className="bg-white border border-[rgba(200,30,30,0.16)] text-[#c21e1e] px-2 py-1.5 rounded-lg cursor-pointer transition-[background,border-color,box-shadow] hover:bg-[#fff1f2] hover:border-[rgba(200,30,30,0.35)] hover:shadow-[0_8px_18px_rgba(200,30,30,0.15)]"
+                                  onClick={() => {
+                                    openConfirm({
+                                      title: "删除题目",
+                                      description:
+                                        "确认删除该题目吗？此操作不可恢复。",
+                                      confirmText: "确认删除",
+                                      danger: true,
+                                      onConfirm: () => {
+                                        const next = localQuestions.filter(
+                                          (p) => p.id !== q.id,
+                                        );
+                                        setLocalQuestions(next);
+                                        persistExam(next);
+                                        if (selectedQuestion === q.id)
+                                          setSelectedQuestion(null);
+                                      },
+                                    });
+                                  }}
+                                  data-oid="hn43k9m"
+                                >
+                                  删除
+                                </button>
+                              </div>
                             </div>
+                          </div>
+
+                          {selectedQuestion === q.id && (
+                            <div
+                              className="analysis-reveal flex flex-col gap-2.5 my-2"
+                              data-oid="xaw2m61"
+                            >
+                              <div
+                                className="bg-white rounded-xl p-3.5 border border-[rgba(123,59,232,0.08)] shadow-[0_1px_6px_rgba(0,0,0,0.03)]"
+                                data-oid="5djgh84"
+                              >
+                                <div
+                                  className="font-bold text-[#2b1650] mb-2"
+                                  data-oid=":pur:uz"
+                                >
+                                  知识点分析
+                                </div>
+                                <div
+                                  className="text-[#4b4b4b] text-[14px] leading-[1.6]"
+                                  data-oid="3e7g59_"
+                                >
+                                  当前题目覆盖「数据库」，建议搭配相邻知识点，扩展覆盖范围。
+                                </div>
+                              </div>
+                              <div
+                                className="bg-white rounded-xl p-3.5 border border-[rgba(123,59,232,0.08)] shadow-[0_1px_6px_rgba(0,0,0,0.03)]"
+                                data-oid="5e6if:q"
+                              >
+                                <div
+                                  className="font-bold text-[#2b1650] mb-2"
+                                  data-oid="sardy9."
+                                >
+                                  难度分析
+                                </div>
+                                <div
+                                  className="text-[#4b4b4b] text-[14px] leading-[1.6]"
+                                  data-oid="di1o:8h"
+                                >
+                                  偏基础概念，适合作为入门或热身题。
+                                </div>
+                              </div>
+                              <div
+                                className="bg-white rounded-xl p-3.5 border border-[rgba(123,59,232,0.08)] shadow-[0_1px_6px_rgba(0,0,0,0.03)]"
+                                data-oid="m-5.t4t"
+                              >
+                                <div
+                                  className="font-bold text-[#2b1650] mb-2"
+                                  data-oid="96m.93."
+                                >
+                                  答案分析
+                                </div>
+                                <div
+                                  className="text-[#4b4b4b] text-[14px] leading-[1.6]"
+                                  data-oid="mjzs14y"
+                                >
+                                  {q.answerAnalysis || "暂无答案分析。"}
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                          <div
+                            className="flex justify-center my-1.5"
+                            data-oid="x26d_d_"
+                          >
+                            <button
+                              className="bg-transparent border border-dashed border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1 rounded-lg cursor-pointer text-[13px] transition-[background,border-color] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)]"
+                              onClick={() => {
+                                openInsertModal({ at: idx, editingId: null });
+                              }}
+                              data-oid="1g-kyf:"
+                            >
+                              + 插入题目
+                            </button>
                           </div>
                         </div>
-
-                        {selectedQuestion === q.id && (
-                          <div
-                            className="analysis-reveal flex flex-col gap-2.5 my-2"
-                            data-oid="xaw2m61"
-                          >
-                            <div
-                              className="bg-white rounded-xl p-3.5 border border-[rgba(123,59,232,0.08)] shadow-[0_1px_6px_rgba(0,0,0,0.03)]"
-                              data-oid="5djgh84"
-                            >
-                              <div
-                                className="font-bold text-[#2b1650] mb-2"
-                                data-oid=":pur:uz"
-                              >
-                                知识点分析
-                              </div>
-                              <div
-                                className="text-[#4b4b4b] text-[14px] leading-[1.6]"
-                                data-oid="3e7g59_"
-                              >
-                                当前题目覆盖「数据库」，建议搭配相邻知识点，扩展覆盖范围。
-                              </div>
-                            </div>
-                            <div
-                              className="bg-white rounded-xl p-3.5 border border-[rgba(123,59,232,0.08)] shadow-[0_1px_6px_rgba(0,0,0,0.03)]"
-                              data-oid="5e6if:q"
-                            >
-                              <div
-                                className="font-bold text-[#2b1650] mb-2"
-                                data-oid="sardy9."
-                              >
-                                难度分析
-                              </div>
-                              <div
-                                className="text-[#4b4b4b] text-[14px] leading-[1.6]"
-                                data-oid="di1o:8h"
-                              >
-                                偏基础概念，适合作为入门或热身题。
-                              </div>
-                            </div>
-                            <div
-                              className="bg-white rounded-xl p-3.5 border border-[rgba(123,59,232,0.08)] shadow-[0_1px_6px_rgba(0,0,0,0.03)]"
-                              data-oid="m-5.t4t"
-                            >
-                              <div
-                                className="font-bold text-[#2b1650] mb-2"
-                                data-oid="96m.93."
-                              >
-                                答案分析
-                              </div>
-                              <div
-                                className="text-[#4b4b4b] text-[14px] leading-[1.6]"
-                                data-oid="mjzs14y"
-                              >
-                                {q.answerAnalysis || "暂无答案分析。"}
-                              </div>
-                            </div>
-                          </div>
-                        )}
-
+                      ))}
+                      {/* 如果试卷为空，显示插入按钮 */}
+                      {localQuestions.length === 0 && (
                         <div
                           className="flex justify-center my-1.5"
-                          data-oid="x26d_d_"
+                          data-oid="py3kx:o"
                         >
                           <button
                             className="bg-transparent border border-dashed border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1 rounded-lg cursor-pointer text-[13px] transition-[background,border-color] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)]"
                             onClick={() => {
-                              setInsertAt(idx);
-                              setEditingQuestionId(null);
-                              setShowInsertModal(true);
+                              openInsertModal({ at: -1, editingId: null });
                             }}
-                            data-oid="1g-kyf:"
+                            data-oid="zf8fxy:"
                           >
                             + 插入题目
                           </button>
                         </div>
-                      </div>
-                    ))}
-                    {/* 如果试卷为空，显示插入按钮 */}
-                    {localQuestions.length === 0 && (
-                      <div
-                        className="flex justify-center my-1.5"
-                        data-oid="py3kx:o"
-                      >
-                        <button
-                          className="bg-transparent border border-dashed border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1 rounded-lg cursor-pointer text-[13px] transition-[background,border-color] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)]"
-                          onClick={() => {
-                            setInsertAt(-1);
-                            setEditingQuestionId(null);
-                            setShowInsertModal(true);
-                          }}
-                          data-oid="zf8fxy:"
-                        >
-                          + 插入题目
-                        </button>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div data-oid="n3_3c7r">
-              <div
-                className="bg-white/40 backdrop-blur-[16px] rounded-xl p-[18px] shadow-[0_8px_32px_rgba(147,51,234,0.12)] border border-white/40 min-h-[640px] max-h-[640px] flex flex-col gap-3 overflow-y-auto relative"
-                data-oid="q-zngzr"
-              >
+            }
+            right={
+              <div data-oid="n3_3c7r">
+                <div
+                  className="bg-white/40 backdrop-blur-[16px] rounded-xl p-[18px] shadow-[0_8px_32px_rgba(147,51,234,0.12)] border border-white/40 flex-1 min-h-0 flex flex-col gap-3 overflow-y-auto relative"
+                  data-oid="q-zngzr"
+                >
                 <div className="flex flex-col gap-3" data-oid="cim6_sx">
                   <div
                     className="bg-white rounded-[10px] p-3 shadow-[0_1px_6px_rgba(0,0,0,0.06)] min-h-[320px]"
@@ -973,11 +968,10 @@ const DetailPage: React.FC<{
                   </div>
                 </div>
 
-                {recommendMounted && (
-                  <div
-                    className={`absolute inset-[18px] bg-white rounded-xl flex flex-col gap-3 z-[2] transition-[opacity,transform] shadow-[0_6px_18px_rgba(16,24,40,0.08)] will-change-[transform,opacity] ${!recommendVisible ? "opacity-0 translate-y-[18px] pointer-events-none" : "opacity-100 translate-y-0"}`}
-                    data-oid="da8uzsz"
-                  >
+                <div
+                  className={`absolute inset-[18px] bg-white rounded-xl flex flex-col gap-3 z-[2] transition-[opacity,transform] shadow-[0_6px_18px_rgba(16,24,40,0.08)] will-change-[transform,opacity] ${!recommendActive ? "opacity-0 translate-y-[18px] pointer-events-none" : "opacity-100 translate-y-0"}`}
+                  data-oid="da8uzsz"
+                >
                     <div
                       className="flex flex-col gap-3 flex-1 min-h-0 overflow-auto"
                       data-oid="84-vy:l"
@@ -1077,11 +1071,12 @@ const DetailPage: React.FC<{
                         </div>
                       </div>
                     </div>
-                  </div>
-                )}
+                </div>
+                </div>
               </div>
-            </div>
-          </div>
+            }
+            data-oid="uewgnt."
+          />
         </div>
 
         {showInsertModal && (
