@@ -13,14 +13,14 @@ const TeachingHub: React.FC = () => {
           key: "exam-design",
           title: "试卷设计",
           desc: "快速搭建题型组合并输出大题。",
-          to: "/teaching/exam",
+          to: "/teaching/exam/ListPage",
           icon: <FormOutlined data-oid="u.yjbbr" />,
         },
         {
           key: "syllabus",
           title: "大纲生成",
           desc: "匹配教学目标与考核内容。",
-          to: "/teaching/syllabus",
+          to: "/teaching/syllabus/ListPage",
           icon: <BookOutlined data-oid="_swv0qp" />,
         },
       ]}

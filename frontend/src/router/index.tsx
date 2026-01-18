@@ -1,5 +1,5 @@
 import React, { Suspense } from "react";
-import { createBrowserRouter } from "react-router-dom";
+import { Navigate, createBrowserRouter } from "react-router-dom";
 import { Spin } from "antd";
 import MainLayout from "@/layouts/MainLayout";
 import AuthLayout from "@/pages/Auth";
@@ -13,8 +13,18 @@ const StudyHub = React.lazy(() => import("@/pages/Study"));
 const TeachingHub = React.lazy(() => import("@/pages/Teaching"));
 const ResearchHub = React.lazy(() => import("@/pages/Research"));
 const ManagementHub = React.lazy(() => import("@/pages/Management"));
-const Syllabus = React.lazy(() => import("@/pages/Teaching/Syllabus"));
-const ExamDesign = React.lazy(() => import("@/pages/Teaching/ExamDesign"));
+const SyllabusList = React.lazy(
+  () => import("@/pages/Teaching/Syllabus/ListRoute"),
+);
+const SyllabusDetail = React.lazy(
+  () => import("@/pages/Teaching/Syllabus/DetailRoute"),
+);
+const ExamDesignList = React.lazy(
+  () => import("@/pages/Teaching/ExamDesign/ListRoute"),
+);
+const ExamDesignDetail = React.lazy(
+  () => import("@/pages/Teaching/ExamDesign/DetailRoute"),
+);
 const MajorConstruct = React.lazy(
   () => import("@/pages/Management/MajorConstruct"),
 );
@@ -62,12 +72,24 @@ const router = createBrowserRouter([
         element: LazyLoad(<CodeTutor />),
       },
       {
-        path: "teaching/syllabus",
-        element: LazyLoad(<Syllabus />),
+        path: "teaching/exam",
+        element: <Navigate to="/teaching/exam/ListPage" replace />,
       },
       {
-        path: "teaching/exam",
-        element: LazyLoad(<ExamDesign />),
+        path: "teaching/syllabus/ListPage",
+        element: LazyLoad(<SyllabusList />),
+      },
+      {
+        path: "teaching/syllabus/DetailPage",
+        element: LazyLoad(<SyllabusDetail />),
+      },
+      {
+        path: "teaching/exam/ListPage",
+        element: LazyLoad(<ExamDesignList />),
+      },
+      {
+        path: "teaching/exam/DetailPage",
+        element: LazyLoad(<ExamDesignDetail />),
       },
       {
         path: "management/major",

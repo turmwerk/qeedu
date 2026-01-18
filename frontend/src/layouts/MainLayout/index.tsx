@@ -66,9 +66,17 @@ const MainLayout: React.FC = () => {
   }, [siderOpen]);
 
   const showSiderToggle = useMemo(
-    () => location.pathname.startsWith("/teaching/syllabus"),
+    () =>
+      location.pathname.startsWith("/teaching/syllabus") &&
+      location.pathname !== "/teaching/syllabus/ListPage",
     [location.pathname]
   );
+
+  useEffect(() => {
+    if (location.pathname === "/teaching/syllabus/ListPage") {
+      setSiderOpen(false);
+    }
+  }, [location.pathname]);
 
   return (
     <div className="flex h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50 relative overflow-hidden">

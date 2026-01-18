@@ -47,6 +47,7 @@ const ListPage: React.FC<{
                   items={items}
                   keyExtractor={(i: any) => i.id}
                   editable={{ getValue: (i: any) => i.title }}
+                  onItemClick={(item: any) => onEdit(item.id)}
                   renderItem={(item: any) => (
                     <>
                       <div className="font-bold text-[#2d1b4f]">

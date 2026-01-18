@@ -21,6 +21,8 @@ export interface ListProps<T = any> {
   editable?: EditableProps<T>;
   /** 可选：用于生成稳定的 key（默认为索引） */
   keyExtractor?: (item: T) => string | number;
+  /** 点击条目行 */
+  onItemClick?: (item: T) => void;
 }
 
 function List<T = any>({
@@ -30,6 +32,7 @@ function List<T = any>({
   emptyText,
   editable,
   keyExtractor,
+  onItemClick,
 }: ListProps<T>) {
   const [editingKey, setEditingKey] = useState<string | null>(null);
   const [editingValue, setEditingValue] = useState<string>("");
@@ -47,7 +50,7 @@ function List<T = any>({
 
   return (
     <div
-      className="flex flex-col gap-3 max-h-[420px] overflow-auto"
+      className="flex flex-col gap-3 max-h-[420px] overflow-y-auto overflow-x-hidden"
       data-oid="uhdlmu-"
     >
       {items.map((item, idx) => {
@@ -58,9 +61,18 @@ function List<T = any>({
         return (
           <div
             key={key}
-            className="flex justify-between items-center bg-[var(--brand-accent-soft)] p-3 rounded-[10px] border border-transparent transition-[box-shadow,border-color,background] hover:shadow-[var(--brand-shadow)] hover:border-[var(--brand-accent)] hover:bg-white"
+            className={`group relative flex justify-between items-center bg-[var(--brand-accent-soft)] p-3 rounded-[10px] border border-transparent transition-[box-shadow,border-color,background,transform] hover:shadow-[0_18px_40px_rgba(124,58,237,0.22),0_0_0_1px_rgba(124,58,237,0.15)] hover:border-[var(--brand-accent)] hover:bg-white hover:-translate-y-[2px] ${onItemClick ? "cursor-pointer" : ""}`}
+            onClick={() => {
+              if (isEditing) return;
+              if (onItemClick) onItemClick(item);
+            }}
             data-oid="_99fzva"
           >
+            {onItemClick && (
+              <div className="pointer-events-none absolute inset-0 rounded-[10px] opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                <div className="absolute -inset-1 rounded-[12px] bg-[radial-gradient(circle_at_30%_20%,rgba(160,120,255,0.35),transparent_55%),radial-gradient(circle_at_70%_80%,rgba(98,54,255,0.28),transparent_60%)] blur-[10px]" />
+              </div>
+            )}
             <div
               className="w-10 text-center text-[var(--brand-accent)] font-bold mr-3"
               data-oid="9yfs1_:"
@@ -75,6 +87,7 @@ function List<T = any>({
                     aria-label="重命名"
                     value={editingValue}
                     onChange={(e) => setEditingValue(e.target.value)}
+                    onClick={(e) => e.stopPropagation()}
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
                         // 找到重命名 action 并触发
@@ -106,7 +119,8 @@ function List<T = any>({
                           action.className ||
                           "bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1.5 rounded-lg cursor-pointer font-semibold hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)]"
                         }
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.stopPropagation();
                           const start = editable ? editable.getValue(item) : "";
                           setEditingValue(start);
                           setEditingKey(key);
@@ -125,7 +139,10 @@ function List<T = any>({
                         action.className ||
                         "bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1.5 rounded-lg cursor-pointer font-semibold hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)]"
                       }
-                      onClick={() => action.onClick(item)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        action.onClick(item);
+                      }}
                       data-oid="iqsl-65"
                     >
                       {action.label}
@@ -139,7 +156,8 @@ function List<T = any>({
               <div className="flex gap-2" data-oid="ylq3eih">
                 <button
                   className="bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1.5 rounded-lg cursor-pointer font-semibold hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)]"
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
                     const renameAction = actions?.find((a) => a.isRename);
                     if (renameAction) renameAction.onClick(item, editingValue);
                     setEditingKey(null);
@@ -150,7 +168,10 @@ function List<T = any>({
                 </button>
                 <button
                   className="bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1.5 rounded-lg cursor-pointer font-semibold hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)]"
-                  onClick={() => setEditingKey(null)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setEditingKey(null);
+                  }}
                   data-oid="ta682i1"
                 >
                   取消

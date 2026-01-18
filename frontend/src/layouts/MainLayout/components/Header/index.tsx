@@ -37,11 +37,19 @@ const routeConfig: Record<string, { title: string; icon?: React.ReactNode }> = {
     title: "南京大学 · 助教模块",
     icon: <ExperimentOutlined data-oid="b7xm4-i" />,
   },
-  "/teaching/syllabus": {
+  "/teaching/syllabus/ListPage": {
     title: "大纲设计",
     icon: <BookOutlined data-oid="gayo2n4" />,
   },
-  "/teaching/exam": {
+  "/teaching/syllabus/DetailPage": {
+    title: "大纲设计",
+    icon: <BookOutlined data-oid="gayo2n4" />,
+  },
+  "/teaching/exam/ListPage": {
+    title: "试卷设计",
+    icon: <FormOutlined data-oid="noyy4d9" />,
+  },
+  "/teaching/exam/DetailPage": {
     title: "试卷设计",
     icon: <FormOutlined data-oid="noyy4d9" />,
   },
@@ -75,6 +83,14 @@ const MainHeader: React.FC<{ onToggleSider?: () => void; showSiderToggle?: boole
   const navigate = useNavigate();
   const location = useLocation();
   const isHomePage = location.pathname === "/";
+
+  const backRouteMap: Record<string, string> = {
+    "/teaching/exam/DetailPage": "/teaching/exam/ListPage",
+    "/teaching/exam/ListPage": "/teaching",
+    "/teaching/syllabus/DetailPage": "/teaching/syllabus/ListPage",
+    "/teaching/syllabus/ListPage": "/teaching",
+  };
+  const backTarget = backRouteMap[location.pathname];
 
   // 获取当前路由的配置
   const currentConfig = routeConfig[location.pathname] || {
@@ -135,7 +151,7 @@ const MainHeader: React.FC<{ onToggleSider?: () => void; showSiderToggle?: boole
         ) : (
           <button
             className="flex items-center gap-1.5 px-4 py-1.5 text-sm font-medium text-[#1a1a1a] bg-transparent border-0 cursor-pointer rounded-lg transition-all hover:text-[#6236ff] hover:bg-[rgba(98,54,255,0.05)]"
-            onClick={() => navigate(-1)}
+            onClick={() => (backTarget ? navigate(backTarget) : navigate(-1))}
             data-oid="36x2h-h"
           >
             <ArrowLeftOutlined data-oid="o9u1a7c" />
