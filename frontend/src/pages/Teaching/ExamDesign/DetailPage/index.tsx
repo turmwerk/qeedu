@@ -1,6 +1,5 @@
 import React, { useCallback, useState, useEffect, type DragEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { MenuOutlined } from "@ant-design/icons";
 import Dialog from "@/components/Dialog";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import Dropdown from "@/components/Dropdown";
@@ -368,7 +367,7 @@ const DetailPage: React.FC<{
 
   return (
     <>
-      <div data-oid="vqmja1r">
+      <div className="h-full min-h-0 w-full" data-oid="vqmja1r">
         <ToastContainer data-oid="d_rl_f6" />
         <style data-oid="ykkejm8">{`
         @keyframes analysisReveal {
@@ -399,18 +398,6 @@ const DetailPage: React.FC<{
               />
 
               <div className="flex items-center gap-3" data-oid="fkowqs5">
-                {!siderOpen && (
-                  <button
-                    className="flex items-center justify-center w-9 h-9 rounded-lg bg-white/60 border border-white/60 shadow-[0_6px_18px_rgba(124,58,237,0.18)] text-[#5b35b7] hover:brightness-110 transition"
-                    onClick={() =>
-                      window.dispatchEvent(new Event("toggle-exam-sider"))
-                    }
-                    aria-label="打开侧边栏"
-                    data-oid="sider-toggle-exam"
-                  >
-                    <MenuOutlined />
-                  </button>
-                )}
                 <div
                   className="flex flex-col items-start justify-center gap-0.5 mr-2"
                   data-oid="1cj8vf:"
@@ -476,12 +463,12 @@ const DetailPage: React.FC<{
             </div>
           </div>
           <SplitSiderLayout
-            className="p-0"
+            className="p-0 flex-1 min-h-0 h-full"
             leftClassName="flex flex-col h-full min-h-0 bg-white overflow-hidden"
             rightClassName="bg-white h-full flex flex-col min-h-0 overflow-hidden"
             left={
-              <div data-oid=":ugrgg3">
-                <div className="flex flex-col gap-3" data-oid="kpt222u">
+              <div className="h-full min-h-0 flex flex-col" data-oid=":ugrgg3">
+                <div className="flex flex-col gap-3 flex-1 min-h-0" data-oid="kpt222u">
                   <div
                     className="bg-white rounded-xl shadow-[0_6px_18px_rgba(16,24,40,0.06)] p-3 flex-1 min-h-0 overflow-y-auto"
                     data-oid="7_pgxtm"
@@ -751,7 +738,7 @@ const DetailPage: React.FC<{
               </div>
             }
             right={
-              <div data-oid="n3_3c7r">
+              <div className="h-full min-h-0 flex flex-col" data-oid="n3_3c7r">
                 <div
                   className="bg-white/40 backdrop-blur-[16px] rounded-xl p-[18px] shadow-[0_8px_32px_rgba(147,51,234,0.12)] border border-white/40 flex-1 min-h-0 flex flex-col gap-3 overflow-y-auto relative"
                   data-oid="q-zngzr"
@@ -969,11 +956,11 @@ const DetailPage: React.FC<{
                 </div>
 
                 <div
-                  className={`absolute inset-[18px] bg-white rounded-xl flex flex-col gap-3 z-[2] transition-[opacity,transform] shadow-[0_6px_18px_rgba(16,24,40,0.08)] will-change-[transform,opacity] ${!recommendActive ? "opacity-0 translate-y-[18px] pointer-events-none" : "opacity-100 translate-y-0"}`}
+                  className={`absolute inset-[18px] bg-white rounded-xl flex flex-col z-[2] transition-[opacity,transform] shadow-[0_6px_18px_rgba(16,24,40,0.08)] will-change-[transform,opacity] ${!recommendActive ? "opacity-0 translate-y-[18px] pointer-events-none" : "opacity-100 translate-y-0"}`}
                   data-oid="da8uzsz"
                 >
                     <div
-                      className="flex flex-col gap-3 flex-1 min-h-0 overflow-auto"
+                      className="flex flex-col gap-0 p-0 overflow-y-auto flex-1 min-h-0"
                       data-oid="84-vy:l"
                     >
                       <div
@@ -1055,7 +1042,7 @@ const DetailPage: React.FC<{
                       </div>
 
                       <div
-                        className="bg-white rounded-[10px] p-3 shadow-[0_1px_6px_rgba(0,0,0,0.06)] flex flex-col h-[360px] min-h-0"
+                        className="bg-white rounded-[10px] p-3 shadow-[0_1px_6px_rgba(0,0,0,0.06)] flex flex-col h-[720px] min-h-0"
                         data-oid=".3-t5d_"
                       >
                         <div

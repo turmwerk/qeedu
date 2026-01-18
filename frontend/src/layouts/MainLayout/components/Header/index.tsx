@@ -85,6 +85,7 @@ const MainHeader: React.FC<{ onToggleSider?: () => void; showSiderToggle?: boole
   const isHomePage = location.pathname === "/";
 
   const backRouteMap: Record<string, string> = {
+    "/teaching": "/",
     "/teaching/exam/ListPage": "/teaching",
     "/teaching/syllabus/ListPage": "/teaching",
   };

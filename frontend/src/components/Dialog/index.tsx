@@ -92,7 +92,7 @@ const Dialog: React.FC<DialogProps> & {
       </div>
       <div
         ref={bodyRef}
-        className="flex-1 min-h-0 bg-[var(--brand-accent-soft)] rounded-lg p-3 flex flex-col gap-2 overflow-y-auto"
+        className="flex-1 min-h-0 bg-[var(--brand-accent-soft)] rounded-lg p-3 flex flex-col gap-2 overflow-y-scroll"
         data-oid="3i9rwq-"
       >
         {messages.map((m, i) => (

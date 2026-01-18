@@ -126,10 +126,16 @@ const ModuleHub: React.FC<Props> = ({
                 <button
                   key={feature.key}
                   type="button"
-                  className="group relative overflow-hidden rounded-[20px] p-8 min-h-[140px] bg-white/30 backdrop-blur-[16px] text-left cursor-pointer shadow-[0_8px_32px_rgba(147,51,234,0.15)] transition-all duration-300 flex items-start gap-3.5 hover:-translate-y-1 hover:shadow-[0_16px_48px_rgba(147,51,234,0.3)] hover:bg-white/50"
+                  className="group relative overflow-hidden rounded-[20px] p-8 min-h-[140px] bg-white/30 backdrop-blur-[16px] text-left cursor-pointer shadow-[0_8px_32px_rgba(147,51,234,0.15)] transition-all duration-300 flex items-start gap-3.5 hover:-translate-y-1 hover:shadow-[0_14px_36px_rgba(99,102,241,0.22),0_0_18px_rgba(236,72,153,0.12),0_0_24px_rgba(139,92,246,0.14)] hover:bg-white/50"
                   onClick={() => navigate(feature.to)}
                   data-oid="e4tl.v3"
                 >
+                  <span
+                    className="pointer-events-none absolute -inset-3 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                    data-oid="color-glow"
+                  >
+                    <span className="absolute inset-0 rounded-[24px] bg-[radial-gradient(circle_at_20%_20%,rgba(99,102,241,0.22),transparent_65%),radial-gradient(circle_at_80%_30%,rgba(236,72,153,0.2),transparent_65%),radial-gradient(circle_at_40%_80%,rgba(139,92,246,0.18),transparent_70%)] blur-[16px]" />
+                  </span>
                   <span
                     className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.65),transparent_55%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
                     data-oid="d2q7rxo"

@@ -61,7 +61,7 @@ function List<T = any>({
         return (
           <div
             key={key}
-            className={`group relative flex justify-between items-center bg-[var(--brand-accent-soft)] p-3 rounded-[10px] border border-transparent transition-[box-shadow,border-color,background,transform] hover:shadow-[0_18px_40px_rgba(124,58,237,0.22),0_0_0_1px_rgba(124,58,237,0.15)] hover:border-[var(--brand-accent)] hover:bg-white hover:-translate-y-[2px] ${onItemClick ? "cursor-pointer" : ""}`}
+            className={`group relative flex justify-between items-center bg-[var(--brand-accent-soft)] p-4 rounded-[12px] border border-transparent transition-[box-shadow,border-color,background] hover:shadow-[0_16px_34px_rgba(99,102,241,0.22),0_0_18px_rgba(236,72,153,0.12),0_0_24px_rgba(139,92,246,0.14)] hover:border-[var(--brand-accent)] hover:bg-white ${onItemClick ? "cursor-pointer" : ""}`}
             onClick={() => {
               if (isEditing) return;
               if (onItemClick) onItemClick(item);
@@ -70,7 +70,7 @@ function List<T = any>({
           >
             {onItemClick && (
               <div className="pointer-events-none absolute inset-0 rounded-[10px] opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                <div className="absolute -inset-1 rounded-[12px] bg-[radial-gradient(circle_at_30%_20%,rgba(160,120,255,0.35),transparent_55%),radial-gradient(circle_at_70%_80%,rgba(98,54,255,0.28),transparent_60%)] blur-[10px]" />
+                <div className="absolute -inset-2 rounded-[14px] bg-[radial-gradient(circle_at_20%_20%,rgba(99,102,241,0.22),transparent_65%),radial-gradient(circle_at_80%_30%,rgba(236,72,153,0.2),transparent_65%),radial-gradient(circle_at_40%_85%,rgba(139,92,246,0.18),transparent_70%)] blur-[12px]" />
               </div>
             )}
             <div
