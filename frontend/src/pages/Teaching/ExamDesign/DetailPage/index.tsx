@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect, type DragEvent } from "react";
+import React, { useCallback, useState, type DragEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import Dialog from "@/components/Dialog";
 import ConfirmDialog from "@/components/ConfirmDialog";
@@ -94,7 +94,6 @@ const DetailPage: React.FC<{
   const [selectedQuestion, setSelectedQuestion] = useState<string | null>(null);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
-  const [siderOpen, setSiderOpen] = useState(false);
   const [confirmState, setConfirmState] = useState<{
     title: string;
     description?: string;
@@ -110,20 +109,7 @@ const DetailPage: React.FC<{
 
   const recommendActive = !!selectedQuestion;
 
-  useEffect(() => {
-    const handleState = (event: Event) => {
-      const detail = (event as CustomEvent<{ open?: boolean }>).detail;
-      setSiderOpen(!!detail?.open);
-    };
-    window.addEventListener("exam-sider-state", handleState as EventListener);
-    window.dispatchEvent(new Event("get-exam-sider-state"));
-    return () => {
-      window.removeEventListener(
-        "exam-sider-state",
-        handleState as EventListener,
-      );
-    };
-  }, []);
+  
 
   const openConfirm = (payload: {
     title: string;
