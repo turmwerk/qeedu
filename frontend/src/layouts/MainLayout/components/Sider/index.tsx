@@ -47,31 +47,30 @@ const Sider: React.FC<Props> = ({
 	const [editingTitle, setEditingTitle] = useState("");
 	const [deleteConfirm, setDeleteConfirm] = useState<{ open: boolean; id: string | null; title: string }>({ open: false, id: null, title: "" });
 
-	useEffect(() => {
-		const load = () => {
-			try {
-				const raw = localStorage.getItem(storageKey);
-				if (raw) {
-					const parsed = JSON.parse(raw) as Array<
-						SiderItem & Record<string, unknown>
-					>;
-					setItems(
-						parsed.map((item) => ({
-							id: item.id,
-							title: item.title,
-							createdAt: item.createdAt,
-						})),
-					);
-				} else {
-					setItems([]);
-				}
-			} catch {
+	const loadItems = useCallback(() => {
+		try {
+			const raw = localStorage.getItem(storageKey);
+			if (raw) {
+				const parsed = JSON.parse(raw) as Array<SiderItem & Record<string, unknown>>;
+				setItems(
+					parsed.map((item) => ({
+						id: item.id,
+						title: item.title,
+						createdAt: item.createdAt,
+					})),
+				);
+			} else {
 				setItems([]);
 			}
-		};
-		load();
-		const onStorage = () => load();
-		const onCustom = () => load();
+		} catch {
+			setItems([]);
+		}
+	}, [storageKey]);
+
+	useEffect(() => {
+		loadItems();
+		const onStorage = () => loadItems();
+		const onCustom = () => loadItems();
 		const onSelect = (event: Event) => {
 			const detail = (event as CustomEvent<{ id?: string }>).detail;
 			if (detail?.id) setSelectedId(detail.id);
@@ -87,7 +86,33 @@ const Sider: React.FC<Props> = ({
 				onSelect as EventListener
 			);
 		};
-	}, [storageKey, updatedEventName, currentIdEventName]);
+	}, [loadItems, updatedEventName, currentIdEventName]);
+
+	const persistRename = useCallback(
+		(id: string, nextTitle: string) => {
+			try {
+				const raw = localStorage.getItem(storageKey);
+				const parsed = raw
+					? (JSON.parse(raw) as Array<Record<string, unknown> & SiderItem>)
+					: [];
+				const updated = parsed.map((item) =>
+					item.id === id ? { ...item, title: nextTitle } : item,
+				);
+				localStorage.setItem(storageKey, JSON.stringify(updated));
+				setItems(
+					updated.map((item) => ({
+						id: item.id,
+						title: item.title,
+						createdAt: item.createdAt,
+					})),
+				);
+				window.dispatchEvent(new Event(updatedEventName));
+			} catch (e) {
+				console.warn("rename item failed", e);
+			}
+		},
+		[storageKey, updatedEventName]
+	);
 
 	const startDrag = useCallback(() => {
 		isDragging.current = true;
@@ -261,12 +286,7 @@ const Sider: React.FC<Props> = ({
 									title="重命名"
 									onBlur={() => {
 										if (editingTitle.trim()) {
-											const updated = items.map((o) =>
-												o.id === item.id ? { ...o, title: editingTitle.trim() } : o
-											);
-											localStorage.setItem(storageKey, JSON.stringify(updated));
-											setItems(updated);
-											window.dispatchEvent(new Event(updatedEventName));
+											persistRename(item.id, editingTitle.trim());
 										}
 										setEditingId(null);
 									}}
