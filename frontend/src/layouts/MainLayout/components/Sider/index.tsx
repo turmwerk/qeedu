@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { SortAscendingOutlined, SortDescendingOutlined, EditOutlined, DeleteOutlined, CheckOutlined, PlusOutlined } from "@ant-design/icons";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import Button from "@/components/Button";
 
 type SiderItem = {
 	id: string;
@@ -210,7 +211,7 @@ const Sider: React.FC<Props> = ({
 						列表
 					</div>
 					<div className="flex items-center gap-2">
-						<button
+						<Button
 							className="flex items-center justify-center w-9 h-9 rounded-lg bg-white/80 border border-white/60 shadow-[0_6px_18px_rgba(124,58,237,0.18)] text-[#5b35b7] hover:brightness-110 transition"
 							onClick={() =>
 								window.dispatchEvent(new Event(createEventName))
@@ -218,13 +219,13 @@ const Sider: React.FC<Props> = ({
 							aria-label="新增"
 						>
 							<PlusOutlined />
-						</button>
+						</Button>
 						<div className="relative group">
-							<button className="flex items-center justify-center w-9 h-9 rounded-lg bg-white/80 border border-white/60 shadow-[0_6px_18px_rgba(124,58,237,0.18)] text-[#5b35b7] hover:brightness-110 transition">
+							<Button className="flex items-center justify-center w-9 h-9 rounded-lg bg-white/80 border border-white/60 shadow-[0_6px_18px_rgba(124,58,237,0.18)] text-[#5b35b7] hover:brightness-110 transition">
 								排序
-							</button>
+							</Button>
 							<div className="absolute right-0 top-[calc(100%+4px)] bg-white/90 backdrop-blur-[20px] rounded-xl p-2 min-w-[120px] shadow-[0_8px_32px_rgba(147,51,234,0.15)] border border-white/40 opacity-0 -translate-y-1.5 pointer-events-none z-10 flex flex-col transition-[opacity,transform] [transition:opacity_200ms_ease_500ms,transform_200ms_ease_500ms] group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto group-hover:[transition-delay:0ms]">
-								<button
+								<Button
 									className={`bg-transparent border-0 text-left w-full px-3 py-2 rounded-lg cursor-pointer text-[#1f1f1f] hover:bg-[var(--brand-accent-soft)] flex items-center justify-between ${
 										sortBy === "time" ? "bg-purple-50" : ""
 									}`}
@@ -232,8 +233,8 @@ const Sider: React.FC<Props> = ({
 								>
 									<span>按时间</span>
 									{sortBy === "time" && <CheckOutlined className="text-[#5b35b7]" />}
-								</button>
-								<button
+								</Button>
+								<Button
 									className={`bg-transparent border-0 text-left w-full px-3 py-2 rounded-lg cursor-pointer text-[#1f1f1f] hover:bg-[var(--brand-accent-soft)] flex items-center justify-between ${
 										sortBy === "name" ? "bg-purple-50" : ""
 									}`}
@@ -241,23 +242,23 @@ const Sider: React.FC<Props> = ({
 								>
 									<span>按名称</span>
 									{sortBy === "name" && <CheckOutlined className="text-[#5b35b7]" />}
-								</button>
+								</Button>
 							</div>
 						</div>
-						<button
+						<Button
 							className="flex items-center justify-center w-9 h-9 rounded-lg bg-white/80 border border-white/60 shadow-[0_6px_18px_rgba(124,58,237,0.18)] text-[#5b35b7] hover:brightness-110 transition"
 							onClick={() => setOrder((v) => (v === "asc" ? "desc" : "asc"))}
 							aria-label="切换排序"
 						>
 							{order === "asc" ? <SortAscendingOutlined /> : <SortDescendingOutlined />}
-						</button>
-						<button
+						</Button>
+						<Button
 							className="flex items-center justify-center w-9 h-9 rounded-lg bg-white/80 border border-white/60 shadow-[0_6px_18px_rgba(124,58,237,0.18)] text-[#5b35b7] hover:brightness-110 transition"
 							onClick={onClose}
 							aria-label="关闭侧边栏"
 						>
 							收起
-						</button>
+						</Button>
 					</div>
 				</div>
 				<div className="flex-1 overflow-y-auto p-3 space-y-2">
@@ -317,7 +318,7 @@ const Sider: React.FC<Props> = ({
 									: "--"}
 							</div>
 							<div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-								<button
+								<Button
 									className="flex items-center justify-center w-7 h-7 rounded-lg bg-white/90 border border-purple-300/60 shadow-[0_4px_12px_rgba(124,58,237,0.2)] text-[#5b35b7] hover:bg-purple-50 hover:scale-110 transition-all"
 									onClick={(e) => {
 										e.stopPropagation();
@@ -327,8 +328,8 @@ const Sider: React.FC<Props> = ({
 									aria-label="重命名"
 								>
 									<EditOutlined className="text-xs" />
-								</button>
-								<button
+								</Button>
+								<Button
 									className="flex items-center justify-center w-7 h-7 rounded-lg bg-white/90 border border-red-300/60 shadow-[0_4px_12px_rgba(220,38,38,0.2)] text-red-500 hover:bg-red-50 hover:scale-110 transition-all"
 									onClick={(e) => {
 										e.stopPropagation();
@@ -337,7 +338,7 @@ const Sider: React.FC<Props> = ({
 									aria-label="删除"
 								>
 									<DeleteOutlined className="text-xs" />
-								</button>
+								</Button>
 							</div>
 						</div>
 					))}

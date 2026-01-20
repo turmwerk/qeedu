@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Button from "@/components/Button";
 
 export interface ListAction<T = any> {
   label: React.ReactNode;
@@ -113,7 +114,7 @@ function List<T = any>({
                   // 对于重命名动作，List 自行切换到编辑模式并填充初始值
                   if (action.isRename) {
                     return (
-                      <button
+                      <Button
                         key={i}
                         className={
                           action.className ||
@@ -128,12 +129,12 @@ function List<T = any>({
                         data-oid="b_t10g-"
                       >
                         {action.label}
-                      </button>
+                      </Button>
                     );
                   }
 
                   return (
-                    <button
+                    <Button
                       key={i}
                       className={
                         action.className ||
@@ -146,7 +147,7 @@ function List<T = any>({
                       data-oid="iqsl-65"
                     >
                       {action.label}
-                    </button>
+                    </Button>
                   );
                 })}
               </div>
@@ -154,7 +155,7 @@ function List<T = any>({
 
             {isEditing && (
               <div className="flex gap-2" data-oid="ylq3eih">
-                <button
+                <Button
                   className="bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1.5 rounded-lg cursor-pointer font-semibold hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)]"
                   onClick={(e) => {
                     e.stopPropagation();
@@ -165,8 +166,8 @@ function List<T = any>({
                   data-oid="qc2lvtt"
                 >
                   确定
-                </button>
-                <button
+                </Button>
+                <Button
                   className="bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1.5 rounded-lg cursor-pointer font-semibold hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)]"
                   onClick={(e) => {
                     e.stopPropagation();
@@ -175,7 +176,7 @@ function List<T = any>({
                   data-oid="ta682i1"
                 >
                   取消
-                </button>
+                </Button>
               </div>
             )}
           </div>

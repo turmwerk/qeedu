@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Button from "@/components/Button";
 
 export interface FormField {
   name: string;
@@ -229,9 +230,9 @@ const Form: React.FC<FormProps> = ({
                               ? (file.size / 1024).toFixed(1) + "KB"
                               : ""}
                           </span>
-                          <button
+                          <Button
                             type="button"
-                            className="bg-transparent border-0 text-[#999] cursor-pointer text-[16px] leading-none px-1 transition hover:text-[#ff4d4f]"
+                            className="bg-transparent border-0 text-[#999] text-[16px] leading-none px-1 transition hover:text-[#ff4d4f]"
                             onClick={() => {
                               if (Array.isArray(values[f.name])) {
                                 const newFiles = values[f.name].filter(
@@ -245,7 +246,7 @@ const Form: React.FC<FormProps> = ({
                             data-oid="2.upi19"
                           >
                             ×
-                          </button>
+                          </Button>
                         </div>
                       ))}
                     </div>
@@ -314,11 +315,11 @@ const Form: React.FC<FormProps> = ({
         })(),
       )}
       <div className="mt-3 col-span-2" data-oid="sfs651y">
-        <button
+        <Button
           className={
             submitClassName
-              ? `bg-[var(--brand-accent)] text-white border-0 px-3.5 py-2 rounded-full cursor-pointer shadow-[var(--brand-shadow)] transition-[background,box-shadow] hover:bg-[var(--brand-accent-strong)] hover:shadow-[var(--brand-shadow)] ${submitClassName}`
-              : "bg-[var(--brand-accent)] text-white border-0 px-3.5 py-2 rounded-full cursor-pointer shadow-[var(--brand-shadow)] transition-[background,box-shadow] hover:bg-[var(--brand-accent-strong)] hover:shadow-[var(--brand-shadow)]"
+              ? `bg-[var(--brand-accent)] text-white border-0 px-3.5 py-2 rounded-full shadow-[var(--brand-shadow)] transition-[background,box-shadow] hover:bg-[var(--brand-accent-strong)] hover:shadow-[var(--brand-shadow)] ${submitClassName}`
+              : "bg-[var(--brand-accent)] text-white border-0 px-3.5 py-2 rounded-full shadow-[var(--brand-shadow)] transition-[background,box-shadow] hover:bg-[var(--brand-accent-strong)] hover:shadow-[var(--brand-shadow)]"
           }
           type="submit"
           disabled={!!submitDisabled || !!submitLoading}
@@ -350,7 +351,7 @@ const Form: React.FC<FormProps> = ({
           ) : (
             submitText
           )}
-        </button>
+        </Button>
       </div>
     </form>
   );

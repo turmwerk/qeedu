@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { MenuOutlined } from "@ant-design/icons";
 
 import MarkdownView from "@/components/MarkdownView";
+import Button from "@/components/Button";
 
 interface Props {
   value?: string;
@@ -102,33 +103,33 @@ const MarkdownEditor: React.FC<Props> = ({ value = "", onClose }) => {
         >
           <div className="flex items-center gap-3">
             {!siderOpen && (
-              <button
+              <Button
                 className="flex items-center justify-center w-9 h-9 rounded-lg bg-white/60 border border-white/60 shadow-[0_6px_18px_rgba(124,58,237,0.18)] text-[#5b35b7] hover:brightness-110 transition"
                 onClick={handleToggleSider}
                 aria-label="打开侧边栏"
               >
                 <MenuOutlined />
-              </button>
+              </Button>
             )}
             <div className="text-lg font-semibold text-gray-900" data-oid="rue9-_q">
               画布编辑
             </div>
           </div>
           <div className="flex items-center gap-2" data-oid="o.thfwc">
-            <button
+            <Button
               className="inline-flex items-center justify-center rounded-md border border-gray-200 bg-white/80 px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
               onClick={() => onClose(null)}
               data-oid="zqqe::h"
             >
               取消
-            </button>
-            <button
+            </Button>
+            <Button
               className="inline-flex items-center justify-center rounded-md bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-lg transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
               onClick={() => onClose(text)}
               data-oid="jh7rruz"
             >
               保存并退出
-            </button>
+            </Button>
           </div>
         </div>
 

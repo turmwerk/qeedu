@@ -1,5 +1,6 @@
 import React, { useId } from "react";
 import { createPortal } from "react-dom";
+import Button from "@/components/Button";
 
 const Model: React.FC<{
   visible: boolean;
@@ -33,13 +34,13 @@ const Model: React.FC<{
           <div className="font-bold text-[#2d1b4f]" data-oid="0pbqih6">
             {title}
           </div>
-          <button
-            className="bg-transparent border-0 text-[20px] cursor-pointer"
+          <Button
+            className="bg-transparent border-0 text-[20px]"
             onClick={onClose}
             data-oid="t:bcga_"
           >
             ×
-          </button>
+          </Button>
         </div>
         <div
           className="px-5 py-[18px] max-h-[calc(90vh-72px)] overflow-auto"

@@ -1,5 +1,6 @@
 import React from "react";
 import Model from "@/components/Model";
+import Button from "@/components/Button";
 
 type ConfirmDialogProps = {
   open: boolean;
@@ -34,22 +35,20 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
           </div>
         ) : null}
         <div className="flex justify-end gap-2.5" data-oid="lxcum0k">
-          <button
-            className="bg-transparent border border-[var(--brand-border)] text-[var(--brand-accent)] px-3.5 py-2 rounded-[10px] cursor-pointer font-semibold transition-[background,border-color,box-shadow] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)]"
-            type="button"
+          <Button
+            variant="outline"
             onClick={onCancel}
             data-oid="dpclpq8"
           >
             {cancelText}
-          </button>
-          <button
-            className={`${danger ? "bg-[#c21e1e] hover:bg-[#a30f0f] hover:shadow-[0_10px_24px_rgba(194,30,30,0.2)]" : "bg-[var(--brand-accent)] hover:bg-[var(--brand-accent-strong)] hover:shadow-[var(--brand-shadow)]"} text-white px-3.5 py-2 rounded-[10px] cursor-pointer font-semibold border-0 transition-[background,box-shadow]`}
-            type="button"
+          </Button>
+          <Button
+            variant={danger ? "danger" : "primary"}
             onClick={onConfirm}
             data-oid="a6y_157"
           >
             {confirmText}
-          </button>
+          </Button>
         </div>
       </div>
     </Model>

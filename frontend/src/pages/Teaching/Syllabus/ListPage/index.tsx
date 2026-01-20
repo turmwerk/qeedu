@@ -3,6 +3,7 @@ import List from "@/components/List";
 import Form from "@/components/Form";
 import Model from "@/components/Model";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import Button from "@/components/Button";
 
 type Outline = {
   id: string;
@@ -45,12 +46,12 @@ const ListPage: React.FC<{
                   已创建的大纲 ({items.length})
                 </div>
                 <div>
-                  <button
-                    className="bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1.5 rounded-xl cursor-pointer font-semibold transition-[background,border-color,box-shadow] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)]"
+                  <Button
+                    className="bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1.5 rounded-xl font-semibold transition-[background,border-color,box-shadow] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)]"
                     onClick={() => setOpen(true)}
                   >
                     新建大纲
-                  </button>
+                  </Button>
                 </div>
               </div>
               <div className="p-3">

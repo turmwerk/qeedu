@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Form from "@/components/Form";
 import { showToast } from "@/components/Toast";
 import type { FormField } from "@/components/Form";
+import Button from "@/components/Button";
 
 function EmailIcon() {
   return (
@@ -251,14 +252,14 @@ export default function Resister() {
             data-oid="gp087c6"
           />
 
-          <button
+          <Button
             type="button"
-            className="h-[56px] min-w-[96px] px-[18px] box-border border-0 bg-[var(--brand-accent)] text-white text-[16px] font-bold cursor-pointer hover:bg-[var(--brand-accent-strong)]"
+            className="h-[56px] min-w-[96px] px-[18px] box-border border-0 bg-[var(--brand-accent)] text-white text-[16px] font-bold hover:bg-[var(--brand-accent-strong)]"
             onClick={() => showToast("验证码发送未实现")}
             data-oid="c860_1o"
           >
             发送
-          </button>
+          </Button>
         </div>
       ),
     },
@@ -287,15 +288,15 @@ export default function Resister() {
             data-oid="8n_06g6"
           />
 
-          <button
+          <Button
             type="button"
-            className="absolute right-0 top-0 border-0 bg-transparent text-[var(--brand-muted)] cursor-pointer w-[56px] h-[56px] p-0 inline-flex items-center justify-center box-border shadow-none outline-none leading-none"
+            className="absolute right-0 top-0 border-0 bg-transparent text-[var(--brand-muted)] w-[56px] h-[56px] p-0 inline-flex items-center justify-center box-border shadow-none outline-none leading-none"
             onClick={() => setShowPassword((v) => !v)}
             aria-label={showPassword ? "隐藏密码" : "显示密码"}
             data-oid="n6tvm06"
           >
             <EyeIcon on={showPassword} data-oid="-nnyyp." />
-          </button>
+          </Button>
         </div>
       ),
     },
@@ -324,15 +325,15 @@ export default function Resister() {
             data-oid="j6-:3ie"
           />
 
-          <button
+          <Button
             type="button"
-            className="absolute right-0 top-0 border-0 bg-transparent text-[var(--brand-muted)] cursor-pointer w-[56px] h-[56px] p-0 inline-flex items-center justify-center box-border shadow-none outline-none leading-none"
+            className="absolute right-0 top-0 border-0 bg-transparent text-[var(--brand-muted)] w-[56px] h-[56px] p-0 inline-flex items-center justify-center box-border shadow-none outline-none leading-none"
             onClick={() => setShowPassword2((v) => !v)}
             aria-label={showPassword2 ? "隐藏密码" : "显示密码"}
             data-oid="570ah99"
           >
             <EyeIcon on={showPassword2} data-oid="8boa4sf" />
-          </button>
+          </Button>
         </div>
       ),
     },
@@ -378,23 +379,23 @@ export default function Resister() {
         data-oid="cxq2m32"
       >
         <div className="inline-flex gap-3 items-center" data-oid="7hn9b5q">
-          <button
-            className="bg-transparent border-0 text-[var(--brand-accent)] cursor-pointer px-0.5 py-1.5 text-[16px] hover:underline"
+          <Button
+            className="bg-transparent border-0 text-[var(--brand-accent)] px-0.5 py-1.5 text-[16px] hover:underline"
             onClick={() => navigate("/login")}
             data-oid="81t8x7t"
           >
             返回登录
-          </button>
+          </Button>
         </div>
 
         <div className="inline-flex items-center" data-oid="tjqg5f6">
-          <button
-            className="bg-transparent border-0 text-[var(--brand-accent)] cursor-pointer px-0.5 py-1.5 text-[16px] hover:underline"
+          <Button
+            className="bg-transparent border-0 text-[var(--brand-accent)] px-0.5 py-1.5 text-[16px] hover:underline"
             onClick={goGuest}
             data-oid="rveoy0u"
           >
             游客模式
-          </button>
+          </Button>
         </div>
       </div>
     </div>

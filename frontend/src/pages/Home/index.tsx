@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import Button from "@/components/Button";
 import {
   ReadOutlined,
   ExperimentOutlined,
@@ -151,21 +152,21 @@ const Home: React.FC = () => {
               data-oid="7kfv7p0"
             />
 
-            <button
+            <Button
               type="button"
-              className="w-[42px] h-[42px] rounded-full border-0 bg-[linear-gradient(135deg,#6236ff_0%,#8b5cf6_100%)] text-white text-[20px] cursor-pointer flex items-center justify-center shrink-0 shadow-[0_6px_16px_rgba(98,54,255,0.35)] transition hover:scale-105 hover:shadow-[0_8px_24px_rgba(98,54,255,0.45)]"
+              className="w-[42px] h-[42px] rounded-full border-0 bg-[linear-gradient(135deg,#6236ff_0%,#8b5cf6_100%)] text-white text-[20px] flex items-center justify-center shrink-0 shadow-[0_6px_16px_rgba(98,54,255,0.35)] transition hover:scale-105 hover:shadow-[0_8px_24px_rgba(98,54,255,0.45)]"
               aria-label="发送"
               data-oid="8t-zg1d"
             >
               →
-            </button>
+            </Button>
           </div>
           <div
             className="grid grid-cols-2 gap-6 relative z-[1]"
             data-oid="offsvqz"
           >
             {modules.map((item) => (
-              <button
+              <Button
                 key={item.key}
                 type="button"
                 className="home-card border border-white/40 rounded-[20px] p-8 min-h-[140px] bg-white/30 backdrop-blur-[16px] text-left cursor-pointer shadow-[0_8px_32px_rgba(147,51,234,0.15)] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] flex items-start gap-3.5 relative overflow-hidden hover:-translate-y-1 hover:scale-[1.02] hover:shadow-[0_16px_48px_rgba(147,51,234,0.3),0_0_0_1px_rgba(147,51,234,0.2)_inset] hover:bg-white/50"
@@ -205,7 +206,7 @@ const Home: React.FC = () => {
                     {item.desc}
                   </div>
                 </div>
-              </button>
+              </Button>
             ))}
           </div>
         </div>

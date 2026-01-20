@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Dialog from "@/components/Dialog";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import Dropdown from "@/components/Dropdown";
+import Button from "@/components/Button";
 import Model from "@/components/Model";
 import MarkdownView, { SplitSiderLayout } from "@/components/MarkdownView";
 import ToastContainer from "@/components/Toast";
@@ -401,20 +402,20 @@ const DetailPage: React.FC<{
                     {previewTotalScore}
                   </div>
                 </div>
-                <button
-                  className="bg-white border-2 border-[#7a54c4] text-[#7a54c4] px-3 py-1.5 rounded-xl cursor-pointer font-bold text-[14px] transition-[background,box-shadow,transform] hover:bg-[#f3eefb] hover:shadow-[0_8px_18px_rgba(75,42,133,0.12)] hover:-translate-y-[1px]"
+                <Button
+                  className="bg-white border-2 border-[#7a54c4] text-[#7a54c4] px-3 py-1.5 rounded-xl font-bold text-[14px] transition-[background,box-shadow,transform] hover:bg-[#f3eefb] hover:shadow-[0_8px_18px_rgba(75,42,133,0.12)] hover:-translate-y-[1px]"
                   onClick={handleBack}
                   data-oid="69nuaqq"
                 >
                   返回试卷列表
-                </button>
-                <button
-                  className="bg-white border-2 border-[#7a54c4] text-[#7a54c4] px-3 py-1.5 rounded-xl cursor-pointer font-bold text-[14px] transition-[background,box-shadow,transform] hover:bg-[#f3eefb] hover:shadow-[0_8px_18px_rgba(75,42,133,0.12)] hover:-translate-y-[1px]"
+                </Button>
+                <Button
+                  className="bg-white border-2 border-[#7a54c4] text-[#7a54c4] px-3 py-1.5 rounded-xl font-bold text-[14px] transition-[background,box-shadow,transform] hover:bg-[#f3eefb] hover:shadow-[0_8px_18px_rgba(75,42,133,0.12)] hover:-translate-y-[1px]"
                   onClick={() => setPreviewOpen(true)}
                   data-oid="67i3oug"
                 >
                   试卷预览
-                </button>
+                </Button>
                 <Dropdown
                   button="导出"
                   items={[
@@ -586,8 +587,8 @@ const DetailPage: React.FC<{
                                     data-oid="ut2gof0"
                                   />
                                 </label>
-                                <button
-                                  className="bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-2 py-1.5 rounded-lg cursor-pointer transition-[background,border-color,box-shadow] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)]"
+                                <Button
+                                  className="bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-2 py-1.5 rounded-lg transition-[background,border-color,box-shadow] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)]"
                                   onClick={() => {
                                     openInsertModal({
                                       at: idx - 1,
@@ -597,9 +598,9 @@ const DetailPage: React.FC<{
                                   data-oid="j:aycuw"
                                 >
                                   修改
-                                </button>
-                                <button
-                                  className="bg-white border border-[rgba(200,30,30,0.16)] text-[#c21e1e] px-2 py-1.5 rounded-lg cursor-pointer transition-[background,border-color,box-shadow] hover:bg-[#fff1f2] hover:border-[rgba(200,30,30,0.35)] hover:shadow-[0_8px_18px_rgba(200,30,30,0.15)]"
+                                </Button>
+                                <Button
+                                  className="bg-white border border-[rgba(200,30,30,0.16)] text-[#c21e1e] px-2 py-1.5 rounded-lg transition-[background,border-color,box-shadow] hover:bg-[#fff1f2] hover:border-[rgba(200,30,30,0.35)] hover:shadow-[0_8px_18px_rgba(200,30,30,0.15)]"
                                   onClick={() => {
                                     openConfirm({
                                       title: "删除题目",
@@ -621,7 +622,7 @@ const DetailPage: React.FC<{
                                   data-oid="hn43k9m"
                                 >
                                   删除
-                                </button>
+                                </Button>
                               </div>
                             </div>
                           </div>
@@ -689,15 +690,15 @@ const DetailPage: React.FC<{
                             className="flex justify-center my-1.5"
                             data-oid="x26d_d_"
                           >
-                            <button
-                              className="bg-transparent border border-dashed border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1 rounded-lg cursor-pointer text-[13px] transition-[background,border-color] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)]"
+                            <Button
+                              className="bg-transparent border border-dashed border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1 rounded-lg text-[13px] transition-[background,border-color] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)]"
                               onClick={() => {
                                 openInsertModal({ at: idx, editingId: null });
                               }}
                               data-oid="1g-kyf:"
                             >
                               + 插入题目
-                            </button>
+                            </Button>
                           </div>
                         </div>
                       ))}
@@ -707,15 +708,15 @@ const DetailPage: React.FC<{
                           className="flex justify-center my-1.5"
                           data-oid="py3kx:o"
                         >
-                          <button
-                            className="bg-transparent border border-dashed border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1 rounded-lg cursor-pointer text-[13px] transition-[background,border-color] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)]"
+                          <Button
+                            className="bg-transparent border border-dashed border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1 rounded-lg text-[13px] transition-[background,border-color] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)]"
                             onClick={() => {
                               openInsertModal({ at: -1, editingId: null });
                             }}
                             data-oid="zf8fxy:"
                           >
                             + 插入题目
-                          </button>
+                          </Button>
                         </div>
                       )}
                     </div>
@@ -956,8 +957,8 @@ const DetailPage: React.FC<{
                         <div className="font-bold mb-2" data-oid="16.airx">
                           推荐变题
                         </div>
-                        <button
-                          className="absolute top-2 right-2 bg-transparent border border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1.5 rounded-[16px] cursor-pointer font-semibold transition-[background,border-color,box-shadow] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)]"
+                        <Button
+                          className="absolute top-2 right-2 bg-transparent border border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1.5 rounded-[16px] font-semibold transition-[background,border-color,box-shadow] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)]"
                           onClick={() => {
                             // 简单模拟换一换：在两个备选集中切换或打乱
                             setRecList((prev) => {
@@ -970,7 +971,7 @@ const DetailPage: React.FC<{
                           data-oid=":7hc9s9"
                         >
                           换一换
-                        </button>
+                        </Button>
 
                         <div
                           className="flex flex-col gap-3 mt-2"
@@ -1000,8 +1001,8 @@ const DetailPage: React.FC<{
                                     </span>
                                   ))}
                                 </div>
-                                <button
-                                  className="bg-[var(--brand-accent)] text-white border-0 px-3 py-1.5 rounded-xl cursor-pointer font-bold text-[13px] transition-[background,box-shadow] hover:bg-[var(--brand-accent-strong)] hover:shadow-[var(--brand-shadow)]"
+                                <Button
+                                  className="bg-[var(--brand-accent)] text-white border-0 px-3 py-1.5 rounded-xl font-bold text-[13px] transition-[background,box-shadow] hover:bg-[var(--brand-accent-strong)] hover:shadow-[var(--brand-shadow)]"
                                   onClick={() => {
                                     const next = localQuestions.map((qq) =>
                                       qq.id === selectedQuestion
@@ -1014,7 +1015,7 @@ const DetailPage: React.FC<{
                                   data-oid="6boymcq"
                                 >
                                   替换
-                                </button>
+                                </Button>
                               </div>
                               <div
                                 className="text-[#222] font-semibold mt-2"
@@ -1190,8 +1191,8 @@ const DetailPage: React.FC<{
                             data-oid="7.76bhv"
                           />
 
-                          <button
-                            className="bg-white border border-[rgba(200,30,30,0.16)] text-[#c21e1e] px-2 py-1.5 rounded-lg cursor-pointer transition-[background,border-color,box-shadow] hover:bg-[#fff1f2] hover:border-[rgba(200,30,30,0.35)] hover:shadow-[0_8px_18px_rgba(200,30,30,0.15)]"
+                          <Button
+                            className="bg-white border border-[rgba(200,30,30,0.16)] text-[#c21e1e] px-2 py-1.5 rounded-lg transition-[background,border-color,box-shadow] hover:bg-[#fff1f2] hover:border-[rgba(200,30,30,0.35)] hover:shadow-[0_8px_18px_rgba(200,30,30,0.15)]"
                             onClick={() => {
                               openConfirm({
                                 title: "删除选项",
@@ -1210,19 +1211,19 @@ const DetailPage: React.FC<{
                             data-oid="vpcntpg"
                           >
                             删除
-                          </button>
+                          </Button>
                         </div>
                       ))}
                       <div data-oid="nq8e6dt">
-                        <button
-                          className="bg-transparent border border-dashed border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1 rounded-lg cursor-pointer text-[13px] transition-[background,border-color] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)]"
+                        <Button
+                          className="bg-transparent border border-dashed border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1 rounded-lg text-[13px] transition-[background,border-color] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)]"
                           onClick={() =>
                             setModalOptions((prev) => [...prev, ""])
                           }
                           data-oid="_n:zeuz"
                         >
                           + 添加选项
-                        </button>
+                        </Button>
                       </div>
                     </div>
                   )}
@@ -1264,8 +1265,8 @@ const DetailPage: React.FC<{
                 </div>
               </div>
               <div className="flex justify-end gap-2 mt-3" data-oid="bnpk12g">
-                <button
-                  className="bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-3 py-2 rounded-lg cursor-pointer transition-[background,border-color,box-shadow] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)]"
+                <Button
+                  className="bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-3 py-2 rounded-lg transition-[background,border-color,box-shadow] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)]"
                   onClick={() => {
                     const base = modalKnowledge
                       ? `基于「${modalKnowledge}」`
@@ -1276,23 +1277,23 @@ const DetailPage: React.FC<{
                   data-oid="es0bqrw"
                 >
                   生成题目
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={() => {
                     handleModalSubmit();
                   }}
-                  className="bg-[var(--brand-accent)] text-white border-0 px-3.5 py-2 rounded-[18px] cursor-pointer shadow-[var(--brand-shadow)] transition-[background,box-shadow] hover:bg-[var(--brand-accent-strong)]"
+                  className="bg-[var(--brand-accent)] text-white border-0 px-3.5 py-2 rounded-[18px] shadow-[var(--brand-shadow)] transition-[background,box-shadow] hover:bg-[var(--brand-accent-strong)]"
                   data-oid="fd-imyj"
                 >
                   {editingQuestionId ? "保存修改" : "确认加入"}
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={() => setShowInsertModal(false)}
-                  className="bg-transparent border border-[var(--brand-border)] text-[var(--brand-accent)] px-3 py-1.5 rounded-lg cursor-pointer transition-[background,border-color,box-shadow] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)]"
+                  className="bg-transparent border border-[var(--brand-border)] text-[var(--brand-accent)] px-3 py-1.5 rounded-lg transition-[background,border-color,box-shadow] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)]"
                   data-oid="fa:6lpu"
                 >
                   取消
-                </button>
+                </Button>
               </div>
             </div>
           </div>

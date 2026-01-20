@@ -4,6 +4,7 @@ import mk from "markdown-it-katex";
 import hljs from "highlight.js";
 import "katex/dist/katex.min.css";
 import "highlight.js/styles/github.css";
+import Button from "@/components/Button";
 
 const md = new MarkdownIt({
   html: true,
@@ -74,21 +75,21 @@ export const Markdown: React.FC<{
                         `}</style>
       {showControls && (
         <div className="flex justify-end gap-2 pt-3 pb-2" data-oid="4l:pe-u">
-          <button
-            className="bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1.5 rounded-xl cursor-pointer font-semibold transition-[background,border-color,box-shadow,transform] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)] active:translate-y-[1px] active:scale-[0.98]"
+          <Button
+            className="bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1.5 rounded-xl font-semibold transition-[background,border-color,box-shadow,transform] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)] active:translate-y-[1px] active:scale-[0.98]"
             onClick={() => setShowRaw((v) => !v)}
             data-oid="-cwnu.l"
           >
             {showRaw ? "渲染 Markdown" : "显示 Markdown"}
-          </button>
+          </Button>
           {onFullScreen && (
-            <button
-              className="bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1.5 rounded-xl cursor-pointer font-semibold transition-[background,border-color,box-shadow,transform] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)] active:translate-y-[1px] active:scale-[0.98]"
+            <Button
+              className="bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1.5 rounded-xl font-semibold transition-[background,border-color,box-shadow,transform] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)] active:translate-y-[1px] active:scale-[0.98]"
               onClick={onFullScreen}
               data-oid="4umb1l1"
             >
               全屏编辑
-            </button>
+            </Button>
           )}
         </div>
       )}

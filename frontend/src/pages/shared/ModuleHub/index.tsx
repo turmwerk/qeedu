@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import Button from "@/components/Button";
 
 type Feature = {
   key: string;
@@ -112,18 +113,18 @@ const ModuleHub: React.FC<Props> = ({
                 data-oid="f6wp5:v"
               />
 
-              <button
+              <Button
                 type="button"
-                className="w-[42px] h-[42px] rounded-full border-0 bg-gradient-to-br from-purple-600 to-blue-600 text-white text-[20px] cursor-pointer flex items-center justify-center shrink-0 shadow-[0_6px_16px_rgba(147,51,234,0.35)] transition hover:scale-105"
+                className="w-[42px] h-[42px] rounded-full border-0 bg-gradient-to-br from-purple-600 to-blue-600 text-white text-[20px] flex items-center justify-center shrink-0 shadow-[0_6px_16px_rgba(147,51,234,0.35)] transition hover:scale-105"
                 data-oid="po36joe"
               >
                 →
-              </button>
+              </Button>
             </div>
 
             <div className="grid grid-cols-2 gap-6" data-oid="h-8po4_">
               {features.map((feature) => (
-                <button
+                <Button
                   key={feature.key}
                   type="button"
                   className="group relative overflow-hidden rounded-[20px] p-8 min-h-[140px] bg-white/30 backdrop-blur-[16px] text-left cursor-pointer shadow-[0_8px_32px_rgba(147,51,234,0.15)] transition-all duration-300 flex items-start gap-3.5 hover:-translate-y-1 hover:shadow-[0_14px_36px_rgba(99,102,241,0.22),0_0_18px_rgba(236,72,153,0.12),0_0_24px_rgba(139,92,246,0.14)] hover:bg-white/50"
@@ -169,7 +170,7 @@ const ModuleHub: React.FC<Props> = ({
                       {feature.desc}
                     </div>
                   </div>
-                </button>
+                </Button>
               ))}
             </div>
           </div>

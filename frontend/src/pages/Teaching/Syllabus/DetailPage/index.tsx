@@ -8,6 +8,7 @@ import {
 import MarkdownView, { SplitSiderLayout } from "@/components/MarkdownView";
 import MarkdownEditor from "@/components/MarkdownEditor";
 import Dialog from "@/components/Dialog";
+import Button from "@/components/Button";
 
 const DetailPage: React.FC<{
   md: string;
@@ -69,13 +70,13 @@ const DetailPage: React.FC<{
                   90
                 </div>
               </div>
-              <button
-                className="bg-white border-2 border-[#7a54c4] text-[#7a54c4] px-3.5 py-1.5 rounded-[14px] cursor-pointer font-bold text-[15px] transition-[background,box-shadow,transform] hover:bg-[#f3eefb] hover:shadow-[0_8px_18px_rgba(75,42,133,0.12)] hover:-translate-y-[1px]"
+              <Button
+                className="bg-white border-2 border-[#7a54c4] text-[#7a54c4] px-3.5 py-1.5 rounded-[14px] font-bold text-[15px] transition-[background,box-shadow,transform] hover:bg-[#f3eefb] hover:shadow-[0_8px_18px_rgba(75,42,133,0.12)] hover:-translate-y-[1px]"
                 onClick={onBack}
                 data-oid="loi4hgh"
               >
                 返回大纲目录
-              </button>
+              </Button>
               <Dropdown
                 button="导出"
                 items={[

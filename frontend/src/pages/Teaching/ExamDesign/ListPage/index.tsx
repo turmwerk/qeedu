@@ -3,6 +3,7 @@ import List from "@/components/List";
 import Form from "@/components/Form";
 import Model from "@/components/Model";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import Button from "@/components/Button";
 
 type ExamItem = {
   id: string;
@@ -199,13 +200,13 @@ const ListPage: React.FC<{
                   已创建的试卷 ({items.length})
                 </div>
                 <div data-oid="cat0f92">
-                  <button
-                    className="bg-white/60 backdrop-blur-sm border border-purple-200 text-[var(--brand-accent)] px-2.5 py-1.5 rounded-xl cursor-pointer font-semibold transition-all hover:bg-white/80 hover:border-purple-300 hover:shadow-[0_4px_16px_rgba(147,51,234,0.2)]"
+                  <Button
+                    className="bg-white/60 backdrop-blur-sm border border-purple-200 text-[var(--brand-accent)] px-2.5 py-1.5 rounded-xl font-semibold transition-all hover:bg-white/80 hover:border-purple-300 hover:shadow-[0_4px_16px_rgba(147,51,234,0.2)]"
                     onClick={() => setOpen(true)}
                     data-oid="g6rpkd6"
                   >
                     新建试卷
-                  </button>
+                  </Button>
                 </div>
               </div>
               <div className="p-3" data-oid="qx3woto">

@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import Button from "@/components/Button";
 
 interface DialogMessage {
   from: "user" | "bot";
@@ -143,14 +144,14 @@ const Dialog: React.FC<DialogProps> & {
           data-oid="5cs_3sk"
         />
 
-        <button
+        <Button
           onClick={send}
           disabled={pending}
-          className="px-3 py-2 rounded-md bg-[var(--brand-accent)] text-white border-0 cursor-pointer transition-[background,box-shadow] hover:bg-[var(--brand-accent-strong)] hover:shadow-[var(--brand-shadow)] disabled:opacity-60 disabled:cursor-default"
+          className="px-3 py-2 rounded-md bg-[var(--brand-accent)] text-white border-0 transition-[background,box-shadow] hover:bg-[var(--brand-accent-strong)] hover:shadow-[var(--brand-shadow)] disabled:opacity-60 disabled:cursor-default"
           data-oid="gfo9oi2"
         >
           发送
-        </button>
+        </Button>
       </div>
     </div>
   );

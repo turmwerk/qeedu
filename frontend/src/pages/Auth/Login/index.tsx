@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Form from "@/components/Form";
 import { showToast } from "@/components/Toast";
 import type { FormField } from "@/components/Form";
+import Button from "@/components/Button";
 
 function UserIcon() {
   return (
@@ -218,15 +219,15 @@ export default function Login() {
             data-oid="mvllwxt"
           />
 
-          <button
+          <Button
             type="button"
-            className="absolute right-0 top-0 border-0 bg-transparent text-[var(--brand-muted)] cursor-pointer w-[56px] h-[56px] p-0 inline-flex items-center justify-center box-border shadow-none outline-none leading-none"
+            className="absolute right-0 top-0 border-0 bg-transparent text-[var(--brand-muted)] w-[56px] h-[56px] p-0 inline-flex items-center justify-center box-border shadow-none outline-none leading-none"
             onClick={() => setShowPassword((v) => !v)}
             aria-label={showPassword ? "隐藏密码" : "显示密码"}
             data-oid="ug:f1pm"
           >
             <EyeIcon on={showPassword} data-oid="dhp3a7j" />
-          </button>
+          </Button>
         </div>
       ),
     },
@@ -274,33 +275,33 @@ export default function Login() {
         data-oid="6ydi:ss"
       >
         <div className="inline-flex gap-3 items-center" data-oid="ujeralt">
-          <button
-            className="bg-transparent border-0 text-[var(--brand-accent)] cursor-pointer px-0.5 py-1.5 text-[16px] hover:underline"
+          <Button
+            className="bg-transparent border-0 text-[var(--brand-accent)] px-0.5 py-1.5 text-[16px] hover:underline"
             onClick={() => navigate("/register")}
             data-oid="e-:w90c"
           >
             注册
-          </button>
+          </Button>
           <span className="text-[rgba(0,0,0,0.3)]" data-oid="rieg_u6">
             |
           </span>
-          <button
-            className="bg-transparent border-0 text-[var(--brand-accent)] cursor-pointer px-0.5 py-1.5 text-[16px] hover:underline"
+          <Button
+            className="bg-transparent border-0 text-[var(--brand-accent)] px-0.5 py-1.5 text-[16px] hover:underline"
             onClick={() => navigate("/forget-password")}
             data-oid="a_le.-i"
           >
             忘记密码
-          </button>
+          </Button>
         </div>
 
         <div className="inline-flex items-center" data-oid="d69hs.f">
-          <button
-            className="bg-transparent border-0 text-[var(--brand-accent)] cursor-pointer px-0.5 py-1.5 text-[16px] hover:underline"
+          <Button
+            className="bg-transparent border-0 text-[var(--brand-accent)] px-0.5 py-1.5 text-[16px] hover:underline"
             onClick={goGuest}
             data-oid="rvcp8wt"
           >
             游客模式
-          </button>
+          </Button>
         </div>
       </div>
     </div>
