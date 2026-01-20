@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
-import { BookOutlined, SortAscendingOutlined, SortDescendingOutlined, EditOutlined, DeleteOutlined, CheckOutlined } from "@ant-design/icons";
+import { SortAscendingOutlined, SortDescendingOutlined, EditOutlined, DeleteOutlined, CheckOutlined, PlusOutlined } from "@ant-design/icons";
 import ConfirmDialog from "@/components/ConfirmDialog";
 
 type SiderItem = {
@@ -13,7 +13,7 @@ type Props = {
 	onClose: () => void;
 	storageKey: string;
 	title: string;
-	icon?: React.ReactNode;
+	createEventName: string;
 	updatedEventName: string;
 	currentIdEventName: string;
 	selectEventName: string;
@@ -27,7 +27,7 @@ const Sider: React.FC<Props> = ({
 	onClose,
 	storageKey,
 	title,
-	icon,
+	createEventName,
 	updatedEventName,
 	currentIdEventName,
 	selectEventName,
@@ -207,12 +207,18 @@ const Sider: React.FC<Props> = ({
 			<div className="h-full bg-white/70 backdrop-blur-[18px] shadow-[0_12px_40px_rgba(124,58,237,0.2)] border-r border-white/60 flex flex-col">
 				<div className="flex items-center justify-between px-4 py-3 border-b border-white/50">
 					<div className="flex items-center gap-2 font-bold text-[#2d1b4f]">
-						<span className="w-7 h-7 rounded-lg bg-white/80 border border-white/60 shadow-[0_6px_18px_rgba(124,58,237,0.18)] flex items-center justify-center text-[#5b35b7]">
-							{icon || <BookOutlined />}
-						</span>
-						{title}
+						列表
 					</div>
 					<div className="flex items-center gap-2">
+						<button
+							className="flex items-center justify-center w-9 h-9 rounded-lg bg-white/80 border border-white/60 shadow-[0_6px_18px_rgba(124,58,237,0.18)] text-[#5b35b7] hover:brightness-110 transition"
+							onClick={() =>
+								window.dispatchEvent(new Event(createEventName))
+							}
+							aria-label="新增"
+						>
+							<PlusOutlined />
+						</button>
 						<div className="relative group">
 							<button className="flex items-center justify-center w-9 h-9 rounded-lg bg-white/80 border border-white/60 shadow-[0_6px_18px_rgba(124,58,237,0.18)] text-[#5b35b7] hover:brightness-110 transition">
 								排序

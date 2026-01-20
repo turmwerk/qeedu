@@ -132,8 +132,12 @@ const DetailRoute: React.FC = () => {
       const detail = (event as CustomEvent<{ id?: string }>).detail;
       if (detail?.id) handleDelete(detail.id);
     };
+    const onCreate = () => {
+      navigate("/teaching/syllabus/ListPage", { state: { openCreate: true } });
+    };
     window.addEventListener("syllabus-outline-select", onSelect as EventListener);
     window.addEventListener("syllabus-outline-delete", onDelete as EventListener);
+    window.addEventListener("syllabus-outline-create", onCreate);
     return () => {
       window.removeEventListener(
         "syllabus-outline-select",
@@ -143,8 +147,9 @@ const DetailRoute: React.FC = () => {
         "syllabus-outline-delete",
         onDelete as EventListener
       );
+      window.removeEventListener("syllabus-outline-create", onCreate);
     };
-  }, [handleDelete]);
+  }, [handleDelete, navigate]);
 
   if (!currentOutline) {
     return null;

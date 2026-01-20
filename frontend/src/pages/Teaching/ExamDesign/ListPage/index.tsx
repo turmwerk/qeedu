@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import List from "@/components/List";
 import Form from "@/components/Form";
 import Model from "@/components/Model";
@@ -17,11 +17,22 @@ const ListPage: React.FC<{
   onCreate: (payload: any) => void;
   onDelete: (id: string) => void;
   onRename: (id: string, newName: string) => void;
-}> = ({ items, onEdit, onCreate, onDelete, onRename }) => {
+  openSignal?: number;
+}> = ({ items, onEdit, onCreate, onDelete, onRename, openSignal }) => {
   const [open, setOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [confirmDeleteTitle, setConfirmDeleteTitle] = useState<string>("");
+  useEffect(() => {
+    if (typeof openSignal === "number" && openSignal > 0) {
+      setOpen(true);
+    }
+  }, [openSignal]);
+  useEffect(() => {
+    const onCreate = () => setOpen(true);
+    window.addEventListener("exam-exam-create", onCreate);
+    return () => window.removeEventListener("exam-exam-create", onCreate);
+  }, []);
   // DifficultyPicker with two draggable knobs controlling boundaries between easy|medium|hard
   const DifficultyPicker: React.FC<{
     value: any;

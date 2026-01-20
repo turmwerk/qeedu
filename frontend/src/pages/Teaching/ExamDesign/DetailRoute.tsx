@@ -154,13 +154,18 @@ const DetailRoute: React.FC = () => {
       const detail = (event as CustomEvent<{ id?: string }>).detail;
       if (detail?.id) handleDelete(detail.id);
     };
+    const onCreate = () => {
+      navigate("/teaching/exam/ListPage", { state: { openCreate: true } });
+    };
     window.addEventListener("exam-exam-select", onSelect as EventListener);
     window.addEventListener("exam-exam-delete", onDelete as EventListener);
+    window.addEventListener("exam-exam-create", onCreate);
     return () => {
       window.removeEventListener("exam-exam-select", onSelect as EventListener);
       window.removeEventListener("exam-exam-delete", onDelete as EventListener);
+      window.removeEventListener("exam-exam-create", onCreate);
     };
-  }, [handleDelete]);
+  }, [handleDelete, navigate]);
 
   if (!current) {
     return null;

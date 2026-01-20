@@ -1,5 +1,5 @@
-import React, { useCallback, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useCallback, useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import ListPage from "./ListPage";
 import Dialog from "@/components/Dialog";
 
@@ -27,6 +27,7 @@ const CURRENT_KEY = "exam_design_current_id";
 
 const ListRoute: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [exams, setExams] = useState<Exam[]>(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -47,6 +48,17 @@ const ListRoute: React.FC = () => {
       console.error("save exams", e);
     }
   }, []);
+
+  const [openSignal, setOpenSignal] = useState(0);
+
+  useEffect(() => {
+    const openCreate = (location.state as { openCreate?: boolean } | null)
+      ?.openCreate;
+    if (openCreate) {
+      setOpenSignal((v) => v + 1);
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.pathname, location.state, navigate]);
 
   const setCurrentId = useCallback((id: string) => {
     try {
@@ -138,6 +150,7 @@ const ListRoute: React.FC = () => {
       onCreate={handleCreate}
       onDelete={(id) => id && handleDelete(id)}
       onRename={(id, newName) => id && newName && handleRename(id, newName)}
+      openSignal={openSignal}
     />
   );
 };

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import ListPage from "./ListPage";
 import Dialog from "@/components/Dialog";
 import PageShell from "./PageShell";
@@ -17,7 +17,9 @@ const CURRENT_KEY = "syllabus_current_id";
 
 const ListRoute: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [outlines, setOutlines] = useState<Outline[]>([]);
+  const [openSignal, setOpenSignal] = useState(0);
 
   const loadOutlines = useCallback(() => {
     try {
@@ -44,6 +46,15 @@ const ListRoute: React.FC = () => {
       );
     };
   }, [loadOutlines]);
+
+  useEffect(() => {
+    const openCreate = (location.state as { openCreate?: boolean } | null)
+      ?.openCreate;
+    if (openCreate) {
+      setOpenSignal((v) => v + 1);
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.pathname, location.state, navigate]);
 
   const persist = useCallback((next: Outline[]) => {
     setOutlines(next);
@@ -314,6 +325,7 @@ const ListRoute: React.FC = () => {
         onRename={(id?: string, newName?: string) =>
           id && newName && handleRename(id, newName)
         }
+        openSignal={openSignal}
       />
     </PageShell>
   );

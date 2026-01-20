@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { BookOutlined, FormOutlined } from "@ant-design/icons";
 import { Layout } from "antd";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Header from "./components/Header";
@@ -159,7 +158,7 @@ const MainLayout: React.FC = () => {
         onClose={() => setSyllabusSiderOpen(false)}
         storageKey="syllabus_outlines"
         title="大纲列表"
-        icon={<BookOutlined />}
+        createEventName="syllabus-outline-create"
         updatedEventName="syllabus-outlines-updated"
         currentIdEventName="syllabus-current-id"
         selectEventName="syllabus-outline-select"
@@ -172,7 +171,7 @@ const MainLayout: React.FC = () => {
         onClose={() => setExamSiderOpen(false)}
         storageKey="exam_design_exams_v1"
         title="试卷列表"
-        icon={<FormOutlined />}
+        createEventName="exam-exam-create"
         updatedEventName="exam-exams-updated"
         currentIdEventName="exam-current-id"
         selectEventName="exam-exam-select"
