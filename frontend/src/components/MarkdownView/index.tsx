@@ -98,7 +98,7 @@ export const Markdown: React.FC<{
         {showRaw ? (
           onChange ? (
             <textarea
-              className="fade-slide w-full h-full box-border p-3 font-mono text-[13px] rounded-md border border-[var(--brand-border)] min-h-0 resize-y overflow-auto"
+              className="w-full h-full box-border p-3 font-mono text-[13px] rounded-md border border-[var(--brand-border)] min-h-0 resize-y overflow-auto"
               value={value}
               onChange={(e) => onChange(e.target.value)}
               aria-label="Markdown 编辑"
@@ -106,7 +106,7 @@ export const Markdown: React.FC<{
             />
           ) : (
             <pre
-              className="fade-slide w-full h-full box-border p-3 font-mono text-[13px] rounded-md border border-[var(--brand-border)] min-h-0 resize-y overflow-auto"
+              className="w-full h-full box-border p-3 font-mono text-[13px] rounded-md border border-[var(--brand-border)] min-h-0 resize-y overflow-auto"
               data-oid="fw9vofw"
             >
               {value}
@@ -114,12 +114,12 @@ export const Markdown: React.FC<{
           )
         ) : value ? (
           <div
-            className="content fade-slide flex-1 min-h-0 overflow-y-auto"
+            className="content flex-1 min-h-0 overflow-y-auto"
             dangerouslySetInnerHTML={{ __html: html }}
             data-oid="f6t.rff"
           />
         ) : (
-          <div className="empty fade-slide" data-oid="xxehnqg">
+          <div className="empty" data-oid="xxehnqg">
             空的 Markdown
           </div>
         )}

@@ -26,6 +26,7 @@ type Exam = {
 
 const STORAGE_KEY = "exam_design_exams_v1";
 const CURRENT_KEY = "exam_design_current_id";
+const COUNTER_KEY = "exam_design_exams_counter";
 
 export const ListRoute: React.FC = () => {
 	const navigate = useNavigate();
@@ -73,9 +74,32 @@ export const ListRoute: React.FC = () => {
 		}
 	}, []);
 
+	const getNextId = useCallback(() => {
+		let next = 1;
+		try {
+			const rawCounter = localStorage.getItem(COUNTER_KEY);
+			if (rawCounter) {
+				const parsed = Number.parseInt(rawCounter, 10);
+				next = Number.isNaN(parsed) ? 1 : parsed + 1;
+			} else {
+				const rawList = localStorage.getItem(STORAGE_KEY);
+				if (rawList) {
+					const parsedList = JSON.parse(rawList) as Array<{ id?: string }>;
+					const maxId = parsedList.reduce((max, item) => {
+						const value = Number.parseInt(String(item.id ?? ""), 10);
+						return Number.isNaN(value) ? max : Math.max(max, value);
+					}, 0);
+					next = maxId + 1;
+				}
+			}
+			localStorage.setItem(COUNTER_KEY, String(next));
+		} catch {}
+		return String(next);
+	}, []);
+
 	const handleCreate = useCallback(
 		(payload: Record<string, unknown>) => {
-			const id = Date.now().toString();
+			const id = getNextId();
 			const name =
 				typeof payload.name === "string" && payload.name.trim()
 					? payload.name
@@ -89,9 +113,9 @@ export const ListRoute: React.FC = () => {
 			const next = [item, ...exams];
 			persist(next);
 			setCurrentId(id);
-			navigate("/teaching/exam/DetailPage");
+			navigate(`/teaching/exam/detail?examId=${encodeURIComponent(id)}`);
 		},
-		[exams, navigate, persist, setCurrentId]
+		[getNextId, exams, navigate, persist, setCurrentId]
 	);
 
 	const handleDelete = useCallback(
@@ -135,7 +159,7 @@ export const ListRoute: React.FC = () => {
 			const nextId = id || exams[0]?.id;
 			if (!nextId) return;
 			setCurrentId(nextId);
-			navigate("/teaching/exam/DetailPage", { state: { id: nextId } });
+			navigate(`/teaching/exam/detail?examId=${encodeURIComponent(nextId)}`);
 		},
 		[exams, navigate, setCurrentId]
 	);
@@ -172,6 +196,7 @@ export const DetailRoute: React.FC = () => {
 	});
 	const [manualId, setManualId] = useState<string | null>(null);
 	const [createModalOpen, setCreateModalOpen] = useState(false);
+	const [loaded, setLoaded] = useState(false);
 
 	const loadExams = useCallback(() => {
 		try {
@@ -205,9 +230,17 @@ export const DetailRoute: React.FC = () => {
 		};
 	}, [loadExams]);
 
-	const stateId = (location.state as { id?: string } | null)?.id;
+	useEffect(() => {
+		loadExams();
+		setLoaded(true);
+	}, [loadExams]);
+
+	const queryId = useMemo(
+		() => new URLSearchParams(location.search).get("examId"),
+		[location.search]
+	);
 	const fallbackId = useMemo(() => {
-		if (stateId) return stateId;
+		if (queryId) return queryId;
 		try {
 			const savedId = localStorage.getItem(CURRENT_KEY);
 			if (savedId) return savedId;
@@ -215,15 +248,22 @@ export const DetailRoute: React.FC = () => {
 			console.warn("read current exam id failed", e);
 		}
 		return exams[0]?.id || null;
-	}, [exams, stateId]);
+	}, [exams, queryId]);
 
 	const currentId = manualId || fallbackId;
 
 	useEffect(() => {
+		if (!manualId && queryId) {
+			setManualId(queryId);
+		}
+	}, [manualId, queryId]);
+
+	useEffect(() => {
+		if (!loaded) return;
 		if (!currentId && exams.length === 0) {
 			navigate("/teaching/exam/ListPage");
 		}
-	}, [currentId, exams.length, navigate]);
+	}, [currentId, exams.length, loaded, navigate]);
 
 	useEffect(() => {
 		if (!currentId) return;
@@ -237,16 +277,30 @@ export const DetailRoute: React.FC = () => {
 		);
 	}, [currentId]);
 
+	useEffect(() => {
+		if (!currentId) return;
+		const params = new URLSearchParams(location.search);
+		if (params.get("examId") !== currentId) {
+			params.set("examId", currentId);
+			navigate(`/teaching/exam/detail?${params.toString()}`, { replace: true });
+		}
+	}, [currentId, location.search, navigate]);
+
 	const current = useMemo(
 		() => exams.find((e) => e.id === currentId),
 		[exams, currentId]
 	);
 
 	useEffect(() => {
+		if (!loaded) return;
 		if (currentId && !current) {
+			if (exams[0]) {
+				setManualId(exams[0].id);
+				return;
+			}
 			navigate("/teaching/exam/ListPage");
 		}
-	}, [current, currentId, navigate]);
+	}, [current, currentId, exams, loaded, navigate]);
 
 	const handleDelete = useCallback(
 		(id: string) => {
@@ -278,9 +332,32 @@ export const DetailRoute: React.FC = () => {
 		[currentId, exams, navigate, persist]
 	);
 
+	const getNextId = useCallback(() => {
+		let next = 1;
+		try {
+			const rawCounter = localStorage.getItem(COUNTER_KEY);
+			if (rawCounter) {
+				const parsed = Number.parseInt(rawCounter, 10);
+				next = Number.isNaN(parsed) ? 1 : parsed + 1;
+			} else {
+				const rawList = localStorage.getItem(STORAGE_KEY);
+				if (rawList) {
+					const parsedList = JSON.parse(rawList) as Array<{ id?: string }>;
+					const maxId = parsedList.reduce((max, item) => {
+						const value = Number.parseInt(String(item.id ?? ""), 10);
+						return Number.isNaN(value) ? max : Math.max(max, value);
+					}, 0);
+					next = maxId + 1;
+				}
+			}
+			localStorage.setItem(COUNTER_KEY, String(next));
+		} catch {}
+		return String(next);
+	}, []);
+
 	const handleCreate = useCallback(
 		(payload: Record<string, any>) => {
-			const id = Date.now().toString();
+			const id = getNextId();
 			const name =
 				typeof payload.name === "string" && payload.name.trim()
 					? payload.name
@@ -295,13 +372,13 @@ export const DetailRoute: React.FC = () => {
 			persist(next);
 			setManualId(id);
 		},
-		[exams, persist]
+		[getNextId, exams, persist]
 	);
 
 	useEffect(() => {
 		const onSelect = (event: Event) => {
 			const detail = (event as CustomEvent<{ id?: string }>).detail;
-			if (detail?.id) setManualId(detail.id);
+			if (detail?.id && detail.id !== manualId) setManualId(detail.id);
 		};
 		const onDelete = (event: Event) => {
 			const detail = (event as CustomEvent<{ id?: string }>).detail;
@@ -318,7 +395,7 @@ export const DetailRoute: React.FC = () => {
 			window.removeEventListener("exam-exam-delete", onDelete as EventListener);
 			window.removeEventListener("exam-exam-create", onCreate);
 		};
-	}, [handleDelete]);
+	}, [handleDelete, manualId]);
 
 	if (!current) {
 		return null;
@@ -327,7 +404,6 @@ export const DetailRoute: React.FC = () => {
 	return (
 		<>
 			<DetailPage
-				key={current?.id || "default-exam"}
 				examId={current?.id}
 				title={current?.title}
 				questions={current?.questions}

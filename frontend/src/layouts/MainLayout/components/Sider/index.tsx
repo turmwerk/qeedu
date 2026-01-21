@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
 	DeleteOutlined,
 	EditOutlined,
@@ -68,6 +69,7 @@ const Sider: React.FC<Props> = ({
 	getWidthEventName,
 	listModalComponent: ListModalComponent,
 }) => {
+	const navigate = useNavigate();
 	const [items, setItems] = useState<SiderItem[]>([]);
 	const widthId = useId().replace(/[:]/g, "");
 	const widthClass = `sider-width-${widthId}`;
@@ -245,7 +247,29 @@ const Sider: React.FC<Props> = ({
 
 	const handleModalCreate = useCallback(
 		(payload: Record<string, unknown>) => {
-			const id = Date.now().toString();
+			const counterKey =
+				storageKey === "syllabus_outlines"
+					? "syllabus_outlines_counter"
+					: "exam_design_exams_counter";
+			let id = "1";
+			try {
+				const rawCounter = localStorage.getItem(counterKey);
+				if (rawCounter) {
+					const parsed = Number.parseInt(rawCounter, 10);
+					id = String(Number.isNaN(parsed) ? 1 : parsed + 1);
+				} else {
+					const rawList = localStorage.getItem(storageKey);
+					if (rawList) {
+						const parsedList = JSON.parse(rawList) as Array<{ id?: string }>;
+						const maxId = parsedList.reduce((max, item) => {
+							const value = Number.parseInt(String(item.id ?? ""), 10);
+							return Number.isNaN(value) ? max : Math.max(max, value);
+						}, 0);
+						id = String(maxId + 1);
+					}
+				}
+				localStorage.setItem(counterKey, id);
+			} catch {}
 			const name =
 				typeof payload.name === "string" && payload.name.trim()
 					? payload.name.trim()
@@ -268,6 +292,8 @@ const Sider: React.FC<Props> = ({
 				} catch (e) {
 					console.warn("create outline failed", e);
 				}
+				setListModalOpen(false);
+				navigate(`/teaching/syllabus/detail?outlineId=${encodeURIComponent(id)}`);
 			} else if (storageKey === "exam_design_exams_v1") {
 				const item = { id, title: name, questions: [], createdAt };
 				try {
@@ -282,9 +308,11 @@ const Sider: React.FC<Props> = ({
 				} catch (e) {
 					console.warn("create exam failed", e);
 				}
+				setListModalOpen(false);
+				navigate(`/teaching/exam/detail?examId=${encodeURIComponent(id)}`);
 			}
 		},
-		[storageKey, updatedEventName, currentIdEventName]
+		[storageKey, updatedEventName, currentIdEventName, navigate]
 	);
 
 	return (
@@ -356,13 +384,14 @@ const Sider: React.FC<Props> = ({
 									? "border-purple-500 bg-gradient-to-br from-purple-200 via-indigo-100 to-purple-150 shadow-[0_10px_24px_rgba(124,58,237,0.3)]"
 									: "border-purple-200/40 bg-white/80 hover:border-purple-400/70"
 							}`}
-							onClick={() =>
+							onClick={() => {
+								if (selectedId === item.id) return;
 								window.dispatchEvent(
 									new CustomEvent(selectEventName, {
 										detail: { id: item.id },
 									})
-								)
-							}
+								);
+							}}
 						>
 							{editingId === item.id ? (
 								<input

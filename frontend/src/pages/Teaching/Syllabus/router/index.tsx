@@ -15,6 +15,7 @@ type Outline = {
 
 const STORAGE_KEY = "syllabus_outlines";
 const CURRENT_KEY = "syllabus_current_id";
+const COUNTER_KEY = "syllabus_outlines_counter";
 
 export const ListRoute: React.FC = () => {
 	const navigate = useNavigate();
@@ -79,9 +80,32 @@ export const ListRoute: React.FC = () => {
 		);
 	}, []);
 
+	const getNextId = useCallback(() => {
+		let next = 1;
+		try {
+			const rawCounter = localStorage.getItem(COUNTER_KEY);
+			if (rawCounter) {
+				const parsed = Number.parseInt(rawCounter, 10);
+				next = Number.isNaN(parsed) ? 1 : parsed + 1;
+			} else {
+				const rawList = localStorage.getItem(STORAGE_KEY);
+				if (rawList) {
+					const parsedList = JSON.parse(rawList) as Array<{ id?: string }>;
+					const maxId = parsedList.reduce((max, item) => {
+						const value = Number.parseInt(String(item.id ?? ""), 10);
+						return Number.isNaN(value) ? max : Math.max(max, value);
+					}, 0);
+					next = maxId + 1;
+				}
+			}
+			localStorage.setItem(COUNTER_KEY, String(next));
+		} catch {}
+		return String(next);
+	}, []);
+
 	const handleCreate = useCallback(
 		(payload: Record<string, any>) => {
-			const id = Date.now().toString();
+			const id = getNextId();
 			const name = payload.name || "未命名课程";
 			const englishName = payload.englishName || "Untitled Course";
 			const courseId = payload.courseId || "00000000";
@@ -246,9 +270,9 @@ export const ListRoute: React.FC = () => {
 			const next = [item, ...outlines];
 			persist(next);
 			setCurrentId(id);
-			navigate("/teaching/syllabus/DetailPage");
+			navigate(`/teaching/syllabus/detail?outlineId=${encodeURIComponent(id)}`);
 		},
-		[navigate, outlines, persist, setCurrentId]
+		[getNextId, navigate, outlines, persist, setCurrentId]
 	);
 
 	const handleDelete = useCallback(
@@ -276,7 +300,7 @@ export const ListRoute: React.FC = () => {
 			const nextId = id || outlines[0]?.id;
 			if (!nextId) return;
 			setCurrentId(nextId);
-			navigate("/teaching/syllabus/DetailPage", { state: { id: nextId } });
+			navigate(`/teaching/syllabus/detail?outlineId=${encodeURIComponent(nextId)}`);
 		},
 		[navigate, outlines, setCurrentId]
 	);
@@ -375,9 +399,9 @@ export const DetailRoute: React.FC = () => {
 
 	useEffect(() => {
 		if (currentId) return;
-		const stateId = (location.state as { id?: string } | null)?.id;
-		if (stateId) {
-			setCurrentId(stateId);
+		const queryId = new URLSearchParams(location.search).get("outlineId");
+		if (queryId) {
+			setCurrentId(queryId);
 			return;
 		}
 		try {
@@ -394,7 +418,16 @@ export const DetailRoute: React.FC = () => {
 		if (loaded && outlines.length === 0) {
 			navigate("/teaching/syllabus/ListPage");
 		}
-	}, [currentId, location.state, outlines, navigate, loaded]);
+	}, [currentId, location.search, outlines, navigate, loaded]);
+
+	useEffect(() => {
+		if (!currentId) return;
+		const params = new URLSearchParams(location.search);
+		if (params.get("outlineId") !== currentId) {
+			params.set("outlineId", currentId);
+			navigate(`/teaching/syllabus/detail?${params.toString()}`, { replace: true });
+		}
+	}, [currentId, location.search, navigate]);
 
 	const persist = useCallback((next: Outline[]) => {
 		setOutlines(next);
@@ -445,9 +478,32 @@ export const DetailRoute: React.FC = () => {
 		[currentId, navigate, outlines, persist]
 	);
 
+	const getNextId = useCallback(() => {
+		let next = 1;
+		try {
+			const rawCounter = localStorage.getItem(COUNTER_KEY);
+			if (rawCounter) {
+				const parsed = Number.parseInt(rawCounter, 10);
+				next = Number.isNaN(parsed) ? 1 : parsed + 1;
+			} else {
+				const rawList = localStorage.getItem(STORAGE_KEY);
+				if (rawList) {
+					const parsedList = JSON.parse(rawList) as Array<{ id?: string }>;
+					const maxId = parsedList.reduce((max, item) => {
+						const value = Number.parseInt(String(item.id ?? ""), 10);
+						return Number.isNaN(value) ? max : Math.max(max, value);
+					}, 0);
+					next = maxId + 1;
+				}
+			}
+			localStorage.setItem(COUNTER_KEY, String(next));
+		} catch {}
+		return String(next);
+	}, []);
+
 	const handleCreate = useCallback(
 		(payload: Record<string, any>) => {
-			const id = Date.now().toString();
+			const id = getNextId();
 			const name = payload.name || "未命名课程";
 			const englishName = payload.englishName || "Untitled Course";
 			const courseId = payload.courseId || "00000000";
@@ -557,13 +613,13 @@ export const DetailRoute: React.FC = () => {
 			persist(next);
 			setCurrentId(id);
 		},
-		[outlines, persist]
+		[getNextId, outlines, persist]
 	);
 
 	useEffect(() => {
 		const onSelect = (event: Event) => {
 			const detail = (event as CustomEvent<{ id?: string }>).detail;
-			if (detail?.id) setCurrentId(detail.id);
+			if (detail?.id && detail.id !== currentId) setCurrentId(detail.id);
 		};
 		const onDelete = (event: Event) => {
 			const detail = (event as CustomEvent<{ id?: string }>).detail;
@@ -592,7 +648,7 @@ export const DetailRoute: React.FC = () => {
 			);
 			window.removeEventListener("syllabus-outline-create", onCreate);
 		};
-	}, [handleDelete]);
+	}, [currentId, handleDelete]);
 
 	if (!currentOutline) {
 		return null;

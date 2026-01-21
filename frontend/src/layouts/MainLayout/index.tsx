@@ -108,7 +108,7 @@ const MainLayout: React.FC = () => {
   const isSyllabusDetail =
     location.pathname.startsWith("/teaching/syllabus") &&
     location.pathname !== "/teaching/syllabus/ListPage";
-  const isExamDetail = location.pathname === "/teaching/exam/DetailPage";
+  const isExamDetail = location.pathname.startsWith("/teaching/exam/detail");
   const showSiderToggle = useMemo(
     () => isSyllabusDetail || isExamDetail,
     [isExamDetail, isSyllabusDetail]

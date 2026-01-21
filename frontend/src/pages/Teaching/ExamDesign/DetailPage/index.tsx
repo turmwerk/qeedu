@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState, type DragEvent } from "react";
+import React, { useCallback, useEffect, useMemo, useState, type DragEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { SplitSiderLayout } from "@/components/MarkdownView";
@@ -106,6 +106,13 @@ const DetailPage: React.FC<{
   }) => setConfirmState(payload);
 
   const [localQuestions, setLocalQuestions] = useState<Question[]>(questions);
+
+  useEffect(() => {
+    setLocalTitle(title);
+    setLocalQuestions(questions);
+    setSelectedQuestion(null);
+    setDraggingId(null);
+  }, [examId, title, questions]);
 
   const applyQuestions = useCallback(
     (next: Question[]) => {

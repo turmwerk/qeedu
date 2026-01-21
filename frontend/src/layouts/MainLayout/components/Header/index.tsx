@@ -42,7 +42,7 @@ const routeConfig: Record<string, { title: string; icon?: React.ReactNode }> = {
     title: "大纲设计",
     icon: <BookOutlined data-oid="gayo2n4" />,
   },
-  "/teaching/syllabus/DetailPage": {
+  "/teaching/syllabus/detail": {
     title: "大纲设计",
     icon: <BookOutlined data-oid="gayo2n4" />,
   },
@@ -50,7 +50,7 @@ const routeConfig: Record<string, { title: string; icon?: React.ReactNode }> = {
     title: "试卷设计",
     icon: <FormOutlined data-oid="noyy4d9" />,
   },
-  "/teaching/exam/DetailPage": {
+  "/teaching/exam/detail": {
     title: "试卷设计",
     icon: <FormOutlined data-oid="noyy4d9" />,
   },
@@ -116,9 +116,9 @@ const MainHeader: React.FC<{
     "/teaching/exam/ListPage": "/teaching",
     "/teaching/syllabus/ListPage": "/teaching",
   };
-  const backTarget = location.pathname.startsWith("/teaching/exam/DetailPage")
+  const backTarget = location.pathname.startsWith("/teaching/exam/detail")
     ? "/teaching/exam/ListPage"
-    : location.pathname.startsWith("/teaching/syllabus/DetailPage")
+    : location.pathname.startsWith("/teaching/syllabus/detail")
       ? "/teaching/syllabus/ListPage"
       : backRouteMap[location.pathname];
 

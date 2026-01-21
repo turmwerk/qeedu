@@ -186,6 +186,8 @@ export default function Login() {
           </div>
           <input
             className="w-full h-[56px] pl-[56px] pr-4 box-border border-0 bg-transparent text-[16px] outline-none"
+            id="login-account"
+            name="account"
             value={value}
             onChange={(e) => onChange(e.target.value)}
             placeholder="用户名或邮箱"
@@ -211,6 +213,8 @@ export default function Login() {
           </div>
           <input
             className="h-[56px] w-full pl-[56px] pr-[56px] box-border border-0 bg-transparent text-[16px] outline-none"
+            id="login-password"
+            name="password"
             type={showPassword ? "text" : "password"}
             value={value}
             onChange={(e) => onChange(e.target.value)}
@@ -240,13 +244,13 @@ export default function Login() {
   };
 
   const primaryButtonClass =
-    "w-full h-[56px] bg-[#eff6ff] text-[#1d4ed8] border border-[#bfdbfe] text-[18px] font-extrabold cursor-pointer shadow-[0_10px_25px_rgba(59,130,246,0.2)] transition-[background,box-shadow,transform] flex items-center justify-center gap-3.5 hover:bg-[#dbeafe] hover:shadow-[0_12px_28px_rgba(59,130,246,0.28)] hover:-translate-y-[1px]";
+    "w-full h-[56px] bg-[#f3e8ff] text-[#6d28d9] border border-[#d8b4fe] text-[18px] font-extrabold cursor-pointer transition-[background,border-color,transform] flex items-center justify-center gap-3.5 hover:bg-[#e9d5ff] hover:-translate-y-[1px]";
   const smallButtonBase =
-    "px-3 py-1.5 rounded-full text-[15px] font-semibold border transition-[background,border-color,box-shadow,transform] hover:-translate-y-[1px]";
+    "px-3 py-1.5 rounded-full text-[15px] font-semibold border transition-[background,border-color,transform] hover:-translate-y-[1px]";
   const smallPrimaryButton =
-    `${smallButtonBase} bg-white text-[#1d4ed8] border-[#bfdbfe] hover:bg-[#eff6ff] hover:shadow-[0_8px_18px_rgba(59,130,246,0.2)]`;
+    `${smallButtonBase} bg-white text-[#6d28d9] border-[#d8b4fe] hover:bg-[#f3e8ff]`;
   const smallNeutralButton =
-    `${smallButtonBase} bg-white text-[#475569] border-[var(--brand-border)] hover:shadow-[0_8px_18px_rgba(15,23,42,0.12)]`;
+    `${smallButtonBase} bg-white text-[#6d28d9] border-[#d8b4fe] hover:bg-[#f3e8ff]`;
 
   return (
     <div

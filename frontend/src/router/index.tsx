@@ -88,7 +88,7 @@ const router = createBrowserRouter([
         element: LazyLoad(<SyllabusList />),
       },
       {
-        path: "teaching/syllabus/DetailPage",
+        path: "teaching/syllabus/detail",
         element: LazyLoad(<SyllabusDetail />),
       },
       {
@@ -96,7 +96,7 @@ const router = createBrowserRouter([
         element: LazyLoad(<ExamDesignList />),
       },
       {
-        path: "teaching/exam/DetailPage",
+        path: "teaching/exam/detail",
         element: LazyLoad(<ExamDesignDetail />),
       },
       {
