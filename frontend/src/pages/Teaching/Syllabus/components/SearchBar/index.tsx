@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { LeftOutlined, RightOutlined, SearchOutlined } from "@ant-design/icons";
+import { LeftOutlined, SearchOutlined } from "@ant-design/icons";
 import Button from "@/components/Button";
 import BaseSearchBar from "@/components/SearchBar";
 

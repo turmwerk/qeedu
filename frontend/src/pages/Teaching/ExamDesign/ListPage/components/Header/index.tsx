@@ -1,5 +1,10 @@
 import React from "react";
-import { SortAscendingOutlined, SortDescendingOutlined } from "@ant-design/icons";
+import {
+	CloseOutlined,
+	PlusOutlined,
+	SortAscendingOutlined,
+	SortDescendingOutlined,
+} from "@ant-design/icons";
 import Button from "@/components/Button";
 import Dropdown from "@/components/Dropdown";
 import SearchBar from "@/pages/Teaching/ExamDesign/components/SearchBar";
@@ -16,6 +21,8 @@ interface Props {
 	onCreate: () => void;
 	searchValue: string;
 	onSearchChange: (value: string) => void;
+	modalMode?: boolean;
+	onCloseModal?: () => void;
 }
 
 const Header: React.FC<Props> = ({
@@ -30,15 +37,17 @@ const Header: React.FC<Props> = ({
 	onCreate,
 	searchValue,
 	onSearchChange,
+	modalMode = false,
+	onCloseModal,
 }) => {
 	const sortButtonClass =
-		"bg-white border border-[#bfdbfe] text-[#1d4ed8] px-2.5 py-1.5 rounded-xl font-semibold transition-[background,border-color,box-shadow] hover:bg-[#eff6ff] hover:border-[#93c5fd] hover:shadow-[0_8px_18px_rgba(59,130,246,0.18)]";
-	const orderButtonClass =
-		"bg-white border border-[#e2e8f0] text-[#475569] px-2.5 py-1.5 rounded-xl font-semibold transition-[background,border-color,box-shadow] hover:bg-[#f8fafc] hover:border-[#cbd5f5] hover:shadow-[0_8px_18px_rgba(15,23,42,0.12)]";
+		"bg-white border border-[#bfdbfe] text-[#1d4ed8] w-9 h-9 rounded-xl font-semibold transition-[background,border-color,box-shadow] hover:bg-[#eff6ff] hover:border-[#93c5fd] hover:shadow-[0_8px_18px_rgba(59,130,246,0.18)]";
 	const filterButtonClass =
 		"bg-white border border-[#a7f3d0] text-[#047857] px-2.5 py-1.5 rounded-xl font-semibold transition-[background,border-color,box-shadow] hover:bg-[#ecfdf3] hover:border-[#6ee7b7] hover:shadow-[0_8px_18px_rgba(16,185,129,0.18)]";
 	const createButtonClass =
-		"bg-white border border-[#c7d2fe] text-[#3730a3] px-2.5 py-1.5 rounded-xl font-semibold transition-[background,border-color,box-shadow] hover:bg-[#eef2ff] hover:border-[#a5b4fc] hover:shadow-[0_8px_18px_rgba(99,102,241,0.18)]";
+		"bg-white border border-[#c7d2fe] text-[#3730a3] w-9 h-9 rounded-xl font-semibold transition-[background,border-color,box-shadow] hover:bg-[#eef2ff] hover:border-[#a5b4fc] hover:shadow-[0_8px_18px_rgba(99,102,241,0.18)]";
+	const closeButtonClass =
+		"bg-white border border-[#e2e8f0] text-[#475569] w-9 h-9 rounded-xl font-semibold transition-[background,border-color,box-shadow] hover:bg-[#f8fafc] hover:border-[#cbd5f5] hover:shadow-[0_8px_18px_rgba(15,23,42,0.12)]";
 
 	return (
 		<div className="flex justify-between items-center font-bold mb-3">
@@ -53,8 +62,9 @@ const Header: React.FC<Props> = ({
 					defaultExpanded
 				/>
 				<Dropdown
-					button="排序"
+					button={order === "asc" ? <SortAscendingOutlined /> : <SortDescendingOutlined />}
 					buttonClassName={sortButtonClass}
+					onButtonClick={onToggleOrder}
 					items={[
 						{
 							label: "按时间",
@@ -69,13 +79,6 @@ const Header: React.FC<Props> = ({
 					]}
 					showCheck
 				/>
-				<Button
-					className={orderButtonClass}
-					onClick={onToggleOrder}
-					aria-label="切换排序"
-				>
-					{order === "asc" ? <SortAscendingOutlined /> : <SortDescendingOutlined />}
-				</Button>
 				<Dropdown
 					button={`筛选：${filterLabel}`}
 					buttonClassName={filterButtonClass}
@@ -95,9 +98,18 @@ const Header: React.FC<Props> = ({
 					})}
 					showCheck
 				/>
-				<Button className={createButtonClass} onClick={onCreate}>
-					新建试卷
+				<Button className={createButtonClass} onClick={onCreate} aria-label="新建试卷">
+					<PlusOutlined />
 				</Button>
+				{modalMode && (
+					<Button
+						className={closeButtonClass}
+						onClick={onCloseModal}
+						aria-label="关闭"
+					>
+						<CloseOutlined />
+					</Button>
+				)}
 			</div>
 		</div>
 	);

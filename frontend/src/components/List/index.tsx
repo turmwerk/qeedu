@@ -24,6 +24,10 @@ export interface ListProps<T = any> {
   keyExtractor?: (item: T) => string | number;
   /** 点击条目行 */
   onItemClick?: (item: T) => void;
+  /** 条目是否禁用点击 */
+  isItemDisabled?: (item: T) => boolean;
+  /** 自定义条目容器样式 */
+  itemClassName?: (item: T) => string;
 }
 
 function List<T = any>({
@@ -34,6 +38,8 @@ function List<T = any>({
   editable,
   keyExtractor,
   onItemClick,
+  isItemDisabled,
+  itemClassName,
 }: ListProps<T>) {
   const [editingKey, setEditingKey] = useState<string | null>(null);
   const [editingValue, setEditingValue] = useState<string>("");
@@ -58,13 +64,17 @@ function List<T = any>({
         const rawKey = keyExtractor ? keyExtractor(item) : idx;
         const key = String(rawKey);
         const isEditing = editingKey === key;
+        const disabled = isItemDisabled ? isItemDisabled(item) : false;
 
         return (
           <div
             key={key}
-            className={`group relative flex justify-between items-center bg-white/70 p-4 rounded-[12px] border border-[var(--brand-border)] transition-[box-shadow,border-color,background] hover:shadow-[0_12px_26px_rgba(17,24,39,0.12)] hover:border-[var(--brand-accent)] hover:bg-white ${onItemClick ? "cursor-pointer" : ""}`}
+            className={`group relative flex justify-between items-center bg-white/70 p-4 rounded-[12px] border border-[var(--brand-border)] transition-[box-shadow,border-color,background] hover:shadow-[0_12px_26px_rgba(17,24,39,0.12)] hover:border-[var(--brand-accent)] hover:bg-white ${
+              onItemClick && !disabled ? "cursor-pointer" : ""
+            } ${itemClassName ? itemClassName(item) : ""}`}
             onClick={() => {
               if (isEditing) return;
+              if (disabled) return;
               if (onItemClick) onItemClick(item);
             }}
             data-oid="_99fzva"

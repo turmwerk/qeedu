@@ -1,8 +1,17 @@
 import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
-import { SortAscendingOutlined, SortDescendingOutlined, EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+	DeleteOutlined,
+	EditOutlined,
+	LeftOutlined,
+	PlusOutlined,
+	SearchOutlined,
+	SortAscendingOutlined,
+	SortDescendingOutlined,
+} from "@ant-design/icons";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import Button from "@/components/Button";
 import Dropdown from "@/components/Dropdown";
+import Model from "@/components/Model";
 
 type SiderItem = {
 	id: string;
@@ -22,6 +31,27 @@ type Props = {
 	deleteEventName: string;
 	widthEventName: string;
 	getWidthEventName: string;
+	listModalComponent?: React.ComponentType<ListModalProps>;
+};
+
+type ListModalItem = {
+	id: string;
+	title: string;
+	subtitle?: string;
+	md?: string;
+	createdAt?: number;
+};
+
+type ListModalProps = {
+	items: ListModalItem[];
+	onEdit: (id?: string) => void;
+	onCreate: (payload: Record<string, unknown>) => void;
+	onDelete: (id: string) => void;
+	onRename: (id: string, newName: string) => void;
+	openSignal?: number;
+	modalMode?: boolean;
+	onCloseModal?: () => void;
+	currentId?: string | null;
 };
 
 const Sider: React.FC<Props> = ({
@@ -36,6 +66,7 @@ const Sider: React.FC<Props> = ({
 	deleteEventName,
 	widthEventName,
 	getWidthEventName,
+	listModalComponent: ListModalComponent,
 }) => {
 	const [items, setItems] = useState<SiderItem[]>([]);
 	const widthId = useId().replace(/[:]/g, "");
@@ -48,6 +79,7 @@ const Sider: React.FC<Props> = ({
 	const [editingId, setEditingId] = useState<string | null>(null);
 	const [editingTitle, setEditingTitle] = useState("");
 	const [deleteConfirm, setDeleteConfirm] = useState<{ open: boolean; id: string | null; title: string }>({ open: false, id: null, title: "" });
+	const [listModalOpen, setListModalOpen] = useState(false);
 
 	const loadItems = useCallback(() => {
 		try {
@@ -201,6 +233,60 @@ const Sider: React.FC<Props> = ({
 		return next;
 	}, [items, sortBy, order]);
 
+	const listModalItems = useMemo<ListModalItem[]>(
+		() =>
+			items.map((item) => ({
+				id: item.id,
+				title: item.title,
+				createdAt: item.createdAt,
+			})),
+		[items]
+	);
+
+	const handleModalCreate = useCallback(
+		(payload: Record<string, unknown>) => {
+			const id = Date.now().toString();
+			const name =
+				typeof payload.name === "string" && payload.name.trim()
+					? payload.name.trim()
+					: "未命名";
+			const createdAt = Date.now();
+			if (storageKey === "syllabus_outlines") {
+				const intro = typeof payload.intro === "string" ? payload.intro : "";
+				const goals = typeof payload.goals === "string" ? payload.goals : "";
+				const md = `# ${name}\n\n## 课程简介\n${intro || "..."}\n\n## 教学目标\n${goals || "..."}`;
+				const item = { id, title: name, md, createdAt };
+				try {
+					const raw = localStorage.getItem(storageKey);
+					const parsed = raw ? (JSON.parse(raw) as any[]) : [];
+					const next = [item, ...parsed];
+					localStorage.setItem(storageKey, JSON.stringify(next));
+					window.dispatchEvent(new Event(updatedEventName));
+					window.dispatchEvent(
+						new CustomEvent(currentIdEventName, { detail: { id } })
+					);
+				} catch (e) {
+					console.warn("create outline failed", e);
+				}
+			} else if (storageKey === "exam_design_exams_v1") {
+				const item = { id, title: name, questions: [], createdAt };
+				try {
+					const raw = localStorage.getItem(storageKey);
+					const parsed = raw ? (JSON.parse(raw) as any[]) : [];
+					const next = [item, ...parsed];
+					localStorage.setItem(storageKey, JSON.stringify(next));
+					window.dispatchEvent(new Event(updatedEventName));
+					window.dispatchEvent(
+						new CustomEvent(currentIdEventName, { detail: { id } })
+					);
+				} catch (e) {
+					console.warn("create exam failed", e);
+				}
+			}
+		},
+		[storageKey, updatedEventName, currentIdEventName]
+	);
+
 	return (
 		<div
 			className={`relative h-screen z-[10000] transition-all duration-200 ease-out overflow-hidden ${widthClass}`}
@@ -214,6 +300,13 @@ const Sider: React.FC<Props> = ({
 					</div>
 					<div className="flex items-center gap-2">
 						<Button
+								className="flex items-center justify-center w-9 h-9 rounded-xl bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] shadow-[var(--brand-shadow)] transition-[background,border-color,box-shadow,transform] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:-translate-y-[1px]"
+								onClick={() => setListModalOpen(true)}
+								aria-label="搜索"
+							>
+								<SearchOutlined />
+							</Button>
+							<Button
 							className="flex items-center justify-center w-9 h-9 rounded-xl bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] shadow-[var(--brand-shadow)] transition-[background,border-color,box-shadow,transform] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:-translate-y-[1px]"
 							onClick={() =>
 								window.dispatchEvent(new Event(createEventName))
@@ -223,8 +316,9 @@ const Sider: React.FC<Props> = ({
 							<PlusOutlined />
 						</Button>
 						<Dropdown
-							button="排序"
+								button={order === "asc" ? <SortAscendingOutlined /> : <SortDescendingOutlined />}
 							buttonClassName="flex items-center justify-center w-9 h-9 rounded-xl bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] shadow-[var(--brand-shadow)] transition-[background,border-color,box-shadow,transform] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:-translate-y-[1px]"
+								onButtonClick={() => setOrder((v) => (v === "asc" ? "desc" : "asc"))}
 							items={[
 								{
 									label: "按时间",
@@ -241,17 +335,10 @@ const Sider: React.FC<Props> = ({
 						/>
 						<Button
 							className="flex items-center justify-center w-9 h-9 rounded-xl bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] shadow-[var(--brand-shadow)] transition-[background,border-color,box-shadow,transform] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:-translate-y-[1px]"
-							onClick={() => setOrder((v) => (v === "asc" ? "desc" : "asc"))}
-							aria-label="切换排序"
-						>
-							{order === "asc" ? <SortAscendingOutlined /> : <SortDescendingOutlined />}
-						</Button>
-						<Button
-							className="flex items-center justify-center w-9 h-9 rounded-xl bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] shadow-[var(--brand-shadow)] transition-[background,border-color,box-shadow,transform] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:-translate-y-[1px]"
 							onClick={onClose}
 							aria-label="关闭侧边栏"
 						>
-							收起
+								<LeftOutlined />
 						</Button>
 					</div>
 				</div>
@@ -382,6 +469,37 @@ const Sider: React.FC<Props> = ({
 				}}
 				onCancel={() => setDeleteConfirm({ open: false, id: null, title: "" })}
 			/>
+			{ListModalComponent && (
+				<Model
+					visible={listModalOpen}
+					onClose={() => setListModalOpen(false)}
+					width={1100}
+					showHeader={false}
+					bodyClassName="p-2 max-h-[calc(90vh-24px)] overflow-auto"
+				>
+					<ListModalComponent
+						items={listModalItems}
+						onEdit={(id) => {
+							if (id) {
+								window.dispatchEvent(
+									new CustomEvent(selectEventName, { detail: { id } })
+								);
+							}
+							setListModalOpen(false);
+						}}
+						onCreate={handleModalCreate}
+						onDelete={(id) => {
+							window.dispatchEvent(
+								new CustomEvent(deleteEventName, { detail: { id } })
+							);
+						}}
+						onRename={persistRename}
+						modalMode
+						onCloseModal={() => setListModalOpen(false)}
+						currentId={selectedId}
+					/>
+				</Model>
+			)}
 		</div>
 	);
 };

@@ -3,6 +3,8 @@ import { Layout } from "antd";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Header from "./components/Header";
 import Sider from "./components/Sider";
+import SyllabusListModal from "@/pages/Teaching/Syllabus/components/ListModal";
+import ExamListModal from "@/pages/Teaching/ExamDesign/components/ListModal";
 
 const { Content } = Layout;
 
@@ -165,6 +167,7 @@ const MainLayout: React.FC = () => {
         deleteEventName="syllabus-outline-delete"
         widthEventName="syllabus-sider-width"
         getWidthEventName="get-syllabus-sider-width"
+        listModalComponent={SyllabusListModal}
       />
       <Sider
         open={examSiderOpen && isExamDetail}
@@ -178,6 +181,7 @@ const MainLayout: React.FC = () => {
         deleteEventName="exam-exam-delete"
         widthEventName="exam-sider-width"
         getWidthEventName="get-exam-sider-width"
+        listModalComponent={ExamListModal}
       />
       
       {/* 右侧内容区域 */}
