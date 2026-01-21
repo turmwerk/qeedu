@@ -16,6 +16,7 @@ import {
   UserOutlined,
   MenuOutlined,
 } from "@ant-design/icons";
+import Dropdown from "@/components/Dropdown";
 
 const { Header } = Layout;
 
@@ -75,14 +76,40 @@ const routeConfig: Record<string, { title: string; icon?: React.ReactNode }> = {
   },
 };
 
-const MainHeader: React.FC<{ onToggleSider?: () => void; showSiderToggle?: boolean; siderOpen?: boolean }> = ({
-  onToggleSider,
-  showSiderToggle,
-  siderOpen,
-}) => {
+const menuButtonBase =
+  "flex items-center gap-1.5 px-3.5 py-1.5 text-sm font-semibold rounded-lg transition-all";
+const menuButtonIdle =
+  "text-[#1a1a1a] bg-transparent hover:text-[#6236ff] hover:bg-[rgba(98,54,255,0.06)]";
+const menuButtonActive = "text-[#4a2aa6] bg-[rgba(98,54,255,0.12)]";
+
+const buildItems = (
+  pathname: string,
+  navigate: ReturnType<typeof useNavigate>,
+  items: Array<{ label: string; path: string }>,
+) =>
+  items.map((item) => {
+    const itemActive = pathname === item.path;
+    return {
+      label: item.label,
+      active: itemActive,
+      onClick: () => {
+        if (!itemActive) navigate(item.path);
+      },
+    };
+  });
+
+const MainHeader: React.FC<{
+  onToggleSider?: () => void;
+  showSiderToggle?: boolean;
+  siderOpen?: boolean;
+}> = ({ onToggleSider, showSiderToggle, siderOpen }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const isHomePage = location.pathname === "/";
+  const isStudy = location.pathname.startsWith("/study");
+  const isTeaching = location.pathname.startsWith("/teaching");
+  const isManagement = location.pathname.startsWith("/management");
+  const isResearch = location.pathname.startsWith("/research");
 
   const backRouteMap: Record<string, string> = {
     "/teaching": "/",
@@ -131,10 +158,10 @@ const MainHeader: React.FC<{ onToggleSider?: () => void; showSiderToggle?: boole
           {currentConfig.title}
         </h1>
       </div>
-      <div className="flex items-center gap-4" data-oid="lg2sztd">
+      <div className="flex items-center gap-3" data-oid="lg2sztd">
         {!isHomePage && (
           <button
-            className="flex items-center gap-1.5 px-4 py-1.5 text-sm font-medium text-[#1a1a1a] bg-transparent border-0 cursor-pointer rounded-lg transition-all hover:text-[#6236ff] hover:bg-[rgba(98,54,255,0.05)]"
+            className={`${menuButtonBase} ${menuButtonIdle}`}
             onClick={() => navigate("/")}
             data-oid="obxmeer"
           >
@@ -142,9 +169,81 @@ const MainHeader: React.FC<{ onToggleSider?: () => void; showSiderToggle?: boole
             <span data-oid="wwhcunl">首页</span>
           </button>
         )}
+
+        <Dropdown
+          button={
+            <span className="inline-flex items-center gap-1.5">
+              <ReadOutlined />
+              助学
+            </span>
+          }
+          buttonClassName={`${menuButtonBase} ${
+            isStudy ? menuButtonActive : menuButtonIdle
+          }`}
+          onButtonClick={() => {
+            if (!isStudy) navigate("/study");
+          }}
+          items={buildItems(location.pathname, navigate, [
+            { label: "编程辅导", path: "/study/code-tutor" },
+          ])}
+        />
+        <Dropdown
+          button={
+            <span className="inline-flex items-center gap-1.5">
+              <ExperimentOutlined />
+              助教
+            </span>
+          }
+          buttonClassName={`${menuButtonBase} ${
+            isTeaching ? menuButtonActive : menuButtonIdle
+          }`}
+          onButtonClick={() => {
+            if (!isTeaching) navigate("/teaching");
+          }}
+          items={buildItems(location.pathname, navigate, [
+            { label: "大纲设计", path: "/teaching/syllabus/ListPage" },
+            { label: "试卷设计", path: "/teaching/exam/ListPage" },
+          ])}
+        />
+        <Dropdown
+          button={
+            <span className="inline-flex items-center gap-1.5">
+              <ControlOutlined />
+              助管
+            </span>
+          }
+          buttonClassName={`${menuButtonBase} ${
+            isManagement ? menuButtonActive : menuButtonIdle
+          }`}
+          onButtonClick={() => {
+            if (!isManagement) navigate("/management");
+          }}
+          items={buildItems(location.pathname, navigate, [
+            { label: "专业建设", path: "/management/major" },
+            { label: "政策响应", path: "/management/policy" },
+          ])}
+        />
+        <Dropdown
+          button={
+            <span className="inline-flex items-center gap-1.5">
+              <TeamOutlined />
+              助研
+            </span>
+          }
+          buttonClassName={`${menuButtonBase} ${
+            isResearch ? menuButtonActive : menuButtonIdle
+          }`}
+          onButtonClick={() => {
+            if (!isResearch) navigate("/research");
+          }}
+          items={buildItems(location.pathname, navigate, [
+            { label: "科研协作", path: "/research/collaboration" },
+          ])}
+        />
+
         {isHomePage ? (
           <button
-            className="flex items-center gap-1.5 px-4 py-1.5 text-sm font-medium text-[#1a1a1a] bg-transparent border-0 cursor-pointer rounded-lg transition-all hover:text-[#6236ff] hover:bg-[rgba(98,54,255,0.05)]"
+            className={`${menuButtonBase} ${menuButtonIdle}`}
             onClick={() => navigate("/login")}
             data-oid=".99sosb"
           >
@@ -153,7 +252,7 @@ const MainHeader: React.FC<{ onToggleSider?: () => void; showSiderToggle?: boole
           </button>
         ) : (
           <button
-            className="flex items-center gap-1.5 px-4 py-1.5 text-sm font-medium text-[#1a1a1a] bg-transparent border-0 cursor-pointer rounded-lg transition-all hover:text-[#6236ff] hover:bg-[rgba(98,54,255,0.05)]"
+            className={`${menuButtonBase} ${menuButtonIdle}`}
             onClick={() => (backTarget ? navigate(backTarget) : navigate(-1))}
             data-oid="36x2h-h"
           >
