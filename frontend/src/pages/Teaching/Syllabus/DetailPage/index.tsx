@@ -1,14 +1,7 @@
 import React, { useEffect, useState } from "react";
-import Dropdown from "@/components/Dropdown";
-import {
-  downloadMarkdown,
-  downloadDocx,
-  exportPdfViaPrint,
-} from "@/utils/exportFiles";
-import MarkdownView, { SplitSiderLayout } from "@/components/MarkdownView";
+import { SplitSiderLayout } from "@/components/MarkdownView";
 import MarkdownEditor from "@/components/MarkdownEditor";
-import Dialog from "@/components/Dialog";
-import Button from "@/components/Button";
+import { AssistantPanel, Header, MarkdownPanel } from "./components";
 
 const DetailPage: React.FC<{
   md: string;
@@ -35,69 +28,12 @@ const DetailPage: React.FC<{
   return (
     <div className="h-full min-h-0 w-full" data-oid="d:u9nn:">
       <div className="p-0 text-[#444] h-full min-h-0 flex flex-col" data-oid="4sxypj2">
-        <div
-          className="bg-white px-0 py-2 shadow-[0_1px_6px_rgba(16,24,40,0.04)] flex-shrink-0 z-10"
-          data-oid="ooya:-g"
-        >
-          <div
-            className="flex justify-between items-center gap-2.5 px-0"
-            data-oid="iut9jk:"
-          >
-            <input
-              className="flex-1 border border-transparent bg-[#f0ebf6] rounded-xl px-3 py-2 text-[18px] font-bold text-[#4b2a85] min-h-[40px] transition-[box-shadow,border-color] focus:outline-none focus:border-[#4b2a85] focus:shadow-[0_0_0_3px_rgba(75,42,133,0.18)]"
-              type="text"
-              value={localTitle}
-              onChange={(event) => handleTitleChange(event.target.value)}
-              placeholder="未命名课程"
-              data-oid="m7io34z"
-            />
-
-            <div className="flex items-center gap-3" data-oid="icl7kpu">
-              <div
-                className="flex flex-col items-start justify-center gap-0.5 mr-2"
-                data-oid="xu1iqli"
-              >
-                <div
-                  className="text-[12px] text-[#6b6b6b] font-semibold"
-                  data-oid="h1fskpm"
-                >
-                  总分
-                </div>
-                <div
-                  className="text-[22px] font-extrabold text-[#4b2a85] leading-none"
-                  data-oid="yel0gv1"
-                >
-                  90
-                </div>
-              </div>
-              <Button
-                className="bg-white border-2 border-[#7a54c4] text-[#7a54c4] px-3.5 py-1.5 rounded-[14px] font-bold text-[15px] transition-[background,box-shadow,transform] hover:bg-[#f3eefb] hover:shadow-[0_8px_18px_rgba(75,42,133,0.12)] hover:-translate-y-[1px]"
-                onClick={onBack}
-                data-oid="loi4hgh"
-              >
-                返回大纲目录
-              </Button>
-              <Dropdown
-                button="导出"
-                items={[
-                  {
-                    label: "导出 PDF",
-                    onClick: () => exportPdfViaPrint(displayTitle, md),
-                  },
-                  {
-                    label: "导出 Docx",
-                    onClick: () => downloadDocx(displayTitle, md),
-                  },
-                  {
-                    label: "导出 Markdown",
-                    onClick: () => downloadMarkdown(displayTitle, md),
-                  },
-                ]}
-                data-oid="6zbhnlb"
-              />
-            </div>
-          </div>
-        </div>
+        <Header
+          title={displayTitle}
+          onTitleChange={handleTitleChange}
+          onBack={onBack}
+          md={md}
+        />
         <SplitSiderLayout
           className="p-0"
           leftClassName="flex flex-col h-full min-h-0 bg-white overflow-hidden"
@@ -108,35 +44,15 @@ const DetailPage: React.FC<{
                 className="flex justify-between items-center font-bold mb-0"
                 data-oid="ybrwo3s"
               />
-
-              <div
-                className="flex-1 min-h-0 overflow-hidden p-4"
-                data-oid="l8gcb7j"
-              >
-                <div className="h-full min-h-0" data-oid="as3o8_c">
-                  <MarkdownView
-                    value={md}
-                    onChange={setMd}
-                    onFullScreen={() => setOpenFull(true)}
-                    data-oid="-tf1lud"
-                  />
-                </div>
-              </div>
+              <MarkdownPanel
+                md={md}
+                onChange={setMd}
+                onFullScreen={() => setOpenFull(true)}
+              />
             </>
           }
           right={
-            <div className="flex-1 min-h-0 overflow-hidden p-4">
-              <div className="h-full min-h-0" data-oid="bub8x6d">
-                {/* 传入大纲id作为dialogId，保证唯一性 */}
-                <Dialog
-                  key={id || "default-outline"}
-                  dialogId={id || "default-outline"}
-                  botName="大纲助手"
-                  initMessage="欢迎使用大纲助手，你可以询问如何改进课程大纲。"
-                  data-oid="rva1_cl"
-                />
-              </div>
-            </div>
+            <AssistantPanel id={id} />
           }
           data-oid="wc6ybz5"
         />

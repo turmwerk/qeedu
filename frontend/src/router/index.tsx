@@ -13,17 +13,25 @@ const StudyHub = React.lazy(() => import("@/pages/Study"));
 const TeachingHub = React.lazy(() => import("@/pages/Teaching"));
 const ResearchHub = React.lazy(() => import("@/pages/Research"));
 const ManagementHub = React.lazy(() => import("@/pages/Management"));
-const SyllabusList = React.lazy(
-  () => import("@/pages/Teaching/Syllabus/ListRoute"),
+const SyllabusList = React.lazy(() =>
+  import("@/pages/Teaching/Syllabus/router").then((m) => ({
+    default: m.ListRoute,
+  })),
 );
-const SyllabusDetail = React.lazy(
-  () => import("@/pages/Teaching/Syllabus/DetailRoute"),
+const SyllabusDetail = React.lazy(() =>
+  import("@/pages/Teaching/Syllabus/router").then((m) => ({
+    default: m.DetailRoute,
+  })),
 );
-const ExamDesignList = React.lazy(
-  () => import("@/pages/Teaching/ExamDesign/ListRoute"),
+const ExamDesignList = React.lazy(() =>
+  import("@/pages/Teaching/ExamDesign/router").then((m) => ({
+    default: m.ListRoute,
+  })),
 );
-const ExamDesignDetail = React.lazy(
-  () => import("@/pages/Teaching/ExamDesign/DetailRoute"),
+const ExamDesignDetail = React.lazy(() =>
+  import("@/pages/Teaching/ExamDesign/router").then((m) => ({
+    default: m.DetailRoute,
+  })),
 );
 const MajorConstruct = React.lazy(
   () => import("@/pages/Management/MajorConstruct"),

@@ -3,51 +3,6 @@ import ListPage from "./ListPage";
 import DetailPage from "./DetailPage";
 import Dialog from "@/components/Dialog";
 
-type PageShellProps = {
-  children: React.ReactNode;
-  contentClassName?: string;
-};
-
-const PageShell: React.FC<PageShellProps> = ({ children, contentClassName }) => {
-  const contentClass = contentClassName ?? "pt-3 pb-6 px-6";
-  return (
-    <div
-      className="relative h-[calc(100vh-80px)] min-h-0 flex flex-col bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50 overflow-hidden"
-      data-oid="m2e-jxo"
-    >
-      <div
-        className="absolute inset-0 overflow-hidden pointer-events-none"
-        data-oid="ubda76f"
-      >
-        <div
-          className="absolute w-[600px] h-[600px] rounded-full bg-gradient-to-r from-purple-300/30 to-blue-300/30 blur-[120px] -top-48 -left-48 animate-[float_20s_ease-in-out_infinite]"
-          data-oid="n2:nuro"
-        />
-
-        <div
-          className="absolute w-[500px] h-[500px] rounded-full bg-gradient-to-r from-pink-300/30 to-purple-300/30 blur-[100px] top-1/4 -right-32 animate-[float_25s_ease-in-out_infinite_reverse]"
-          data-oid="lc:5m-n"
-        />
-
-        <div
-          className="absolute w-[400px] h-[400px] rounded-full bg-gradient-to-r from-blue-300/25 to-indigo-300/25 blur-[90px] bottom-0 left-1/3 animate-[float_22s_ease-in-out_infinite]"
-          data-oid="gbzf5bv"
-        />
-      </div>
-      <style data-oid="-8cd:8b">{`
-        @keyframes float {
-          0%, 100% { transform: translate(0, 0) scale(1); }
-          33% { transform: translate(30px, -30px) scale(1.1); }
-          66% { transform: translate(-20px, 20px) scale(0.9); }
-        }
-      `}</style>
-      <div className={`relative z-10 flex-1 min-h-0 ${contentClass}`} data-oid="zobt:l.">
-        {children}
-      </div>
-    </div>
-  );
-};
-
 type Outline = {
   id: string;
   title: string;
@@ -401,48 +356,44 @@ const Syllabus: React.FC = () => {
   if (view === "edit") {
     const currentOutline = outlines.find((o) => o.id === currentId);
     return (
-      <PageShell contentClassName="p-0" data-oid="7ut1p8i">
-        <DetailPage
-          md={md}
-          setMd={(updated: string) => {
-            setMd(updated);
-            if (currentId) {
-              const next = outlines.map((o) =>
-                o.id === currentId ? { ...o, md: updated } : o,
-              );
-              persist(next);
-            }
-          }}
-          onBack={() => {
-            setOpenFull(false);
-            setView("list");
-          }}
-          openFull={openFull}
-          setOpenFull={setOpenFull}
-          title={currentOutline?.title}
-          id={currentOutline?.id}
-          onRename={(id, newName) => handleRename(id, newName)}
-          data-oid="ov3eqbg"
-        />
-      </PageShell>
+      <DetailPage
+        md={md}
+        setMd={(updated: string) => {
+          setMd(updated);
+          if (currentId) {
+            const next = outlines.map((o) =>
+              o.id === currentId ? { ...o, md: updated } : o,
+            );
+            persist(next);
+          }
+        }}
+        onBack={() => {
+          setOpenFull(false);
+          setView("list");
+        }}
+        openFull={openFull}
+        setOpenFull={setOpenFull}
+        title={currentOutline?.title}
+        id={currentOutline?.id}
+        onRename={(id, newName) => handleRename(id, newName)}
+        data-oid="ov3eqbg"
+      />
     );
   }
   return (
-    <PageShell data-oid="2-:yi8t">
-      <ListPage
-        items={outlines}
-        onEdit={(id?: string) => {
-          if (id) handleEdit(id);
-          else setView("edit");
-        }}
-        onCreate={handleCreate}
-        onDelete={(id?: string) => id && handleDelete(id)}
-        onRename={(id?: string, newName?: string) =>
-          id && handleRename(id, newName)
-        }
-        data-oid="zf4txpt"
-      />
-    </PageShell>
+    <ListPage
+      items={outlines}
+      onEdit={(id?: string) => {
+        if (id) handleEdit(id);
+        else setView("edit");
+      }}
+      onCreate={handleCreate}
+      onDelete={(id?: string) => id && handleDelete(id)}
+      onRename={(id?: string, newName?: string) =>
+        id && handleRename(id, newName)
+      }
+      data-oid="zf4txpt"
+    />
   );
 };
 

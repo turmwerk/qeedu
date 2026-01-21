@@ -1,29 +1,16 @@
-import React, { useCallback, useState, type DragEvent } from "react";
+import React, { useCallback, useMemo, useState, type DragEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import Dialog from "@/components/Dialog";
 import ConfirmDialog from "@/components/ConfirmDialog";
-import Dropdown from "@/components/Dropdown";
-import Button from "@/components/Button";
-import Model from "@/components/Model";
-import MarkdownView, { SplitSiderLayout } from "@/components/MarkdownView";
+import { SplitSiderLayout } from "@/components/MarkdownView";
 import ToastContainer from "@/components/Toast";
 import {
-  downloadMarkdown,
-  downloadDocx,
-  exportPdfViaPrint,
-} from "@/utils/exportFiles";
-
-type Question = {
-  id: string;
-  stem: string;
-  score?: number;
-  type?: string;
-  options?: string[];
-  knowledge?: string;
-  difficulty?: string;
-  cognition?: string;
-  answerAnalysis?: string;
-};
+  Header,
+  InsertQuestionModal,
+  PreviewModal,
+  QuestionList,
+  RightPanel,
+} from "./components";
+import type { Question } from "./types";
 
 const DetailPage: React.FC<{
   examId?: string;
@@ -110,8 +97,6 @@ const DetailPage: React.FC<{
 
   const recommendActive = !!selectedQuestion;
 
-  
-
   const openConfirm = (payload: {
     title: string;
     description?: string;
@@ -121,6 +106,14 @@ const DetailPage: React.FC<{
   }) => setConfirmState(payload);
 
   const [localQuestions, setLocalQuestions] = useState<Question[]>(questions);
+
+  const applyQuestions = useCallback(
+    (next: Question[]) => {
+      setLocalQuestions(next);
+      persistExam(next);
+    },
+    [persistExam],
+  );
 
   const handleTitleChange = useCallback(
     (next: string) => {
@@ -133,9 +126,7 @@ const DetailPage: React.FC<{
   // insert modal state
   const [showInsertModal, setShowInsertModal] = useState(false);
   const [insertAt, setInsertAt] = useState<number | null>(null);
-  const [editingQuestionId, setEditingQuestionId] = useState<string | null>(
-    null,
-  );
+  const [editingQuestionId, setEditingQuestionId] = useState<string | null>(null);
   const [modalStem, setModalStem] = useState("");
   const [modalScore, setModalScore] = useState<number>(5);
   const [modalKnowledge, setModalKnowledge] = useState("");
@@ -175,6 +166,16 @@ const DetailPage: React.FC<{
       setShowInsertModal(true);
     },
     [localQuestions]
+  );
+
+  const handleModalQTypeChange = useCallback(
+    (nextType: string) => {
+      setModalQType(nextType);
+      if (nextType === "选择" && modalOptions.length < 2) {
+        setModalOptions(["", ""]);
+      }
+    },
+    [modalOptions.length],
   );
 
   const handleModalSubmit = () => {
@@ -217,8 +218,7 @@ const DetailPage: React.FC<{
       copy.splice(idx, 0, newQ);
       nextQuestions = copy;
     }
-    setLocalQuestions(nextQuestions);
-    persistExam(nextQuestions);
+    applyQuestions(nextQuestions);
     setShowInsertModal(false);
     setEditingQuestionId(null);
     setInsertAt(null);
@@ -323,27 +323,33 @@ const DetailPage: React.FC<{
       setDraggingId(null);
     };
 
-  const initialRecs = [
-    {
-      id: "r1",
-      tags: ["数据结构", "困难", "选择"],
-      stem: "红黑树中，红色节点的子节点必须是？",
-    },
-    { id: "r2", tags: ["数据结构", "简单", "选择"], stem: "栈的特点是？" },
-  ];
+  const initialRecs = useMemo(
+    () => [
+      {
+        id: "r1",
+        tags: ["数据结构", "困难", "选择"],
+        stem: "红黑树中，红色节点的子节点必须是？",
+      },
+      { id: "r2", tags: ["数据结构", "简单", "选择"], stem: "栈的特点是？" },
+    ],
+    [],
+  );
 
-  const altRecs = [
-    {
-      id: "r3",
-      tags: ["算法", "中等", "填空"],
-      stem: "二分查找的前提是什么？",
-    },
-    {
-      id: "r4",
-      tags: ["数据库", "简单", "选择"],
-      stem: "SQL 中用于筛选的关键字是？",
-    },
-  ];
+  const altRecs = useMemo(
+    () => [
+      {
+        id: "r3",
+        tags: ["算法", "中等", "填空"],
+        stem: "二分查找的前提是什么？",
+      },
+      {
+        id: "r4",
+        tags: ["数据库", "简单", "选择"],
+        stem: "SQL 中用于筛选的关键字是？",
+      },
+    ],
+    [],
+  );
 
   const [recList, setRecList] = useState(initialRecs);
 
@@ -351,6 +357,24 @@ const DetailPage: React.FC<{
     onBack();
     navigate("/teaching/exam/ListPage");
   }, [navigate, onBack]);
+
+  const handleShuffleRecs = useCallback(() => {
+    setRecList((prev) => {
+      const isInitial = prev === initialRecs || prev[0]?.id === initialRecs[0].id;
+      return isInitial ? altRecs : initialRecs;
+    });
+  }, [altRecs, initialRecs]);
+
+  const handleReplaceSelected = useCallback(
+    (stem: string) => {
+      if (!selectedQuestion) return;
+      const next = localQuestions.map((qq) =>
+        qq.id === selectedQuestion ? { ...qq, stem } : qq,
+      );
+      applyQuestions(next);
+    },
+    [applyQuestions, localQuestions, selectedQuestion],
+  );
 
   return (
     <>
@@ -367,937 +391,75 @@ const DetailPage: React.FC<{
           className="p-0 text-[#444] h-full min-h-0 flex flex-col"
           data-oid="j-6j29_"
         >
-          <div
-            className="bg-white px-0 py-2 shadow-[0_1px_6px_rgba(16,24,40,0.04)] flex-shrink-0 z-10"
-            data-oid="uqiyav_"
-          >
-            <div
-              className="flex justify-between items-center gap-2.5 px-0"
-              data-oid="81m1vpn"
-            >
-              <input
-                className="flex-1 border border-transparent bg-[#f0ebf6] rounded-xl px-3 py-2 text-[18px] font-bold text-[#4b2a85] min-h-[40px] focus:outline-none focus:border-[#4b2a85] focus:shadow-[0_0_0_3px_rgba(75,42,133,0.18)]"
-                type="text"
-                value={localTitle}
-                onChange={(event) => handleTitleChange(event.target.value)}
-                placeholder="未命名试卷"
-                data-oid="81u59z5"
-              />
-
-              <div className="flex items-center gap-3" data-oid="fkowqs5">
-                <div
-                  className="flex flex-col items-start justify-center gap-0.5 mr-2"
-                  data-oid="1cj8vf:"
-                >
-                  <div
-                    className="text-[12px] text-[#6b6b6b] font-semibold"
-                    data-oid="j9xr7f0"
-                  >
-                    总分
-                  </div>
-                  <div
-                    className="text-[22px] font-extrabold text-[#4b2a85] leading-none"
-                    data-oid="6s313h-"
-                  >
-                    {previewTotalScore}
-                  </div>
-                </div>
-                <Button
-                  className="bg-white border-2 border-[#7a54c4] text-[#7a54c4] px-3 py-1.5 rounded-xl font-bold text-[14px] transition-[background,box-shadow,transform] hover:bg-[#f3eefb] hover:shadow-[0_8px_18px_rgba(75,42,133,0.12)] hover:-translate-y-[1px]"
-                  onClick={handleBack}
-                  data-oid="69nuaqq"
-                >
-                  返回试卷列表
-                </Button>
-                <Button
-                  className="bg-white border-2 border-[#7a54c4] text-[#7a54c4] px-3 py-1.5 rounded-xl font-bold text-[14px] transition-[background,box-shadow,transform] hover:bg-[#f3eefb] hover:shadow-[0_8px_18px_rgba(75,42,133,0.12)] hover:-translate-y-[1px]"
-                  onClick={() => setPreviewOpen(true)}
-                  data-oid="67i3oug"
-                >
-                  试卷预览
-                </Button>
-                <Dropdown
-                  button="导出"
-                  items={[
-                    {
-                      label: "导出 PDF",
-                      onClick: () =>
-                        exportPdfViaPrint(
-                          localTitle || title || "exam",
-                          examMarkdown,
-                        ),
-                    },
-                    {
-                      label: "导出 Docx",
-                      onClick: () =>
-                        downloadDocx(
-                          localTitle || title || "exam",
-                          examMarkdown,
-                        ),
-                    },
-                    {
-                      label: "导出 Markdown",
-                      onClick: () =>
-                        downloadMarkdown(
-                          localTitle || title || "exam",
-                          examMarkdown,
-                        ),
-                    },
-                  ]}
-                  data-oid="i0kuqu6"
-                />
-              </div>
-            </div>
-          </div>
+          <Header
+            title={localTitle}
+            totalScore={previewTotalScore}
+            onTitleChange={handleTitleChange}
+            onBack={handleBack}
+            onPreview={() => setPreviewOpen(true)}
+            examMarkdown={examMarkdown}
+          />
           <SplitSiderLayout
             className="p-0 flex-1 min-h-0 h-full"
             leftClassName="flex flex-col h-full min-h-0 bg-white overflow-hidden"
             rightClassName="bg-white h-full flex flex-col min-h-0 overflow-hidden"
             left={
-              <div className="h-full min-h-0 flex flex-col" data-oid=":ugrgg3">
-                <div className="flex flex-col gap-3 flex-1 min-h-0" data-oid="kpt222u">
-                  <div
-                    className="bg-white rounded-xl shadow-[0_6px_18px_rgba(16,24,40,0.06)] p-3 flex-1 min-h-0 overflow-y-auto"
-                    data-oid="7_pgxtm"
-                  >
-                    <div
-                      className="font-bold mb-2.5 text-[var(--brand-text)]"
-                      data-oid="-0oot4h"
-                    >
-                      试卷
-                    </div>
-                    <div className="flex flex-col gap-3" data-oid="2uf_.d.">
-                      {localQuestions.length === 0 && (
-                        <div
-                          className="text-[#999] p-5 text-center"
-                          data-oid="y-e06rw"
-                        >
-                          当前试卷暂无题目
-                        </div>
-                      )}
-                      {localQuestions.map((q, idx) => (
-                        <div
-                          key={q.id}
-                          className="flex flex-col gap-2.5"
-                          data-oid="2vthdly"
-                        >
-                          <div
-                            className={`bg-white rounded-[14px] border border-[rgba(75,42,133,0.1)] shadow-[0_8px_18px_rgba(16,24,40,0.06)] p-3 flex flex-col gap-2.5 cursor-grab transition-[transform,box-shadow,border-color] relative hover:-translate-y-[1px] hover:shadow-[0_12px_24px_rgba(75,42,133,0.12)] hover:border-[rgba(75,42,133,0.2)] ${selectedQuestion === q.id ? "border-[rgba(75,42,133,0.3)] shadow-[0_0_0_3px_rgba(123,59,232,0.12)]" : ""} ${draggingId === q.id ? "opacity-65 scale-[0.98]" : ""}`}
-                            onClick={() =>
-                              setSelectedQuestion((prev) =>
-                                prev === q.id ? null : q.id,
-                              )
-                            }
-                            draggable
-                            onDragStart={handleDragStart(q.id)}
-                            onDragEnd={handleDragEnd}
-                            onDragOver={handleDragOver}
-                            onDrop={handleDropOnItem(q.id)}
-                            data-oid="67.ukz-"
-                          >
-                            <div
-                              className="flex items-center justify-between gap-2"
-                              data-oid="dgsz-d4"
-                            >
-                              <div
-                                className="font-bold text-[var(--brand-accent)]"
-                                data-oid="2s9n0_v"
-                              >
-                                #{idx + 1}
-                              </div>
-                              <div
-                                className="flex flex-wrap gap-1.5 text-[#6b4da6] text-[12px] flex-1"
-                                data-oid="mfs0jof"
-                              >
-                                <span
-                                  className="bg-[var(--brand-accent-soft)] px-2 py-0.5 rounded-full"
-                                  data-oid="rt9twv."
-                                >
-                                  {q.knowledge || "未标注"}
-                                </span>
-                                <span
-                                  className="bg-[var(--brand-accent-soft)] px-2 py-0.5 rounded-full"
-                                  data-oid="ji22tbf"
-                                >
-                                  {q.difficulty || "中等"}
-                                </span>
-                                <span
-                                  className="bg-[var(--brand-accent-soft)] px-2 py-0.5 rounded-full"
-                                  data-oid="glxxpa2"
-                                >
-                                  {q.type || "简答"}
-                                </span>
-                              </div>
-                              <span
-                                className="text-[16px] text-[rgba(75,42,133,0.5)] tracking-[1px]"
-                                aria-hidden="true"
-                                data-oid="d_6z::v"
-                              >
-                                ⋮⋮
-                              </span>
-                            </div>
-                            <div
-                              className="text-[#2a2038] leading-[1.6] text-[14px]"
-                              data-oid="8mxap_8"
-                            >
-                              {q.stem}
-                              {q.options && q.options.length > 0 && (
-                                <ul
-                                  className="mt-2 list-none p-0"
-                                  data-oid="gvrimrr"
-                                >
-                                  {q.options.map((opt, i) => (
-                                    <li
-                                      key={i}
-                                      className="p-1.5 rounded-lg bg-white border border-[rgba(0,0,0,0.03)] mb-1.5"
-                                      data-oid="urpa82s"
-                                    >
-                                      {String.fromCharCode(65 + i)}. {opt}
-                                    </li>
-                                  ))}
-                                </ul>
-                              )}
-                            </div>
-                            <div
-                              className="flex items-center justify-end gap-2.5 flex-wrap"
-                              onClick={(e) => e.stopPropagation()}
-                              data-oid="zdnnsht"
-                            >
-                              <div
-                                className="flex gap-2 items-center"
-                                data-oid="9q0vh6x"
-                              >
-                                <label
-                                  className="flex items-center gap-1.5 text-[#666] text-[13px]"
-                                  data-oid="e4b:1za"
-                                >
-                                  分值
-                                  <input
-                                    type="number"
-                                    value={q.score ?? 5}
-                                    onChange={(e) => {
-                                      const v = Number(e.target.value || 0);
-                                      const next = localQuestions.map((p) =>
-                                        p.id === q.id ? { ...p, score: v } : p,
-                                      );
-                                      setLocalQuestions(next);
-                                      persistExam(next);
-                                    }}
-                                    className="w-[64px] px-1.5 py-1 rounded-md border border-[#eee]"
-                                    data-oid="ut2gof0"
-                                  />
-                                </label>
-                                <Button
-                                  className="bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-2 py-1.5 rounded-lg transition-[background,border-color,box-shadow] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)]"
-                                  onClick={() => {
-                                    openInsertModal({
-                                      at: idx - 1,
-                                      editingId: q.id,
-                                    });
-                                  }}
-                                  data-oid="j:aycuw"
-                                >
-                                  修改
-                                </Button>
-                                <Button
-                                  className="bg-white border border-[rgba(200,30,30,0.16)] text-[#c21e1e] px-2 py-1.5 rounded-lg transition-[background,border-color,box-shadow] hover:bg-[#fff1f2] hover:border-[rgba(200,30,30,0.35)] hover:shadow-[0_8px_18px_rgba(200,30,30,0.15)]"
-                                  onClick={() => {
-                                    openConfirm({
-                                      title: "删除题目",
-                                      description:
-                                        "确认删除该题目吗？此操作不可恢复。",
-                                      confirmText: "确认删除",
-                                      danger: true,
-                                      onConfirm: () => {
-                                        const next = localQuestions.filter(
-                                          (p) => p.id !== q.id,
-                                        );
-                                        setLocalQuestions(next);
-                                        persistExam(next);
-                                        if (selectedQuestion === q.id)
-                                          setSelectedQuestion(null);
-                                      },
-                                    });
-                                  }}
-                                  data-oid="hn43k9m"
-                                >
-                                  删除
-                                </Button>
-                              </div>
-                            </div>
-                          </div>
-
-                          {selectedQuestion === q.id && (
-                            <div
-                              className="analysis-reveal flex flex-col gap-2.5 my-2"
-                              data-oid="xaw2m61"
-                            >
-                              <div
-                                className="bg-white rounded-xl p-3.5 border border-[rgba(123,59,232,0.08)] shadow-[0_1px_6px_rgba(0,0,0,0.03)]"
-                                data-oid="5djgh84"
-                              >
-                                <div
-                                  className="font-bold text-[#2b1650] mb-2"
-                                  data-oid=":pur:uz"
-                                >
-                                  知识点分析
-                                </div>
-                                <div
-                                  className="text-[#4b4b4b] text-[14px] leading-[1.6]"
-                                  data-oid="3e7g59_"
-                                >
-                                  当前题目覆盖「数据库」，建议搭配相邻知识点，扩展覆盖范围。
-                                </div>
-                              </div>
-                              <div
-                                className="bg-white rounded-xl p-3.5 border border-[rgba(123,59,232,0.08)] shadow-[0_1px_6px_rgba(0,0,0,0.03)]"
-                                data-oid="5e6if:q"
-                              >
-                                <div
-                                  className="font-bold text-[#2b1650] mb-2"
-                                  data-oid="sardy9."
-                                >
-                                  难度分析
-                                </div>
-                                <div
-                                  className="text-[#4b4b4b] text-[14px] leading-[1.6]"
-                                  data-oid="di1o:8h"
-                                >
-                                  偏基础概念，适合作为入门或热身题。
-                                </div>
-                              </div>
-                              <div
-                                className="bg-white rounded-xl p-3.5 border border-[rgba(123,59,232,0.08)] shadow-[0_1px_6px_rgba(0,0,0,0.03)]"
-                                data-oid="m-5.t4t"
-                              >
-                                <div
-                                  className="font-bold text-[#2b1650] mb-2"
-                                  data-oid="96m.93."
-                                >
-                                  答案分析
-                                </div>
-                                <div
-                                  className="text-[#4b4b4b] text-[14px] leading-[1.6]"
-                                  data-oid="mjzs14y"
-                                >
-                                  {q.answerAnalysis || "暂无答案分析。"}
-                                </div>
-                              </div>
-                            </div>
-                          )}
-
-                          <div
-                            className="flex justify-center my-1.5"
-                            data-oid="x26d_d_"
-                          >
-                            <Button
-                              className="bg-transparent border border-dashed border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1 rounded-lg text-[13px] transition-[background,border-color] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)]"
-                              onClick={() => {
-                                openInsertModal({ at: idx, editingId: null });
-                              }}
-                              data-oid="1g-kyf:"
-                            >
-                              + 插入题目
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
-                      {/* 如果试卷为空，显示插入按钮 */}
-                      {localQuestions.length === 0 && (
-                        <div
-                          className="flex justify-center my-1.5"
-                          data-oid="py3kx:o"
-                        >
-                          <Button
-                            className="bg-transparent border border-dashed border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1 rounded-lg text-[13px] transition-[background,border-color] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)]"
-                            onClick={() => {
-                              openInsertModal({ at: -1, editingId: null });
-                            }}
-                            data-oid="zf8fxy:"
-                          >
-                            + 插入题目
-                          </Button>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <QuestionList
+                questions={localQuestions}
+                selectedQuestion={selectedQuestion}
+                draggingId={draggingId}
+                onSelect={setSelectedQuestion}
+                onDragStart={handleDragStart}
+                onDragEnd={handleDragEnd}
+                onDragOver={handleDragOver}
+                onDropOnItem={handleDropOnItem}
+                onOpenInsertModal={openInsertModal}
+                onOpenConfirm={openConfirm}
+                onQuestionsChange={applyQuestions}
+              />
             }
             right={
-              <div className="h-full min-h-0 flex flex-col" data-oid="n3_3c7r">
-                <div
-                  className="bg-white/40 backdrop-blur-[16px] rounded-xl p-[18px] shadow-[0_8px_32px_rgba(147,51,234,0.12)] border border-white/40 flex-1 min-h-0 flex flex-col gap-3 overflow-y-auto relative"
-                  data-oid="q-zngzr"
-                >
-                <div className="flex flex-col gap-3" data-oid="cim6_sx">
-                  <div
-                    className="bg-white rounded-[10px] p-3 shadow-[0_1px_6px_rgba(0,0,0,0.06)] min-h-[320px]"
-                    data-oid="z1utcph"
-                  >
-                    <div className="font-bold mb-2" data-oid="73rcsov">
-                      试卷质量画像
-                    </div>
-
-                    <div className="mb-3" data-oid="6x97:n7">
-                      <div
-                        className="bg-[var(--brand-accent-soft)] p-3 rounded-lg flex items-center gap-3"
-                        data-oid="w9tgbb2"
-                      >
-                        <div
-                          className="text-[#666] text-[12px]"
-                          data-oid="s2hidz3"
-                        >
-                          综合评价
-                        </div>
-                        <div className="flex flex-col" data-oid="xubuim_">
-                          <div
-                            className="text-[var(--brand-accent)] font-bold text-[14px]"
-                            data-oid="e5o9pq4"
-                          >
-                            可用
-                          </div>
-                          <div
-                            className="text-[#6b4da6] text-[12px] mt-1"
-                            data-oid="trb3b_u"
-                          ></div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-3" data-oid="4x65-:9">
-                      <div className="text-[#666] w-[64px]" data-oid="xxxsx7q">
-                        覆盖度
-                      </div>
-                      <div className="flex-1" data-oid="ijvn3l9">
-                        <div
-                          className="bg-[#efe9fb] h-2 rounded-lg overflow-hidden"
-                          data-oid="v53h4h7"
-                        >
-                          <div
-                            className="bg-[var(--brand-accent)] h-full rounded-lg w-[83%]"
-                            data-oid="m5i4:lo"
-                          />
-                        </div>
-                      </div>
-                      <div
-                        className="w-[44px] text-right text-[var(--brand-accent)] font-bold"
-                        data-oid="tfmswu4"
-                      >
-                        83%
-                      </div>
-                    </div>
-
-                    <div
-                      className="flex justify-between items-center mt-2 text-[#666]"
-                      data-oid="579q5n:"
-                    >
-                      <div data-oid="kwvrebx">难度结构</div>
-                      <div data-oid="gru.xfx">合理</div>
-                    </div>
-                    <div
-                      className="flex gap-[18px] text-[#666] mt-1.5 text-[13px]"
-                      data-oid="e2h.urc"
-                    >
-                      <div data-oid="mzslbni">易 30%</div>
-                      <div data-oid="9xcu_2-">中 50%</div>
-                      <div data-oid="ih-20z-">难 20%</div>
-                    </div>
-
-                    <div
-                      className="flex justify-between mt-3"
-                      data-oid="agn-flf"
-                    >
-                      <div
-                        className="flex flex-col gap-1.5 items-start"
-                        data-oid="afov6qx"
-                      >
-                        <div
-                          className="text-[#666] text-[12px]"
-                          data-oid="egie2th"
-                        >
-                          区分度
-                        </div>
-                        <div
-                          className="font-bold text-[var(--brand-accent)] text-[16px]"
-                          data-oid="-_emq-a"
-                        >
-                          0.42
-                        </div>
-                        <div
-                          className="text-[#666] text-[12px]"
-                          data-oid="sb7g01n"
-                        >
-                          良好
-                        </div>
-                      </div>
-                      <div
-                        className="flex flex-col gap-1.5 items-start"
-                        data-oid="z3eq:i1"
-                      >
-                        <div
-                          className="text-[#666] text-[12px]"
-                          data-oid="3pnpycc"
-                        >
-                          信度
-                        </div>
-                        <div
-                          className="font-bold text-[var(--brand-accent)] text-[16px]"
-                          data-oid="1g82czn"
-                        >
-                          0.78
-                        </div>
-                        <div
-                          className="text-[#666] text-[12px]"
-                          data-oid="7jt3ged"
-                        >
-                          可接受
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div
-                    className="bg-white rounded-[10px] p-3 shadow-[0_1px_6px_rgba(0,0,0,0.06)]"
-                    data-oid="sx444_6"
-                  >
-                    <div
-                      className="flex items-center border-b border-dashed border-[var(--brand-border)] pb-2 mb-2.5"
-                      data-oid="stur:ne"
-                    >
-                      <div className="font-bold mb-2" data-oid="txkkqb0">
-                        试卷概览
-                      </div>
-                    </div>
-                    <div className="flex flex-col gap-2.5" data-oid="pgqwzff">
-                      <div
-                        className="flex gap-3 items-start"
-                        data-oid="_e5ht8t"
-                      >
-                        <div
-                          className="min-w-[72px] text-[#666] text-[12px]"
-                          data-oid="hl:e8pn"
-                        >
-                          题型分布
-                        </div>
-                        <div
-                          className="text-[var(--brand-text)] text-[13px] leading-[1.6]"
-                          data-oid="5wai_7q"
-                        >
-                          {formatCounts(typeCounts)}
-                        </div>
-                      </div>
-                      <div
-                        className="flex gap-3 items-start"
-                        data-oid="xr97x:_"
-                      >
-                        <div
-                          className="min-w-[72px] text-[#666] text-[12px]"
-                          data-oid="hfu0wtx"
-                        >
-                          难度分布
-                        </div>
-                        <div
-                          className="text-[var(--brand-text)] text-[13px] leading-[1.6]"
-                          data-oid="7tz0vsd"
-                        >
-                          {formatCounts(difficultyCounts)}
-                        </div>
-                      </div>
-                      <div
-                        className="flex gap-3 items-start"
-                        data-oid="j8en4hu"
-                      >
-                        <div
-                          className="min-w-[72px] text-[#666] text-[12px]"
-                          data-oid="q78-pj5"
-                        >
-                          知识点覆盖
-                        </div>
-                        <div
-                          className="flex flex-wrap gap-2"
-                          data-oid=".5cfkbm"
-                        >
-                          {knowledgeEntries.length ? (
-                            knowledgeEntries.map(([label, count]) => (
-                              <span
-                                key={label}
-                                className="bg-[var(--brand-accent-soft)] text-[#6b4da6] px-2 py-1 rounded-full text-[12px]"
-                                data-oid="9hmo5_t"
-                              >
-                                {label} ×{count}
-                              </span>
-                            ))
-                          ) : (
-                            <span
-                              className="text-[var(--brand-muted)] text-[13px]"
-                              data-oid=":_o5iwk"
-                            >
-                              暂无
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div
-                  className={`absolute inset-[18px] bg-white rounded-xl flex flex-col z-[2] transition-[opacity,transform] shadow-[0_6px_18px_rgba(16,24,40,0.08)] will-change-[transform,opacity] ${!recommendActive ? "opacity-0 translate-y-[18px] pointer-events-none" : "opacity-100 translate-y-0"}`}
-                  data-oid="da8uzsz"
-                >
-                    <div
-                      className="flex flex-col gap-0 p-0 overflow-y-auto flex-1 min-h-0"
-                      data-oid="84-vy:l"
-                    >
-                      <div
-                        className="bg-white rounded-[10px] p-3 shadow-[0_1px_6px_rgba(0,0,0,0.06)] relative"
-                        data-oid="muhpd0u"
-                      >
-                        <div className="font-bold mb-2" data-oid="16.airx">
-                          推荐变题
-                        </div>
-                        <Button
-                          className="absolute top-2 right-2 bg-transparent border border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1.5 rounded-[16px] font-semibold transition-[background,border-color,box-shadow] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)]"
-                          onClick={() => {
-                            // 简单模拟换一换：在两个备选集中切换或打乱
-                            setRecList((prev) => {
-                              const isInitial =
-                                prev === initialRecs ||
-                                prev[0]?.id === initialRecs[0].id;
-                              return isInitial ? altRecs : initialRecs;
-                            });
-                          }}
-                          data-oid=":7hc9s9"
-                        >
-                          换一换
-                        </Button>
-
-                        <div
-                          className="flex flex-col gap-3 mt-2"
-                          data-oid="_-p7ah0"
-                        >
-                          {recList.map((r) => (
-                            <div
-                              key={r.id}
-                              className="bg-[#fbf7ff] rounded-xl p-3 flex flex-col gap-3"
-                              data-oid="tnb7-up"
-                            >
-                              <div
-                                className="flex justify-between items-center"
-                                data-oid="i-pq9_a"
-                              >
-                                <div
-                                  className="flex gap-2 text-[#888] text-[12px]"
-                                  data-oid="uun.ai."
-                                >
-                                  {r.tags.map((t) => (
-                                    <span
-                                      key={t}
-                                      className="bg-[var(--brand-accent-soft)] px-2 py-1 rounded-lg text-[#6b4da6]"
-                                      data-oid="gdgeox-"
-                                    >
-                                      {t}
-                                    </span>
-                                  ))}
-                                </div>
-                                <Button
-                                  className="bg-[var(--brand-accent)] text-white border-0 px-3 py-1.5 rounded-xl font-bold text-[13px] transition-[background,box-shadow] hover:bg-[var(--brand-accent-strong)] hover:shadow-[var(--brand-shadow)]"
-                                  onClick={() => {
-                                    const next = localQuestions.map((qq) =>
-                                      qq.id === selectedQuestion
-                                        ? { ...qq, stem: r.stem }
-                                        : qq,
-                                    );
-                                    setLocalQuestions(next);
-                                    persistExam(next);
-                                  }}
-                                  data-oid="6boymcq"
-                                >
-                                  替换
-                                </Button>
-                              </div>
-                              <div
-                                className="text-[#222] font-semibold mt-2"
-                                data-oid="fbg3s1g"
-                              >
-                                {r.stem}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div
-                        className="bg-white rounded-[10px] p-3 shadow-[0_1px_6px_rgba(0,0,0,0.06)] flex flex-col h-[720px] min-h-0"
-                        data-oid=".3-t5d_"
-                      >
-                        <div
-                          className="h-full flex flex-col min-h-0"
-                          data-oid="0ruc-sg"
-                        >
-                          <Dialog
-                            dialogId={dialogIdFor(selectedQuestion)}
-                            botName="题目助手"
-                            initMessage="这是本题的讨论对话。"
-                            data-oid="quto__9"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                </div>
-                </div>
-              </div>
+              <RightPanel
+                recommendActive={recommendActive}
+                typeSummary={formatCounts(typeCounts)}
+                difficultySummary={formatCounts(difficultyCounts)}
+                knowledgeEntries={knowledgeEntries}
+                dialogId={dialogIdFor(selectedQuestion)}
+                recList={recList}
+                onShuffleRecs={handleShuffleRecs}
+                onReplaceSelected={handleReplaceSelected}
+              />
             }
             data-oid="uewgnt."
           />
         </div>
-
-        {showInsertModal && (
-          <div
-            className="fixed inset-0 bg-[rgba(0,0,0,0.35)] flex items-center justify-center z-[1200]"
-            onClick={() => setShowInsertModal(false)}
-            data-oid="3xqotyg"
-          >
-            <div
-              className="w-[920px] max-w-[92%] bg-white rounded-[10px] p-[18px] shadow-[0_10px_40px_rgba(16,24,40,0.2)]"
-              onClick={(e) => e.stopPropagation()}
-              data-oid="xz:ye08"
-            >
-              <div className="flex gap-3" data-oid="-1knhok">
-                <div className="flex-1" data-oid="l5_2wxs">
-                  <h3 className="mt-0" data-oid="wfhbpcb">
-                    {editingQuestionId ? "修改题目" : "生成插入题目"}
-                  </h3>
-                  <div className="mb-2" data-oid="texmhxp">
-                    <div className="mb-1.5" data-oid="qc5gppr">
-                      题干
-                    </div>
-                    <textarea
-                      value={modalStem}
-                      onChange={(e) => setModalStem(e.target.value)}
-                      rows={5}
-                      className="w-full"
-                      aria-label="题干"
-                      data-oid="jv3zu-q"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2" data-oid="iqu4l00">
-                    <div data-oid="26g165q">
-                      <div className="mb-1.5" data-oid="b:paj0d">
-                        知识点
-                      </div>
-                      <input
-                        value={modalKnowledge}
-                        onChange={(e) => setModalKnowledge(e.target.value)}
-                        placeholder="例如：数据库"
-                        className="w-full p-2 rounded-lg border border-[#eee]"
-                        aria-label="知识点"
-                        data-oid="lfgr06s"
-                      />
-                    </div>
-                    <div data-oid="cxht.qq">
-                      <div className="mb-1.5" data-oid="83qrh7r">
-                        题型
-                      </div>
-                      <select
-                        value={modalQType}
-                        onChange={(e) => {
-                          const v = e.target.value;
-                          setModalQType(v);
-                          if (v === "选择" && modalOptions.length < 2)
-                            setModalOptions(["", ""]);
-                        }}
-                        className="w-full p-2 rounded-lg border border-[#eee]"
-                        aria-label="题型"
-                        data-oid="hbg8ad9"
-                      >
-                        <option data-oid=":jaqi3t">简答</option>
-                        <option data-oid="wqd:o2h">选择</option>
-                        <option data-oid="4xag0rv">填空</option>
-                        <option data-oid="jjx6cd-">编程</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div
-                    className="grid grid-cols-2 gap-2 mt-2"
-                    data-oid="oy6lqxh"
-                  >
-                    <div data-oid="sh8mva6">
-                      <div className="mb-1.5" data-oid="1h5p3fk">
-                        难度
-                      </div>
-                      <select
-                        value={modalDifficulty}
-                        onChange={(e) => setModalDifficulty(e.target.value)}
-                        className="w-full p-2 rounded-lg border border-[#eee]"
-                        aria-label="难度"
-                        data-oid="90c2.gs"
-                      >
-                        <option data-oid="_-ng19x">简单</option>
-                        <option data-oid="eh7:m9v">中等</option>
-                        <option data-oid="areo_oc">困难</option>
-                      </select>
-                    </div>
-                    <div data-oid="g1cx2iu">
-                      <div className="mb-1.5" data-oid="n98hh8m">
-                        认知层次
-                      </div>
-                      <select
-                        value={modalCognition}
-                        onChange={(e) => setModalCognition(e.target.value)}
-                        className="w-full p-2 rounded-lg border border-[#eee]"
-                        aria-label="认知层次"
-                        data-oid="0ez9b0m"
-                      >
-                        <option data-oid="thgy-le">记忆</option>
-                        <option data-oid="akbr4vm">理解</option>
-                        <option data-oid="pmkyr8e">应用</option>
-                        <option data-oid="6_h:ror">分析</option>
-                      </select>
-                    </div>
-                  </div>
-                  {modalQType === "选择" && (
-                    <div className="mt-2" data-oid="ro3nvc2">
-                      <div className="mb-1.5" data-oid="jwr8vtw">
-                        选项
-                      </div>
-                      {modalOptions.map((opt, i) => (
-                        <div
-                          key={i}
-                          className="flex gap-2 items-center mb-1.5"
-                          data-oid="it:ra1w"
-                        >
-                          <div
-                            className="w-7 text-center font-bold"
-                            data-oid="xh6ywn:"
-                          >
-                            {String.fromCharCode(65 + i)}
-                          </div>
-                          <input
-                            value={opt}
-                            onChange={(e) =>
-                              setModalOptions((prev) => {
-                                const copy = [...prev];
-                                copy[i] = e.target.value;
-                                return copy;
-                              })
-                            }
-                            placeholder={`选项 ${String.fromCharCode(65 + i)}`}
-                            className="flex-1 p-2 rounded-lg border border-[#eee]"
-                            aria-label={`选项 ${String.fromCharCode(65 + i)}`}
-                            data-oid="7.76bhv"
-                          />
-
-                          <Button
-                            className="bg-white border border-[rgba(200,30,30,0.16)] text-[#c21e1e] px-2 py-1.5 rounded-lg transition-[background,border-color,box-shadow] hover:bg-[#fff1f2] hover:border-[rgba(200,30,30,0.35)] hover:shadow-[0_8px_18px_rgba(200,30,30,0.15)]"
-                            onClick={() => {
-                              openConfirm({
-                                title: "删除选项",
-                                description: "确认删除该选项吗？",
-                                confirmText: "确认删除",
-                                danger: true,
-                                onConfirm: () => {
-                                  setModalOptions((prev) =>
-                                    prev.length > 1
-                                      ? prev.filter((_, idx) => idx !== i)
-                                      : prev,
-                                  );
-                                },
-                              });
-                            }}
-                            data-oid="vpcntpg"
-                          >
-                            删除
-                          </Button>
-                        </div>
-                      ))}
-                      <div data-oid="nq8e6dt">
-                        <Button
-                          className="bg-transparent border border-dashed border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1 rounded-lg text-[13px] transition-[background,border-color] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)]"
-                          onClick={() =>
-                            setModalOptions((prev) => [...prev, ""])
-                          }
-                          data-oid="_n:zeuz"
-                        >
-                          + 添加选项
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="mt-2" data-oid="z:pzg.k">
-                    <div className="mb-1.5" data-oid="x-i00os">
-                      答案分析
-                    </div>
-                    <textarea
-                      value={modalAnswerAnalysis}
-                      onChange={(e) => setModalAnswerAnalysis(e.target.value)}
-                      rows={3}
-                      className="w-full p-2 rounded-lg border border-[#eee]"
-                      aria-label="答案分析"
-                      data-oid="nleo7om"
-                    />
-                  </div>
-                </div>
-                <div className="w-[360px] ml-4" data-oid=":8vrf3-">
-                  <div className="font-bold mb-2" data-oid="w:_92rr">
-                    对话记录
-                  </div>
-                  <div
-                    className="bg-white rounded-[10px] p-3 shadow-[0_1px_6px_rgba(0,0,0,0.06)] flex flex-col h-[360px] mt-2"
-                    data-oid="cadtxbr"
-                  >
-                    <div
-                      className="flex-1 flex flex-col min-h-0 text-[#666]"
-                      data-oid="juowtmz"
-                    >
-                      <Dialog
-                        dialogId={`${examId}-gen`}
-                        botName="生成助手"
-                        initMessage="在此与模型对话以协助生成题目。"
-                        data-oid="qt1eahc"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="flex justify-end gap-2 mt-3" data-oid="bnpk12g">
-                <Button
-                  className="bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-3 py-2 rounded-lg transition-[background,border-color,box-shadow] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)]"
-                  onClick={() => {
-                    const base = modalKnowledge
-                      ? `基于「${modalKnowledge}」`
-                      : "";
-                    const gen = `${base}${modalQType}题：请描述 ${modalKnowledge || "相关"} 的核心概念。`;
-                    setModalStem(gen);
-                  }}
-                  data-oid="es0bqrw"
-                >
-                  生成题目
-                </Button>
-                <Button
-                  onClick={() => {
-                    handleModalSubmit();
-                  }}
-                  className="bg-[var(--brand-accent)] text-white border-0 px-3.5 py-2 rounded-[18px] shadow-[var(--brand-shadow)] transition-[background,box-shadow] hover:bg-[var(--brand-accent-strong)]"
-                  data-oid="fd-imyj"
-                >
-                  {editingQuestionId ? "保存修改" : "确认加入"}
-                </Button>
-                <Button
-                  onClick={() => setShowInsertModal(false)}
-                  className="bg-transparent border border-[var(--brand-border)] text-[var(--brand-accent)] px-3 py-1.5 rounded-lg transition-[background,border-color,box-shadow] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)]"
-                  data-oid="fa:6lpu"
-                >
-                  取消
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
+        <InsertQuestionModal
+          open={showInsertModal}
+          examId={examId}
+          editingQuestionId={editingQuestionId}
+          modalStem={modalStem}
+          modalKnowledge={modalKnowledge}
+          modalQType={modalQType}
+          modalDifficulty={modalDifficulty}
+          modalCognition={modalCognition}
+          modalOptions={modalOptions}
+          modalAnswerAnalysis={modalAnswerAnalysis}
+          onClose={() => setShowInsertModal(false)}
+          onOpenConfirm={openConfirm}
+          onChangeStem={setModalStem}
+          onChangeKnowledge={setModalKnowledge}
+          onChangeQType={handleModalQTypeChange}
+          onChangeDifficulty={setModalDifficulty}
+          onChangeCognition={setModalCognition}
+          onChangeOptions={setModalOptions}
+          onChangeAnswerAnalysis={setModalAnswerAnalysis}
+          onGenerateStem={() => {
+            const base = modalKnowledge ? `基于「${modalKnowledge}」` : "";
+            const gen = `${base}${modalQType}题：请描述 ${modalKnowledge || "相关"} 的核心概念。`;
+            setModalStem(gen);
+          }}
+          onSubmit={handleModalSubmit}
+        />
 
         <ConfirmDialog
           open={!!confirmState}
@@ -1313,23 +475,11 @@ const DetailPage: React.FC<{
           data-oid="r6gs8je"
         />
 
-        <Model
-          visible={previewOpen}
-          title="试卷预览"
+        <PreviewModal
+          open={previewOpen}
           onClose={() => setPreviewOpen(false)}
-          data-oid="1ixlwxp"
-        >
-          <div
-            className="h-[520px] min-h-[320px] max-h-[70vh]"
-            data-oid="7zo0bmf"
-          >
-            <MarkdownView
-              value={examMarkdown}
-              showControls={false}
-              data-oid="11u_vcj"
-            />
-          </div>
-        </Model>
+          markdown={examMarkdown}
+        />
       </div>
     </>
   );

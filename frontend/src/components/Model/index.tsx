@@ -15,7 +15,7 @@ const Model: React.FC<{
   if (!visible) return null;
   return createPortal(
     <div
-      className="fixed inset-0 bg-[rgba(0,0,0,0.45)] flex items-center justify-center z-[1000]"
+      className="fixed inset-0 bg-[rgba(0,0,0,0.45)] flex items-center justify-center z-[11000]"
       onMouseDown={onClose}
       data-oid="owobl1e"
     >
