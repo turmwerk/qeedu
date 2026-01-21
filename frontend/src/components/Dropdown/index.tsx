@@ -24,6 +24,10 @@ const Dropdown: React.FC<DropdownProps> = ({
   buttonDisabled,
   showCheck = false,
 }) => {
+  const defaultButtonClass =
+    "bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1.5 rounded-xl font-semibold transition-[background,border-color,box-shadow] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[0_8px_18px_rgba(59,130,246,0.18)]";
+  const disabledButtonClass =
+    "bg-[var(--brand-accent)] text-white border-0 px-3.5 py-[7px] rounded-[16px] font-semibold text-[15px] transition-[box-shadow,background]";
   return (
     <div
       className="relative inline-block group"
@@ -39,7 +43,7 @@ const Dropdown: React.FC<DropdownProps> = ({
       <Button
         className={
           buttonClassName ||
-          "bg-[var(--brand-accent)] text-white border-0 px-3.5 py-[7px] rounded-[16px] font-semibold text-[15px] transition-[box-shadow,background] hover:bg-[var(--brand-accent-strong)] hover:shadow-[var(--brand-shadow)]"
+          (buttonDisabled ? disabledButtonClass : defaultButtonClass)
         }
         aria-expanded="false"
         onClick={onButtonClick}
@@ -49,16 +53,16 @@ const Dropdown: React.FC<DropdownProps> = ({
         {button}
       </Button>
       <div
-        className="absolute right-0 top-[calc(100%+4px)] bg-gradient-to-b from-white/95 via-white/90 to-purple-50/80 backdrop-blur-[22px] rounded-2xl p-1.5 min-w-[120px] shadow-[0_12px_36px_rgba(147,51,234,0.18),0_0_24px_rgba(236,72,153,0.18)] border border-white/50 opacity-0 -translate-y-2 scale-[0.98] pointer-events-none z-10 flex flex-col transition-[opacity,transform,box-shadow] duration-[2000ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:opacity-100 group-hover:translate-y-0 group-hover:scale-[1.01] group-hover:pointer-events-auto group-hover:duration-160 group-hover:shadow-[0_18px_48px_rgba(147,51,234,0.24),0_0_32px_rgba(236,72,153,0.28)] group-focus-within:opacity-100 group-focus-within:translate-y-0 group-focus-within:scale-[1.01] group-focus-within:pointer-events-auto group-focus-within:duration-160"
+        className="absolute right-0 top-[calc(100%+4px)] bg-white/95 backdrop-blur-[16px] rounded-2xl p-1.5 min-w-[120px] shadow-[0_10px_24px_rgba(15,23,42,0.12)] border border-[rgba(59,130,246,0.12)] opacity-0 -translate-y-2 scale-[0.98] pointer-events-none z-10 flex flex-col transition-[opacity,transform,box-shadow] duration-[2000ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:opacity-100 group-hover:translate-y-0 group-hover:scale-[1.01] group-hover:pointer-events-auto group-hover:duration-160 group-hover:shadow-[0_14px_30px_rgba(15,23,42,0.16)] group-focus-within:opacity-100 group-focus-within:translate-y-0 group-focus-within:scale-[1.01] group-focus-within:pointer-events-auto group-focus-within:duration-160"
         data-oid="z7um0kb"
       >
         {items.map((item, i) => (
           <Button
             key={i}
-            className={`w-full px-3 py-1.5 rounded-lg border transition-[background,border-color,color] ${
+            className={`w-full px-3 py-1.5 rounded-lg border text-sm font-semibold transition-[background,border-color,color,box-shadow] ${
               item.active
-                ? "bg-purple-100 text-[#4a2aa6] border-purple-300"
-                : "bg-transparent text-[#1f1f1f] border-transparent hover:bg-[var(--brand-accent-soft)]"
+                ? "bg-[#eff6ff] text-[#1d4ed8] border-[#bfdbfe]"
+                : "bg-white/70 text-[#374151] border-transparent hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)]"
             }`}
             onClick={item.onClick}
             data-oid="i7-h8ep"

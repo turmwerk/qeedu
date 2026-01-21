@@ -239,6 +239,15 @@ export default function Login() {
     showToast("登录功能未接入，使用“游客模式”进入首页");
   };
 
+  const primaryButtonClass =
+    "w-full h-[56px] bg-[#eff6ff] text-[#1d4ed8] border border-[#bfdbfe] text-[18px] font-extrabold cursor-pointer shadow-[0_10px_25px_rgba(59,130,246,0.2)] transition-[background,box-shadow,transform] flex items-center justify-center gap-3.5 hover:bg-[#dbeafe] hover:shadow-[0_12px_28px_rgba(59,130,246,0.28)] hover:-translate-y-[1px]";
+  const smallButtonBase =
+    "px-3 py-1.5 rounded-full text-[15px] font-semibold border transition-[background,border-color,box-shadow,transform] hover:-translate-y-[1px]";
+  const smallPrimaryButton =
+    `${smallButtonBase} bg-white text-[#1d4ed8] border-[#bfdbfe] hover:bg-[#eff6ff] hover:shadow-[0_8px_18px_rgba(59,130,246,0.2)]`;
+  const smallNeutralButton =
+    `${smallButtonBase} bg-white text-[#475569] border-[var(--brand-border)] hover:shadow-[0_8px_18px_rgba(15,23,42,0.12)]`;
+
   return (
     <div
       className="w-[520px] max-w-[calc(100%-40px)] bg-white shadow-[0_10px_40px_rgba(0,0,0,0.12)] px-[22px] pt-[22px] pb-[18px] relative"
@@ -263,7 +272,7 @@ export default function Login() {
               <span data-oid="k:7s1e-">登录</span>
             </>
           }
-          submitClassName="w-full h-[56px] bg-[var(--brand-accent)] text-white border-0 text-[18px] font-extrabold cursor-pointer shadow-[var(--brand-shadow)] transition-[background,box-shadow] flex items-center justify-center gap-3.5 hover:bg-[var(--brand-accent-strong)]"
+          submitClassName={primaryButtonClass}
           fieldClassName="relative [&>label]:sr-only col-span-2"
           className="flex flex-col gap-3.5"
           data-oid="i8kfphu"
@@ -276,7 +285,7 @@ export default function Login() {
       >
         <div className="inline-flex gap-3 items-center" data-oid="ujeralt">
           <Button
-            className="bg-transparent border-0 text-[var(--brand-accent)] px-0.5 py-1.5 text-[16px] hover:underline"
+            className={smallPrimaryButton}
             onClick={() => navigate("/register")}
             data-oid="e-:w90c"
           >
@@ -286,7 +295,7 @@ export default function Login() {
             |
           </span>
           <Button
-            className="bg-transparent border-0 text-[var(--brand-accent)] px-0.5 py-1.5 text-[16px] hover:underline"
+            className={smallPrimaryButton}
             onClick={() => navigate("/forget-password")}
             data-oid="a_le.-i"
           >
@@ -296,7 +305,7 @@ export default function Login() {
 
         <div className="inline-flex items-center" data-oid="d69hs.f">
           <Button
-            className="bg-transparent border-0 text-[var(--brand-accent)] px-0.5 py-1.5 text-[16px] hover:underline"
+            className={smallNeutralButton}
             onClick={goGuest}
             data-oid="rvcp8wt"
           >

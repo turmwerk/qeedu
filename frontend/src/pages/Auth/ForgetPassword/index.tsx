@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Form from "@/components/Form";
 import { showToast } from "@/components/Toast";
 import type { FormField } from "@/components/Form";
+import Button from "@/components/Button";
 
 function EmailIcon() {
   return (
@@ -251,14 +252,14 @@ export default function ForgetPassword() {
             data-oid="37.:qal"
           />
 
-          <button
+          <Button
             type="button"
-            className="h-[56px] min-w-[96px] px-[18px] box-border border-0 bg-[var(--brand-accent)] text-white text-[16px] font-bold cursor-pointer hover:bg-[var(--brand-accent-strong)]"
+            className={sendButtonClass}
             onClick={() => showToast("验证码发送未实现")}
             data-oid="h9a904l"
           >
             发送
-          </button>
+          </Button>
         </div>
       ),
     },
@@ -343,6 +344,17 @@ export default function ForgetPassword() {
     showToast("重置密码未实现");
   };
 
+  const primaryButtonClass =
+    "w-full h-[56px] bg-[#eff6ff] text-[#1d4ed8] border border-[#bfdbfe] text-[18px] font-extrabold cursor-pointer shadow-[0_10px_25px_rgba(59,130,246,0.2)] transition-[background,box-shadow,transform] flex items-center justify-center gap-3.5 hover:bg-[#dbeafe] hover:shadow-[0_12px_28px_rgba(59,130,246,0.28)] hover:-translate-y-[1px]";
+  const smallButtonBase =
+    "px-3 py-1.5 rounded-full text-[15px] font-semibold border transition-[background,border-color,box-shadow,transform] hover:-translate-y-[1px]";
+  const smallPrimaryButton =
+    `${smallButtonBase} bg-white text-[#1d4ed8] border-[#bfdbfe] hover:bg-[#eff6ff] hover:shadow-[0_8px_18px_rgba(59,130,246,0.2)]`;
+  const smallNeutralButton =
+    `${smallButtonBase} bg-white text-[#475569] border-[var(--brand-border)] hover:shadow-[0_8px_18px_rgba(15,23,42,0.12)]`;
+  const sendButtonClass =
+    "h-[56px] min-w-[96px] px-[18px] box-border border-l border-[#bfdbfe] bg-[#eff6ff] text-[#1d4ed8] text-[16px] font-bold hover:bg-[#dbeafe]";
+
   return (
     <div
       className="w-[520px] max-w-[calc(100%-40px)] bg-white shadow-[0_10px_40px_rgba(0,0,0,0.12)] px-[22px] pt-[22px] pb-[18px] relative"
@@ -367,7 +379,7 @@ export default function ForgetPassword() {
               <span data-oid="sr9zmqg">重置密码</span>
             </>
           }
-          submitClassName="w-full h-[56px] bg-[var(--brand-accent)] text-white border-0 text-[18px] font-extrabold cursor-pointer shadow-[var(--brand-shadow)] transition-[background,box-shadow] flex items-center justify-center gap-3.5 hover:bg-[var(--brand-accent-strong)]"
+          submitClassName={primaryButtonClass}
           fieldClassName="relative [&>label]:sr-only col-span-2"
           className="flex flex-col gap-3.5"
           data-oid="7e2a2_3"
@@ -379,23 +391,23 @@ export default function ForgetPassword() {
         data-oid="1v5:-.b"
       >
         <div className="inline-flex gap-3 items-center" data-oid="eyka67n">
-          <button
-            className="bg-transparent border-0 text-[var(--brand-accent)] cursor-pointer px-0.5 py-1.5 text-[16px] hover:underline"
+          <Button
+            className={smallPrimaryButton}
             onClick={() => navigate("/login")}
             data-oid=".s1-0.w"
           >
             返回登录
-          </button>
+          </Button>
         </div>
 
         <div className="inline-flex items-center" data-oid="rbp96dn">
-          <button
-            className="bg-transparent border-0 text-[var(--brand-accent)] cursor-pointer px-0.5 py-1.5 text-[16px] hover:underline"
+          <Button
+            className={smallNeutralButton}
             onClick={goGuest}
             data-oid="yu8iyzz"
           >
             游客模式
-          </button>
+          </Button>
         </div>
       </div>
     </div>

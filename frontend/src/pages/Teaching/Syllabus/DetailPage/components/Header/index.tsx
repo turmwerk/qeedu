@@ -15,6 +15,8 @@ type HeaderProps = {
 };
 
 const Header: React.FC<HeaderProps> = ({ title, onTitleChange, onBack, md }) => {
+  const actionButtonClass =
+    "bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1.5 rounded-xl font-semibold transition-[background,border-color,box-shadow,transform] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)] hover:-translate-y-[1px]";
   return (
     <div className="bg-white px-0 py-2 shadow-[0_1px_6px_rgba(16,24,40,0.04)] flex-shrink-0 z-10">
       <div className="flex justify-between items-center gap-2.5 px-0">
@@ -34,13 +36,14 @@ const Header: React.FC<HeaderProps> = ({ title, onTitleChange, onBack, md }) => 
             </div>
           </div>
           <Button
-            className="bg-white border-2 border-[#7a54c4] text-[#7a54c4] px-3.5 py-1.5 rounded-[14px] font-bold text-[15px] transition-[background,box-shadow,transform] hover:bg-[#f3eefb] hover:shadow-[0_8px_18px_rgba(75,42,133,0.12)] hover:-translate-y-[1px]"
+            className={actionButtonClass}
             onClick={onBack}
           >
             返回大纲目录
           </Button>
           <Dropdown
             button="导出"
+            buttonClassName={actionButtonClass}
             items={[
               {
                 label: "导出 PDF",

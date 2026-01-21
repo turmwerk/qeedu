@@ -1,10 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { SortAscendingOutlined, SortDescendingOutlined } from "@ant-design/icons";
 import List from "@/components/List";
 import ConfirmDialog from "@/components/ConfirmDialog";
-import Button from "@/components/Button";
-import Dropdown from "@/components/Dropdown";
 import CreateModal from "../components/CreateModal";
+import Header from "./components/Header";
 
 type ExamItem = {
   id: string;
@@ -27,6 +25,7 @@ const ListPage: React.FC<{
   const [filterKeys, setFilterKeys] = useState<Array<"all" | "final" | "mid">>([
     "all",
   ]);
+  const [searchText, setSearchText] = useState("");
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [confirmDeleteTitle, setConfirmDeleteTitle] = useState<string>("");
   const sortedItems = useMemo(() => {
@@ -50,6 +49,14 @@ const ListPage: React.FC<{
       );
     });
   }, [filterKeys, sortedItems]);
+  const searchValue = searchText.trim().toLowerCase();
+  const searchedItems = useMemo(() => {
+    if (!searchValue) return filteredItems;
+    return filteredItems.filter((item) => {
+      const content = `${item.title} ${item.subtitle || ""}`.toLowerCase();
+      return content.includes(searchValue);
+    });
+  }, [filteredItems, searchValue]);
   const filterLabelMap: Record<"all" | "final" | "mid", string> = {
     all: "全部",
     final: "期末",
@@ -88,78 +95,24 @@ const ListPage: React.FC<{
               className="bg-white/40 backdrop-blur-[16px] rounded-xl p-[18px] shadow-[0_8px_32px_rgba(147,51,234,0.12)] border border-white/40 min-h-[520px]"
               data-oid=".m9p1gd"
             >
-              <div
-                className="flex justify-between items-center font-bold mb-3"
-                data-oid="9zy2etk"
-              >
-                <div
-                  className="text-[var(--brand-accent)] font-bold"
-                  data-oid="ct-hsf6"
-                >
-                  已创建的试卷 ({items.length})
-                </div>
-                <div className="flex items-center gap-2" data-oid="cat0f92">
-                  <Dropdown
-                    button="排序"
-                    buttonClassName="bg-white/60 backdrop-blur-sm border border-purple-200 text-[var(--brand-accent)] px-2.5 py-1.5 rounded-xl font-semibold transition-all hover:bg-white/80 hover:border-purple-300 hover:shadow-[0_4px_16px_rgba(147,51,234,0.2)]"
-                    items={[
-                      {
-                        label: "按时间",
-                        active: sortBy === "time",
-                        onClick: () => setSortBy("time"),
-                      },
-                      {
-                        label: "按名称",
-                        active: sortBy === "name",
-                        onClick: () => setSortBy("name"),
-                      },
-                    ]}
-                    showCheck
-                  />
-                  <Button
-                    className="bg-white/60 backdrop-blur-sm border border-purple-200 text-[var(--brand-accent)] px-2.5 py-1.5 rounded-xl font-semibold transition-all hover:bg-white/80 hover:border-purple-300 hover:shadow-[0_4px_16px_rgba(147,51,234,0.2)]"
-                    onClick={() =>
-                      setOrder((value) => (value === "asc" ? "desc" : "asc"))
-                    }
-                    aria-label="切换排序"
-                  >
-                    {order === "asc" ? (
-                      <SortAscendingOutlined />
-                    ) : (
-                      <SortDescendingOutlined />
-                    )}
-                  </Button>
-                  <Dropdown
-                    button={`筛选：${filterLabel}`}
-                    items={([
-                      { key: "all", label: "全部" },
-                      { key: "final", label: "期末" },
-                      { key: "mid", label: "期中" },
-                    ] as const).map((item) => {
-                      const checked =
-                        filterKeys.includes("all")
-                          ? item.key === "all"
-                          : filterKeys.includes(item.key);
-                      return {
-                        label: item.label,
-                        active: checked,
-                        onClick: () => toggleFilter(item.key),
-                      };
-                    })}
-                    showCheck
-                  />
-                  <Button
-                    className="bg-white/60 backdrop-blur-sm border border-purple-200 text-[var(--brand-accent)] px-2.5 py-1.5 rounded-xl font-semibold transition-all hover:bg-white/80 hover:border-purple-300 hover:shadow-[0_4px_16px_rgba(147,51,234,0.2)]"
-                    onClick={() => setOpen(true)}
-                    data-oid="g6rpkd6"
-                  >
-                    新建试卷
-                  </Button>
-                </div>
-              </div>
+              <Header
+                count={items.length}
+                sortBy={sortBy}
+                onSortChange={setSortBy}
+                order={order}
+                onToggleOrder={() =>
+                  setOrder((value) => (value === "asc" ? "desc" : "asc"))
+                }
+                filterLabel={filterLabel}
+                filterKeys={filterKeys}
+                onToggleFilter={toggleFilter}
+                onCreate={() => setOpen(true)}
+                searchValue={searchText}
+                onSearchChange={setSearchText}
+              />
               <div className="p-3" data-oid="qx3woto">
                 <List<ExamItem>
-                  items={filteredItems}
+                  items={searchedItems}
                   keyExtractor={(i) => i.id}
                   editable={{ getValue: (i) => i.title }}
                   onItemClick={(item) => onEdit(item.id)}
@@ -196,7 +149,7 @@ const ListPage: React.FC<{
                       label: "继续编辑",
                       onClick: (item) => onEdit(item.id),
                       className:
-                        "bg-[var(--brand-accent)] text-white border-0 px-2.5 py-1.5 rounded-lg cursor-pointer font-semibold hover:bg-[var(--brand-accent-strong)]",
+                        "bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1.5 rounded-lg cursor-pointer font-semibold transition-[background,border-color,box-shadow,transform] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)] hover:-translate-y-[1px]",
                     },
                     {
                       label: "重命名",
@@ -204,7 +157,7 @@ const ListPage: React.FC<{
                       onClick: (item, newName?: string) =>
                         newName && onRename(item.id, newName),
                       className:
-                        "bg-[var(--brand-accent-soft)] text-[var(--brand-accent)] border border-[var(--brand-border)] px-2.5 py-1.5 rounded-lg cursor-pointer font-semibold hover:bg-[var(--brand-accent-faint)]",
+                        "bg-[#e8f3ff] text-[#1d4ed8] border border-[#bfdbfe] px-2.5 py-1.5 rounded-lg cursor-pointer font-semibold transition-[background,border-color,box-shadow,transform] hover:bg-[#dbeafe] hover:border-[#93c5fd] hover:shadow-[0_6px_14px_rgba(59,130,246,0.2)] hover:-translate-y-[1px]",
                     },
                     {
                       label: "删除",

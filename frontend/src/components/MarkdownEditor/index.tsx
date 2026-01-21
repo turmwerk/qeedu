@@ -104,7 +104,7 @@ const MarkdownEditor: React.FC<Props> = ({ value = "", onClose }) => {
           <div className="flex items-center gap-3">
             {!siderOpen && (
               <Button
-                className="flex items-center justify-center w-9 h-9 rounded-lg bg-white/60 border border-white/60 shadow-[0_6px_18px_rgba(124,58,237,0.18)] text-[#5b35b7] hover:brightness-110 transition"
+                className="flex items-center justify-center w-9 h-9 rounded-lg bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)] transition"
                 onClick={handleToggleSider}
                 aria-label="打开侧边栏"
               >
@@ -117,14 +117,14 @@ const MarkdownEditor: React.FC<Props> = ({ value = "", onClose }) => {
           </div>
           <div className="flex items-center gap-2" data-oid="o.thfwc">
             <Button
-              className="inline-flex items-center justify-center rounded-md border border-gray-200 bg-white/80 px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+              className="inline-flex items-center justify-center rounded-lg border border-[var(--brand-border)] bg-white px-4 py-2 text-sm font-semibold text-[#475569] shadow-[0_6px_14px_rgba(15,23,42,0.08)] transition hover:bg-white hover:shadow-[0_10px_22px_rgba(15,23,42,0.12)]"
               onClick={() => onClose(null)}
               data-oid="zqqe::h"
             >
               取消
             </Button>
             <Button
-              className="inline-flex items-center justify-center rounded-md bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-lg transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+              className="inline-flex items-center justify-center rounded-lg border border-[#bfdbfe] bg-[#eff6ff] px-4 py-2 text-sm font-semibold text-[#1d4ed8] shadow-[0_10px_22px_rgba(59,130,246,0.2)] transition hover:bg-[#dbeafe] hover:shadow-[0_12px_26px_rgba(59,130,246,0.28)]"
               onClick={() => onClose(text)}
               data-oid="jh7rruz"
             >

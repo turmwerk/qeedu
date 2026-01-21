@@ -77,10 +77,10 @@ const routeConfig: Record<string, { title: string; icon?: React.ReactNode }> = {
 };
 
 const menuButtonBase =
-  "flex items-center gap-1.5 px-3.5 py-1.5 text-sm font-semibold rounded-lg transition-all";
-const menuButtonIdle =
-  "text-[#1a1a1a] bg-transparent hover:text-[#6236ff] hover:bg-[rgba(98,54,255,0.06)]";
-const menuButtonActive = "text-[#4a2aa6] bg-[rgba(98,54,255,0.12)]";
+  "flex items-center gap-1.5 px-3.5 py-1.5 text-sm font-semibold rounded-xl border border-[var(--brand-border)] transition-[background,border-color,box-shadow,transform] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)] hover:-translate-y-[1px]";
+const menuButtonIdle = "text-[var(--brand-accent)] bg-white";
+const menuButtonActive =
+  "text-[#4a2aa6] bg-[var(--brand-accent-soft)] border-[var(--brand-accent)]";
 
 const buildItems = (
   pathname: string,
@@ -135,7 +135,7 @@ const MainHeader: React.FC<{
       <div className="flex items-center gap-3" data-oid="40dtg53">
         {showSiderToggle && !siderOpen && (
           <button
-            className="flex items-center justify-center w-9 h-9 rounded-lg bg-white/60 border border-white/60 shadow-[0_6px_18px_rgba(124,58,237,0.18)] text-[#5b35b7] hover:brightness-110 transition"
+            className="flex items-center justify-center w-9 h-9 rounded-lg bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)] transition"
             onClick={onToggleSider}
             aria-label="打开侧边栏"
             data-oid="sider-toggle"

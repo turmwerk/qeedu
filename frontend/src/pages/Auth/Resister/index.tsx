@@ -254,7 +254,7 @@ export default function Resister() {
 
           <Button
             type="button"
-            className="h-[56px] min-w-[96px] px-[18px] box-border border-0 bg-[var(--brand-accent)] text-white text-[16px] font-bold hover:bg-[var(--brand-accent-strong)]"
+            className={sendButtonClass}
             onClick={() => showToast("验证码发送未实现")}
             data-oid="c860_1o"
           >
@@ -344,6 +344,17 @@ export default function Resister() {
     showToast("注册未实现");
   };
 
+  const primaryButtonClass =
+    "w-full h-[56px] bg-[#eff6ff] text-[#1d4ed8] border border-[#bfdbfe] text-[18px] font-extrabold cursor-pointer shadow-[0_10px_25px_rgba(59,130,246,0.2)] transition-[background,box-shadow,transform] flex items-center justify-center gap-3.5 hover:bg-[#dbeafe] hover:shadow-[0_12px_28px_rgba(59,130,246,0.28)] hover:-translate-y-[1px]";
+  const smallButtonBase =
+    "px-3 py-1.5 rounded-full text-[15px] font-semibold border transition-[background,border-color,box-shadow,transform] hover:-translate-y-[1px]";
+  const smallPrimaryButton =
+    `${smallButtonBase} bg-white text-[#1d4ed8] border-[#bfdbfe] hover:bg-[#eff6ff] hover:shadow-[0_8px_18px_rgba(59,130,246,0.2)]`;
+  const smallNeutralButton =
+    `${smallButtonBase} bg-white text-[#475569] border-[var(--brand-border)] hover:shadow-[0_8px_18px_rgba(15,23,42,0.12)]`;
+  const sendButtonClass =
+    "h-[56px] min-w-[96px] px-[18px] box-border border-l border-[#bfdbfe] bg-[#eff6ff] text-[#1d4ed8] text-[16px] font-bold hover:bg-[#dbeafe]";
+
   return (
     <div
       className="w-[520px] max-w-[calc(100%-40px)] bg-white shadow-[0_10px_40px_rgba(0,0,0,0.12)] px-[22px] pt-[22px] pb-[18px] relative"
@@ -367,7 +378,7 @@ export default function Resister() {
               <span data-oid=".iab:ea">注册</span>
             </>
           }
-          submitClassName="w-full h-[56px] bg-[var(--brand-accent)] text-white border-0 text-[18px] font-extrabold cursor-pointer shadow-[var(--brand-shadow)] transition-[background,box-shadow] flex items-center justify-center gap-3.5 hover:bg-[var(--brand-accent-strong)]"
+          submitClassName={primaryButtonClass}
           fieldClassName="relative [&>label]:sr-only"
           className="flex flex-col gap-3.5"
           data-oid="nk485g0"
@@ -380,7 +391,7 @@ export default function Resister() {
       >
         <div className="inline-flex gap-3 items-center" data-oid="7hn9b5q">
           <Button
-            className="bg-transparent border-0 text-[var(--brand-accent)] px-0.5 py-1.5 text-[16px] hover:underline"
+            className={smallPrimaryButton}
             onClick={() => navigate("/login")}
             data-oid="81t8x7t"
           >
@@ -390,7 +401,7 @@ export default function Resister() {
 
         <div className="inline-flex items-center" data-oid="tjqg5f6">
           <Button
-            className="bg-transparent border-0 text-[var(--brand-accent)] px-0.5 py-1.5 text-[16px] hover:underline"
+            className={smallNeutralButton}
             onClick={goGuest}
             data-oid="rveoy0u"
           >
