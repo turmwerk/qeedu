@@ -1,6 +1,7 @@
 import React from "react";
 import Button from "@/components/Button";
 import Dialog from "@/components/Dialog";
+import Model from "@/components/Model";
 
 type ConfirmPayload = {
   title: string;
@@ -57,20 +58,15 @@ const InsertQuestionModal: React.FC<InsertQuestionModalProps> = ({
   onGenerateStem,
   onSubmit,
 }) => {
-  if (!open) return null;
-
   return (
-    <div
-      className="fixed inset-0 bg-[rgba(0,0,0,0.35)] flex items-center justify-center z-[1200]"
-      onClick={onClose}
+    <Model
+      visible={open}
+      title={editingQuestionId ? "修改题目" : "生成插入题目"}
+      width={920}
+      onClose={onClose}
     >
-      <div
-        className="w-[920px] max-w-[92%] bg-white rounded-[10px] p-[18px] shadow-[0_10px_40px_rgba(16,24,40,0.2)]"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex gap-3">
+      <div className="flex gap-3">
           <div className="flex-1">
-            <h3 className="mt-0">{editingQuestionId ? "修改题目" : "生成插入题目"}</h3>
             <div className="mb-2">
               <div className="mb-1.5">题干</div>
               <textarea
@@ -214,8 +210,8 @@ const InsertQuestionModal: React.FC<InsertQuestionModalProps> = ({
               </div>
             </div>
           </div>
-        </div>
-        <div className="flex justify-end gap-2 mt-3">
+      </div>
+      <div className="flex justify-end gap-2 mt-3">
           <Button
             className="bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-3 py-2 rounded-lg transition-[background,border-color,box-shadow] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)]"
             onClick={onGenerateStem}
@@ -234,9 +230,8 @@ const InsertQuestionModal: React.FC<InsertQuestionModalProps> = ({
           >
             取消
           </Button>
-        </div>
       </div>
-    </div>
+    </Model>
   );
 };
 
