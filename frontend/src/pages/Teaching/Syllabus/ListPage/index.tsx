@@ -1,7 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import {
+  CheckOutlined,
+  SortAscendingOutlined,
+  SortDescendingOutlined,
+} from "@ant-design/icons";
 import List from "@/components/List";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import Button from "@/components/Button";
+import Dropdown from "@/components/Dropdown";
 import CreateModal from "../components/CreateModal";
 
 type Outline = {
@@ -21,8 +27,51 @@ const ListPage: React.FC<{
   openSignal?: number;
 }> = ({ items, onEdit, onCreate, onDelete, onRename, openSignal }) => {
   const [open, setOpen] = useState(false);
+  const [sortBy, setSortBy] = useState<"time" | "name">("time");
+  const [order, setOrder] = useState<"asc" | "desc">("desc");
+  const [filterKeys, setFilterKeys] = useState<Array<"all" | "intro" | "overview">>([
+    "all",
+  ]);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [confirmDeleteTitle, setConfirmDeleteTitle] = useState<string>("");
+  const sortedItems = useMemo(() => {
+    const next = [...items];
+    if (sortBy === "name") {
+      next.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+    } else {
+      next.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+    }
+    if (order === "desc") next.reverse();
+    return next;
+  }, [items, order, sortBy]);
+  const filteredItems = useMemo(() => {
+    if (filterKeys.includes("all")) return sortedItems;
+    return sortedItems.filter((item) => {
+      const hitIntro = item.title.includes("导论");
+      const hitOverview = item.title.includes("概论");
+      return (
+        (filterKeys.includes("intro") && hitIntro) ||
+        (filterKeys.includes("overview") && hitOverview)
+      );
+    });
+  }, [filterKeys, sortedItems]);
+  const filterLabelMap: Record<"all" | "intro" | "overview", string> = {
+    all: "全部",
+    intro: "含“导论”",
+    overview: "含“概论”",
+  };
+  const filterLabel = filterKeys.includes("all")
+    ? filterLabelMap.all
+    : filterKeys.map((key) => filterLabelMap[key]).join("、") || "全部";
+  const toggleFilter = (key: "all" | "intro" | "overview") => {
+    setFilterKeys((prev) => {
+      if (key === "all") return ["all"];
+      const next = prev.filter((k) => k !== "all");
+      const exists = next.includes(key);
+      const updated = exists ? next.filter((k) => k !== key) : [...next, key];
+      return updated.length ? updated : ["all"];
+    });
+  };
   useEffect(() => {
     if (typeof openSignal === "number" && openSignal > 0) {
       const id = window.setTimeout(() => setOpen(true), 0);
@@ -45,7 +94,71 @@ const ListPage: React.FC<{
                 <div className="text-[var(--brand-accent)] font-bold">
                   已创建的大纲 ({items.length})
                 </div>
-                <div>
+                <div className="flex items-center gap-2">
+                  <div className="relative group">
+                    <Button className="bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1.5 rounded-xl font-semibold transition-[background,border-color,box-shadow] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)]">
+                      排序
+                    </Button>
+                    <div className="absolute right-0 top-[calc(100%+4px)] bg-white/90 backdrop-blur-[20px] rounded-xl p-2 min-w-[120px] shadow-[0_8px_32px_rgba(147,51,234,0.15)] border border-white/40 opacity-0 -translate-y-1.5 pointer-events-none z-10 flex flex-col transition-[opacity,transform] [transition:opacity_200ms_ease_500ms,transform_200ms_ease_500ms] group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto group-hover:[transition-delay:0ms]">
+                      <Button
+                        className={`bg-transparent border-0 text-left w-full px-3 py-2 rounded-lg cursor-pointer text-[#1f1f1f] hover:bg-[var(--brand-accent-soft)] flex items-center justify-between ${
+                          sortBy === "time" ? "bg-purple-50" : ""
+                        }`}
+                        onClick={() => setSortBy("time")}
+                      >
+                        <span>按时间</span>
+                        {sortBy === "time" && (
+                          <CheckOutlined className="text-[#5b35b7]" />
+                        )}
+                      </Button>
+                      <Button
+                        className={`bg-transparent border-0 text-left w-full px-3 py-2 rounded-lg cursor-pointer text-[#1f1f1f] hover:bg-[var(--brand-accent-soft)] flex items-center justify-between ${
+                          sortBy === "name" ? "bg-purple-50" : ""
+                        }`}
+                        onClick={() => setSortBy("name")}
+                      >
+                        <span>按名称</span>
+                        {sortBy === "name" && (
+                          <CheckOutlined className="text-[#5b35b7]" />
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                  <Button
+                    className="bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1.5 rounded-xl font-semibold transition-[background,border-color,box-shadow] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)]"
+                    onClick={() =>
+                      setOrder((value) => (value === "asc" ? "desc" : "asc"))
+                    }
+                    aria-label="切换排序"
+                  >
+                    {order === "asc" ? (
+                      <SortAscendingOutlined />
+                    ) : (
+                      <SortDescendingOutlined />
+                    )}
+                  </Button>
+                  <Dropdown
+                    button={`筛选：${filterLabel}`}
+                    items={([
+                      { key: "all", label: "全部" },
+                      { key: "intro", label: "含“导论”" },
+                      { key: "overview", label: "含“概论”" },
+                    ] as const).map((item) => {
+                      const checked =
+                        filterKeys.includes("all")
+                          ? item.key === "all"
+                          : filterKeys.includes(item.key);
+                      return {
+                        label: (
+                          <span className="flex items-center justify-between w-full">
+                            <span>{item.label}</span>
+                            {checked && <span>✓</span>}
+                          </span>
+                        ),
+                        onClick: () => toggleFilter(item.key),
+                      };
+                    })}
+                  />
                   <Button
                     className="bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1.5 rounded-xl font-semibold transition-[background,border-color,box-shadow] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)]"
                     onClick={() => setOpen(true)}
@@ -56,7 +169,7 @@ const ListPage: React.FC<{
               </div>
               <div className="p-3">
                 <List<Outline>
-                  items={items}
+                  items={filteredItems}
                   keyExtractor={(i) => i.id}
                   editable={{ getValue: (i) => i.title }}
                   onItemClick={(item) => onEdit(item.id)}
