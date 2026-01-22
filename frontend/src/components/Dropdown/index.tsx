@@ -80,7 +80,7 @@ const Dropdown: React.FC<DropdownProps> = ({
         </span>
       </Button>
       <div
-        className={`absolute ${menuAlignClass} ${menuPositionClass} bg-white/95 backdrop-blur-[16px] rounded-2xl p-1.5 min-w-[120px] shadow-[0_10px_24px_rgba(15,23,42,0.12)] border border-[rgba(59,130,246,0.12)] opacity-0 scale-[0.98] pointer-events-none z-[100] flex flex-col transition-[opacity,transform,box-shadow] duration-[2000ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:opacity-100 group-hover:scale-[1.01] group-hover:pointer-events-auto group-hover:duration-160 group-hover:shadow-[0_14px_30px_rgba(15,23,42,0.16)] group-focus-within:opacity-100 group-focus-within:translate-y-0 group-focus-within:scale-[1.01] group-focus-within:pointer-events-auto group-focus-within:duration-160`}
+        className={`absolute ${menuAlignClass} ${menuPositionClass} bg-white/95 backdrop-blur-[16px] rounded-2xl p-1.5 min-w-[120px] shadow-[0_10px_24px_rgba(15,23,42,0.12)] border border-[rgba(59,130,246,0.12)] opacity-0 scale-[0.98] pointer-events-none z-[999] flex flex-col transition-[opacity,transform,box-shadow] duration-[2000ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:opacity-100 group-hover:scale-[1.01] group-hover:pointer-events-auto group-hover:duration-160 group-hover:shadow-[0_14px_30px_rgba(15,23,42,0.16)] group-focus-within:opacity-100 group-focus-within:translate-y-0 group-focus-within:scale-[1.01] group-focus-within:pointer-events-auto group-focus-within:duration-160`}
         data-oid="z7um0kb"
       >
         {items.map((item, i) => (

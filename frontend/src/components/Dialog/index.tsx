@@ -28,6 +28,7 @@ const Dialog: React.FC<DialogProps> & {
     return [{ from: "bot", text: initMessage }];
   });
   const [input, setInput] = useState("");
+  const [files, setFiles] = useState<File[]>([]);
   const [pending, setPending] = useState(false);
   const bodyRef = useRef<HTMLDivElement | null>(null);
 
@@ -60,10 +61,12 @@ const Dialog: React.FC<DialogProps> & {
   const send = () => {
     if (!input.trim() || pending) return;
     const text = input;
-    setMessages((m) => [...m, { from: "user", text }]);
+    const sentFiles = [...files];
+    setMessages((m) => [...m, { from: "user", text, files: sentFiles }]);
     setInput("");
+    setFiles([]);
     setPending(true);
-    const reply = `已收到：${text}`;
+    const reply = `已收到：${text}${sentFiles.length > 0 ? ` 和 ${sentFiles.length} 个文件` : ''}`;
     setTimeout(() => {
       setMessages((m) => [...m, { from: "bot", text: reply }]);
       setPending(false);
@@ -71,7 +74,7 @@ const Dialog: React.FC<DialogProps> & {
   };
 
   return (
-    <div className="flex flex-col gap-3 h-full min-h-0 overflow-hidden" data-oid="zx6bwsx">
+    <div className="flex flex-col gap-3 h-full min-h-0 overflow-visible" data-oid="zx6bwsx">
       <div className="font-bold text-[var(--brand-text)]" data-oid="o.dphsl">
         {botName}
       </div>
@@ -81,6 +84,8 @@ const Dialog: React.FC<DialogProps> & {
         onInputChange={setInput}
         onSend={send}
         pending={pending}
+        files={files}
+        onFilesChange={setFiles}
       />
     </div>
   );

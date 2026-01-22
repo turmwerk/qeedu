@@ -1,8 +1,13 @@
 import React from "react";
+import UserBubble from "./components/UserBubble";
+import BotBubble from "./components/BotBubble";
+import FileChips from "./components/FileChips";
+import PendingBubble from "./components/PendingBubble";
 
 export interface DialogMessage {
   from: "user" | "bot";
   text: string;
+  files?: File[];
 }
 
 interface MessageListProps {
@@ -40,35 +45,25 @@ const MessageList: React.FC<MessageListProps> = ({
         {messages.map((m, i) => (
           <div
             key={i}
-            className={
-              m.from === "user"
-                ? "self-end bg-[var(--brand-accent)] text-white px-3 py-2 rounded-xl max-w-[80%]"
-                : "self-start bg-[#f1f0fb] text-[#2d1b4f] px-3 py-2 rounded-xl max-w-[80%]"
-            }
+            className={`flex flex-col gap-1.5 ${
+              m.from === "user" ? "self-end items-end" : "self-start items-start"
+            }`}
             data-oid="jbj51yo"
           >
-            {m.text}
+            {m.from === "user" ? (
+              <UserBubble text={m.text} />
+            ) : (
+              <BotBubble text={m.text} />
+            )}
+            {m.files && m.files.length > 0 && (
+              <FileChips
+                files={m.files}
+                align={m.from === "user" ? "end" : "start"}
+              />
+            )}
           </div>
         ))}
-        {pending && (
-          <div
-            className="dialog-pending self-start bg-[#f1f0fb] text-[#2d1b4f] px-3 py-2 rounded-xl flex gap-1.5"
-            data-oid="iac808a"
-          >
-            <span
-              className="dialog-dot w-1.5 h-1.5 rounded-full bg-[#6b4da6] inline-block"
-              data-oid="zmetvfc"
-            />
-            <span
-              className="dialog-dot delay-1 w-1.5 h-1.5 rounded-full bg-[#6b4da6] inline-block"
-              data-oid="jiu771e"
-            />
-            <span
-              className="dialog-dot delay-2 w-1.5 h-1.5 rounded-full bg-[#6b4da6] inline-block"
-              data-oid="pzx_deb"
-            />
-          </div>
-        )}
+        {pending && <PendingBubble />}
       </div>
     </>
   );

@@ -9,6 +9,8 @@ interface InputAreaProps {
   onSend: () => void;
   pending: boolean;
   placeholder?: string;
+  files: File[];
+  onFilesChange: (files: File[]) => void;
 }
 
 const InputArea: React.FC<InputAreaProps> = ({
@@ -17,8 +19,9 @@ const InputArea: React.FC<InputAreaProps> = ({
   onSend,
   pending,
   placeholder = "输入消息，回车发送",
+  files,
+  onFilesChange,
 }) => {
-  const [files, setFiles] = useState<File[]>([]);
   const [selectedMode, setSelectedMode] = useState<string>("Agent");
   const [selectedAI, setSelectedAI] = useState<string>("Claude Sonnet 4.5");
 
@@ -73,7 +76,7 @@ const InputArea: React.FC<InputAreaProps> = ({
   };
 
   return (
-    <div className="flex flex-col border border-[var(--brand-border)] rounded-lg bg-white overflow-hidden">
+    <div className="flex flex-col border border-[var(--brand-border)] rounded-xl bg-white overflow-visible transition-[border-color,box-shadow] hover:border-[var(--brand-accent)] hover:shadow-[0_4px_12px_rgba(59,130,246,0.15)]">
       <style>{`
         .auto-resize-textarea {
           min-height: 40px;
@@ -81,8 +84,8 @@ const InputArea: React.FC<InputAreaProps> = ({
         }
       `}</style>
       {/* 第一行：文件上传 */}
-      <div className="px-3 pt-2 pb-1.5">
-        <FileUpload files={files} onFilesChange={setFiles} />
+      <div className="px-2.5 pt-1.5 pb-1">
+        <FileUpload files={files} onFilesChange={onFilesChange} />
       </div>
 
       {/* 第二行：输入框 */}
@@ -93,7 +96,7 @@ const InputArea: React.FC<InputAreaProps> = ({
         onKeyDown={handleKeyDown}
         disabled={pending}
         rows={1}
-        className="w-full px-3 py-2 disabled:bg-[#f7f4fb] disabled:text-[#7b6d92] focus:outline-none resize-none auto-resize-textarea"
+        className="w-full px-2.5 py-1.5 disabled:bg-[#f7f4fb] disabled:text-[#7b6d92] focus:outline-none resize-none auto-resize-textarea"
         onInput={(e) => {
           const target = e.target as HTMLTextAreaElement;
           target.style.height = 'auto';
@@ -102,21 +105,21 @@ const InputArea: React.FC<InputAreaProps> = ({
       />
 
       {/* 第三行：模式选择、AI选择和发送按钮 */}
-      <div className="flex items-center justify-between px-3 py-2">
-        <div className="flex items-center gap-2">
+      <div className="flex items-center justify-between px-2.5 py-1.5">
+        <div className="flex items-center gap-2 relative z-[250]">
           <Dropdown
             items={modeItems}
             direction="up"
             showSelected={true}
             showCheck={true}
-            buttonClassName="bg-white border border-[var(--brand-border)] text-[var(--brand-text)] px-2.5 py-1 rounded-lg text-sm font-medium hover:bg-[var(--brand-accent-soft)] transition-colors"
+            buttonClassName="bg-white border border-[var(--brand-border)] text-[var(--brand-text)] px-2.5 py-1 rounded-xl text-sm font-medium transition-[background,border-color,box-shadow] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[0_4px_12px_rgba(59,130,246,0.15)]"
           />
           <Dropdown
             items={aiItems}
             direction="up"
             showSelected={true}
             showCheck={true}
-            buttonClassName="bg-white border border-[var(--brand-border)] text-[var(--brand-text)] px-2.5 py-1 rounded-lg text-sm font-medium hover:bg-[var(--brand-accent-soft)] transition-colors"
+            buttonClassName="bg-white border border-[var(--brand-border)] text-[var(--brand-text)] px-2.5 py-1 rounded-xl text-sm font-medium transition-[background,border-color,box-shadow] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[0_4px_12px_rgba(59,130,246,0.15)]"
           />
         </div>
 

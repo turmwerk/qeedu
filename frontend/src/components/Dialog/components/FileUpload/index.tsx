@@ -31,15 +31,29 @@ const FileUpload: React.FC<FileUploadProps> = ({ files, onFilesChange }) => {
   };
 
   return (
-    <div className="flex items-center gap-2 flex-wrap max-h-[100px] overflow-y-auto">
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={handleFileClick}
-        className="!w-7 !h-7 !p-0 flex items-center justify-center sticky left-0 flex-shrink-0"
-      >
-        +
-      </Button>
+    <div className={`flex items-center gap-1.5 flex-wrap max-h-[100px] ${
+      files.length > 8 ? 'overflow-y-auto' : 'overflow-y-visible'
+    }`}>
+      {files.length === 0 ? (
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleFileClick}
+          className="inline-flex items-center gap-0.5 px-2.5 py-1 sticky left-0 flex-shrink-0"
+        >
+          <span className="text-xs leading-none">+</span>
+          <span className="text-xs leading-none">添加文件</span>
+        </Button>
+      ) : (
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleFileClick}
+          className="!w-7 !h-7 !p-0 flex items-center justify-center sticky left-0 flex-shrink-0 !text-2xl leading-none"
+        >
+          +
+        </Button>
+      )}
       <input
         ref={fileInputRef}
         type="file"
@@ -56,7 +70,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ files, onFilesChange }) => {
         return (
           <div
             key={index}
-            className="flex items-center gap-1.5 border border-[var(--brand-border)] rounded-md overflow-hidden h-7"
+            className="flex items-center gap-1.5 border border-[var(--brand-border)] rounded-xl overflow-hidden h-7 transition-[border-color,box-shadow] hover:border-[var(--brand-accent)] hover:shadow-[0_2px_8px_rgba(59,130,246,0.12)]"
           >
             <button
               type="button"
@@ -72,7 +86,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ files, onFilesChange }) => {
               variant="ghost"
               size="sm"
               onClick={() => removeFile(index)}
-              className="!w-7 !h-7 !p-0 flex items-center justify-center text-[var(--brand-accent)] hover:!text-red-500 border-l border-[var(--brand-border)] !rounded-none flex-shrink-0"
+              className="!w-7 !h-7 !p-0 flex items-center justify-center text-[var(--brand-accent)] hover:!text-red-500 border-l border-[var(--brand-border)] !rounded-none flex-shrink-0 !text-2xl"
             >
               ×
             </Button>
