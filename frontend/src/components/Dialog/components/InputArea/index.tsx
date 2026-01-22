@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Dropdown, { type DropdownItem } from "@/components/Dropdown";
+import Button from "@/components/Button";
 import FileUpload from "../FileUpload";
 
 interface InputAreaProps {
@@ -108,22 +109,24 @@ const InputArea: React.FC<InputAreaProps> = ({
             direction="up"
             showSelected={true}
             showCheck={true}
-            hideBorder={true}
+            buttonClassName="bg-white border border-[var(--brand-border)] text-[var(--brand-text)] px-2.5 py-1 rounded-lg text-sm font-medium hover:bg-[var(--brand-accent-soft)] transition-colors"
           />
           <Dropdown
             items={aiItems}
             direction="up"
             showSelected={true}
             showCheck={true}
-            hideBorder={true}
+            buttonClassName="bg-white border border-[var(--brand-border)] text-[var(--brand-text)] px-2.5 py-1 rounded-lg text-sm font-medium hover:bg-[var(--brand-accent-soft)] transition-colors"
           />
         </div>
 
         {/* 发送按钮 */}
-        <button
+        <Button
+          variant="primary"
+          size="sm"
           onClick={onSend}
           disabled={pending || !input.trim()}
-          className="w-9 h-9 rounded-lg bg-[var(--brand-accent)] text-white flex items-center justify-center transition-all hover:bg-[var(--brand-accent-strong)] hover:shadow-[var(--brand-shadow)] disabled:opacity-40 disabled:cursor-not-allowed"
+          className="!w-9 !h-9 !p-0 flex items-center justify-center"
         >
           {pending ? (
             <svg
@@ -160,7 +163,7 @@ const InputArea: React.FC<InputAreaProps> = ({
               />
             </svg>
           )}
-        </button>
+        </Button>
       </div>
     </div>
   );
