@@ -6,7 +6,7 @@ interface UserBubbleProps {
 
 const UserBubble: React.FC<UserBubbleProps> = ({ text }) => {
   return (
-    <div className="bg-[var(--brand-accent)] text-white px-3 py-2 rounded-xl max-w-[90%]">
+    <div className="bg-[var(--brand-accent)] text-white px-3 py-2 rounded-xl max-w-[90%] border border-transparent hover:border-white/60 transition-[border-color]">
       {text}
     </div>
   );
