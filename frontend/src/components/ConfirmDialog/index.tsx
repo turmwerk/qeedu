@@ -24,17 +24,42 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   onCancel,
 }) => {
   return (
-    <Model visible={open} title={title} onClose={onCancel} data-oid="72c4qmg">
-      <div className="flex flex-col gap-4" data-oid="6v6yh0_">
+    <Model visible={open} title={title} onClose={onCancel} width="auto" data-oid="72c4qmg">
+      <style>
+        {`
+          [data-oid="72c4qmg"] [data-oid="0pbqih6"] {
+            text-align: center;
+            flex: 1;
+          }
+          [data-oid="72c4qmg"] [data-oid="0pas9nr"] {
+            border: 2px solid ${danger ? '#c21e1e' : 'var(--brand-accent)'};
+            max-width: 480px;
+          }
+          [data-oid="a6y_157"].danger-btn {
+            border-color: #c21e1e !important;
+            color: #c21e1e !important;
+          }
+          [data-oid="a6y_157"].danger-btn:hover {
+            background: rgba(194, 30, 30, 0.1) !important;
+            border-color: #a30f0f !important;
+            color: #a30f0f !important;
+          }
+          [data-oid="qaytm5."]:hover {
+            color: var(--brand-accent);
+            font-weight: 500;
+          }
+        `}
+      </style>
+      <div className="flex flex-col gap-3 min-w-[360px] px-2 py-1" data-oid="6v6yh0_">
         {description ? (
           <div
-            className="text-sm leading-[1.6] text-[var(--brand-muted)]"
+            className="text-[15px] leading-[1.6] text-[#4a4a4a] text-center transition-all cursor-default"
             data-oid="qaytm5."
           >
             {description}
           </div>
         ) : null}
-        <div className="flex justify-end gap-2.5" data-oid="lxcum0k">
+        <div className="flex justify-center gap-2.5" data-oid="lxcum0k">
           <Button
             variant="outline"
             onClick={onCancel}
@@ -43,7 +68,8 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
             {cancelText}
           </Button>
           <Button
-            variant={danger ? "danger" : "primary"}
+            variant="outline"
+            className={danger ? "danger-btn" : ""}
             onClick={onConfirm}
             data-oid="a6y_157"
           >

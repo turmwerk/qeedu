@@ -76,7 +76,9 @@ const Model: React.FC<{
               {title}
             </div>
             <Button
-              className="bg-transparent border-0 text-[20px]"
+              variant="outline"
+              size="sm"
+              className="!px-2 !py-1 !text-[16px] !min-w-[28px] !h-[28px] !border-green-500 !text-green-600 hover:!bg-green-50 hover:!border-green-600"
               onClick={onClose}
               data-oid="t:bcga_"
             >
