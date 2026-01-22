@@ -80,7 +80,7 @@ const InputArea: React.FC<InputAreaProps> = ({
         }
       `}</style>
       {/* 第一行：文件上传 */}
-      <div className="px-3 pt-3 pb-2 border-b border-[var(--brand-border)]">
+      <div className="px-3 pt-2 pb-1.5">
         <FileUpload files={files} onFilesChange={setFiles} />
       </div>
 
@@ -92,7 +92,7 @@ const InputArea: React.FC<InputAreaProps> = ({
         onKeyDown={handleKeyDown}
         disabled={pending}
         rows={1}
-        className="w-full px-3 py-2 border-b border-[var(--brand-border)] disabled:bg-[#f7f4fb] disabled:text-[#7b6d92] focus:outline-none resize-none auto-resize-textarea"
+        className="w-full px-3 py-2 disabled:bg-[#f7f4fb] disabled:text-[#7b6d92] focus:outline-none resize-none auto-resize-textarea"
         onInput={(e) => {
           const target = e.target as HTMLTextAreaElement;
           target.style.height = 'auto';
@@ -108,14 +108,14 @@ const InputArea: React.FC<InputAreaProps> = ({
             direction="up"
             showSelected={true}
             showCheck={true}
-            buttonClassName="bg-white border border-[var(--brand-border)] text-[var(--brand-text)] px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-[var(--brand-accent-soft)] transition-colors"
+            hideBorder={true}
           />
           <Dropdown
             items={aiItems}
             direction="up"
             showSelected={true}
             showCheck={true}
-            buttonClassName="bg-white border border-[var(--brand-border)] text-[var(--brand-text)] px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-[var(--brand-accent-soft)] transition-colors"
+            hideBorder={true}
           />
         </div>
 
