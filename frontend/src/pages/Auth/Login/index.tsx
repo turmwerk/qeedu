@@ -244,9 +244,9 @@ export default function Login() {
   };
 
   const primaryButtonClass =
-    "w-full h-[56px] bg-[#f3e8ff] text-[#6d28d9] border border-[#d8b4fe] text-[18px] font-extrabold cursor-pointer transition-[background,border-color,transform] flex items-center justify-center gap-3.5 hover:bg-[#e9d5ff] hover:-translate-y-[1px]";
+    "w-full h-[56px] bg-[#f3e8ff] text-[#6d28d9] border border-[#d8b4fe] text-[18px] font-extrabold cursor-pointer transition-[background,border-color,transform] flex items-center justify-center gap-3.5 hover:bg-[#e9d5ff] hover:-translate-y-[1px] active:scale-95";
   const smallButtonBase =
-    "px-3 py-1.5 rounded-full text-[15px] font-semibold border transition-[background,border-color,transform] hover:-translate-y-[1px]";
+    "px-3 py-1.5 rounded-full text-[15px] font-semibold border transition-[background,border-color,transform] hover:-translate-y-[1px] active:scale-95";
   const smallPrimaryButton =
     `${smallButtonBase} bg-white text-[#6d28d9] border-[#d8b4fe] hover:bg-[#f3e8ff]`;
   const smallNeutralButton =
@@ -254,7 +254,7 @@ export default function Login() {
 
   return (
     <div
-      className="w-[520px] max-w-[calc(100%-40px)] bg-white shadow-[0_10px_40px_rgba(0,0,0,0.12)] px-[22px] pt-[22px] pb-[18px] relative"
+      className="w-[520px] max-w-[calc(100%-40px)] bg-white shadow-[0_10px_40px_rgba(0,0,0,0.12)] px-[22px] pt-[22px] pb-[18px] relative animate-[pageEnter_300ms_ease-out]"
       data-oid="si9z1-w"
     >
       <div className="py-3 pb-1.5 text-center" data-oid="y4lag62">

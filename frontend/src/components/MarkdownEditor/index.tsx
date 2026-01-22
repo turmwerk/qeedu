@@ -16,6 +16,7 @@ const MarkdownEditor: React.FC<Props> = ({ value = "", onClose }) => {
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const [siderOpen, setSiderOpen] = useState(false);
   const [siderWidth, setSiderWidth] = useState(300);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   useEffect(() => {
     // 获取初始 sider 状态并监听状态变化
@@ -49,6 +50,10 @@ const MarkdownEditor: React.FC<Props> = ({ value = "", onClose }) => {
 
   useEffect(() => {
     document.documentElement.setAttribute("data-canvas-open", "true");
+    // 触发进入动画
+    requestAnimationFrame(() => {
+      setIsAnimating(true);
+    });
     return () => {
       document.documentElement.removeAttribute("data-canvas-open");
     };
@@ -84,7 +89,9 @@ const MarkdownEditor: React.FC<Props> = ({ value = "", onClose }) => {
   const columns = useMemo(() => `${split}% 6px ${100 - split}%`, [split]);
 
   return (
-    <div className="fixed inset-0 z-[9999] flex min-h-0 items-stretch">
+    <div className={`fixed inset-0 z-[9999] flex min-h-0 items-stretch transition-opacity duration-300 ease-out ${
+      isAnimating ? "opacity-100" : "opacity-0"
+    }`}>
       {/* 左侧 Sider 占位 - 宽度与 MainLayout 的 Sider 同步 */}
       <div 
         style={{ width: siderOpen ? siderWidth : 0 }} 
@@ -92,9 +99,13 @@ const MarkdownEditor: React.FC<Props> = ({ value = "", onClose }) => {
       />
       
       {/* 画布编辑区域 */}
-      <div className="flex-1 flex flex-col bg-black/40 backdrop-blur-sm min-h-0 h-full">
+      <div className={`flex-1 flex flex-col bg-black/40 backdrop-blur-sm min-h-0 h-full transition-all duration-300 ease-out ${
+        isAnimating ? "scale-100" : "scale-95"
+      }`}>
         <div
-          className="w-full h-full bg-white/90 border border-white/60 shadow-2xl backdrop-blur-xl overflow-hidden flex flex-col min-h-0"
+          className={`w-full h-full bg-white/90 border border-white/60 shadow-2xl backdrop-blur-xl overflow-hidden flex flex-col min-h-0 transition-transform duration-300 ease-out ${
+            isAnimating ? "translate-y-0" : "translate-y-4"
+          }`}
           data-oid="4z5ik1d"
         >
         <div

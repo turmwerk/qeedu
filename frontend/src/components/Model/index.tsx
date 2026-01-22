@@ -1,4 +1,4 @@
-import React, { useId } from "react";
+import React, { useId, useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import Button from "@/components/Button";
 
@@ -22,10 +22,36 @@ const Model: React.FC<{
   const id = useId().replace(/[:]/g, "");
   const widthClass = width ? `modal-width-${id}` : "";
   const widthValue = typeof width === "number" ? `${width}px` : width;
-  if (!visible) return null;
+  
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [shouldRender, setShouldRender] = useState(visible);
+
+  useEffect(() => {
+    if (visible) {
+      setShouldRender(true);
+      // 延迟添加动画类，触发进入动画
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setIsAnimating(true);
+        });
+      });
+    } else {
+      // 触发退出动画
+      setIsAnimating(false);
+      // 等待动画完成后卸载
+      const timer = setTimeout(() => {
+        setShouldRender(false);
+      }, 300); // 与动画duration一致
+      return () => clearTimeout(timer);
+    }
+  }, [visible]);
+
+  if (!shouldRender) return null;
   return createPortal(
     <div
-      className="fixed inset-0 bg-[rgba(0,0,0,0.45)] flex items-center justify-center z-[30000]"
+      className={`fixed inset-0 bg-[rgba(0,0,0,0.45)] flex items-center justify-center z-[30000] transition-opacity duration-300 ease-out ${
+        isAnimating ? "opacity-100" : "opacity-0"
+      }`}
       onMouseDown={onClose}
       data-oid="owobl1e"
     >
@@ -33,7 +59,11 @@ const Model: React.FC<{
         {width ? `.${widthClass} { width: ${widthValue}; }` : ""}
       </style>
       <div
-        className={`w-[780px] max-w-[calc(100%-40px)] bg-white/90 backdrop-blur-[24px] rounded-xl shadow-[0_20px_60px_rgba(147,51,234,0.25)] border border-white/40 overflow-hidden ${widthClass}`}
+        className={`w-[780px] max-w-[calc(100%-40px)] bg-white/90 backdrop-blur-[24px] rounded-xl shadow-[0_20px_60px_rgba(147,51,234,0.25)] border border-white/40 overflow-hidden transition-all duration-300 ease-out ${widthClass} ${
+          isAnimating 
+            ? "opacity-100 scale-100 translate-y-0" 
+            : "opacity-0 scale-95 translate-y-4"
+        }`}
         onMouseDown={(e) => e.stopPropagation()}
         data-oid="0pas9nr"
       >

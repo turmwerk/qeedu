@@ -94,9 +94,13 @@ export const Markdown: React.FC<{
         </div>
       )}
 
-      <div className="flex-1 min-h-0 overflow-hidden" data-oid="cclwx20">
-        {showRaw ? (
-          onChange ? (
+      <div className="flex-1 min-h-0 overflow-hidden relative" data-oid="cclwx20">
+        <div
+          className={`absolute inset-0 transition-all duration-300 ease-out ${
+            showRaw ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4 pointer-events-none"
+          }`}
+        >
+          {onChange ? (
             <textarea
               className="w-full h-full box-border p-3 font-mono text-[13px] rounded-md border border-[var(--brand-border)] min-h-0 resize-y overflow-auto"
               value={value}
@@ -111,18 +115,28 @@ export const Markdown: React.FC<{
             >
               {value}
             </pre>
-          )
-        ) : value ? (
+          )}
+        </div>
+        <div
+          className={`absolute inset-0 transition-all duration-300 ease-out ${
+            !showRaw && value ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4 pointer-events-none"
+          }`}
+        >
           <div
-            className="content flex-1 min-h-0 overflow-y-auto"
+            className="content h-full overflow-y-auto"
             dangerouslySetInnerHTML={{ __html: html }}
             data-oid="f6t.rff"
           />
-        ) : (
+        </div>
+        <div
+          className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${
+            !showRaw && !value ? "opacity-100" : "opacity-0 pointer-events-none"
+          }`}
+        >
           <div className="empty" data-oid="xxehnqg">
             空的 Markdown
           </div>
-        )}
+        </div>
       </div>
     </div>
   );

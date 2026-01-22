@@ -41,13 +41,13 @@ const Header: React.FC<Props> = ({
 	onCloseModal,
 }) => {
 	const sortButtonClass =
-		"bg-white border border-[#bfdbfe] text-[#1d4ed8] w-9 h-9 rounded-xl font-semibold transition-[background,border-color,box-shadow] hover:bg-[#eff6ff] hover:border-[#93c5fd] hover:shadow-[0_8px_18px_rgba(59,130,246,0.18)]";
+		"bg-white border border-[#bfdbfe] text-[#1d4ed8] w-9 h-9 rounded-xl font-semibold transition-[background,border-color,box-shadow,transform] hover:bg-[#eff6ff] hover:border-[#93c5fd] hover:shadow-[0_8px_18px_rgba(59,130,246,0.18)] active:scale-95 flex items-center justify-center";
 	const filterButtonClass =
-		"bg-white border border-[#a7f3d0] text-[#047857] px-2.5 py-1.5 rounded-xl font-semibold transition-[background,border-color,box-shadow] hover:bg-[#ecfdf3] hover:border-[#6ee7b7] hover:shadow-[0_8px_18px_rgba(16,185,129,0.18)]";
+		"bg-white border border-[#a7f3d0] text-[#047857] px-2.5 py-1.5 rounded-xl font-semibold transition-[background,border-color,box-shadow,transform] hover:bg-[#ecfdf3] hover:border-[#6ee7b7] hover:shadow-[0_8px_18px_rgba(16,185,129,0.18)] active:scale-95";
 	const createButtonClass =
-		"bg-white border border-[#c7d2fe] text-[#3730a3] w-9 h-9 rounded-xl font-semibold transition-[background,border-color,box-shadow] hover:bg-[#eef2ff] hover:border-[#a5b4fc] hover:shadow-[0_8px_18px_rgba(99,102,241,0.18)]";
+		"bg-white border border-[#c7d2fe] text-[#3730a3] w-9 h-9 rounded-xl font-semibold transition-[background,border-color,box-shadow,transform] hover:bg-[#eef2ff] hover:border-[#a5b4fc] hover:shadow-[0_8px_18px_rgba(99,102,241,0.18)] active:scale-95 flex items-center justify-center";
 	const closeButtonClass =
-		"bg-white border border-[#e2e8f0] text-[#475569] w-9 h-9 rounded-xl font-semibold transition-[background,border-color,box-shadow] hover:bg-[#f8fafc] hover:border-[#cbd5f5] hover:shadow-[0_8px_18px_rgba(15,23,42,0.12)]";
+		"bg-white border border-[#e2e8f0] text-[#475569] w-9 h-9 rounded-xl font-semibold transition-[background,border-color,box-shadow,transform] hover:bg-[#f8fafc] hover:border-[#cbd5f5] hover:shadow-[0_8px_18px_rgba(15,23,42,0.12)] active:scale-95 flex items-center justify-center";
 
 	return (
 		<div className="flex justify-between items-center font-bold mb-3">
@@ -55,12 +55,14 @@ const Header: React.FC<Props> = ({
 				已创建的试卷 ({count})
 			</div>
 			<div className="flex items-center gap-2">
-				<SearchBar
-					value={searchValue}
-					onChange={onSearchChange}
-					placeholder="搜索试卷"
-					defaultExpanded
-				/>
+				<div className="w-[280px]">
+					<SearchBar
+						value={searchValue}
+						onChange={onSearchChange}
+						placeholder="搜索试卷"
+						defaultExpanded
+					/>
+				</div>
 				<Dropdown
 					button={order === "asc" ? <SortAscendingOutlined /> : <SortDescendingOutlined />}
 					buttonClassName={sortButtonClass}

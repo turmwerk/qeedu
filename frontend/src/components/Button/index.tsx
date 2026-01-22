@@ -59,7 +59,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 		
 		// 如果没有指定variant，则使用纯净模式，只保留原始className
 		const finalClassName = variant
-			? `inline-flex items-center gap-2 font-semibold cursor-pointer transition-[background,border-color,box-shadow,transform,opacity] ${sizeClass[size ?? "md"]} ${variantClass[variant]} ${isDisabled ? "opacity-60 cursor-not-allowed" : ""} ${className ?? ""}`
+			? `inline-flex items-center gap-2 font-semibold cursor-pointer transition-[background,border-color,box-shadow,transform,opacity] active:scale-95 ${sizeClass[size ?? "md"]} ${variantClass[variant]} ${isDisabled ? "opacity-60 cursor-not-allowed" : ""} ${className ?? ""}`
 			: `${className ?? ""}`;
 		
 		return (

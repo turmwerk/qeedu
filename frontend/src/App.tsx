@@ -40,6 +40,19 @@ const App: React.FC = () => {
           color: var(--brand-text);
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
         }
+        @keyframes pageEnter {
+          from {
+            opacity: 0;
+            transform: translateY(8px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .app-root > div {
+          animation: pageEnter 0.3s ease-out;
+        }
       `}</style>
       <div className="app-root" data-oid="p4vlg_w">
         <RouterProvider router={router} data-oid="39ik16v" />
