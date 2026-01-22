@@ -37,10 +37,12 @@ const Dropdown: React.FC<DropdownProps> = ({
   const selectedItem = showSelected ? items.find((item) => item.active) : null;
   const displayButton = selectedItem ? selectedItem.label : button;
 
-  // 根据direction决定菜单位置
+  // 根据direction决定菜单位置和对齐方式
   const menuPositionClass = direction === "up" 
     ? "bottom-[calc(100%+4px)] -translate-y-2 group-hover:translate-y-0" 
     : "top-[calc(100%+4px)] -translate-y-2 group-hover:translate-y-0";
+  
+  const menuAlignClass = direction === "up" ? "left-0" : "right-0";
 
   return (
     <div
@@ -64,10 +66,17 @@ const Dropdown: React.FC<DropdownProps> = ({
         disabled={buttonDisabled}
         data-oid="2k_c_27"
       >
-        {displayButton}
+        <span className="flex items-center gap-1.5">
+          {displayButton}
+          {direction === "up" && (
+            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+            </svg>
+          )}
+        </span>
       </Button>
       <div
-        className={`absolute right-0 ${menuPositionClass} bg-white/95 backdrop-blur-[16px] rounded-2xl p-1.5 min-w-[120px] shadow-[0_10px_24px_rgba(15,23,42,0.12)] border border-[rgba(59,130,246,0.12)] opacity-0 scale-[0.98] pointer-events-none z-10 flex flex-col transition-[opacity,transform,box-shadow] duration-[2000ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:opacity-100 group-hover:scale-[1.01] group-hover:pointer-events-auto group-hover:duration-160 group-hover:shadow-[0_14px_30px_rgba(15,23,42,0.16)] group-focus-within:opacity-100 group-focus-within:translate-y-0 group-focus-within:scale-[1.01] group-focus-within:pointer-events-auto group-focus-within:duration-160`}
+        className={`absolute ${menuAlignClass} ${menuPositionClass} bg-white/95 backdrop-blur-[16px] rounded-2xl p-1.5 min-w-[120px] shadow-[0_10px_24px_rgba(15,23,42,0.12)] border border-[rgba(59,130,246,0.12)] opacity-0 scale-[0.98] pointer-events-none z-10 flex flex-col transition-[opacity,transform,box-shadow] duration-[2000ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:opacity-100 group-hover:scale-[1.01] group-hover:pointer-events-auto group-hover:duration-160 group-hover:shadow-[0_14px_30px_rgba(15,23,42,0.16)] group-focus-within:opacity-100 group-focus-within:translate-y-0 group-focus-within:scale-[1.01] group-focus-within:pointer-events-auto group-focus-within:duration-160`}
         data-oid="z7um0kb"
       >
         {items.map((item, i) => (

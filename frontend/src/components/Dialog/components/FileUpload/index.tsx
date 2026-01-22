@@ -1,4 +1,5 @@
 import React, { useRef } from "react";
+import { handleFileSelection, removeFileAtIndex } from "@/utils/uploadFiles";
 
 interface FileUploadProps {
   files: File[];
@@ -13,13 +14,13 @@ const FileUpload: React.FC<FileUploadProps> = ({ files, onFilesChange }) => {
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      onFilesChange([...files, ...Array.from(e.target.files)]);
-    }
+    const newFiles = handleFileSelection(files, e.target.files);
+    onFilesChange(newFiles);
   };
 
   const removeFile = (index: number) => {
-    onFilesChange(files.filter((_, i) => i !== index));
+    const updatedFiles = removeFileAtIndex(files, index);
+    onFilesChange(updatedFiles);
   };
 
   return (
@@ -29,7 +30,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ files, onFilesChange }) => {
         onClick={handleFileClick}
         className="px-3 py-1.5 rounded-lg border border-dashed border-[var(--brand-border)] text-[var(--brand-accent)] text-sm hover:bg-[var(--brand-accent-soft)] transition-colors"
       >
-        📎 添加文件
+        📎添加文件
       </button>
       <input
         ref={fileInputRef}

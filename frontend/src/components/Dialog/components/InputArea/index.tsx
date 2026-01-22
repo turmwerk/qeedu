@@ -72,22 +72,36 @@ const InputArea: React.FC<InputAreaProps> = ({
   };
 
   return (
-    <div className="flex flex-col gap-2 border border-[var(--brand-border)] rounded-lg p-3 bg-white">
+    <div className="flex flex-col border border-[var(--brand-border)] rounded-lg bg-white overflow-hidden">
+      <style>{`
+        .auto-resize-textarea {
+          min-height: 40px;
+          max-height: 200px;
+        }
+      `}</style>
       {/* 第一行：文件上传 */}
-      <FileUpload files={files} onFilesChange={setFiles} />
+      <div className="px-3 pt-3 pb-2 border-b border-[var(--brand-border)]">
+        <FileUpload files={files} onFilesChange={setFiles} />
+      </div>
 
       {/* 第二行：输入框 */}
-      <input
+      <textarea
         value={input}
         onChange={(e) => onInputChange(e.target.value)}
         placeholder={pending ? "对方输入中..." : placeholder}
         onKeyDown={handleKeyDown}
         disabled={pending}
-        className="w-full px-2.5 py-2 rounded-md border border-[var(--brand-border)] disabled:bg-[#f7f4fb] disabled:text-[#7b6d92] focus:outline-none focus:border-[var(--brand-accent)]"
+        rows={1}
+        className="w-full px-3 py-2 border-b border-[var(--brand-border)] disabled:bg-[#f7f4fb] disabled:text-[#7b6d92] focus:outline-none resize-none auto-resize-textarea"
+        onInput={(e) => {
+          const target = e.target as HTMLTextAreaElement;
+          target.style.height = 'auto';
+          target.style.height = Math.min(target.scrollHeight, 200) + 'px';
+        }}
       />
 
       {/* 第三行：模式选择、AI选择和发送按钮 */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between px-3 py-2">
         <div className="flex items-center gap-2">
           <Dropdown
             items={modeItems}
