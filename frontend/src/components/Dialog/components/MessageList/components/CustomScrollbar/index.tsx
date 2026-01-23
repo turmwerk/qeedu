@@ -193,7 +193,7 @@ const CustomScrollbar: React.FC<CustomScrollbarProps> = ({
 
       {/* 滑块 */}
       <div
-        className={`absolute right-[6px] w-[4px] rounded-full bg-[rgba(59,130,246,0.5)] cursor-grab active:cursor-grabbing hover:bg-[rgba(59,130,246,0.7)] transition-colors z-20 pointer-events-auto ${isDragging ? 'bg-[rgba(59,130,246,0.8)]' : ''}`}
+        className={`absolute right-[6px] w-[4px] rounded-full bg-[rgba(59,130,246,0.5)] cursor-pointer hover:bg-[rgba(59,130,246,0.7)] transition-colors z-20 pointer-events-auto ${isDragging ? 'bg-[rgba(59,130,246,0.8)]' : ''}`}
         style={{
             height: thumbHeight,
             transform: `translateY(${thumbTop}px)`,

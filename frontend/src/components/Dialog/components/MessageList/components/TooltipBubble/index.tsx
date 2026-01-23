@@ -8,10 +8,11 @@ interface TooltipBubbleProps {
 const TooltipBubble: React.FC<TooltipBubbleProps> = ({ text, topPercent }) => {
   return (
     <div
-      className="pointer-events-none absolute right-6 max-w-[500px] flex items-center justify-end"
+      className="pointer-events-none absolute right-6 flex items-center justify-end"
       style={{
         top: `calc(${topPercent * 100}%)`,
         transform: "translateY(-50%)",
+        maxWidth: "500px"
       }}
     >
       <div className="bg-[var(--brand-accent)] text-white text-sm px-4 py-2.5 rounded-lg shadow-[0_10px_25px_rgba(15,23,42,0.25)] relative" style={{
@@ -21,10 +22,10 @@ const TooltipBubble: React.FC<TooltipBubbleProps> = ({ text, topPercent }) => {
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         wordBreak: 'break-word',
-        overflowWrap: 'break-word',
+        overflowWrap: 'anywhere',
         whiteSpace: 'normal',
-        minWidth: '200px',
-        maxWidth: '500px'
+        minWidth: '150px',
+        maxWidth: '100%'
       }}>
         {text}
         {/* 小三角指向右边 */}
