@@ -18,6 +18,7 @@ interface MessageListProps {
   bodyRef: React.RefObject<HTMLDivElement | null>;
   onAtBottomChange?: (isAtBottom: boolean) => void;
   onScrollToBottom?: () => void;
+  onEditMessage?: (index: number, newText: string) => void;
 }
 
 const MessageList: React.FC<MessageListProps> = ({
@@ -26,8 +27,10 @@ const MessageList: React.FC<MessageListProps> = ({
   bodyRef,
   onAtBottomChange,
   onScrollToBottom,
+  onEditMessage,
 }) => {
   const userMessageRefs = useRef<Record<number, HTMLDivElement | null>>({});
+  const pinnedActionsRef = useRef<HTMLDivElement | null>(null);
   const [markerPositions, setMarkerPositions] = useState<
     { index: number; topPercent: number; text: string }[]
   >([]);
@@ -115,10 +118,10 @@ const MessageList: React.FC<MessageListProps> = ({
           display: none; /* Chrome, Safari, Opera */
         }
       `}</style>
-      <div className="relative flex-1 min-h-0">
+      <div className="relative flex-1 min-h-0 overflow-visible">
         <div
           ref={bodyRef}
-          className="absolute inset-0 bg-[var(--brand-accent-soft)] rounded-lg p-3 pr-6 flex flex-col gap-2 overflow-y-auto hide-scrollbar"
+          className="absolute inset-0 bg-[var(--brand-accent-soft)] rounded-lg p-3 pr-4 flex flex-col gap-2 overflow-y-auto hide-scrollbar"
           data-oid="3i9rwq-"
         >
           {messages.map((m, i) => (
@@ -130,14 +133,14 @@ const MessageList: React.FC<MessageListProps> = ({
                 }
               }}
               className={`flex flex-col gap-1.5 ${
-                m.from === "user" ? "self-end items-end" : "self-start items-start"
+                m.from === "user" ? "self-end items-end max-w-[80%]" : "self-start items-start w-full"
               }`}
               data-oid="jbj51yo"
             >
               {m.from === "user" ? (
-                <UserBubble text={m.text} />
+                <UserBubble text={m.text} messageIndex={i} onEditMessage={onEditMessage} />
               ) : (
-                <BotBubble text={m.text} />
+                <BotBubble text={m.text} bodyRef={bodyRef} actionsPortalRef={pinnedActionsRef} messageIndex={i} onEditMessage={onEditMessage} />
               )}
               {m.files && m.files.length > 0 && (
                 <FileChips
@@ -149,6 +152,7 @@ const MessageList: React.FC<MessageListProps> = ({
           ))}
           {pending && <PendingBubble />}
         </div>
+        <div ref={pinnedActionsRef} className="absolute right-3 top-2 z-30 pointer-events-none" />
         <CustomScrollbar
           bodyRef={bodyRef}
           markers={markerPositions}

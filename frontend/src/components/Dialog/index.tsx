@@ -33,7 +33,6 @@ const Dialog: React.FC<DialogProps> & {
   const bodyRef = useRef<HTMLDivElement | null>(null);
   const replyTimeoutRef = useRef<number | null>(null);
   const isAtBottomRef = useRef(true);
-  const [isAtBottom, setIsAtBottom] = useState(true);
 
   // 持久化消息
   React.useEffect(() => {
@@ -112,8 +111,17 @@ const Dialog: React.FC<DialogProps> & {
 
   const handleAtBottomChange = (nextIsAtBottom: boolean) => {
     isAtBottomRef.current = nextIsAtBottom;
-    setIsAtBottom(nextIsAtBottom);
   };
+
+  const handleEditMessage = useCallback((index: number, newText: string) => {
+    setMessages((prevMessages) => {
+      const updated = [...prevMessages];
+      if (updated[index]) {
+        updated[index] = { ...updated[index], text: newText };
+      }
+      return updated;
+    });
+  }, []);
 
   return (
     <div className="flex flex-col gap-3 h-full min-h-0 overflow-visible" data-oid="zx6bwsx">
@@ -126,6 +134,7 @@ const Dialog: React.FC<DialogProps> & {
         bodyRef={bodyRef}
         onAtBottomChange={handleAtBottomChange}
         onScrollToBottom={() => scrollToBottom("smooth")}
+        onEditMessage={handleEditMessage}
       />
       <InputArea
         input={input}

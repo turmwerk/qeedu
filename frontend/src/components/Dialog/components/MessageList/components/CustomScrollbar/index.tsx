@@ -170,7 +170,7 @@ const CustomScrollbar: React.FC<CustomScrollbarProps> = ({
       {/* 轨道 */}
       <div 
         ref={trackRef}
-        className="absolute inset-y-0 right-[6px] w-[4px] rounded-full bg-[rgba(59,130,246,0.15)] pointer-events-auto cursor-pointer hover:bg-[rgba(59,130,246,0.25)] transition-colors"
+        className="absolute inset-y-0 right-[6px] w-[4px] rounded-full bg-[rgba(59,130,246,0.2)] pointer-events-auto cursor-pointer hover:bg-[rgba(59,130,246,0.3)] transition-colors"
         onClick={handleTrackClick}
       />
       
@@ -179,7 +179,7 @@ const CustomScrollbar: React.FC<CustomScrollbarProps> = ({
         {markers.map((marker) => (
             <div
               key={marker.index}
-              className="pointer-events-auto absolute right-[4px] w-2 h-2 rounded-full bg-[var(--brand-accent)] shadow-[0_0_0_2px_rgba(255,255,255,0.9)] cursor-pointer hover:scale-125 transition-transform z-10"
+              className="pointer-events-auto absolute right-[4px] w-2 h-2 rounded-full bg-[rgba(59,130,246,0.35)] shadow-[0_0_0_2px_rgba(255,255,255,0.9)] cursor-pointer hover:scale-125 transition-transform z-10"
               style={{ top: `calc(${marker.topPercent * 100}% - 4px)` }}
               onMouseEnter={() => setHoveredIndex(marker.index)}
               onMouseLeave={() => setHoveredIndex(null)}
@@ -193,7 +193,7 @@ const CustomScrollbar: React.FC<CustomScrollbarProps> = ({
 
       {/* 滑块 */}
       <div
-        className={`absolute right-[6px] w-[4px] rounded-full bg-[rgba(59,130,246,0.5)] cursor-pointer hover:bg-[rgba(59,130,246,0.7)] transition-colors z-20 pointer-events-auto ${isDragging ? 'bg-[rgba(59,130,246,0.8)]' : ''}`}
+        className={`absolute right-[6px] w-[4px] rounded-full bg-[rgba(59,130,246,0.65)] cursor-pointer hover:bg-[rgba(59,130,246,0.8)] transition-colors z-20 pointer-events-auto ${isDragging ? 'bg-[rgba(59,130,246,0.9)]' : ''}`}
         style={{
             height: thumbHeight,
             transform: `translateY(${thumbTop}px)`,
