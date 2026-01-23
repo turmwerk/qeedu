@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useLayoutEffect, useRef, useState } from "react";
 import UserMessageActions from "../UserMessageActions";
 
 interface UserBubbleProps {
@@ -11,29 +11,32 @@ const UserBubble: React.FC<UserBubbleProps> = ({ text, messageIndex, onEditMessa
   const [isHovered, setIsHovered] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(text);
-  const [baseHeight, setBaseHeight] = useState<number | null>(null);
   const [baseWidth, setBaseWidth] = useState<number | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const bubbleRef = useRef<HTMLDivElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
+  const resizeTextarea = () => {
+    if (!textareaRef.current) return;
+    const ta = textareaRef.current;
+    ta.style.height = "auto";
+    ta.style.height = `${ta.scrollHeight}px`;
+  };
+
   useLayoutEffect(() => {
-    if (isEditing && textareaRef.current) {
-      const ta = textareaRef.current;
-      ta.style.height = "auto";
-      const nextHeight = Math.max(baseHeight ?? 0, ta.scrollHeight);
-      ta.style.height = `${nextHeight}px`;
+    if (isEditing) {
+      resizeTextarea();
     }
-  }, [editText, isEditing, baseHeight]);
+  }, [editText, isEditing]);
 
   const handleEdit = () => {
     if (bubbleRef.current) {
       const rect = bubbleRef.current.getBoundingClientRect();
-      setBaseHeight(rect.height);
       setBaseWidth(rect.width);
     }
     setIsEditing(true);
     setEditText(text);
+    requestAnimationFrame(resizeTextarea);
   };
 
   const handleSave = () => {
@@ -79,7 +82,6 @@ const UserBubble: React.FC<UserBubbleProps> = ({ text, messageIndex, onEditMessa
         style={{
           wordBreak: "break-word",
           overflowWrap: "anywhere",
-          minHeight: isEditing && baseHeight ? `${baseHeight}px` : undefined,
           boxSizing: "border-box",
         }}
       >
@@ -87,7 +89,10 @@ const UserBubble: React.FC<UserBubbleProps> = ({ text, messageIndex, onEditMessa
           <textarea
             ref={textareaRef}
             value={editText}
-            onChange={(e) => setEditText(e.target.value)}
+            onChange={(e) => {
+              setEditText(e.target.value);
+              resizeTextarea();
+            }}
             onKeyDown={(e) => {
               if (e.key === "Escape") {
                 setIsEditing(false);

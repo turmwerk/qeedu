@@ -16,16 +16,20 @@ const BotBubble: React.FC<BotBubbleProps> = ({ text, bodyRef, actionsPortalRef, 
   const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(text);
-  const [baseHeight, setBaseHeight] = useState<number | null>(null);
   const bubbleRef = useRef<HTMLDivElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
+  const resizeTextarea = () => {
+    if (!textareaRef.current) return;
+    const ta = textareaRef.current;
+    ta.style.height = "auto";
+    ta.style.height = `${ta.scrollHeight}px`;
+  };
+
   const handleEdit = () => {
-    if (bubbleRef.current) {
-      setBaseHeight(bubbleRef.current.offsetHeight);
-    }
     setEditText(text);
     setIsEditing(true);
+    requestAnimationFrame(resizeTextarea);
   };
 
   const handleSaveEdit = () => {
@@ -56,17 +60,10 @@ const BotBubble: React.FC<BotBubbleProps> = ({ text, bodyRef, actionsPortalRef, 
   }, [actionsPortalRef]);
 
   useLayoutEffect(() => {
-    if (isEditing && bubbleRef.current) {
-      setBaseHeight(bubbleRef.current.offsetHeight);
+    if (isEditing) {
+      resizeTextarea();
     }
-  }, [isEditing]);
-
-  useEffect(() => {
-    if (isEditing && textareaRef.current && baseHeight !== null) {
-      const ta = textareaRef.current;
-      ta.style.height = `${baseHeight}px`;
-    }
-  }, [isEditing, baseHeight]);
+  }, [editText, isEditing]);
 
   useEffect(() => {
     const body = bodyRef.current;
@@ -118,15 +115,17 @@ const BotBubble: React.FC<BotBubbleProps> = ({ text, bodyRef, actionsPortalRef, 
         style={{
           wordBreak: 'break-word',
           overflowWrap: 'anywhere',
-          height: isEditing && baseHeight !== null ? `${baseHeight}px` : undefined,
         }}
       >
         {isEditing ? (
           <textarea
             ref={textareaRef}
             value={editText}
-            onChange={(e) => setEditText(e.target.value)}
-            className="w-full h-full bg-transparent text-[#2d1b4f] leading-relaxed outline-none resize-none"
+            onChange={(e) => {
+              setEditText(e.target.value);
+              resizeTextarea();
+            }}
+            className="w-full bg-transparent text-[#2d1b4f] leading-relaxed outline-none resize-none"
             style={{ wordBreak: 'break-word', overflowWrap: 'anywhere', overflow: 'hidden' }}
           />
         ) : (
