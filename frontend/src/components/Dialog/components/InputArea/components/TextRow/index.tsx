@@ -26,11 +26,10 @@ const TextRow: React.FC<TextRowProps> = ({
     <textarea
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      placeholder={pending ? "对方输入中..." : placeholder}
+      placeholder={pending ? "对方输入中（仍可输入）" : placeholder}
       onKeyDown={handleKeyDown}
-      disabled={pending}
       rows={1}
-      className="w-full px-2.5 py-1.5 disabled:bg-[#f7f4fb] disabled:text-[#7b6d92] focus:outline-none resize-none auto-resize-textarea"
+      className="w-full px-2.5 py-1.5 focus:outline-none resize-none auto-resize-textarea"
       onInput={(e) => {
         const target = e.target as HTMLTextAreaElement;
         target.style.height = "auto";

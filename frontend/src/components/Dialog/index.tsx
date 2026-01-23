@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import MessageList, {
   type DialogMessage,
 } from "./components/MessageList";
@@ -31,6 +31,9 @@ const Dialog: React.FC<DialogProps> & {
   const [files, setFiles] = useState<File[]>([]);
   const [pending, setPending] = useState(false);
   const bodyRef = useRef<HTMLDivElement | null>(null);
+  const replyTimeoutRef = useRef<number | null>(null);
+  const isAtBottomRef = useRef(true);
+  const [isAtBottom, setIsAtBottom] = useState(true);
 
   // 持久化消息
   React.useEffect(() => {
@@ -40,23 +43,46 @@ const Dialog: React.FC<DialogProps> & {
   }, [messages, storageKey]);
 
   useEffect(() => {
+    return () => {
+      if (replyTimeoutRef.current !== null) {
+        window.clearTimeout(replyTimeoutRef.current);
+        replyTimeoutRef.current = null;
+      }
+    };
+  }, []);
+
+  useEffect(() => {
     try {
       const raw = localStorage.getItem(storageKey);
       if (raw) {
         setMessages(JSON.parse(raw));
+        if (replyTimeoutRef.current !== null) {
+          window.clearTimeout(replyTimeoutRef.current);
+          replyTimeoutRef.current = null;
+        }
         return;
       }
     } catch {}
     setMessages([{ from: "bot", text: initMessage }]);
     setInput("");
     setPending(false);
+    if (replyTimeoutRef.current !== null) {
+      window.clearTimeout(replyTimeoutRef.current);
+      replyTimeoutRef.current = null;
+    }
   }, [storageKey, initMessage]);
 
-  useEffect(() => {
+  const scrollToBottom = useCallback((behavior: ScrollBehavior = "auto") => {
     const body = bodyRef.current;
     if (!body) return;
-    body.scrollTop = body.scrollHeight;
-  }, [messages, pending]);
+    body.scrollTo({ top: body.scrollHeight, behavior });
+  }, []);
+
+  useEffect(() => {
+    if (isAtBottomRef.current) {
+      scrollToBottom();
+    }
+  }, [messages, pending, scrollToBottom]);
 
   const send = () => {
     if (!input.trim() || pending) return;
@@ -67,10 +93,26 @@ const Dialog: React.FC<DialogProps> & {
     setFiles([]);
     setPending(true);
     const reply = `已收到：${text}${sentFiles.length > 0 ? ` 和 ${sentFiles.length} 个文件` : ''}`;
-    setTimeout(() => {
+    scrollToBottom("smooth");
+    replyTimeoutRef.current = window.setTimeout(() => {
       setMessages((m) => [...m, { from: "bot", text: reply }]);
       setPending(false);
+      replyTimeoutRef.current = null;
     }, 600);
+  };
+
+  const stop = () => {
+    if (!pending) return;
+    if (replyTimeoutRef.current !== null) {
+      window.clearTimeout(replyTimeoutRef.current);
+      replyTimeoutRef.current = null;
+    }
+    setPending(false);
+  };
+
+  const handleAtBottomChange = (nextIsAtBottom: boolean) => {
+    isAtBottomRef.current = nextIsAtBottom;
+    setIsAtBottom(nextIsAtBottom);
   };
 
   return (
@@ -78,11 +120,18 @@ const Dialog: React.FC<DialogProps> & {
       <div className="font-bold text-[var(--brand-text)]" data-oid="o.dphsl">
         {botName}
       </div>
-      <MessageList messages={messages} pending={pending} bodyRef={bodyRef} />
+      <MessageList
+        messages={messages}
+        pending={pending}
+        bodyRef={bodyRef}
+        onAtBottomChange={handleAtBottomChange}
+        onScrollToBottom={() => scrollToBottom("smooth")}
+      />
       <InputArea
         input={input}
         onInputChange={setInput}
         onSend={send}
+        onStop={stop}
         pending={pending}
         files={files}
         onFilesChange={setFiles}

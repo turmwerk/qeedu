@@ -8,6 +8,7 @@ interface InputAreaProps {
   input: string;
   onInputChange: (value: string) => void;
   onSend: () => void;
+  onStop: () => void;
   pending: boolean;
   placeholder?: string;
   files: File[];
@@ -18,6 +19,7 @@ const InputArea: React.FC<InputAreaProps> = ({
   input,
   onInputChange,
   onSend,
+  onStop,
   pending,
   placeholder = "输入消息，回车发送",
   files,
@@ -89,8 +91,9 @@ const InputArea: React.FC<InputAreaProps> = ({
         modeItems={modeItems}
         aiItems={aiItems}
         onSend={onSend}
+        onStop={onStop}
         pending={pending}
-        disabled={pending || !input.trim()}
+        disabled={!input.trim()}
       />
     </div>
   );

@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import UserBubble from "./components/UserBubble";
 import BotBubble from "./components/BotBubble";
 import FileChips from "./components/FileChips";
 import PendingBubble from "./components/PendingBubble";
+import ScrollToBottomButton from "./components/ScrollToBottomButton";
+import CustomScrollbar from "./components/CustomScrollbar";
 
 export interface DialogMessage {
   from: "user" | "bot";
@@ -14,13 +16,75 @@ interface MessageListProps {
   messages: DialogMessage[];
   pending: boolean;
   bodyRef: React.RefObject<HTMLDivElement | null>;
+  onAtBottomChange?: (isAtBottom: boolean) => void;
+  onScrollToBottom?: () => void;
 }
 
 const MessageList: React.FC<MessageListProps> = ({
   messages,
   pending,
   bodyRef,
+  onAtBottomChange,
+  onScrollToBottom,
 }) => {
+  const userMessageRefs = useRef<Record<number, HTMLDivElement | null>>({});
+  const [markerPositions, setMarkerPositions] = useState<
+    { index: number; topPercent: number; text: string }[]
+  >([]);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [isAtBottom, setIsAtBottom] = useState(true);
+
+  const userMessageIndexes = useMemo(
+    () =>
+      messages
+        .map((m, i) => (m.from === "user" ? i : -1))
+        .filter((i) => i >= 0),
+    [messages]
+  );
+
+  useLayoutEffect(() => {
+    const body = bodyRef.current;
+    if (!body) return;
+    const totalHeight = Math.max(body.scrollHeight, 1);
+    const nextPositions = userMessageIndexes
+      .map((index) => {
+        const el = userMessageRefs.current[index];
+        if (!el) return null;
+        const topPercent = Math.min(
+          1,
+          Math.max(0, el.offsetTop / totalHeight)
+        );
+        return {
+          index,
+          topPercent,
+          text: messages[index]?.text ?? "",
+        };
+      })
+      .filter(Boolean) as { index: number; topPercent: number; text: string }[];
+    setMarkerPositions(nextPositions);
+  }, [messages, userMessageIndexes, bodyRef]);
+
+  useEffect(() => {
+    const body = bodyRef.current;
+    if (!body) return;
+    const handleScroll = () => {
+      const isAtBottom =
+        body.scrollTop + body.clientHeight >= body.scrollHeight - 8;
+      setIsAtBottom(isAtBottom);
+      onAtBottomChange?.(isAtBottom);
+    };
+    handleScroll();
+    body.addEventListener("scroll", handleScroll, { passive: true });
+    return () => body.removeEventListener("scroll", handleScroll);
+  }, [bodyRef, onAtBottomChange]);
+
+  const handleMarkerClick = (index: number) => {
+    const el = userMessageRefs.current[index];
+    if (el && bodyRef.current) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  };
+
   return (
     <>
       <style data-oid=":8h575.">{`
@@ -36,34 +100,67 @@ const MessageList: React.FC<MessageListProps> = ({
         .dialog-dot { animation: dialogDotPulse 1.4s infinite cubic-bezier(0.4, 0, 0.2, 1); }
         .dialog-dot.delay-1 { animation-delay: 1.44s; }
         .dialog-dot.delay-2 { animation-delay: 0.72s; }
+        .marker-tooltip {
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .hide-scrollbar {
+          scrollbar-width: none; /* Firefox */
+          -ms-overflow-style: none; /* IE 和 Edge */
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+          display: none; /* Chrome, Safari, Opera */
+        }
       `}</style>
-      <div
-        ref={bodyRef}
-        className="flex-1 min-h-0 bg-[var(--brand-accent-soft)] rounded-lg p-3 flex flex-col gap-2 overflow-y-scroll"
-        data-oid="3i9rwq-"
-      >
-        {messages.map((m, i) => (
-          <div
-            key={i}
-            className={`flex flex-col gap-1.5 ${
-              m.from === "user" ? "self-end items-end" : "self-start items-start"
-            }`}
-            data-oid="jbj51yo"
-          >
-            {m.from === "user" ? (
-              <UserBubble text={m.text} />
-            ) : (
-              <BotBubble text={m.text} />
-            )}
-            {m.files && m.files.length > 0 && (
-              <FileChips
-                files={m.files}
-                align={m.from === "user" ? "end" : "start"}
-              />
-            )}
-          </div>
-        ))}
-        {pending && <PendingBubble />}
+      <div className="relative flex-1 min-h-0">
+        <div
+          ref={bodyRef}
+          className="absolute inset-0 bg-[var(--brand-accent-soft)] rounded-lg p-3 pr-6 flex flex-col gap-2 overflow-y-auto hide-scrollbar"
+          data-oid="3i9rwq-"
+        >
+          {messages.map((m, i) => (
+            <div
+              key={i}
+              ref={(el) => {
+                if (m.from === "user") {
+                  userMessageRefs.current[i] = el;
+                }
+              }}
+              className={`flex flex-col gap-1.5 ${
+                m.from === "user" ? "self-end items-end" : "self-start items-start"
+              }`}
+              data-oid="jbj51yo"
+            >
+              {m.from === "user" ? (
+                <UserBubble text={m.text} />
+              ) : (
+                <BotBubble text={m.text} />
+              )}
+              {m.files && m.files.length > 0 && (
+                <FileChips
+                  files={m.files}
+                  align={m.from === "user" ? "end" : "start"}
+                />
+              )}
+            </div>
+          ))}
+          {pending && <PendingBubble />}
+        </div>
+        <CustomScrollbar
+          bodyRef={bodyRef}
+          markers={markerPositions}
+          onMarkerClick={handleMarkerClick}
+          hoveredIndex={hoveredIndex}
+          setHoveredIndex={setHoveredIndex}
+          messages={messages}
+        />
+        <ScrollToBottomButton
+          isAtBottom={isAtBottom}
+          onClick={() => onScrollToBottom?.()}
+        />
       </div>
     </>
   );
