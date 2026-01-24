@@ -95,6 +95,7 @@ export const Markdown: React.FC<{
             <div className="markdown-body">
               <ReactMarkdown
                 remarkPlugins={[remarkGfm, remarkMath]}
+                // @ts-expect-error
                 rehypePlugins={[rehypeRaw, rehypeKatex, rehypeHighlight]}
               >
                 {value}

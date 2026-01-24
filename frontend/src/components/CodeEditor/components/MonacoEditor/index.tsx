@@ -1,7 +1,9 @@
 import React, { useMemo } from "react";
 import Editor from "@monaco-editor/react";
 import type { editor } from "monaco-editor";
+// @ts-ignore
 import "monaco-editor/esm/vs/editor/editor.all";
+// @ts-ignore
 import "monaco-editor/esm/vs/basic-languages/markdown/markdown.contribution";
 
 interface Props {
@@ -33,7 +35,7 @@ const MonacoEditor: React.FC<Props> = ({
 		() => ({
 			readOnly,
 			minimap: { enabled: minimap },
-			glyphMargin: true,
+			glyphMargin: false,
 			fontSize: 13,
 			lineHeight: 20,
 			fontLigatures: true,
@@ -101,7 +103,7 @@ const MonacoEditor: React.FC<Props> = ({
 		if (!foldingDefined) {
 			foldingDefined = true;
 			monaco.languages.registerFoldingRangeProvider("markdown", {
-				provideFoldingRanges: (model, context, token) => {
+				provideFoldingRanges: (model, _context, _token) => {
 					const lines = model.getLinesContent();
 					const ranges: { start: number; end: number; kind?: any }[] = [];
 					const headerStack: { line: number; level: number }[] = [];
