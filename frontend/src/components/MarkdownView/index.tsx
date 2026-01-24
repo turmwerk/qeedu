@@ -5,6 +5,7 @@ import hljs from "highlight.js";
 import "katex/dist/katex.min.css";
 import "highlight.js/styles/github.css";
 import Button from "@/components/Button";
+import CodeEditor from "@/components/CodeEditor";
 
 const md = new MarkdownIt({
   html: true,
@@ -101,20 +102,26 @@ export const Markdown: React.FC<{
           }`}
         >
           {onChange ? (
-            <textarea
-              className="w-full h-full box-border p-3 font-mono text-[13px] rounded-md border border-[var(--brand-border)] min-h-0 resize-y overflow-auto"
+            <CodeEditor
               value={value}
-              onChange={(e) => onChange(e.target.value)}
-              aria-label="Markdown 编辑"
+              onChange={onChange}
+              language="markdown"
+              minimap={false}
+              showHeader={false}
+              className="h-full w-full rounded-md border border-[var(--brand-border)]"
               data-oid="1fida20"
             />
           ) : (
-            <pre
-              className="w-full h-full box-border p-3 font-mono text-[13px] rounded-md border border-[var(--brand-border)] min-h-0 resize-y overflow-auto"
+            <CodeEditor
+              value={value}
+              language="markdown"
+              readOnly
+              variant="snippet"
+              minimap={false}
+              showHeader={false}
+              className="h-full w-full rounded-md border border-[var(--brand-border)]"
               data-oid="fw9vofw"
-            >
-              {value}
-            </pre>
+            />
           )}
         </div>
         <div

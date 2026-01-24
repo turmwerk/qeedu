@@ -3,6 +3,7 @@ import { MenuOutlined } from "@ant-design/icons";
 
 import MarkdownView from "@/components/MarkdownView";
 import Button from "@/components/Button";
+import CodeEditor from "@/components/CodeEditor";
 
 interface Props {
   value?: string;
@@ -181,12 +182,16 @@ const MarkdownEditor: React.FC<Props> = ({ value = "", onClose }) => {
             <div className="absolute inset-0 cursor-col-resize" />
           </div>
 
-          <textarea
-            className="min-h-0 h-full w-full resize-none border border-purple-200/50 bg-white/80 p-5 text-sm text-gray-800 shadow-[0_10px_30px_rgba(124,58,237,0.12)] outline-none transition focus:ring-2 focus:ring-purple-400/60"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            data-oid="elbgi1-"
-          />
+          <div className="min-h-0 h-full w-full border border-purple-200/50 bg-white/80 shadow-[0_10px_30px_rgba(124,58,237,0.12)]">
+            <CodeEditor
+              value={text}
+              onChange={setText}
+              language="markdown"
+              title="Markdown"
+              minimap={false}
+              className="h-full rounded-none border-0"
+            />
+          </div>
         </div>
       </div>
       </div>
