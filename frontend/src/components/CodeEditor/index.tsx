@@ -35,7 +35,7 @@ const CodeEditor: React.FC<Props> = ({
 
 	return (
 		<div
-			className={`flex h-full min-h-0 w-full flex-col overflow-hidden rounded-xl border border-[#1f2937] bg-[#0f172a] shadow-[0_12px_30px_rgba(15,23,42,0.35)] ${className}`}
+			className={`vscode-editor flex h-full min-h-0 w-full flex-col overflow-hidden rounded-xl border border-[#1f2937] bg-[#0f172a] shadow-[0_12px_30px_rgba(15,23,42,0.35)] ${className}`}
 			data-oid="code-editor-root"
 		>
 			{showHeader && (
