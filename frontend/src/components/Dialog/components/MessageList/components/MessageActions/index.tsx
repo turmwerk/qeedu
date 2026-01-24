@@ -99,14 +99,29 @@ const MessageActions: React.FC<MessageActionsProps> = ({
 
   const isEditing = editMode && !!onSave;
 
+  // Helper to ensure valid CSS variable values (replace underscores with spaces for shadows)
+  const formatShadow = (val: string) => val.replace(/_/g, " ");
+
+  const buttonStyle = {
+    "--edit-color": editButtonColor,
+    "--edit-hover-bg": editButtonHoverBg,
+    "--edit-hover-shadow": formatShadow(editButtonHoverShadow),
+    "--retry-color": retryButtonColor,
+    "--retry-hover-bg": retryButtonHoverBg,
+    "--retry-hover-shadow": formatShadow(retryButtonHoverShadow),
+    "--menu-color": menuButtonColor,
+    "--menu-hover-bg": menuButtonHoverBg,
+    "--menu-hover-shadow": formatShadow(menuButtonHoverShadow),
+  } as React.CSSProperties;
+
   return (
-    <div className="flex items-center gap-[2px]">
+    <div className="flex items-center gap-[2px]" style={buttonStyle}>
       <FloatingButton
         onClick={isEditing ? onSave! : onEdit}
         visible={true}
         ariaLabel={isEditing ? "保存" : "编辑"}
         title={isEditing ? "保存" : "编辑"}
-        className={`border-[${editButtonColor}] text-[${editButtonColor}] hover:bg-[${editButtonHoverBg}] hover:shadow-[${editButtonHoverShadow}]`}
+        className="border-[var(--edit-color)] text-[var(--edit-color)] hover:bg-[var(--edit-hover-bg)] hover:shadow-[var(--edit-hover-shadow)]"
         icon={
           isEditing ? (
             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -134,7 +149,7 @@ const MessageActions: React.FC<MessageActionsProps> = ({
         visible={true}
         ariaLabel="重试"
         title="重试"
-        className={`border-[${retryButtonColor}] text-[${retryButtonColor}] hover:bg-[${retryButtonHoverBg}] hover:shadow-[${retryButtonHoverShadow}]`}
+        className="border-[var(--retry-color)] text-[var(--retry-color)] hover:bg-[var(--retry-hover-bg)] hover:shadow-[var(--retry-hover-shadow)]"
         icon={
           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <path
@@ -151,7 +166,7 @@ const MessageActions: React.FC<MessageActionsProps> = ({
         direction="down"
         showSelected={false}
         showCheck={false}
-        buttonClassName={`inline-flex items-center justify-center w-8 h-8 p-0 rounded-full border border-[${menuButtonColor}] bg-white text-[${menuButtonColor}] shadow-[0_2px_8px_rgba(15,23,42,0.12)] transition-[transform,box-shadow,background,border-color] hover:bg-[${menuButtonHoverBg}] hover:shadow-[${menuButtonHoverShadow}] active:scale-95`}
+        buttonClassName="inline-flex items-center justify-center w-8 h-8 p-0 rounded-full border border-[var(--menu-color)] bg-white text-[var(--menu-color)] shadow-[0_2px_8px_rgba(15,23,42,0.12)] transition-[transform,box-shadow,background,border-color] hover:bg-[var(--menu-hover-bg)] hover:shadow-[var(--menu-hover-shadow)] active:scale-95"
         button={
           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <path
