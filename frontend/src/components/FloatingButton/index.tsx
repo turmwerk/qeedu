@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Button from "@/components/Button";
 
 
@@ -55,7 +55,9 @@ const FloatingButton: React.FC<FloatingButtonProps> = ({
   };
 
   // 默认样式仿照 Header 中的侧边按钮
-  const defaultClasses = "inline-flex items-center justify-center p-0 border bg-white border-[var(--brand-border)] text-[var(--brand-accent)] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)] transition";
+  // 如果调用方没有传 bgColor，则使用默认白底；否则让调用方控制背景（可设为透明）
+  const bgClass = bgColor ? "" : "bg-white";
+  const defaultClasses = `inline-flex items-center justify-center p-0 border ${bgClass} border-[var(--brand-border)] text-[var(--brand-accent)] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)] transition`;
 
   // hover/active 颜色通过 className 传递或外部覆盖
   // 合并 hover/active 样式
@@ -64,6 +66,8 @@ const FloatingButton: React.FC<FloatingButtonProps> = ({
 
   const [isHovered, setIsHovered] = useState(false);
   const [isActive, setIsActive] = useState(false);
+  const [isJumping, setIsJumping] = useState(false);
+  const jumpTimer = useRef<number | null>(null);
 
   const interactionStyle = isActive ? activeStyle : isHovered ? hoverStyle : {};
   const finalStyle: React.CSSProperties = { ...mergedStyle, ...interactionStyle };
@@ -74,17 +78,33 @@ const FloatingButton: React.FC<FloatingButtonProps> = ({
       aria-label={ariaLabel}
       title={title}
       style={finalStyle}
-      onMouseEnter={() => setIsHovered(true)}
+      onMouseEnter={() => {
+        setIsHovered(true);
+        // trigger a single quick jump on mouse enter
+        setIsJumping(true);
+        if (jumpTimer.current) {
+          window.clearTimeout(jumpTimer.current);
+        }
+        jumpTimer.current = window.setTimeout(() => {
+          setIsJumping(false);
+          jumpTimer.current = null;
+        }, 120);
+      }}
       onMouseLeave={() => {
         setIsHovered(false);
         setIsActive(false);
+        if (jumpTimer.current) {
+          window.clearTimeout(jumpTimer.current);
+          jumpTimer.current = null;
+        }
+        setIsJumping(false);
       }}
       onMouseDown={() => setIsActive(true)}
       onMouseUp={() => setIsActive(false)}
       onBlur={() => setIsActive(false)}
-      className={`${defaultClasses} ${visible ? "opacity-100" : "opacity-0 pointer-events-none"} ${shapeClass} ${className} ${hoverClassName} ${activeClassName}`}
+      className={`${defaultClasses} ${visible ? "opacity-100" : "opacity-0 pointer-events-none"} ${shapeClass} ${className} ${hoverClassName} ${activeClassName} group`}
     >
-      <span className="inline-flex items-center justify-center leading-none">
+      <span className={`inline-flex items-center justify-center leading-none transform transition-transform duration-100 ease-linear ${isJumping ? '-translate-y-1' : ''}`}>
         {icon}
       </span>
     </Button>

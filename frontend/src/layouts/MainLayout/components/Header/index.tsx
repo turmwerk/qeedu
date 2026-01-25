@@ -1,8 +1,9 @@
-import React from "react";
-import { Layout } from "antd";
+import React, { useState } from "react";
+import { Layout, Modal, Input } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   ReadOutlined,
+  SearchOutlined,
   ExperimentOutlined,
   TeamOutlined,
   ControlOutlined,
@@ -111,6 +112,8 @@ const MainHeader: React.FC<{
   const isManagement = location.pathname.startsWith("/management");
   const isResearch = location.pathname.startsWith("/research");
 
+  const [searchVisible, setSearchVisible] = useState(false);
+
   const backRouteMap: Record<string, string> = {
     "/teaching": "/",
     "/teaching/exam/ListPage": "/teaching",
@@ -132,6 +135,17 @@ const MainHeader: React.FC<{
       className="main-header bg-white/40 backdrop-blur-[32px] shadow-[0_20px_60px_rgba(147,51,234,0.2),0_0_0_1px_rgba(255,255,255,0.5)_inset] border-b border-white/30 py-2 px-4 flex items-center justify-between relative z-[100] leading-[20px] h-[56px]"
       data-oid="hoa5tyk"
     >
+      <Modal
+        open={searchVisible}
+        onCancel={() => setSearchVisible(false)}
+        footer={null}
+        title="搜索"
+        centered
+      >
+        <div className="p-2">
+          <Input size="large" placeholder="输入即搜索" />
+        </div>
+      </Modal>
       <div className="flex items-center gap-3" data-oid="40dtg53">
         {showSiderToggle && !siderOpen && (
           <button
@@ -159,6 +173,14 @@ const MainHeader: React.FC<{
         </h1>
       </div>
       <div className="flex items-center gap-3" data-oid="lg2sztd">
+        <button
+          className={`${menuButtonBase} ${menuButtonIdle}`}
+          onClick={() => setSearchVisible(true)}
+          data-oid="search-button"
+        >
+          <SearchOutlined />
+          <span>搜索</span>
+        </button>
         {!isHomePage && (
           <button
             className={`${menuButtonBase} ${menuButtonIdle}`}

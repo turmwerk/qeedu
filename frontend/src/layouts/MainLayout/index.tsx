@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Layout } from "antd";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Header from "./components/Header";
@@ -15,6 +15,7 @@ const MainLayout: React.FC = () => {
   const location = useLocation();
   const [syllabusSiderOpen, setSyllabusSiderOpen] = useState(false);
   const [examSiderOpen, setExamSiderOpen] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     // 首次访问站点时引导至登录（仅一次，保存在 localStorage）
@@ -29,7 +30,12 @@ const MainLayout: React.FC = () => {
     }
   }, [navigate]);
   useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    const el = scrollContainerRef.current;
+    if (el) {
+      el.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    } else {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    }
   }, [location.pathname]);
 
   useEffect(() => {
@@ -200,7 +206,11 @@ const MainLayout: React.FC = () => {
           data-oid="d8-wqm."
         />
         <Content className="m-0 p-0 relative z-10 flex-1 min-h-0" data-oid="gzlcfm-">
-          <div className="h-full min-h-0 flex flex-col overflow-y-auto" data-oid="giq3cbp">
+          <div
+            className="h-full min-h-0 flex flex-col overflow-y-auto"
+            data-oid="giq3cbp"
+            ref={scrollContainerRef}
+          >
             <div className="flex-1">
               <Outlet />
             </div>

@@ -1,0 +1,8 @@
+/* Tailwind entry (base/components/utilities) and header rule */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html[data-canvas-open="true"] .main-header {
+  display: none !important;
+}
