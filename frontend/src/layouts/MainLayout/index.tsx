@@ -3,6 +3,8 @@ import { Layout } from "antd";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Header from "./components/Header";
 import Sider from "./components/Sider";
+import Footer from "./components/Footer";
+import FloatActions from "./components/FloatActions";
 import SyllabusListModal from "@/pages/Teaching/Syllabus/components/ListModal";
 import ExamListModal from "@/pages/Teaching/ExamDesign/components/ListModal";
 
@@ -105,9 +107,10 @@ const MainLayout: React.FC = () => {
     );
   }, [examSiderOpen]);
 
-  const isSyllabusDetail =
-    location.pathname.startsWith("/teaching/syllabus") &&
-    location.pathname !== "/teaching/syllabus/ListPage";
+  // 只要路径包含 detail 视为 detail 页面
+  const isDetailPage = /\/detail(\/|$)/.test(location.pathname);
+  // 侧边栏切换按钮逻辑：只在大纲/试卷详情页显示
+  const isSyllabusDetail = location.pathname.startsWith("/teaching/syllabus") && location.pathname !== "/teaching/syllabus/ListPage";
   const isExamDetail = location.pathname.startsWith("/teaching/exam/detail");
   const showSiderToggle = useMemo(
     () => isSyllabusDetail || isExamDetail,
@@ -197,9 +200,14 @@ const MainLayout: React.FC = () => {
           data-oid="d8-wqm."
         />
         <Content className="m-0 p-0 relative z-10 flex-1 min-h-0" data-oid="gzlcfm-">
-          <div className="h-full min-h-0" data-oid="giq3cbp">
-            <Outlet />
+          <div className="h-full min-h-0 flex flex-col overflow-y-auto" data-oid="giq3cbp">
+            <div className="flex-1">
+              <Outlet />
+            </div>
+            {!isDetailPage && <Footer />}
           </div>
+          {/* 除了 detail 页面，所有页面都显示 FloatActions */}
+          {!isDetailPage && <FloatActions />}
         </Content>
       </Layout>
     </div>

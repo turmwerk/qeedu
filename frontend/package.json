@@ -13,6 +13,7 @@
     "@ant-design/icons": "^6.1.0",
     "@antv/g6": "^5.0.50",
     "@monaco-editor/react": "^4.7.0",
+    "@octokit/rest": "^22.0.1",
     "antd": "^6.1.2",
     "axios": "^1.13.2",
     "classnames": "^2.5.1",
@@ -35,9 +36,9 @@
     "react-router-dom": "^7.11.0",
     "react-syntax-highlighter": "^16.1.0",
     "reactflow": "^11.11.4",
-    "rehype-raw": "^7.0.0",
     "rehype-highlight": "^6.0.0",
     "rehype-katex": "^7.0.1",
+    "rehype-raw": "^7.0.0",
     "remark-gfm": "^4.0.1",
     "remark-math": "^4.0.0",
     "zustand": "^5.0.9"

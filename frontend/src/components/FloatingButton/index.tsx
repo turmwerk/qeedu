@@ -1,14 +1,26 @@
-import React from "react";
+import React, { useState } from "react";
 import Button from "@/components/Button";
 
-interface FloatingButtonProps {
+
+export interface FloatingButtonProps {
   onClick: () => void;
   visible?: boolean;
   icon: React.ReactNode;
   ariaLabel?: string;
   title?: string;
   className?: string;
+  style?: React.CSSProperties;
+  size?: number | string; // 支持自定义尺寸
+  shape?: 'circle' | 'square' | string; // 支持自定义形状。也可以直接传入 tailwind 类名，例如 'rounded-lg' 或 'rounded-xl'
+  color?: string; // 主色
+  bgColor?: string; // 背景色
+  borderColor?: string; // 边框色
+  hoverStyle?: React.CSSProperties; // 悬浮时样式
+  activeStyle?: React.CSSProperties; // 激活时样式
+  hoverClassName?: string; // 悬浮时class
+  activeClassName?: string; // 激活时class
 }
+
 
 const FloatingButton: React.FC<FloatingButtonProps> = ({
   onClick,
@@ -17,16 +29,60 @@ const FloatingButton: React.FC<FloatingButtonProps> = ({
   ariaLabel,
   title,
   className = "",
+  style = {},
+  size = 36,
+  shape = 'circle',
+  color,
+  bgColor,
+  borderColor,
+  hoverStyle = {},
+  activeStyle = {},
+  hoverClassName = '',
+  activeClassName = '',
 }) => {
+  // 动态样式
+  // 支持直接传入 tailwind 的 rounded 类，例如 'rounded-lg'
+  const shapeClass =
+    shape === 'circle' ? 'rounded-full' : shape === 'square' ? 'rounded' : (typeof shape === 'string' && shape.startsWith('rounded') ? shape : 'rounded-lg');
+  const baseSize = typeof size === 'number' ? `${size}px` : size;
+  const mergedStyle: React.CSSProperties = {
+    width: baseSize,
+    height: baseSize,
+    color: color || undefined,
+    background: bgColor || undefined,
+    borderColor: borderColor || undefined,
+    ...style,
+  };
+
+  // 默认样式仿照 Header 中的侧边按钮
+  const defaultClasses = "inline-flex items-center justify-center p-0 border bg-white border-[var(--brand-border)] text-[var(--brand-accent)] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)] transition";
+
+  // hover/active 颜色通过 className 传递或外部覆盖
+  // 合并 hover/active 样式
+  // 通过 Tailwind/自定义className传递hover/active样式，或通过 style 传递
+  // 这里仅合并基础样式，hover/active 建议通过 className 传递
+
+  const [isHovered, setIsHovered] = useState(false);
+  const [isActive, setIsActive] = useState(false);
+
+  const interactionStyle = isActive ? activeStyle : isHovered ? hoverStyle : {};
+  const finalStyle: React.CSSProperties = { ...mergedStyle, ...interactionStyle };
   return (
     <Button
       type="button"
       onClick={onClick}
       aria-label={ariaLabel}
       title={title}
-      className={`inline-flex items-center justify-center w-8 h-8 p-0 rounded-full border border-[var(--brand-accent)] bg-white text-[var(--brand-accent)] shadow-[0_2px_8px_rgba(15,23,42,0.12)] transition-[transform,box-shadow,background,border-color,opacity] hover:bg-[var(--brand-accent-soft)] hover:shadow-[0_6px_14px_rgba(15,23,42,0.18)] active:scale-95 ${
-        visible ? "opacity-100" : "opacity-0 pointer-events-none"
-      } ${className}`}
+      style={finalStyle}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => {
+        setIsHovered(false);
+        setIsActive(false);
+      }}
+      onMouseDown={() => setIsActive(true)}
+      onMouseUp={() => setIsActive(false)}
+      onBlur={() => setIsActive(false)}
+      className={`${defaultClasses} ${visible ? "opacity-100" : "opacity-0 pointer-events-none"} ${shapeClass} ${className} ${hoverClassName} ${activeClassName}`}
     >
       <span className="inline-flex items-center justify-center leading-none">
         {icon}

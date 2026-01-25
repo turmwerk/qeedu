@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
+import Footer from "@/layouts/MainLayout/components/Footer";
 
 const AuthLayout: React.FC = () => {
   const location = useLocation();
@@ -44,6 +45,9 @@ const AuthLayout: React.FC = () => {
         data-oid="_djr8t1"
       >
         <Outlet data-oid="v5m5e:5" />
+      </div>
+      <div className="absolute bottom-0 w-full z-20">
+        <Footer />
       </div>
     </div>
   );
