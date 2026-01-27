@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import Model from "@/components/Model";
+import Modal from "@/components/Modal";
 import Form from "@/components/Form";
 import {
   getExamCreateFields,
@@ -165,7 +165,7 @@ const CreateModal: React.FC<CreateModalProps> = ({ open, onClose, onCreate }) =>
   };
 
   return (
-    <Model
+    <Modal
       visible={open}
       title="新建试卷"
       width={1000}
@@ -187,7 +187,7 @@ const CreateModal: React.FC<CreateModalProps> = ({ open, onClose, onCreate }) =>
           />
         </div>
       </div>
-    </Model>
+    </Modal>
   );
 };
 

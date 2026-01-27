@@ -3,38 +3,14 @@ import { useNavigate } from "react-router-dom";
 import Form from "@/components/Form";
 import { showToast } from "@/components/Toast";
 import type { FormField } from "@/components/Form";
-import Button from "@/components/Button";
+import buildFields from "../components/FieldsForm";
+import createNavAgreeFields from "../components/NavAgree";
 
-function EmailIcon() {
+function IdIcon() {
   return (
-    <svg
-      className="block"
-      width="20"
-      height="20"
-      viewBox="0 0 24 24"
-      fill="none"
-      aria-hidden="true"
-      data-oid="tkot-ih"
-    >
-      <rect
-        x="3"
-        y="5"
-        width="18"
-        height="14"
-        rx="2"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        data-oid="hsw32.7"
-      />
-
-      <path
-        d="M3 7l9 6 9-6"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        data-oid="iod-ba4"
-      />
+    <svg className="block" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -79,26 +55,9 @@ function LockIcon() {
       viewBox="0 0 24 24"
       fill="none"
       aria-hidden="true"
-      data-oid="p52:n9o"
     >
-      <rect
-        x="5"
-        y="11"
-        width="14"
-        height="10"
-        rx="2"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        data-oid="qy40loo"
-      />
-
-      <path
-        d="M8 11V7a4 4 0 0 1 8 0v4"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        data-oid="15tr4aa"
-      />
+      <rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M8 11V7a4 4 0 0 1 8 0v4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
     </svg>
   );
 }
@@ -202,184 +161,42 @@ export default function ForgetPassword() {
     navigate("/");
   };
 
-  const fields: FormField[] = [
-    {
-      name: "email",
-      label: "邮箱",
-      placeholder: "邮箱",
-      render: (value, onChange) => (
-        <div
-          className="w-full flex items-stretch box-border border border-[var(--brand-border)] bg-white overflow-hidden relative"
-          data-oid="6toor.d"
-        >
-          <div
-            className="absolute left-0 top-0 w-[56px] h-[56px] flex items-center justify-center text-[var(--brand-muted)] pointer-events-none"
-            data-oid="uj6tj1r"
-          >
-            <EmailIcon data-oid="jei6-pr" />
-          </div>
-          <input
-            className="w-full h-[56px] pl-[56px] pr-4 box-border border-0 bg-transparent text-[16px] outline-none"
-            id="forget-email"
-            name="email"
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            placeholder="邮箱"
-            data-oid="e_uw:4h"
-          />
-        </div>
-      ),
-    },
-    {
-      name: "emailCode",
-      label: "邮箱验证码",
-      placeholder: "邮箱验证码",
-      render: (value, onChange) => (
-        <div
-          className="w-full flex items-stretch box-border border border-[var(--brand-border)] bg-white overflow-hidden relative"
-          data-oid="x2jto6_"
-        >
-          <div
-            className="absolute left-0 top-0 w-[56px] h-[56px] flex items-center justify-center text-[var(--brand-muted)] pointer-events-none z-10"
-            data-oid="uezo2jv"
-          >
-            <KeyIcon data-oid="5sdsy:-" />
-          </div>
-          <input
-            className="h-[56px] flex-1 w-full pl-[56px] pr-[110px] box-border border-0 bg-transparent text-[16px] outline-none"
-            id="forget-email-code"
-            name="emailCode"
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            placeholder="邮箱验证码"
-            autoComplete="one-time-code"
-            data-oid="37.:qal"
-          />
+  const primaryButtonClass =
+    "w-full h-[56px] flex items-center justify-center gap-1.5 text-[18px] font-extrabold rounded-xl bg-[var(--brand-accent)] text-white border-0 shadow-[var(--brand-shadow)] transition-[background,border-color,box-shadow,transform] hover:bg-[var(--brand-accent-strong)] hover:shadow-[var(--brand-shadow)] active:scale-95";
+  const smallButtonBase =
+    "flex items-center gap-1.5 px-3.5 py-1.5 text-sm font-semibold rounded-xl border border-[var(--brand-border)] transition-[background,border-color,box-shadow,transform] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)] hover:-translate-y-[1px]";
+  const smallPrimaryButton = `${smallButtonBase} text-[var(--brand-accent)] bg-white`;
+  const smallNeutralButton = `${smallButtonBase} text-[var(--brand-accent)] bg-white`;
+  const sendButtonClass =
+    "h-[56px] min-w-[96px] px-[18px] box-border border border-[var(--brand-border)] bg-white text-[var(--brand-accent)] text-[16px] font-bold hover:bg-[var(--brand-accent-soft)] active:scale-95";
 
-          <Button
-            type="button"
-            className={sendButtonClass}
-            onClick={() => showToast("验证码发送未实现")}
-            data-oid="h9a904l"
-          >
-            发送
-          </Button>
-        </div>
-      ),
-    },
-    {
-      name: "password",
-      label: "密码",
-      placeholder: "密码",
-      render: (value, onChange) => (
-        <div
-          className="w-full flex items-stretch box-border border border-[var(--brand-border)] bg-white overflow-hidden relative"
-          data-oid="sxdpyvh"
-        >
-          <div
-            className="absolute left-0 top-0 w-[56px] h-[56px] flex items-center justify-center text-[var(--brand-muted)] pointer-events-none"
-            data-oid="zaue8s7"
-          >
-            <LockIcon data-oid="9l:.oid" />
-          </div>
-          <input
-            className="h-[56px] w-full pl-[56px] pr-[56px] box-border border-0 bg-transparent text-[16px] outline-none"
-            id="forget-password"
-            name="password"
-            type={showPassword ? "text" : "password"}
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            placeholder="密码"
-            autoComplete="new-password"
-            data-oid="fn:y35z"
-          />
-
-          <button
-            type="button"
-            className="absolute right-0 top-0 border-0 bg-transparent text-[var(--brand-muted)] cursor-pointer w-[56px] h-[56px] p-0 inline-flex items-center justify-center box-border shadow-none outline-none leading-none"
-            onClick={() => setShowPassword((v) => !v)}
-            aria-label={showPassword ? "隐藏密码" : "显示密码"}
-            data-oid="lgdztjv"
-          >
-            <EyeIcon on={showPassword} data-oid="nnnb66m" />
-          </button>
-        </div>
-      ),
-    },
-    {
-      name: "password2",
-      label: "再次输入密码",
-      placeholder: "再次输入密码",
-      render: (value, onChange) => (
-        <div
-          className="w-full flex items-stretch box-border border border-[var(--brand-border)] bg-white overflow-hidden relative"
-          data-oid="5-6w:2n"
-        >
-          <div
-            className="absolute left-0 top-0 w-[56px] h-[56px] flex items-center justify-center text-[var(--brand-muted)] pointer-events-none"
-            data-oid="7c8td6x"
-          >
-            <LockIcon data-oid="92a6e63" />
-          </div>
-          <input
-            className="h-[56px] w-full pl-[56px] pr-[56px] box-border border-0 bg-transparent text-[16px] outline-none"
-            id="forget-password-confirm"
-            name="password2"
-            type={showPassword2 ? "text" : "password"}
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            placeholder="再次输入密码"
-            autoComplete="new-password"
-            data-oid="nd:.1n8"
-          />
-
-          <button
-            type="button"
-            className="absolute right-0 top-0 border-0 bg-transparent text-[var(--brand-muted)] cursor-pointer w-[56px] h-[56px] p-0 inline-flex items-center justify-center box-border shadow-none outline-none leading-none"
-            onClick={() => setShowPassword2((v) => !v)}
-            aria-label={showPassword2 ? "隐藏密码" : "显示密码"}
-            data-oid="biwm29."
-          >
-            <EyeIcon on={showPassword2} data-oid="00mriur" />
-          </button>
-        </div>
-      ),
-    },
-  ];
+  const fields: FormField[] = buildFields("forget", {
+    showPassword,
+    setShowPassword,
+    showPassword2,
+    setShowPassword2,
+    sendButtonClass,
+  });
 
   const handleSubmit = (values: Record<string, unknown>) => {
     console.log("forget-password", values);
     showToast("重置密码未实现");
   };
 
-  const primaryButtonClass =
-    "w-full h-[56px] bg-[#f3e8ff] text-[#6d28d9] border border-[#d8b4fe] text-[18px] font-extrabold cursor-pointer transition-[background,border-color,transform] flex items-center justify-center gap-3.5 hover:bg-[#e9d5ff] hover:-translate-y-[1px] active:scale-95";
-  const smallButtonBase =
-    "px-3 py-1.5 rounded-full text-[15px] font-semibold border transition-[background,border-color,transform] hover:-translate-y-[1px] active:scale-95";
-  const smallPrimaryButton =
-    `${smallButtonBase} bg-white text-[#6d28d9] border-[#d8b4fe] hover:bg-[#f3e8ff]`;
-  const smallNeutralButton =
-    `${smallButtonBase} bg-white text-[#6d28d9] border-[#d8b4fe] hover:bg-[#f3e8ff]`;
-  const sendButtonClass =
-    "h-[56px] min-w-[96px] px-[18px] box-border border-l border-[#d8b4fe] bg-[#f3e8ff] text-[#6d28d9] text-[16px] font-bold hover:bg-[#e9d5ff] active:scale-95";
+  const navAgree = createNavAgreeFields(navigate, goGuest, smallPrimaryButton, smallNeutralButton, "修改并登录即代表您已阅读并同意", "forget");
 
   return (
     <div
-      className="w-[520px] max-w-[calc(100%-40px)] bg-white shadow-[0_10px_40px_rgba(0,0,0,0.12)] px-[22px] pt-[22px] pb-[18px] relative animate-[pageEnter_300ms_ease-out]"
+      className="w-[520px] max-w-[calc(100%-40px)] bg-white shadow-[0_10px_40px_rgba(0,0,0,0.12)] px-[22px] pt-[22px] pb-[18px] relative animate-[pageEnter_300ms_ease-out] border border-[#6d28d9]"
       data-oid="gusoamy"
     >
       <div className="py-3 pb-1.5 text-center" data-oid="7zn4se7">
-        <div
-          className="text-[44px] leading-[1.05] font-extrabold text-[var(--brand-text)] tracking-[0.02em]"
-          data-oid="f89lafo"
-        >
-          nju-edu-ai
-        </div>
+        <div className="text-[32px] font-extrabold text-[var(--brand-text)]">重置密码</div>
       </div>
 
       <div className="px-[26px] pt-[18px] pb-[10px]" data-oid="phwgzka">
         <Form
-          fields={fields}
+          fields={fields.concat(navAgree)}
           onSubmit={handleSubmit}
           submitText={
             <>
@@ -389,35 +206,12 @@ export default function ForgetPassword() {
           }
           submitClassName={primaryButtonClass}
           fieldClassName="relative [&>label]:sr-only col-span-2"
-          className="flex flex-col gap-3.5"
+          className="flex flex-col gap-1"
           data-oid="7e2a2_3"
         />
       </div>
 
-      <div
-        className="px-[26px] pt-1.5 flex justify-between items-center"
-        data-oid="1v5:-.b"
-      >
-        <div className="inline-flex gap-3 items-center" data-oid="eyka67n">
-          <Button
-            className={smallPrimaryButton}
-            onClick={() => navigate("/login")}
-            data-oid=".s1-0.w"
-          >
-            返回登录
-          </Button>
-        </div>
-
-        <div className="inline-flex items-center" data-oid="rbp96dn">
-          <Button
-            className={smallNeutralButton}
-            onClick={goGuest}
-            data-oid="yu8iyzz"
-          >
-            游客模式
-          </Button>
-        </div>
-      </div>
+      
     </div>
   );
 }

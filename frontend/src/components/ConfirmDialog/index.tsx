@@ -1,5 +1,5 @@
 import React from "react";
-import Model from "@/components/Model";
+import Modal from "@/components/Modal";
 import Button from "@/components/Button";
 
 type ConfirmDialogProps = {
@@ -24,7 +24,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   onCancel,
 }) => {
   return (
-    <Model visible={open} title={title} onClose={onCancel} width="auto" data-oid="72c4qmg">
+    <Modal visible={open} title={title} onClose={onCancel} width="auto" data-oid="72c4qmg">
       <style>
         {`
           [data-oid="72c4qmg"] [data-oid="0pbqih6"] {
@@ -77,7 +77,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
           </Button>
         </div>
       </div>
-    </Model>
+    </Modal>
   );
 };
 

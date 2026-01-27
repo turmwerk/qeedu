@@ -12,7 +12,7 @@ import {
 import ConfirmDialog from "@/components/ConfirmDialog";
 import Button from "@/components/Button";
 import Dropdown from "@/components/Dropdown";
-import Model from "@/components/Model";
+import Modal from "@/components/Modal";
 
 type SiderItem = {
 	id: string;
@@ -499,7 +499,7 @@ const Sider: React.FC<Props> = ({
 				onCancel={() => setDeleteConfirm({ open: false, id: null, title: "" })}
 			/>
 			{ListModalComponent && (
-				<Model
+				<Modal
 					visible={listModalOpen}
 					onClose={() => setListModalOpen(false)}
 					width={1100}
@@ -527,7 +527,7 @@ const Sider: React.FC<Props> = ({
 						onCloseModal={() => setListModalOpen(false)}
 						currentId={selectedId}
 					/>
-				</Model>
+				</Modal>
 			)}
 		</div>
 	);

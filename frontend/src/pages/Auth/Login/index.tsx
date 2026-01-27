@@ -3,7 +3,9 @@ import { useNavigate } from "react-router-dom";
 import Form from "@/components/Form";
 import { showToast } from "@/components/Toast";
 import type { FormField } from "@/components/Form";
-import Button from "@/components/Button";
+import Tabs from "../components/Tabs";
+import buildFields from "../components/FieldsForm";
+import createNavAgreeFields from "../components/NavAgree";
 
 function UserIcon() {
   return (
@@ -33,6 +35,26 @@ function UserIcon() {
         strokeLinejoin="round"
         data-oid="ew11zt_"
       />
+    </svg>
+  );
+}
+
+
+
+function IdIcon() {
+  return (
+    <svg className="block" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function KeyIcon() {
+  return (
+    <svg className="block" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle cx="8" cy="15" r="4" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M11.5 12.5l9-9M16 8l1.5-1.5M19 11l1.5-1.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
     </svg>
   );
 }
@@ -162,161 +184,82 @@ function EnterIcon() {
 export default function Login() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [mode, setMode] = useState<"password" | "sms">("password");
 
   const goGuest = () => {
     showToast("使用“游客模式”进入首页");
     navigate("/");
   };
 
-  const fields: FormField[] = [
-    {
-      name: "account",
-      label: "用户名或邮箱",
-      placeholder: "用户名或邮箱",
-      render: (value, onChange) => (
-        <div
-          className="w-full flex items-stretch box-border border border-[var(--brand-border)] bg-white overflow-hidden relative"
-          data-oid="7k7.nd7"
-        >
-          <div
-            className="absolute left-0 top-0 w-[56px] h-[56px] flex items-center justify-center text-[var(--brand-muted)] pointer-events-none"
-            data-oid="r8cw3-h"
-          >
-            <UserIcon data-oid="158vlog" />
-          </div>
-          <input
-            className="w-full h-[56px] pl-[56px] pr-4 box-border border-0 bg-transparent text-[16px] outline-none"
-            id="login-account"
-            name="account"
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            placeholder="用户名或邮箱"
-            data-oid="cplps:4"
-          />
-        </div>
-      ),
-    },
-    {
-      name: "password",
-      label: "密码",
-      placeholder: "密码",
-      render: (value, onChange) => (
-        <div
-          className="w-full flex items-stretch box-border border border-[var(--brand-border)] bg-white overflow-hidden relative"
-          data-oid="c8.4hi0"
-        >
-          <div
-            className="absolute left-0 top-0 w-[56px] h-[56px] flex items-center justify-center text-[var(--brand-muted)] pointer-events-none"
-            data-oid="no:s9bg"
-          >
-            <LockIcon data-oid="-0rfv.2" />
-          </div>
-          <input
-            className="h-[56px] w-full pl-[56px] pr-[56px] box-border border-0 bg-transparent text-[16px] outline-none"
-            id="login-password"
-            name="password"
-            type={showPassword ? "text" : "password"}
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            placeholder="密码"
-            autoComplete="current-password"
-            data-oid="mvllwxt"
-          />
+  // 两种表单会通过共享 builder 生成（下方 buildFields）
+  const primaryButtonClass =
+    "w-full h-[56px] flex items-center justify-center gap-1.5 text-[18px] font-extrabold rounded-xl bg-[var(--brand-accent)] text-white border-0 shadow-[var(--brand-shadow)] transition-[background,border-color,box-shadow,transform] hover:bg-[var(--brand-accent-strong)] hover:shadow-[var(--brand-shadow)] active:scale-95";
+  const smallButtonBase =
+    "flex items-center gap-1.5 px-3.5 py-1.5 text-sm font-semibold rounded-xl border border-[var(--brand-border)] transition-[background,border-color,box-shadow,transform] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)] hover:-translate-y-[1px]";
+  const smallPrimaryButton = `${smallButtonBase} text-[var(--brand-accent)] bg-white`;
+  const smallNeutralButton = `${smallButtonBase} text-[var(--brand-accent)] bg-white`;
+  const sendButtonClass =
+    "h-[56px] min-w-[96px] px-[18px] box-border border border-[var(--brand-border)] bg-white text-[var(--brand-accent)] text-[16px] font-bold hover:bg-[var(--brand-accent-soft)] active:scale-95";
+  // build fields via shared builder
+  const passwordFields: FormField[] = buildFields("login-password", {
+    showPassword,
+    setShowPassword,
+    sendButtonClass,
+  });
 
-          <Button
-            type="button"
-            className="absolute right-0 top-0 border-0 bg-transparent text-[var(--brand-muted)] w-[56px] h-[56px] p-0 inline-flex items-center justify-center box-border shadow-none outline-none leading-none"
-            onClick={() => setShowPassword((v) => !v)}
-            aria-label={showPassword ? "隐藏密码" : "显示密码"}
-            data-oid="ug:f1pm"
-          >
-            <EyeIcon on={showPassword} data-oid="dhp3a7j" />
-          </Button>
-        </div>
-      ),
-    },
-  ];
+  const smsFields: FormField[] = buildFields("login-sms", {
+    showPassword,
+    setShowPassword,
+    sendButtonClass,
+  });
+
+  // 在表单中添加导航行与协议提示（span=2），会显示在提交按钮上方
+  
+  const navAgree = createNavAgreeFields(navigate, goGuest, smallPrimaryButton, smallNeutralButton, "登录即代表您已阅读并同意", "login");
 
   const handleSubmit = (values: Record<string, unknown>) => {
-    // 登录未实现
-    console.log("login", values);
-    showToast("登录功能未接入，使用“游客模式”进入首页");
+    console.log("login", values, "mode", mode);
+    if (mode === "password") {
+      showToast("账密登录未接入，使用“游客模式”进入首页");
+    } else {
+      showToast("验证码登录未接入，使用“游客模式”进入首页");
+    }
   };
-
-  const primaryButtonClass =
-    "w-full h-[56px] bg-[#f3e8ff] text-[#6d28d9] border border-[#d8b4fe] text-[18px] font-extrabold cursor-pointer transition-[background,border-color,transform] flex items-center justify-center gap-3.5 hover:bg-[#e9d5ff] hover:-translate-y-[1px] active:scale-95";
-  const smallButtonBase =
-    "px-3 py-1.5 rounded-full text-[15px] font-semibold border transition-[background,border-color,transform] hover:-translate-y-[1px] active:scale-95";
-  const smallPrimaryButton =
-    `${smallButtonBase} bg-white text-[#6d28d9] border-[#d8b4fe] hover:bg-[#f3e8ff]`;
-  const smallNeutralButton =
-    `${smallButtonBase} bg-white text-[#6d28d9] border-[#d8b4fe] hover:bg-[#f3e8ff]`;
 
   return (
     <div
-      className="w-[520px] max-w-[calc(100%-40px)] bg-white shadow-[0_10px_40px_rgba(0,0,0,0.12)] px-[22px] pt-[22px] pb-[18px] relative animate-[pageEnter_300ms_ease-out]"
+      className="w-[520px] max-w-[calc(100%-40px)] bg-white shadow-[0_10px_40px_rgba(0,0,0,0.12)] px-[22px] pt-[22px] pb-[18px] relative animate-[pageEnter_300ms_ease-out] border border-[#6d28d9]"
       data-oid="si9z1-w"
     >
       <div className="py-3 pb-1.5 text-center" data-oid="y4lag62">
-        <div
-          className="text-[44px] leading-[1.05] font-extrabold text-[var(--brand-text)] tracking-[0.02em]"
-          data-oid="8.:wc94"
-        >
-          nju-edu-ai
-        </div>
+        <div className="text-[32px] font-extrabold text-[var(--brand-text)]">登录</div>
       </div>
 
-      <div className="px-[26px] pt-[18px] pb-[10px]" data-oid="yzb8-_s">
+      <div className="px-[26px] pt-[18px] pb-[10px]">
+        <Tabs mode={mode} setMode={setMode} />
+
+        <style>{`
+          @keyframes slideInFromBottom { from { opacity: 0; transform: translateY(8px); } to { opacity:1; transform:translateY(0);} }
+          .animate-form-enter { animation: slideInFromBottom 220ms cubic-bezier(.2,.9,.2,1) both; }
+        `}</style>
+
         <Form
-          fields={fields}
+          fields={(mode === "password" ? passwordFields : smsFields).concat(navAgree)}
           onSubmit={handleSubmit}
           submitText={
             <>
-              <EnterIcon data-oid="g1-_8d6" />
-              <span data-oid="k:7s1e-">登录</span>
+              <EnterIcon />
+              <span>登录</span>
             </>
           }
           submitClassName={primaryButtonClass}
           fieldClassName="relative [&>label]:sr-only col-span-2"
-          className="flex flex-col gap-3.5"
-          data-oid="i8kfphu"
+          className="flex flex-col gap-1"
+          animateFieldsKey={mode}
         />
       </div>
 
-      <div
-        className="px-[26px] pt-1.5 flex justify-between items-center"
-        data-oid="6ydi:ss"
-      >
-        <div className="inline-flex gap-3 items-center" data-oid="ujeralt">
-          <Button
-            className={smallPrimaryButton}
-            onClick={() => navigate("/register")}
-            data-oid="e-:w90c"
-          >
-            注册
-          </Button>
-          <span className="text-[rgba(0,0,0,0.3)]" data-oid="rieg_u6">
-            |
-          </span>
-          <Button
-            className={smallPrimaryButton}
-            onClick={() => navigate("/forget-password")}
-            data-oid="a_le.-i"
-          >
-            忘记密码
-          </Button>
-        </div>
-
-        <div className="inline-flex items-center" data-oid="d69hs.f">
-          <Button
-            className={smallNeutralButton}
-            onClick={goGuest}
-            data-oid="rvcp8wt"
-          >
-            游客模式
-          </Button>
-        </div>
-      </div>
+      
     </div>
   );
 }

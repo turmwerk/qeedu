@@ -1,7 +1,7 @@
 import React from "react";
 import Button from "@/components/Button";
 import Dialog from "@/components/Dialog";
-import Model from "@/components/Model";
+import Modal from "@/components/Modal";
 
 type ConfirmPayload = {
   title: string;
@@ -59,7 +59,7 @@ const InsertQuestionModal: React.FC<InsertQuestionModalProps> = ({
   onSubmit,
 }) => {
   return (
-    <Model
+    <Modal
       visible={open}
       title={editingQuestionId ? "修改题目" : "生成插入题目"}
       width={920}
@@ -231,7 +231,7 @@ const InsertQuestionModal: React.FC<InsertQuestionModalProps> = ({
             取消
           </Button>
       </div>
-    </Model>
+    </Modal>
   );
 };
 

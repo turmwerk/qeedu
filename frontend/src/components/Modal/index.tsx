@@ -2,7 +2,7 @@ import React, { useId, useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import Button from "@/components/Button";
 
-const Model: React.FC<{
+const Modal: React.FC<{
   visible: boolean;
   title?: React.ReactNode;
   onClose: () => void;
@@ -100,4 +100,4 @@ const Model: React.FC<{
   );
 };
 
-export default Model;
+export default Modal;

@@ -4,68 +4,22 @@ import Form from "@/components/Form";
 import { showToast } from "@/components/Toast";
 import type { FormField } from "@/components/Form";
 import Button from "@/components/Button";
+import buildFields from "../components/FieldsForm";
+import createNavAgreeFields from "../components/NavAgree";
 
-function EmailIcon() {
+function IdIcon() {
   return (
-    <svg
-      className="block"
-      width="20"
-      height="20"
-      viewBox="0 0 24 24"
-      fill="none"
-      aria-hidden="true"
-      data-oid="pz1xabt"
-    >
-      <rect
-        x="3"
-        y="5"
-        width="18"
-        height="14"
-        rx="2"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        data-oid="yexhngw"
-      />
-
-      <path
-        d="M3 7l9 6 9-6"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        data-oid="ox5c:r9"
-      />
+    <svg className="block" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
-
 function KeyIcon() {
   return (
-    <svg
-      className="block"
-      width="20"
-      height="20"
-      viewBox="0 0 24 24"
-      fill="none"
-      aria-hidden="true"
-      data-oid="-az0.q3"
-    >
-      <circle
-        cx="8"
-        cy="15"
-        r="4"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        data-oid=".atqg8x"
-      />
-
-      <path
-        d="M11.5 12.5l9-9M16 8l1.5-1.5M19 11l1.5-1.5"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        data-oid="jajlc7b"
-      />
+    <svg className="block" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle cx="8" cy="15" r="4" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M11.5 12.5l9-9M16 8l1.5-1.5M19 11l1.5-1.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
     </svg>
   );
 }
@@ -79,73 +33,25 @@ function LockIcon() {
       viewBox="0 0 24 24"
       fill="none"
       aria-hidden="true"
-      data-oid="7uava.y"
     >
-      <rect
-        x="5"
-        y="11"
-        width="14"
-        height="10"
-        rx="2"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        data-oid="s.fnifq"
-      />
-
-      <path
-        d="M8 11V7a4 4 0 0 1 8 0v4"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        data-oid="8imar2s"
-      />
+      <rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M8 11V7a4 4 0 0 1 8 0v4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
     </svg>
   );
 }
 
 function EyeIcon({ on }: { on: boolean }) {
   return (
-    <svg
-      className="block"
-      width="20"
-      height="20"
-      viewBox="0 0 24 24"
-      fill="none"
-      aria-hidden="true"
-      data-oid="rm3.6x_"
-    >
+    <svg className="block" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
       {on ? (
         <>
-          <path
-            d="M2.2 12c1.9-4.7 5.4-7.5 9.8-7.5S19.9 7.3 21.8 12c-1.9 4.7-5.4 7.5-9.8 7.5S4.1 16.7 2.2 12Z"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            data-oid="f99asfr"
-          />
-
-          <path
-            d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            data-oid="fhsov0k"
-          />
+          <path d="M2.2 12c1.9-4.7 5.4-7.5 9.8-7.5S19.9 7.3 21.8 12c-1.9 4.7-5.4 7.5-9.8 7.5S4.1 16.7 2.2 12Z" stroke="currentColor" strokeWidth="1.8" />
+          <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" stroke="currentColor" strokeWidth="1.8" />
         </>
       ) : (
         <>
-          <path
-            d="M3 12c2.1-4.7 5.6-7.5 9-7.5 3.4 0 6.9 2.8 9 7.5-2.1 4.7-5.6 7.5-9 7.5-3.4 0-6.9-2.8-9-7.5Z"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            data-oid="ec8y629"
-          />
-
-          <path
-            d="M4 4l16 16"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            data-oid="09lju9v"
-          />
+          <path d="M3 12c2.1-4.7 5.6-7.5 9-7.5 3.4 0 6.9 2.8 9 7.5-2.1 4.7-5.6 7.5-9 7.5-3.4 0-6.9-2.8-9-7.5Z" stroke="currentColor" strokeWidth="1.8" />
+          <path d="M4 4l16 16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
         </>
       )}
     </svg>
@@ -154,40 +60,10 @@ function EyeIcon({ on }: { on: boolean }) {
 
 function EnterIcon() {
   return (
-    <svg
-      className="inline-block flex-[0_0_auto]"
-      width="28"
-      height="28"
-      viewBox="0 0 24 24"
-      fill="none"
-      aria-hidden="true"
-      data-oid="u.xo40_"
-    >
-      <path
-        d="M4 12h10"
-        stroke="currentColor"
-        strokeWidth="2.2"
-        strokeLinecap="round"
-        data-oid="tz:dxy:"
-      />
-
-      <path
-        d="M11 7l5 5-5 5"
-        stroke="currentColor"
-        strokeWidth="2.2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        data-oid="hvmxeo0"
-      />
-
-      <path
-        d="M20 4h-4M20 4v16M20 20h-4"
-        stroke="currentColor"
-        strokeWidth="2.2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        data-oid="kisukow"
-      />
+    <svg className="inline-block flex-[0_0_auto]" width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M4 12h10" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+      <path d="M11 7l5 5-5 5" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M20 4h-4M20 4v16M20 20h-4" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -202,21 +78,24 @@ export default function Resister() {
     navigate("/");
   };
 
+  const primaryButtonClass =
+    "w-full h-[56px] flex items-center justify-center gap-1.5 text-[18px] font-extrabold rounded-xl bg-[var(--brand-accent)] text-white border-0 shadow-[var(--brand-shadow)] transition-[background,border-color,box-shadow,transform] hover:bg-[var(--brand-accent-strong)] hover:shadow-[var(--brand-shadow)] active:scale-95";
+  const smallButtonBase =
+    "flex items-center gap-1.5 px-3.5 py-1.5 text-sm font-semibold rounded-xl border border-[var(--brand-border)] transition-[background,border-color,box-shadow,transform] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)] hover:-translate-y-[1px]";
+  const smallPrimaryButton = `${smallButtonBase} text-[var(--brand-accent)] bg-white`;
+  const smallNeutralButton = `${smallButtonBase} text-[var(--brand-accent)] bg-white`;
+  const sendButtonClass =
+    "h-[56px] min-w-[96px] px-[18px] box-border border border-[var(--brand-border)] bg-white text-[var(--brand-accent)] text-[16px] font-bold hover:bg-[var(--brand-accent-soft)] active:scale-95";
+
   const fields: FormField[] = [
     {
       name: "email",
-      label: "邮箱",
-      placeholder: "邮箱",
+      label: "邮箱/手机号",
+      placeholder: "邮箱或手机号",
       render: (value, onChange) => (
-        <div
-          className="w-full flex items-stretch box-border border border-[var(--brand-border)] bg-white overflow-hidden relative"
-          data-oid="cgngm3l"
-        >
-          <div
-            className="absolute left-0 top-0 w-[56px] h-[56px] flex items-center justify-center text-[var(--brand-muted)] pointer-events-none"
-            data-oid="ulethtc"
-          >
-            <EmailIcon data-oid="i36asrq" />
+        <div className="w-full flex items-stretch box-border border border-[var(--brand-border)] hover:border-[#6d28d9] focus-within:border-[#6d28d9] transition-colors bg-white overflow-hidden relative">
+          <div className="absolute left-0 top-0 w-[56px] h-[56px] flex items-center justify-center text-[var(--brand-muted)] pointer-events-none">
+            <IdIcon />
           </div>
           <input
             className="w-full h-[56px] pl-[56px] pr-4 box-border border-0 bg-transparent text-[16px] outline-none"
@@ -224,19 +103,18 @@ export default function Resister() {
             name="email"
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            placeholder="邮箱"
-            data-oid="3keljrb"
+            placeholder="邮箱或手机号"
           />
         </div>
       ),
     },
     {
       name: "emailCode",
-      label: "邮箱验证码",
-      placeholder: "邮箱验证码",
+      label: "验证码",
+      placeholder: "验证码",
       render: (value, onChange) => (
         <div
-          className="w-full flex items-stretch box-border border border-[var(--brand-border)] bg-white overflow-hidden relative"
+          className="w-full flex items-stretch box-border border border-[var(--brand-border)] hover:border-[#6d28d9] focus-within:border-[#6d28d9] transition-colors bg-white overflow-hidden relative"
           data-oid="0gz.p8p"
         >
           <div
@@ -251,7 +129,7 @@ export default function Resister() {
             name="emailCode"
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            placeholder="邮箱验证码"
+            placeholder="验证码"
             autoComplete="one-time-code"
             data-oid="gp087c6"
           />
@@ -273,7 +151,7 @@ export default function Resister() {
       placeholder: "密码",
       render: (value, onChange) => (
         <div
-          className="w-full flex items-stretch box-border border border-[var(--brand-border)] bg-white overflow-hidden relative"
+          className="w-full flex items-stretch box-border border border-[var(--brand-border)] hover:border-[#6d28d9] focus-within:border-[#6d28d9] transition-colors bg-white overflow-visible relative"
           data-oid="yhovq6e"
         >
           <div
@@ -294,15 +172,26 @@ export default function Resister() {
             data-oid="8n_06g6"
           />
 
-          <Button
-            type="button"
-            className="absolute right-0 top-0 border-0 bg-transparent text-[var(--brand-muted)] w-[56px] h-[56px] p-0 inline-flex items-center justify-center box-border shadow-none outline-none leading-none"
-            onClick={() => setShowPassword((v) => !v)}
-            aria-label={showPassword ? "隐藏密码" : "显示密码"}
-            data-oid="n6tvm06"
-          >
-            <EyeIcon on={showPassword} data-oid="-nnyyp." />
-          </Button>
+          <div className="absolute right-0 top-0 w-[56px] h-[56px] p-0 inline-flex items-center justify-center box-border">
+            <div className="group relative">
+              <Button
+                type="button"
+                className="border-0 bg-transparent text-[var(--brand-muted)] hover:text-[#6d28d9] group-hover:text-[#6d28d9] cursor-pointer w-[56px] h-[56px] p-0 inline-flex items-center justify-center box-border outline-none"
+                onClick={() => setShowPassword((v) => !v)}
+                aria-label={showPassword ? "隐藏密码" : "显示密码"}
+                data-oid="n6tvm06"
+              >
+                <EyeIcon on={showPassword} data-oid="-nnyyp." />
+              </Button>
+
+              <div className="hidden group-hover:block absolute right-0 top-[66px] w-[280px] bg-black text-white text-sm leading-5 p-3 rounded shadow-lg z-50">
+                <div>长度为8-16位字符</div>
+                <div>字母/数字以及标点符号至少包含2种</div>
+                <div>不允许有空格、中文</div>
+                <div className="absolute left-1/2 -translate-x-1/2 -top-2 w-0 h-0 border-8 border-transparent border-b-black"></div>
+              </div>
+            </div>
+          </div>
         </div>
       ),
     },
@@ -312,7 +201,7 @@ export default function Resister() {
       placeholder: "再次输入密码",
       render: (value, onChange) => (
         <div
-          className="w-full flex items-stretch box-border border border-[var(--brand-border)] bg-white overflow-hidden relative"
+          className="w-full flex items-stretch box-border border border-[var(--brand-border)] hover:border-[#6d28d9] focus-within:border-[#6d28d9] transition-colors bg-white overflow-visible relative"
           data-oid="hkpjtmk"
         >
           <div
@@ -333,15 +222,26 @@ export default function Resister() {
             data-oid="j6-:3ie"
           />
 
-          <Button
-            type="button"
-            className="absolute right-0 top-0 border-0 bg-transparent text-[var(--brand-muted)] w-[56px] h-[56px] p-0 inline-flex items-center justify-center box-border shadow-none outline-none leading-none"
-            onClick={() => setShowPassword2((v) => !v)}
-            aria-label={showPassword2 ? "隐藏密码" : "显示密码"}
-            data-oid="570ah99"
-          >
-            <EyeIcon on={showPassword2} data-oid="8boa4sf" />
-          </Button>
+          <div className="absolute right-0 top-0 w-[56px] h-[56px] p-0 inline-flex items-center justify-center box-border">
+            <div className="group relative">
+              <Button
+                type="button"
+                className="border-0 bg-transparent text-[var(--brand-muted)] hover:text-[#6d28d9] group-hover:text-[#6d28d9] cursor-pointer w-[56px] h-[56px] p-0 inline-flex items-center justify-center box-border outline-none"
+                onClick={() => setShowPassword2((v) => !v)}
+                aria-label={showPassword2 ? "隐藏密码" : "显示密码"}
+                data-oid="570ah99"
+              >
+                <EyeIcon on={showPassword2} data-oid="8boa4sf" />
+              </Button>
+
+              <div className="hidden group-hover:block absolute right-0 top-[66px] w-[280px] bg-black text-white text-sm leading-5 p-3 rounded shadow-lg z-50">
+                <div>长度为8-16位字符</div>
+                <div>字母/数字以及标点符号至少包含2种</div>
+                <div>不允许有空格、中文</div>
+                <div className="absolute left-1/2 -translate-x-1/2 -top-2 w-0 h-0 border-8 border-transparent border-b-black"></div>
+              </div>
+            </div>
+          </div>
         </div>
       ),
     },
@@ -352,33 +252,19 @@ export default function Resister() {
     showToast("注册未实现");
   };
 
-  const primaryButtonClass =
-    "w-full h-[56px] bg-[#f3e8ff] text-[#6d28d9] border border-[#d8b4fe] text-[18px] font-extrabold cursor-pointer transition-[background,border-color,transform] flex items-center justify-center gap-3.5 hover:bg-[#e9d5ff] hover:-translate-y-[1px] active:scale-95";
-  const smallButtonBase =
-    "px-3 py-1.5 rounded-full text-[15px] font-semibold border transition-[background,border-color,transform] hover:-translate-y-[1px] active:scale-95";
-  const smallPrimaryButton =
-    `${smallButtonBase} bg-white text-[#6d28d9] border-[#d8b4fe] hover:bg-[#f3e8ff]`;
-  const smallNeutralButton =
-    `${smallButtonBase} bg-white text-[#6d28d9] border-[#d8b4fe] hover:bg-[#f3e8ff]`;
-  const sendButtonClass =
-    "h-[56px] min-w-[96px] px-[18px] box-border border-l border-[#d8b4fe] bg-[#f3e8ff] text-[#6d28d9] text-[16px] font-bold hover:bg-[#e9d5ff] active:scale-95";
+  const navAgree = createNavAgreeFields(navigate, goGuest, smallPrimaryButton, smallNeutralButton, "注册并登录即代表您已阅读并同意", "register");
 
   return (
     <div
-      className="w-[520px] max-w-[calc(100%-40px)] bg-white shadow-[0_10px_40px_rgba(0,0,0,0.12)] px-[22px] pt-[22px] pb-[18px] relative animate-[pageEnter_300ms_ease-out]"
+      className="w-[520px] max-w-[calc(100%-40px)] bg-white shadow-[0_10px_40px_rgba(0,0,0,0.12)] px-[22px] pt-[22px] pb-[18px] relative animate-[pageEnter_300ms_ease-out] border border-[#6d28d9]"
       data-oid="j48j102"
     >
       <div className="py-3 pb-1.5 text-center" data-oid="6pkt29u">
-        <div
-          className="text-[44px] leading-[1.05] font-extrabold text-[var(--brand-text)] tracking-[0.02em]"
-          data-oid="630y7kg"
-        >
-          nju-edu-ai
-        </div>
+        <div className="text-[32px] font-extrabold text-[var(--brand-text)]">注册</div>
       </div>
       <div className="px-[26px] pt-[18px] pb-[10px]" data-oid="sxw10y7">
         <Form
-          fields={fields}
+          fields={fields.concat(navAgree)}
           onSubmit={handleSubmit}
           submitText={
             <>
@@ -388,35 +274,12 @@ export default function Resister() {
           }
           submitClassName={primaryButtonClass}
           fieldClassName="relative [&>label]:sr-only"
-          className="flex flex-col gap-3.5"
+          className="flex flex-col gap-1"
           data-oid="nk485g0"
         />
       </div>
 
-      <div
-        className="px-[26px] pt-1.5 flex justify-between items-center"
-        data-oid="cxq2m32"
-      >
-        <div className="inline-flex gap-3 items-center" data-oid="7hn9b5q">
-          <Button
-            className={smallPrimaryButton}
-            onClick={() => navigate("/login")}
-            data-oid="81t8x7t"
-          >
-            返回登录
-          </Button>
-        </div>
-
-        <div className="inline-flex items-center" data-oid="tjqg5f6">
-          <Button
-            className={smallNeutralButton}
-            onClick={goGuest}
-            data-oid="rveoy0u"
-          >
-            游客模式
-          </Button>
-        </div>
-      </div>
+      
     </div>
   );
 }

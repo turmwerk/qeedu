@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Model from "@/components/Model";
+import Modal from "@/components/Modal";
 import Form from "@/components/Form";
 import { syllabusCreateFields } from "../../data/createModalFields";
 
@@ -23,7 +23,7 @@ const CreateModal: React.FC<CreateModalProps> = ({ open, onClose, onCreate }) =>
   };
 
   return (
-    <Model
+    <Modal  
       visible={open}
       title="新建课程大纲"
       width={1000}
@@ -45,7 +45,7 @@ const CreateModal: React.FC<CreateModalProps> = ({ open, onClose, onCreate }) =>
           />
         </div>
       </div>
-    </Model>
+    </Modal>
   );
 };
 
