@@ -4,7 +4,7 @@ import Form from "@/components/Form";
 import { showToast } from "@/components/Toast";
 import type { FormField } from "@/components/Form";
 import Button from "@/components/Button";
-import buildFields from "../components/FieldsForm";
+
 import createNavAgreeFields from "../components/NavAgree";
 
 function IdIcon() {
@@ -84,8 +84,7 @@ export default function Resister() {
     "flex items-center gap-1.5 px-3.5 py-1.5 text-sm font-semibold rounded-xl border border-blue-600 transition-[background,border-color,box-shadow,transform] hover:bg-[var(--brand-accent-soft)] hover:border-[#6d28d9] hover:shadow-[var(--brand-shadow)] hover:-translate-y-[1px]";
   const smallPrimaryButton = `${smallButtonBase} text-[var(--brand-accent)] bg-white`;
   const smallNeutralButton = `${smallButtonBase} text-[var(--brand-accent)] bg-white`;
-  const sendButtonClass =
-    "h-[56px] min-w-[96px] px-[18px] box-border border border-blue-600 bg-white text-blue-600 text-[16px] font-bold hover:bg-[var(--brand-accent-soft)] hover:border-[#6d28d9] active:scale-95";
+
 
   const fields: FormField[] = [
     {

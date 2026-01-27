@@ -1,5 +1,3 @@
-import React from "react";
-
 export default function EyeIcon({ on }: { on?: boolean }) {
   return (
     <svg className="block" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">

@@ -1,11 +1,9 @@
-import React from "react";
 import type { FormField } from "@/components/Form";
 import { showToast } from "@/components/Toast";
 import KeyIcon from "../../../../components/Icon/KeyIcon";
 import IdIcon from "../../../../components/Icon/IdIcon";
 import LockIcon from "../../../../components/Icon/LockIcon";
 import EyeIcon from "../../../../components/Icon/EyeIcon";
-import Button from "@/components/Button";
 import EyeTooltip from "../EyeTooltip";
 
 // Note: Some projects may not have centralized Icon components; if so, callers can
@@ -22,6 +20,7 @@ export interface BuildFieldsOptions {
 
 export function buildFields(kind: "login-password" | "login-sms" | "register" | "forget", opts: BuildFieldsOptions): FormField[] {
   const { showPassword, setShowPassword, showPassword2, setShowPassword2, sendButtonClass } = opts;
+  void sendButtonClass;
 
   if (kind === "login-password") {
     const fields: FormField[] = [

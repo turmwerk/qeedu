@@ -1,4 +1,3 @@
-import React from "react";
 import Button from "@/components/Button";
 
 export default function Tabs({ mode, setMode }: { mode: "password" | "sms"; setMode: (m: "password" | "sms") => void }) {
