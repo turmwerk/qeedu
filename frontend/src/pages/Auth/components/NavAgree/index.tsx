@@ -19,24 +19,24 @@ export function createNavAgreeFields(
         <div className="inline-flex gap-1 items-center">
           {page === "login" ? (
             <>
-              <Button className={smallPrimaryButton} onClick={() => navigate("/register")}>
+              <Button className={`${smallPrimaryButton} text-blue-600`} onClick={() => navigate("/register")}>
                 注册
               </Button>
               <span className="text-[rgba(0,0,0,0.3)]">|</span>
-              <Button className={smallPrimaryButton} onClick={() => navigate("/forget-password")}>
+              <Button className={`${smallPrimaryButton} text-blue-600`} onClick={() => navigate("/forget-password")}>
                 忘记密码
               </Button>
             </>
           ) : (
             <>
-              <Button className={smallNeutralButton} onClick={() => navigate("/login")}>
+              <Button className={`${smallNeutralButton} text-blue-600`} onClick={() => navigate("/login")}>
                 返回登录
               </Button>
             </>
           )}
         </div>
         <div className="inline-flex items-center">
-          <Button className={smallNeutralButton} onClick={goGuest}>
+          <Button className={`${smallNeutralButton} text-blue-600`} onClick={goGuest}>
             游客模式
           </Button>
         </div>

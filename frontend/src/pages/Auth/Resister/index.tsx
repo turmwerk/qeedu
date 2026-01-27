@@ -79,13 +79,13 @@ export default function Resister() {
   };
 
   const primaryButtonClass =
-    "w-full h-[56px] flex items-center justify-center gap-1.5 text-[18px] font-extrabold rounded-xl bg-[var(--brand-accent)] text-white border-0 shadow-[var(--brand-shadow)] transition-[background,border-color,box-shadow,transform] hover:bg-[var(--brand-accent-strong)] hover:shadow-[var(--brand-shadow)] active:scale-95";
+    "w-full h-[56px] flex items-center justify-center gap-1.5 text-[18px] font-extrabold rounded-xl bg-blue-600 text-white border-0 shadow-[var(--brand-shadow)] transition-[background,border-color,box-shadow,transform] hover:bg-[#6d28d9] hover:shadow-[var(--brand-shadow)] active:scale-95";
   const smallButtonBase =
-    "flex items-center gap-1.5 px-3.5 py-1.5 text-sm font-semibold rounded-xl border border-[var(--brand-border)] transition-[background,border-color,box-shadow,transform] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)] hover:-translate-y-[1px]";
+    "flex items-center gap-1.5 px-3.5 py-1.5 text-sm font-semibold rounded-xl border border-blue-600 transition-[background,border-color,box-shadow,transform] hover:bg-[var(--brand-accent-soft)] hover:border-[#6d28d9] hover:shadow-[var(--brand-shadow)] hover:-translate-y-[1px]";
   const smallPrimaryButton = `${smallButtonBase} text-[var(--brand-accent)] bg-white`;
   const smallNeutralButton = `${smallButtonBase} text-[var(--brand-accent)] bg-white`;
   const sendButtonClass =
-    "h-[56px] min-w-[96px] px-[18px] box-border border border-[var(--brand-border)] bg-white text-[var(--brand-accent)] text-[16px] font-bold hover:bg-[var(--brand-accent-soft)] active:scale-95";
+    "h-[56px] min-w-[96px] px-[18px] box-border border border-blue-600 bg-white text-blue-600 text-[16px] font-bold hover:bg-[var(--brand-accent-soft)] hover:border-[#6d28d9] active:scale-95";
 
   const fields: FormField[] = [
     {
@@ -93,7 +93,7 @@ export default function Resister() {
       label: "邮箱/手机号",
       placeholder: "邮箱或手机号",
       render: (value, onChange) => (
-        <div className="w-full flex items-stretch box-border border border-[var(--brand-border)] hover:border-[#6d28d9] focus-within:border-[#6d28d9] transition-colors bg-white overflow-hidden relative">
+          <div className="w-full flex items-stretch box-border border border-blue-600 hover:border-[#6d28d9] focus-within:border-[#6d28d9] transition-colors bg-white overflow-hidden relative">
           <div className="absolute left-0 top-0 w-[56px] h-[56px] flex items-center justify-center text-[var(--brand-muted)] pointer-events-none">
             <IdIcon />
           </div>
@@ -114,7 +114,7 @@ export default function Resister() {
       placeholder: "验证码",
       render: (value, onChange) => (
         <div
-          className="w-full flex items-stretch box-border border border-[var(--brand-border)] hover:border-[#6d28d9] focus-within:border-[#6d28d9] transition-colors bg-white overflow-hidden relative"
+          className="w-full flex items-stretch box-border border border-blue-600 hover:border-[#6d28d9] focus-within:border-[#6d28d9] transition-colors bg-white overflow-hidden relative"
           data-oid="0gz.p8p"
         >
           <div
@@ -134,14 +134,14 @@ export default function Resister() {
             data-oid="gp087c6"
           />
 
-          <Button
+          <button
             type="button"
-            className={sendButtonClass}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-600 hover:text-[#6d28d9] font-bold bg-transparent border-0"
             onClick={() => showToast("验证码发送未实现")}
             data-oid="c860_1o"
           >
-            发送
-          </Button>
+            获取验证码
+          </button>
         </div>
       ),
     },
@@ -151,7 +151,7 @@ export default function Resister() {
       placeholder: "密码",
       render: (value, onChange) => (
         <div
-          className="w-full flex items-stretch box-border border border-[var(--brand-border)] hover:border-[#6d28d9] focus-within:border-[#6d28d9] transition-colors bg-white overflow-visible relative"
+          className="w-full flex items-stretch box-border border border-blue-600 hover:border-[#6d28d9] focus-within:border-[#6d28d9] transition-colors bg-white overflow-visible relative"
           data-oid="yhovq6e"
         >
           <div
@@ -176,7 +176,7 @@ export default function Resister() {
             <div className="group relative">
               <Button
                 type="button"
-                className="border-0 bg-transparent text-[var(--brand-muted)] hover:text-[#6d28d9] group-hover:text-[#6d28d9] cursor-pointer w-[56px] h-[56px] p-0 inline-flex items-center justify-center box-border outline-none"
+                className={`border-0 bg-transparent ${showPassword ? 'text-[#6d28d9]' : 'text-blue-600'} hover:text-[#6d28d9] group-hover:text-[#6d28d9] cursor-pointer w-[56px] h-[56px] p-0 inline-flex items-center justify-center box-border outline-none`}
                 onClick={() => setShowPassword((v) => !v)}
                 aria-label={showPassword ? "隐藏密码" : "显示密码"}
                 data-oid="n6tvm06"
@@ -201,7 +201,7 @@ export default function Resister() {
       placeholder: "再次输入密码",
       render: (value, onChange) => (
         <div
-          className="w-full flex items-stretch box-border border border-[var(--brand-border)] hover:border-[#6d28d9] focus-within:border-[#6d28d9] transition-colors bg-white overflow-visible relative"
+          className="w-full flex items-stretch box-border border border-blue-600 hover:border-[#6d28d9] focus-within:border-[#6d28d9] transition-colors bg-white overflow-visible relative"
           data-oid="hkpjtmk"
         >
           <div
@@ -226,7 +226,7 @@ export default function Resister() {
             <div className="group relative">
               <Button
                 type="button"
-                className="border-0 bg-transparent text-[var(--brand-muted)] hover:text-[#6d28d9] group-hover:text-[#6d28d9] cursor-pointer w-[56px] h-[56px] p-0 inline-flex items-center justify-center box-border outline-none"
+                className={`border-0 bg-transparent ${showPassword2 ? 'text-[#6d28d9]' : 'text-blue-600'} hover:text-[#6d28d9] group-hover:text-[#6d28d9] cursor-pointer w-[56px] h-[56px] p-0 inline-flex items-center justify-center box-border outline-none`}
                 onClick={() => setShowPassword2((v) => !v)}
                 aria-label={showPassword2 ? "隐藏密码" : "显示密码"}
                 data-oid="570ah99"
@@ -256,7 +256,7 @@ export default function Resister() {
 
   return (
     <div
-      className="w-[520px] max-w-[calc(100%-40px)] bg-white shadow-[0_10px_40px_rgba(0,0,0,0.12)] px-[22px] pt-[22px] pb-[18px] relative animate-[pageEnter_300ms_ease-out] border border-[#6d28d9]"
+      className="w-[520px] max-w-[calc(100%-40px)] bg-white shadow-[0_10px_40px_rgba(0,0,0,0.12)] px-[22px] pt-[22px] pb-[18px] relative animate-[pageEnter_300ms_ease-out] rounded-xl border border-[#6d28d9] shadow-[var(--brand-shadow)]"
       data-oid="j48j102"
     >
       <div className="py-3 pb-1.5 text-center" data-oid="6pkt29u">
