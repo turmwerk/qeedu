@@ -11,6 +11,14 @@
   --brand-bg: #071028; /* 深蓝 */
   /* Nav button colors for dark (only arrow color needed when no box) */
   --nav-fg: #ffffff;
+  /* Auth-specific colors (cards/buttons) to ensure good contrast in dark mode */
+  --auth-panel-bg: rgba(255,255,255,0.04);
+  --auth-panel-border: rgba(255,255,255,0.08);
+  --auth-btn-bg: #1e40af; /* darker vivid blue for primary button */
+  --auth-btn-hover: #7c3aed; /* purple hover */
+  --auth-btn-text: #ffffff;
+  --auth-link: #93c5fd; /* lighter blue for inline links */
+  --auth-link-hover: #c4b5fd; /* lighter purple on hover */
 }
 
 :root[data-theme="dark"] .app-root, [data-theme="dark"] .app-root {
@@ -60,4 +68,40 @@
 /* Exceptions: allow elements that opt into a solid background via data attribute */
 [data-theme="dark"] [data-theme-keep-bg="true"] {
   background-color: var(--keep-bg, rgba(255,255,255,0.06)) !important;
+}
+
+/* Auth panel: keep a subtle card background and distinct borders in dark mode */
+[data-theme="dark"] .auth-panel {
+  background-color: var(--auth-panel-bg) !important;
+  border-color: var(--auth-panel-border) !important;
+}
+
+/* Scope auth-specific button/link overrides so light theme isn't affected */
+[data-theme="dark"] .auth-panel .bg-blue-600 {
+  background-color: var(--auth-btn-bg) !important;
+}
+[data-theme="dark"] .auth-panel .bg-blue-600:hover {
+  background-color: var(--auth-btn-hover) !important;
+}
+[data-theme="dark"] .auth-panel .text-white {
+  color: var(--auth-btn-text) !important;
+}
+
+/* Links and small buttons inside auth panel */
+[data-theme="dark"] .auth-panel .text-blue-600 {
+  color: var(--auth-link) !important;
+}
+[data-theme="dark"] .auth-panel .text-blue-600:hover {
+  color: var(--auth-link-hover) !important;
+}
+[data-theme="dark"] .auth-panel .border-blue-600 {
+  border-color: var(--auth-panel-border) !important;
+}
+[data-theme="dark"] .auth-panel .border-blue-600:hover {
+  border-color: var(--auth-btn-hover) !important;
+}
+
+/* Ensure tab underline is visible in dark auth panels */
+[data-theme="dark"] .auth-panel .tab-underline {
+  background-color: var(--brand-accent) !important;
 }

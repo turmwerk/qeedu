@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import Footer from "@/layouts/MainLayout/components/Footer";
-
+import FloatActions from "@/layouts/MainLayout/components/FloatActions";
 const AuthLayout: React.FC = () => {
   const location = useLocation();
 
@@ -49,6 +49,7 @@ const AuthLayout: React.FC = () => {
       <div className="absolute bottom-0 w-full z-20">
         <Footer />
       </div>
+      <FloatActions />
     </div>
   );
 };

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Form from "@/components/Form";
 import { showToast } from "@/components/Toast";
 import type { FormField } from "@/components/Form";
-import Button from "@/components/Button";
+import EyeTooltip from "../components/EyeTooltip";
 
 import createNavAgreeFields from "../components/NavAgree";
 
@@ -80,10 +80,7 @@ export default function Resister() {
 
   const primaryButtonClass =
     "w-full h-[56px] flex items-center justify-center gap-1.5 text-[18px] font-extrabold rounded-xl bg-blue-600 text-white border-0 shadow-[var(--brand-shadow)] transition-[background,border-color,box-shadow,transform] hover:bg-[#6d28d9] hover:shadow-[var(--brand-shadow)] active:scale-95";
-  const smallButtonBase =
-    "flex items-center gap-1.5 px-3.5 py-1.5 text-sm font-semibold rounded-xl border border-blue-600 transition-[background,border-color,box-shadow,transform] hover:bg-[var(--brand-accent-soft)] hover:border-[#6d28d9] hover:shadow-[var(--brand-shadow)] hover:-translate-y-[1px]";
-  const smallPrimaryButton = `${smallButtonBase} text-[var(--brand-accent)] bg-white`;
-  const smallNeutralButton = `${smallButtonBase} text-[var(--brand-accent)] bg-white`;
+  
 
 
   const fields: FormField[] = [
@@ -171,26 +168,9 @@ export default function Resister() {
             data-oid="8n_06g6"
           />
 
-          <div className="absolute right-0 top-0 w-[56px] h-[56px] p-0 inline-flex items-center justify-center box-border">
-            <div className="group relative">
-              <Button
-                type="button"
-                className={`border-0 bg-transparent ${showPassword ? 'text-[#6d28d9]' : 'text-blue-600'} hover:text-[#6d28d9] group-hover:text-[#6d28d9] cursor-pointer w-[56px] h-[56px] p-0 inline-flex items-center justify-center box-border outline-none`}
-                onClick={() => setShowPassword((v) => !v)}
-                aria-label={showPassword ? "隐藏密码" : "显示密码"}
-                data-oid="n6tvm06"
-              >
-                <EyeIcon on={showPassword} data-oid="-nnyyp." />
-              </Button>
-
-              <div className="hidden group-hover:block absolute right-0 top-[66px] w-[280px] bg-black text-white text-sm leading-5 p-3 rounded shadow-lg z-50">
-                <div>长度为8-16位字符</div>
-                <div>字母/数字以及标点符号至少包含2种</div>
-                <div>不允许有空格、中文</div>
-                <div className="absolute left-1/2 -translate-x-1/2 -top-2 w-0 h-0 border-8 border-transparent border-b-black"></div>
-              </div>
-            </div>
-          </div>
+          <EyeTooltip on={showPassword} onToggle={() => setShowPassword((v) => !v)} ariaLabel={showPassword ? "隐藏密码" : "显示密码"}>
+            <EyeIcon on={showPassword} data-oid="-nnyyp." />
+          </EyeTooltip>
         </div>
       ),
     },
@@ -221,26 +201,9 @@ export default function Resister() {
             data-oid="j6-:3ie"
           />
 
-          <div className="absolute right-0 top-0 w-[56px] h-[56px] p-0 inline-flex items-center justify-center box-border">
-            <div className="group relative">
-              <Button
-                type="button"
-                className={`border-0 bg-transparent ${showPassword2 ? 'text-[#6d28d9]' : 'text-blue-600'} hover:text-[#6d28d9] group-hover:text-[#6d28d9] cursor-pointer w-[56px] h-[56px] p-0 inline-flex items-center justify-center box-border outline-none`}
-                onClick={() => setShowPassword2((v) => !v)}
-                aria-label={showPassword2 ? "隐藏密码" : "显示密码"}
-                data-oid="570ah99"
-              >
-                <EyeIcon on={showPassword2} data-oid="8boa4sf" />
-              </Button>
-
-              <div className="hidden group-hover:block absolute right-0 top-[66px] w-[280px] bg-black text-white text-sm leading-5 p-3 rounded shadow-lg z-50">
-                <div>长度为8-16位字符</div>
-                <div>字母/数字以及标点符号至少包含2种</div>
-                <div>不允许有空格、中文</div>
-                <div className="absolute left-1/2 -translate-x-1/2 -top-2 w-0 h-0 border-8 border-transparent border-b-black"></div>
-              </div>
-            </div>
-          </div>
+          <EyeTooltip on={showPassword2} onToggle={() => setShowPassword2((v) => !v)} ariaLabel={showPassword2 ? "隐藏密码" : "显示密码"}>
+            <EyeIcon on={showPassword2} data-oid="8boa4sf" />
+          </EyeTooltip>
         </div>
       ),
     },
@@ -251,11 +214,11 @@ export default function Resister() {
     showToast("注册未实现");
   };
 
-  const navAgree = createNavAgreeFields(navigate, goGuest, smallPrimaryButton, smallNeutralButton, "注册并登录即代表您已阅读并同意", "register");
+  const navAgree = createNavAgreeFields(navigate, goGuest, "注册并登录即代表您已阅读并同意", "register");
 
   return (
     <div
-      className="w-[520px] max-w-[calc(100%-40px)] bg-white shadow-[0_10px_40px_rgba(0,0,0,0.12)] px-[22px] pt-[22px] pb-[18px] relative animate-[pageEnter_300ms_ease-out] rounded-xl border border-[#6d28d9] shadow-[var(--brand-shadow)]"
+      className="auth-panel w-[520px] max-w-[calc(100%-40px)] bg-white shadow-[0_10px_40px_rgba(0,0,0,0.12)] px-[22px] pt-[22px] pb-[18px] relative animate-[pageEnter_300ms_ease-out] rounded-xl border border-[#6d28d9] shadow-[var(--brand-shadow)]"
       data-oid="j48j102"
     >
       <div className="py-3 pb-1.5 text-center" data-oid="6pkt29u">
@@ -267,8 +230,8 @@ export default function Resister() {
           onSubmit={handleSubmit}
           submitText={
             <>
-              <EnterIcon data-oid="sojo3:7" />
-              <span data-oid=".iab:ea">注册</span>
+                  <EnterIcon data-oid="sojo3:7" />
+                  <span data-oid=".iab:ea">注册并登录</span>
             </>
           }
           submitClassName={primaryButtonClass}
@@ -277,6 +240,7 @@ export default function Resister() {
           data-oid="nk485g0"
         />
       </div>
+
 
       
     </div>

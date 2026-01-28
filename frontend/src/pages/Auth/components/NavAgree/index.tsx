@@ -1,11 +1,8 @@
 import type { FormField } from "@/components/Form";
-import Button from "@/components/Button";
 
 export function createNavAgreeFields(
   navigate: (path: string) => void,
   goGuest: () => void,
-  smallPrimaryButton: string,
-  smallNeutralButton: string,
   agreeText = "登录即代表您已阅读并同意",
   page: "login" | "register" | "forget" = "login",
 ) {
@@ -18,26 +15,26 @@ export function createNavAgreeFields(
         <div className="inline-flex gap-1 items-center">
           {page === "login" ? (
             <>
-              <Button className={`${smallPrimaryButton} text-blue-600`} onClick={() => navigate("/register")}>
+              <span onClick={() => navigate("/register")} className="text-blue-600 cursor-pointer hover:underline hover:text-[#6d28d9]">
                 注册
-              </Button>
-              <span className="text-[rgba(0,0,0,0.3)]">|</span>
-              <Button className={`${smallPrimaryButton} text-blue-600`} onClick={() => navigate("/forget-password")}>
+              </span>
+              <span className="text-[var(--brand-muted)]">|</span>
+              <span onClick={() => navigate("/forget-password")} className="text-blue-600 cursor-pointer hover:underline hover:text-[#6d28d9]">
                 忘记密码
-              </Button>
+              </span>
             </>
           ) : (
             <>
-              <Button className={`${smallNeutralButton} text-blue-600`} onClick={() => navigate("/login")}>
+              <span onClick={() => navigate("/login")} className="text-blue-600 cursor-pointer hover:underline hover:text-[#6d28d9]">
                 返回登录
-              </Button>
+              </span>
             </>
           )}
         </div>
         <div className="inline-flex items-center">
-          <Button className={`${smallNeutralButton} text-blue-600`} onClick={goGuest}>
+          <span onClick={goGuest} className="text-blue-600 cursor-pointer hover:underline hover:text-[#6d28d9]">
             游客模式
-          </Button>
+          </span>
         </div>
       </div>
     ),

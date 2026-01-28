@@ -62,10 +62,7 @@ export default function Login() {
   // 两种表单会通过共享 builder 生成（下方 buildFields）
   const primaryButtonClass =
     "w-full h-[56px] flex items-center justify-center gap-1.5 text-[18px] font-extrabold rounded-xl bg-blue-600 text-white border-0 shadow-[var(--brand-shadow)] transition-[background,border-color,box-shadow,transform] hover:bg-[#6d28d9] hover:shadow-[var(--brand-shadow)] active:scale-95";
-  const smallButtonBase =
-    "flex items-center gap-1.5 px-3.5 py-1.5 text-sm font-semibold rounded-xl border border-blue-600 transition-[background,border-color,box-shadow,transform] hover:bg-[var(--brand-accent-soft)] hover:border-[#6d28d9] hover:shadow-[var(--brand-shadow)] hover:-translate-y-[1px]";
-  const smallPrimaryButton = `${smallButtonBase} text-[var(--brand-accent)] bg-white`;
-  const smallNeutralButton = `${smallButtonBase} text-[var(--brand-accent)] bg-white`;
+  
   const sendButtonClass =
     "h-[56px] min-w-[96px] px-[18px] box-border border border-blue-600 bg-white text-blue-600 text-[16px] font-bold hover:bg-[var(--brand-accent-soft)] hover:border-[#6d28d9] active:scale-95";
   // build fields via shared builder
@@ -83,7 +80,7 @@ export default function Login() {
 
   // 在表单中添加导航行与协议提示（span=2），会显示在提交按钮上方
   
-  const navAgree = createNavAgreeFields(navigate, goGuest, smallPrimaryButton, smallNeutralButton, "登录即代表您已阅读并同意", "login");
+  const navAgree = createNavAgreeFields(navigate, goGuest, "登录即代表您已阅读并同意", "login");
 
   const handleSubmit = (values: Record<string, unknown>) => {
     console.log("login", values, "mode", mode);
@@ -96,7 +93,7 @@ export default function Login() {
 
   return (
     <div
-      className="w-[520px] max-w-[calc(100%-40px)] bg-white shadow-[0_10px_40px_rgba(0,0,0,0.12)] px-[22px] pt-[22px] pb-[18px] relative animate-[pageEnter_300ms_ease-out] rounded-xl border border-[#6d28d9] shadow-[var(--brand-shadow)]"
+      className="auth-panel w-[520px] max-w-[calc(100%-40px)] bg-white shadow-[0_10px_40px_rgba(0,0,0,0.12)] px-[22px] pt-[22px] pb-[18px] relative animate-[pageEnter_300ms_ease-out] rounded-xl border border-[#6d28d9] shadow-[var(--brand-shadow)]"
       data-oid="si9z1-w"
     >
       <div className="py-3 pb-1.5 text-center" data-oid="y4lag62">
