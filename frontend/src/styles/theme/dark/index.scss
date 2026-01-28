@@ -11,6 +11,7 @@
   --brand-bg: #071028; /* 深蓝 */
   /* Nav button colors for dark (only arrow color needed when no box) */
   --nav-fg: #ffffff;
+  --header-blue: #3b82f6; /* blue for headers in dark mode */
   /* Auth-specific colors (cards/buttons) to ensure good contrast in dark mode */
   --auth-panel-bg: rgba(255,255,255,0.04);
   --auth-panel-border: rgba(255,255,255,0.08);
@@ -23,11 +24,17 @@
 
 :root[data-theme="dark"] .app-root, [data-theme="dark"] .app-root {
   background-color: var(--brand-bg);
-  /* Subtle grid overlay like the reference */
+  /* Subtle single-color grid overlay (no colorful gradients or glow) */
   background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
   background-size: 48px 48px, 48px 48px;
   background-position: 0 0, 0 0;
-  color: var(--brand-text);
+}
+
+/* Also apply the grid to body so portal-mounted elements (menus/modals) show the grid behind when transparent */
+[data-theme="dark"] body {
+  background-color: var(--brand-bg) !important;
+  background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px) !important;
+  background-size: 48px 48px, 48px 48px !important;
 }
 
 /* Hide the page decorative gradient in dark mode so the deep-blue shows through */
@@ -53,10 +60,13 @@
 /* Force unified deep-blue background across the app in dark mode */
 [data-theme="dark"] html,
 [data-theme="dark"] body,
-[data-theme="dark"] #root,
-[data-theme="dark"] .app-root {
+[data-theme="dark"] #root {
   background-color: var(--brand-bg) !important;
   background-image: none !important;
+}
+[data-theme="dark"] .app-root {
+  background-color: var(--brand-bg) !important;
+  /* keep the grid background-image defined earlier for .app-root */
 }
 
 /* Make element backgrounds show through the page background (transparent) */
@@ -74,6 +84,11 @@
 [data-theme="dark"] .auth-panel {
   background-color: var(--auth-panel-bg) !important;
   border-color: var(--auth-panel-border) !important;
+}
+
+/* Show auth page decorative gradients only in dark mode */
+[data-theme="dark"] .auth-decor {
+  display: none !important;
 }
 
 /* Scope auth-specific button/link overrides so light theme isn't affected */

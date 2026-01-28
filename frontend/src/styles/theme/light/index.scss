@@ -7,8 +7,9 @@
   --brand-border: rgba(75, 42, 133, 0.18);
   --brand-shadow: 0 10px 24px rgba(75, 42, 133, 0.06);
   --brand-text: #2b1650;
+  --header-blue: var(--brand-text);
   --brand-muted: #666;
-  --brand-bg: #f5f3fb;
+  --brand-bg: #ffffff;
   /* Nav button colors for light */
   --nav-bg: #ffffff;
   --nav-fg: #1f2937; /* dark text */
@@ -27,4 +28,11 @@
 [data-theme="light"] .app-root {
   background-color: var(--brand-bg) !important;
   background-image: none !important;
+}
+
+/* Ensure header, footer and ModuleHub hero are white in light theme */
+[data-theme="light"] .main-header,
+[data-theme="light"] footer,
+[data-theme="light"] .home-hero {
+  background-color: #ffffff !important;
 }

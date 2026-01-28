@@ -46,7 +46,7 @@ const ThemeToggle: React.FC = () => {
       title="切换主题"
       size={40}
       shape="rounded-lg"
-      className="bg-white/0" // let CSS variables control bg
+      className="border-blue-600 text-blue-600 hover:border-[#6d28d9] hover:text-[#6d28d9] !bg-white !hover:bg-white"
       hoverClassName=""
     />
   );

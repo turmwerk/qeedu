@@ -11,11 +11,11 @@ const AuthLayout: React.FC = () => {
 
   return (
     <div
-      className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50 relative overflow-hidden flex items-center justify-center px-6 py-10"
+      className="min-h-screen bg-[var(--brand-bg)] relative overflow-hidden flex items-center justify-center px-6 py-10"
       data-oid="n9saej-"
     >
       <div
-        className="absolute inset-0 overflow-hidden pointer-events-none"
+        className="absolute inset-0 overflow-hidden pointer-events-none auth-decor hidden"
         data-oid=".fza9ll"
       >
         <div

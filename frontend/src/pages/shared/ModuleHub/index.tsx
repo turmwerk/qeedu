@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "@/components/Button";
 
@@ -22,6 +22,7 @@ const ModuleHub: React.FC<Props> = ({
   features,
 }) => {
   const navigate = useNavigate();
+  const [hoveredTitle, setHoveredTitle] = useState<string | null>(null);
 
   return (
     <div
@@ -35,12 +36,12 @@ const ModuleHub: React.FC<Props> = ({
         data-oid="w:tm0qp"
       >
         <div
-          className="home-hero bg-transparent rounded-md px-[60px] pt-[40px] pb-[36px] w-[90%] max-w-[1100px] shadow-none border border-gray-200 flex flex-col gap-6 relative overflow-hidden mx-auto"
+          className="home-hero bg-transparent rounded-md px-[60px] pt-[40px] pb-[36px] w-[90%] max-w-[1100px] shadow-none flex flex-col gap-6 relative overflow-hidden mx-auto"
           data-oid="oes92qw"
         >
           {headline && (
             <h1
-              className="m-0 font-black text-[#111] text-center relative z-[1] text-[40px]"
+              className="m-0 font-black text-[var(--header-blue)] text-center relative z-[1] text-[40px]"
               data-oid="x_3t9uw"
             >
               {headline}
@@ -62,8 +63,7 @@ const ModuleHub: React.FC<Props> = ({
               <Button
                 key={item.key}
                 type="button"
-                className="home-card border border-gray-200 rounded-md p-6 min-h-[120px] bg-white text-left cursor-pointer shadow-none transition-all duration-200 flex items-start gap-3 relative overflow-hidden hover:-translate-y-0.5 hover:scale-[1.01]"
-                onClick={() => navigate(item.to)}
+                className="home-card rounded-md p-6 min-h-[120px] bg-white text-left cursor-default shadow-none transition-all duration-200 flex items-start gap-3 relative overflow-hidden hover:scale-[1.01]"
                 onMouseMove={(e) => {
                   const rect = e.currentTarget.getBoundingClientRect();
                   const x = ((e.clientX - rect.left) / rect.width) * 100;
@@ -75,7 +75,7 @@ const ModuleHub: React.FC<Props> = ({
               >
                 {item.icon && (
                   <span
-                    className="shrink-0 text-[24px] w-[44px] h-[44px] rounded-md bg-gray-100 flex items-center justify-center text-gray-700"
+                    className={`shrink-0 text-[24px] w-[44px] h-[44px] rounded-md bg-transparent flex items-center justify-center ${hoveredTitle === item.key ? 'text-[#6d28d9]' : 'text-blue-600'}`}
                     data-oid="86:iy6x"
                   >
                     {item.icon}
@@ -86,8 +86,14 @@ const ModuleHub: React.FC<Props> = ({
                   data-oid="zh_91:s"
                 >
                   <div
-                    className="font-extrabold text-[20px] bg-[linear-gradient(135deg,#1a1a1a,#4b2a85)] bg-clip-text text-transparent"
+                    className="font-extrabold text-[20px] text-blue-600 hover:text-[#6d28d9] cursor-pointer inline-block w-max border-b-2 border-transparent hover:border-[#6d28d9]"
                     data-oid="783nk_d"
+                    onClick={() => navigate(item.to)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') navigate(item.to); }}
+                    onMouseEnter={() => setHoveredTitle(item.key)}
+                    onMouseLeave={() => setHoveredTitle(null)}
                   >
                     {item.title}
                   </div>

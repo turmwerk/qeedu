@@ -42,7 +42,7 @@ const FeatureHub: React.FC = () => {
   return (
     <ModuleHub
       headline="nju-edu-ai-system"
-      subtitle="南京大学教育大模型"
+      subtitle="南京大学教育AI"
       features={modules}
     />
   );

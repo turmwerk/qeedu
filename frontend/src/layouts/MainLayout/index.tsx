@@ -157,34 +157,7 @@ const MainLayout: React.FC = () => {
   }, [location.pathname]);
 
   return (
-    <div data-theme={theme} className="flex h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50 main-bg-gradient relative overflow-hidden">
-      {/* 全局流动光球背景 */}
-      <div
-        className="fixed inset-0 overflow-hidden pointer-events-none z-0"
-        data-oid="lqlqe9:"
-      >
-        <div
-          className="absolute w-[600px] h-[600px] rounded-full bg-gradient-to-r from-purple-300/20 to-blue-300/20 blur-[120px] -top-48 -left-48 animate-[globalFloat_25s_ease-in-out_infinite]"
-          data-oid="411sr1b"
-        />
-
-        <div
-          className="absolute w-[500px] h-[500px] rounded-full bg-gradient-to-r from-pink-300/20 to-purple-300/20 blur-[100px] top-1/3 -right-32 animate-[globalFloat_30s_ease-in-out_infinite_reverse]"
-          data-oid="e351e_:"
-        />
-
-        <div
-          className="absolute w-[450px] h-[450px] rounded-full bg-gradient-to-r from-blue-300/15 to-indigo-300/15 blur-[90px] bottom-0 left-1/4 animate-[globalFloat_28s_ease-in-out_infinite]"
-          data-oid="4iutmqo"
-        />
-      </div>
-      <style data-oid="q4cg0al">{`
-        @keyframes globalFloat {
-          0%, 100% { transform: translate(0, 0) scale(1); }
-          33% { transform: translate(40px, -40px) scale(1.15); }
-          66% { transform: translate(-30px, 30px) scale(0.85); }
-        }
-      `}</style>
+    <div data-theme={theme} className="app-root flex h-screen bg-[var(--brand-bg)] relative overflow-hidden">
       
       {/* 左侧栏 */}
       <Sider

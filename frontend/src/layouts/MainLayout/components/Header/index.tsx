@@ -78,8 +78,8 @@ const routeConfig: Record<string, { title: string; icon?: React.ReactNode }> = {
 };
 
 const menuButtonBase =
-  "flex items-center gap-1.5 px-3.5 py-1.5 text-sm font-semibold rounded-xl border border-[var(--brand-border)] transition-[background,border-color,transform] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:-translate-y-[1px]";
-const menuButtonIdle = "text-[var(--brand-accent)] bg-white";
+  "flex items-center gap-1.5 px-3.5 py-1.5 text-sm font-semibold rounded-xl border border-[var(--brand-border)] transition-[background,border-color,transform] hover:border-[#6d28d9] hover:text-[#6d28d9] !hover:bg-white";
+const menuButtonIdle = "text-blue-600 bg-white";
 const menuButtonActive =
   "text-[#4a2aa6] bg-[var(--brand-accent-soft)] border-[var(--brand-accent)]";
 
@@ -132,7 +132,7 @@ const MainHeader: React.FC<{
 
   return (
     <Header
-      className="main-header bg-white border-b border-gray-200 py-2 px-4 flex items-center justify-between relative z-[100] leading-[20px] h-[56px]"
+      className="main-header bg-white py-2 px-4 flex items-center justify-between relative z-[100] leading-[20px] h-[56px]"
       data-oid="hoa5tyk"
     >
       <Modal
@@ -149,7 +149,7 @@ const MainHeader: React.FC<{
       <div className="flex items-center gap-3" data-oid="40dtg53">
         {showSiderToggle && !siderOpen && (
           <button
-            className="flex items-center justify-center w-9 h-9 rounded-lg bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] transition"
+            className="flex items-center justify-center w-9 h-9 rounded-lg bg-white border border-[var(--brand-border)] text-blue-600 hover:border-[#6d28d9] hover:text-[#6d28d9] !hover:bg-white transition"
             onClick={onToggleSider}
             aria-label="打开侧边栏"
             data-oid="sider-toggle"
@@ -166,7 +166,7 @@ const MainHeader: React.FC<{
           </span>
         )}
         <h1
-          className="m-0 text-[20px] font-bold text-[#1a1a1a]"
+          className="m-0 text-[20px] font-bold text-[var(--header-blue)]"
           data-oid="62z39-1"
         >
           {currentConfig.title}
