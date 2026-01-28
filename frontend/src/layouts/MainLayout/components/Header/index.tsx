@@ -78,7 +78,7 @@ const routeConfig: Record<string, { title: string; icon?: React.ReactNode }> = {
 };
 
 const menuButtonBase =
-  "flex items-center gap-1.5 px-3.5 py-1.5 text-sm font-semibold rounded-xl border border-[var(--brand-border)] transition-[background,border-color,box-shadow,transform] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)] hover:-translate-y-[1px]";
+  "flex items-center gap-1.5 px-3.5 py-1.5 text-sm font-semibold rounded-xl border border-[var(--brand-border)] transition-[background,border-color,transform] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:-translate-y-[1px]";
 const menuButtonIdle = "text-[var(--brand-accent)] bg-white";
 const menuButtonActive =
   "text-[#4a2aa6] bg-[var(--brand-accent-soft)] border-[var(--brand-accent)]";
@@ -132,7 +132,7 @@ const MainHeader: React.FC<{
 
   return (
     <Header
-      className="main-header bg-white/40 backdrop-blur-[32px] shadow-[0_20px_60px_rgba(147,51,234,0.2),0_0_0_1px_rgba(255,255,255,0.5)_inset] border-b border-white/30 py-2 px-4 flex items-center justify-between relative z-[100] leading-[20px] h-[56px]"
+      className="main-header bg-white border-b border-gray-200 py-2 px-4 flex items-center justify-between relative z-[100] leading-[20px] h-[56px]"
       data-oid="hoa5tyk"
     >
       <Modal
@@ -149,7 +149,7 @@ const MainHeader: React.FC<{
       <div className="flex items-center gap-3" data-oid="40dtg53">
         {showSiderToggle && !siderOpen && (
           <button
-            className="flex items-center justify-center w-9 h-9 rounded-lg bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)] transition"
+            className="flex items-center justify-center w-9 h-9 rounded-lg bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] transition"
             onClick={onToggleSider}
             aria-label="打开侧边栏"
             data-oid="sider-toggle"

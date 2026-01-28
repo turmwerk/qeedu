@@ -43,7 +43,6 @@ const FeatureHub: React.FC = () => {
     <ModuleHub
       headline="nju-edu-ai-system"
       subtitle="南京大学教育大模型"
-      placeholder="告诉我你想完成的任务（如：试卷设计流程 / 某功能怎么用）"
       features={modules}
     />
   );

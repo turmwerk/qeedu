@@ -6,6 +6,11 @@ import router from "./router";
 import ToastContainer from "@/components/Toast";
 
 const App: React.FC = () => {
+  React.useEffect(() => {
+    // 初始化主题（light/dark）
+    import("@/utils/theme").then(({ initTheme }) => initTheme());
+  }, []);
+
   return (
     <ConfigProvider
       locale={zhCN}
@@ -23,21 +28,8 @@ const App: React.FC = () => {
       data-oid="g3uwo.t"
     >
       <style data-oid="bf_-q_z">{`
-        :root {
-          --brand-accent: #4b2a85;
-          --brand-accent-strong: #3b1a6a;
-          --brand-accent-soft: rgba(75, 42, 133, 0.08);
-          --brand-accent-faint: rgba(75, 42, 133, 0.16);
-          --brand-border: rgba(75, 42, 133, 0.18);
-          --brand-shadow: 0 10px 24px rgba(75, 42, 133, 0.16);
-          --brand-text: #2b1650;
-          --brand-muted: #666;
-          --brand-bg: #f5f3fb;
-        }
         .app-root {
           min-height: 100vh;
-          background: var(--brand-bg);
-          color: var(--brand-text);
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
         }
         @keyframes pageEnter {

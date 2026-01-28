@@ -7,8 +7,7 @@ const TeachingHub: React.FC = () => {
     <ModuleHub
       headline="助教模块可以帮你更高效备课与出题"
       subtitle="试卷设计 · 大纲生成 · 作业批改"
-      placeholder="你想怎么用助教？例如：生成一份算法期末试卷"
-      features={[
+      features={[ 
         {
           key: "exam-design",
           title: "试卷设计",

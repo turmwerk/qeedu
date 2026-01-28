@@ -3,6 +3,10 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 // 全局样式入口：按功能拆分为三个模块文件夹
 import "./styles/index.scss";
+import { initTheme } from "@/utils/theme";
+
+// Synchronously initialize theme before React mounts to avoid FOUC
+initTheme();
 
 // 核心任务：将 App 组件挂载到 DOM 上
 ReactDOM.createRoot(document.getElementById("root")!).render(

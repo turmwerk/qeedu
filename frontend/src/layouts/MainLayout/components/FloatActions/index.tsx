@@ -1,57 +1,25 @@
-import React, { useEffect, useState } from "react";
-import ScrollToTop from "./components/ScrollToTop";
+import React from "react";
+import ThemeToggle from "./components/ThemeToggle";
 import FloatingButton from "@/components/FloatingButton";
 import { SettingOutlined } from "@ant-design/icons";
 
 const FloatActions: React.FC = () => {
-  const [showScrollToTop, setShowScrollToTop] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollContainer = document.querySelector('[data-oid="giq3cbp"]');
-      if (!scrollContainer) return;
-
-      const scrollTop = scrollContainer.scrollTop;
-
-      // 距离顶部超过100px显示"回到顶部"
-      setShowScrollToTop(scrollTop > 100);
-    };
-
-    const scrollContainer = document.querySelector('[data-oid="giq3cbp"]');
-    if (scrollContainer) {
-      scrollContainer.addEventListener("scroll", handleScroll);
-      handleScroll(); // 初始化状态
-    }
-
-    return () => {
-      if (scrollContainer) {
-        scrollContainer.removeEventListener("scroll", handleScroll);
-      }
-    };
-  }, []);
-
-  const scrollToTop = () => {
-    const scrollContainer = document.querySelector('[data-oid="giq3cbp"]');
-    if (scrollContainer) {
-      scrollContainer.scrollTo({ top: 0, behavior: "smooth" });
-    }
-  };
-
-  // removed scrollToBottom (not needed)
-
+  // 显示常驻操作（始终显示，且靠近右下角）
   return (
-    <div className="fixed bottom-8 right-8 z-50 flex flex-col gap-1.5">
+    <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-1.5">
+      {/* 主题切换：常驻显示 */}
+      <ThemeToggle />
+
+      {/* 设置按钮：常驻显示 */}
       <FloatingButton
         onClick={() => {}}
-        visible={showScrollToTop} // 页面在顶部（scrollTop <= 100）时隐藏
-        icon={<SettingOutlined className="animate-[spin_2s_linear_infinite] group-hover:animate-none" style={{ fontSize: 20 }} />}
+        visible={true}
+        icon={<SettingOutlined style={{ fontSize: 20 }} className="animate-[spin_2s_linear_infinite] group-hover:animate-none" />}
         ariaLabel="设置"
         title="设置"
         size={40}
         shape="rounded-lg"
-        className=""
       />
-      <ScrollToTop visible={showScrollToTop} onClick={scrollToTop} />
     </div>
   );
 };

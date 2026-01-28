@@ -1,0 +1,30 @@
+/* Light theme variables */
+:root[data-theme="light"], [data-theme="light"] {
+  --brand-accent: #4b2a85;
+  --brand-accent-strong: #3b1a6a;
+  --brand-accent-soft: rgba(75, 42, 133, 0.08);
+  --brand-accent-faint: rgba(75, 42, 133, 0.16);
+  --brand-border: rgba(75, 42, 133, 0.18);
+  --brand-shadow: 0 10px 24px rgba(75, 42, 133, 0.06);
+  --brand-text: #2b1650;
+  --brand-muted: #666;
+  --brand-bg: #f5f3fb;
+  /* Nav button colors for light */
+  --nav-bg: #ffffff;
+  --nav-fg: #1f2937; /* dark text */
+}
+
+/* App container colors for light */
+:root[data-theme="light"] .app-root, [data-theme="light"] .app-root {
+  background: var(--brand-bg);
+  color: var(--brand-text);
+}
+
+/* Ensure root & body have light background as well */
+[data-theme="light"] html,
+[data-theme="light"] body,
+[data-theme="light"] #root,
+[data-theme="light"] .app-root {
+  background-color: var(--brand-bg) !important;
+  background-image: none !important;
+}

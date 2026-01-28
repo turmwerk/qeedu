@@ -7,8 +7,7 @@ const ManagementHub: React.FC = () => {
     <ModuleHub
       headline="助管模块可以帮你更高效完成教学管理"
       subtitle="班级管理 · 通知发布 · 资料归档"
-      placeholder="你想怎么用助管？例如：通知发布 / 资料归档"
-      features={[
+      features={[ 
         {
           key: "major-construct",
           title: "专业建设",

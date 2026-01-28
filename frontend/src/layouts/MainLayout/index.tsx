@@ -7,6 +7,7 @@ import Footer from "./components/Footer";
 import FloatActions from "./components/FloatActions";
 import SyllabusListModal from "@/pages/Teaching/Syllabus/components/ListModal";
 import ExamListModal from "@/pages/Teaching/ExamDesign/components/ListModal";
+import { getStoredTheme, applyTheme } from "@/utils/theme";
 
 const { Content } = Layout;
 
@@ -16,6 +17,28 @@ const MainLayout: React.FC = () => {
   const [syllabusSiderOpen, setSyllabusSiderOpen] = useState(false);
   const [examSiderOpen, setExamSiderOpen] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+
+  // Theme control (centralized here)
+  const [theme, setTheme] = useState<"light" | "dark">(() => getStoredTheme());
+
+  useEffect(() => {
+    // Ensure document and other parts are updated
+    applyTheme(theme);
+
+    const onThemeChange = (e: Event) => {
+      const t = (e as CustomEvent).detail?.theme as "light" | "dark" | undefined;
+      if (t) setTheme(t);
+      else setTheme(getStoredTheme());
+    };
+    const onStorage = () => setTheme(getStoredTheme());
+
+    window.addEventListener("theme-change", onThemeChange as EventListener);
+    window.addEventListener("storage", onStorage);
+    return () => {
+      window.removeEventListener("theme-change", onThemeChange as EventListener);
+      window.removeEventListener("storage", onStorage);
+    };
+  }, [theme]);
 
   useEffect(() => {
     // 首次访问站点时引导至登录（仅一次，保存在 localStorage）
@@ -134,7 +157,7 @@ const MainLayout: React.FC = () => {
   }, [location.pathname]);
 
   return (
-    <div className="flex h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50 relative overflow-hidden">
+    <div data-theme={theme} className="flex h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50 main-bg-gradient relative overflow-hidden">
       {/* 全局流动光球背景 */}
       <div
         className="fixed inset-0 overflow-hidden pointer-events-none z-0"

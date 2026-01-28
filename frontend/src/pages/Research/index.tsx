@@ -7,8 +7,7 @@ const ResearchHub: React.FC = () => {
     <ModuleHub
       headline="助研模块可以帮你更高效推进科研协作"
       subtitle="课题协作 · 文献整理 · 进度跟踪"
-      placeholder="你想怎么用助研？例如：协作安排 / 资料归档"
-      features={[
+      features={[ 
         {
           key: "collaboration",
           title: "科研协作",

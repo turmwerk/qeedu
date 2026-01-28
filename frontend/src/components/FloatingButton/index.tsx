@@ -57,7 +57,7 @@ const FloatingButton: React.FC<FloatingButtonProps> = ({
   // 默认样式仿照 Header 中的侧边按钮
   // 如果调用方没有传 bgColor，则使用默认白底；否则让调用方控制背景（可设为透明）
   const bgClass = bgColor ? "" : "bg-white";
-  const defaultClasses = `inline-flex items-center justify-center p-0 border ${bgClass} border-[var(--brand-border)] text-[var(--brand-accent)] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)] transition`;
+  const defaultClasses = `inline-flex items-center justify-center p-0 border ${bgClass} border-[var(--brand-border)] text-[var(--brand-accent)] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] transition`;
 
   // hover/active 颜色通过 className 传递或外部覆盖
   // 合并 hover/active 样式

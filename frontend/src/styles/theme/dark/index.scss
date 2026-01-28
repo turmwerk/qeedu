@@ -1,0 +1,63 @@
+/* Dark theme variables */
+:root[data-theme="dark"], [data-theme="dark"] {
+  --brand-accent: #8b5cf6; /* keep accent visible on dark */
+  --brand-accent-strong: #6f3ae6;
+  --brand-accent-soft: rgba(139, 92, 246, 0.08);
+  --brand-accent-faint: rgba(139, 92, 246, 0.12);
+  --brand-border: rgba(255, 255, 255, 0.06);
+  --brand-shadow: none;
+  --brand-text: #e6e6ee;
+  --brand-muted: #bfc3d6;
+  --brand-bg: #071028; /* 深蓝 */
+  /* Nav button colors for dark (only arrow color needed when no box) */
+  --nav-fg: #ffffff;
+}
+
+:root[data-theme="dark"] .app-root, [data-theme="dark"] .app-root {
+  background-color: var(--brand-bg);
+  /* Subtle grid overlay like the reference */
+  background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 48px 48px, 48px 48px;
+  background-position: 0 0, 0 0;
+  color: var(--brand-text);
+}
+
+/* Hide the page decorative gradient in dark mode so the deep-blue shows through */
+[data-theme="dark"] .main-bg-gradient {
+  background-image: none !important;
+  background-color: transparent !important;
+}
+
+/* Disable Tailwind gradient utility backgrounds in dark mode to enforce unified dark page background */
+[data-theme="dark"] [class*="bg-gradient-to"] {
+  background-image: none !important;
+  background-color: transparent !important;
+}
+
+/* Make white backgrounds transparent in dark mode so the deep-blue shows through */
+:root[data-theme="dark"] [class*="bg-white"], [data-theme="dark"] [class*="bg-white"] {
+  background-color: transparent !important;
+}
+:root[data-theme="dark"] [class*="border-white"], [data-theme="dark"] [class*="border-white"] {
+  border-color: rgba(255,255,255,0.06) !important;
+}
+
+/* Force unified deep-blue background across the app in dark mode */
+[data-theme="dark"] html,
+[data-theme="dark"] body,
+[data-theme="dark"] #root,
+[data-theme="dark"] .app-root {
+  background-color: var(--brand-bg) !important;
+  background-image: none !important;
+}
+
+/* Make element backgrounds show through the page background (transparent) */
+[data-theme="dark"] * {
+  background-image: none !important;
+  background-color: transparent !important;
+}
+
+/* Exceptions: allow elements that opt into a solid background via data attribute */
+[data-theme="dark"] [data-theme-keep-bg="true"] {
+  background-color: var(--keep-bg, rgba(255,255,255,0.06)) !important;
+}
