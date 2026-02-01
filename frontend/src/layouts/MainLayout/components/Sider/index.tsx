@@ -1,18 +1,10 @@
 import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-	DeleteOutlined,
-	EditOutlined,
-	LeftOutlined,
-	PlusOutlined,
-	SearchOutlined,
-	SortAscendingOutlined,
-	SortDescendingOutlined,
-} from "@ant-design/icons";
-import ConfirmDialog from "@/components/ConfirmDialog";
-import Button from "@/components/Button";
-import Dropdown from "@/components/Dropdown";
-import Modal from "@/components/Modal";
+import Header from "./components/Header";
+import List from "./components/List";
+import ResizeHandle from "./components/ResizeHandle";
+import DeleteConfirm from "./components/DeleteConfirm";
+import ListModal, { type ListModalItem, type ListModalProps } from "./components/ListModal";
 
 type SiderItem = {
 	id: string;
@@ -35,25 +27,6 @@ type Props = {
 	listModalComponent?: React.ComponentType<ListModalProps>;
 };
 
-type ListModalItem = {
-	id: string;
-	title: string;
-	subtitle?: string;
-	md?: string;
-	createdAt?: number;
-};
-
-type ListModalProps = {
-	items: ListModalItem[];
-	onEdit: (id?: string) => void;
-	onCreate: (payload: Record<string, unknown>) => void;
-	onDelete: (id: string) => void;
-	onRename: (id: string, newName: string) => void;
-	openSignal?: number;
-	modalMode?: boolean;
-	onCloseModal?: () => void;
-	currentId?: string | null;
-};
 
 const Sider: React.FC<Props> = ({
 	open,
@@ -322,170 +295,44 @@ const Sider: React.FC<Props> = ({
 		>
 			<style data-oid="sider-width">{widthStyle}</style>
 			<div className="h-full bg-white/70 backdrop-blur-[18px] shadow-[0_12px_40px_rgba(124,58,237,0.2)] border-r border-white/60 flex flex-col">
-				<div className="flex items-center justify-between px-4 py-3 border-b border-white/50">
-					<div className="flex items-center gap-2 font-bold text-[#2d1b4f]">
-						列表
-					</div>
-					<div className="flex items-center gap-2">
-						<Button
-								className="flex items-center justify-center w-9 h-9 rounded-xl bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] shadow-[var(--brand-shadow)] transition-[background,border-color,box-shadow,transform] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:-translate-y-[1px]"
-								onClick={() => setListModalOpen(true)}
-								aria-label="搜索"
-							>
-								<SearchOutlined />
-							</Button>
-							<Button
-							className="flex items-center justify-center w-9 h-9 rounded-xl bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] shadow-[var(--brand-shadow)] transition-[background,border-color,box-shadow,transform] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:-translate-y-[1px]"
-							onClick={() =>
-								window.dispatchEvent(new Event(createEventName))
-							}
-							aria-label="新增"
-						>
-							<PlusOutlined />
-						</Button>
-						<Dropdown
-								button={order === "asc" ? <SortAscendingOutlined /> : <SortDescendingOutlined />}
-							buttonClassName="flex items-center justify-center w-9 h-9 rounded-xl bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] shadow-[var(--brand-shadow)] transition-[background,border-color,box-shadow,transform] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:-translate-y-[1px]"
-								onButtonClick={() => setOrder((v) => (v === "asc" ? "desc" : "asc"))}
-							items={[
-								{
-									label: "按时间",
-									active: sortBy === "time",
-									onClick: () => setSortBy("time"),
-								},
-								{
-									label: "按名称",
-									active: sortBy === "name",
-									onClick: () => setSortBy("name"),
-								},
-							]}
-							showCheck
-						/>
-						<Button
-							className="flex items-center justify-center w-9 h-9 rounded-xl bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] shadow-[var(--brand-shadow)] transition-[background,border-color,box-shadow,transform] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:-translate-y-[1px]"
-							onClick={onClose}
-							aria-label="关闭侧边栏"
-						>
-								<LeftOutlined />
-						</Button>
-					</div>
-				</div>
-				<div className="flex-1 overflow-y-auto p-3 space-y-2">
-					{items.length === 0 && (
-						<div className="text-[#7d6b9a] text-sm px-2 py-4">
-							暂无{title}
-						</div>
-					)}
-					{sortedItems.map((item, index) => (
-						<div
-							key={item.id}
-							className={`group relative w-full rounded-xl border px-3 py-2 shadow-[0_8px_20px_rgba(124,58,237,0.12)] transition-all cursor-pointer hover:-translate-y-[2px] hover:shadow-[0_16px_32px_rgba(124,58,237,0.25)] hover:bg-purple-50/30 active:translate-y-0 active:scale-[0.98] ${
-								selectedId === item.id
-									? "border-purple-500 bg-gradient-to-br from-purple-200 via-indigo-100 to-purple-150 shadow-[0_10px_24px_rgba(124,58,237,0.3)]"
-									: "border-purple-200/40 bg-white/80 hover:border-purple-400/70"
-							}`}
-							onClick={() => {
-								if (selectedId === item.id) return;
-								window.dispatchEvent(
-									new CustomEvent(selectEventName, {
-										detail: { id: item.id },
-									})
-								);
-							}}
-						>
-							{editingId === item.id ? (
-								<input
-									type="text"
-									value={editingTitle}
-									onChange={(e) => setEditingTitle(e.target.value)}
-									onClick={(e) => e.stopPropagation()}
-									placeholder="输入名称"
-									title="重命名"
-									onBlur={() => {
-										if (editingTitle.trim()) {
-											persistRename(item.id, editingTitle.trim());
-										}
-										setEditingId(null);
-									}}
-									onKeyDown={(e) => {
-										if (e.key === "Enter") {
-											e.currentTarget.blur();
-										} else if (e.key === "Escape") {
-											setEditingId(null);
-										}
-									}}
-									autoFocus
-									className="w-full font-semibold text-sm bg-white border border-purple-300 rounded-lg px-2 py-1 focus:outline-none focus:border-purple-500 text-[#3d256b]"
-								/>
-							) : (
-								<div
-									className={`font-semibold text-sm ${
-										selectedId === item.id
-											? "text-[#3d1a70]"
-											: "text-[#3d256b]"
-									}`}
-								>
-									{index + 1}. {item.title || "未命名课程"}
-								</div>
-							)}
-							<div
-								className={`text-xs mt-1 ${
-									selectedId === item.id
-										? "text-[#5b4a7d]"
-										: "text-[#8b7aa8]"
-								}`}
-							>
-								{item.createdAt ? new Date(item.createdAt).toLocaleString() : "--"}
-							</div>
-							<div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-								<Button
-									className="flex items-center justify-center w-7 h-7 rounded-lg bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] shadow-[var(--brand-shadow)] transition-[background,border-color,box-shadow,transform] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:scale-105"
-									onClick={(e) => {
-										e.stopPropagation();
-										setEditingId(item.id);
-										setEditingTitle(item.title || "");
-									}}
-									aria-label="重命名"
-								>
-									<EditOutlined className="text-xs" />
-								</Button>
-								<Button
-									className="flex items-center justify-center w-7 h-7 rounded-lg bg-white border border-red-300/70 text-[#d43b3b] shadow-[0_4px_12px_rgba(239,68,68,0.18)] transition-[background,border-color,box-shadow,transform] hover:bg-red-50 hover:border-red-400 hover:scale-105"
-									onClick={(e) => {
-										e.stopPropagation();
-										setDeleteConfirm({
-											open: true,
-											id: item.id,
-											title: item.title || "未命名课程",
-										});
-									}}
-									aria-label="删除"
-								>
-									<DeleteOutlined className="text-xs" />
-								</Button>
-							</div>
-						</div>
-					))}
-				</div>
+				<Header
+					order={order}
+					sortBy={sortBy}
+					onToggleOrder={() => setOrder((v) => (v === "asc" ? "desc" : "asc"))}
+					onSortByChange={(value) => setSortBy(value)}
+					onSearch={() => setListModalOpen(true)}
+					onCreate={() => window.dispatchEvent(new Event(createEventName))}
+					onClose={onClose}
+				/>
+				<List
+					items={items}
+					sortedItems={sortedItems}
+					selectedId={selectedId}
+					editingId={editingId}
+					editingTitle={editingTitle}
+					emptyText={title}
+					onSelect={(id) =>
+						window.dispatchEvent(
+							new CustomEvent(selectEventName, { detail: { id } })
+						)
+					}
+					onStartEdit={(id, value) => {
+						setEditingId(id);
+						setEditingTitle(value);
+					}}
+					onChangeEdit={(value) => setEditingTitle(value)}
+					onCommitEdit={(id, value) => persistRename(id, value)}
+					onCancelEdit={() => setEditingId(null)}
+					onDelete={(id, itemTitle) =>
+						setDeleteConfirm({ open: true, id, title: itemTitle })
+					}
+				/>
 			</div>
 
-			<div
-				className="absolute right-0 top-0 h-full w-[8px] cursor-col-resize hover:bg-purple-200/30 transition-colors"
-				onMouseDown={startDrag}
-				onTouchStart={startDrag}
-				role="separator"
-				aria-orientation="vertical"
-				aria-label="Resize sidebar"
-			>
-				<div className="absolute right-[3px] top-20 h-[60%] w-[2px] rounded-full bg-purple-300/80" />
-			</div>
-			<ConfirmDialog
+			<ResizeHandle onStartDrag={startDrag} />
+			<DeleteConfirm
 				open={deleteConfirm.open}
-				title="确认删除"
-				description={`确定要删除"${deleteConfirm.title}"吗？删除后无法恢复。`}
-				confirmText="删除"
-				cancelText="取消"
-				danger
+				title={deleteConfirm.title}
 				onConfirm={() => {
 					if (deleteConfirm.id) {
 						window.dispatchEvent(
@@ -498,37 +345,28 @@ const Sider: React.FC<Props> = ({
 				}}
 				onCancel={() => setDeleteConfirm({ open: false, id: null, title: "" })}
 			/>
-			{ListModalComponent && (
-				<Modal
-					visible={listModalOpen}
-					onClose={() => setListModalOpen(false)}
-					width={1100}
-					showHeader={false}
-					bodyClassName="p-2 max-h-[calc(90vh-24px)] overflow-auto"
-				>
-					<ListModalComponent
-						items={listModalItems}
-						onEdit={(id) => {
-							if (id) {
-								window.dispatchEvent(
-									new CustomEvent(selectEventName, { detail: { id } })
-								);
-							}
-							setListModalOpen(false);
-						}}
-						onCreate={handleModalCreate}
-						onDelete={(id) => {
-							window.dispatchEvent(
-								new CustomEvent(deleteEventName, { detail: { id } })
-							);
-						}}
-						onRename={persistRename}
-						modalMode
-						onCloseModal={() => setListModalOpen(false)}
-						currentId={selectedId}
-					/>
-				</Modal>
-			)}
+			<ListModal
+				open={listModalOpen}
+				onClose={() => setListModalOpen(false)}
+				items={listModalItems}
+				onEdit={(id) => {
+					if (id) {
+						window.dispatchEvent(
+							new CustomEvent(selectEventName, { detail: { id } })
+						);
+					}
+					setListModalOpen(false);
+				}}
+				onCreate={handleModalCreate}
+				onDelete={(id) => {
+					window.dispatchEvent(
+						new CustomEvent(deleteEventName, { detail: { id } })
+					);
+				}}
+				onRename={persistRename}
+				currentId={selectedId}
+				ListModalComponent={ListModalComponent}
+			/>
 		</div>
 	);
 };
