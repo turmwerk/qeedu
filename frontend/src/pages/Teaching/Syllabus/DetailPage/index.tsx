@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { SplitSiderLayout } from "@/components/MarkdownView";
-import MarkdownEditor from "@/components/MarkdownEditor";
+import React, { useState } from "react";
+import SplitSiderLayout from "@/layouts/SplitSiderLayout";
+import FullScreenMarkdownCanvas from "@/components/FullScreenMarkdownCanvas";
 import { AssistantPanel, Header, MarkdownPanel } from "./components";
 
 const DetailPage: React.FC<{
@@ -14,10 +14,7 @@ const DetailPage: React.FC<{
   onRename?: (id: string, title: string) => void;
 }> = ({ md, setMd, onBack, openFull, setOpenFull, title, id, onRename }) => {
   const [localTitle, setLocalTitle] = useState(title || "");
-
-  useEffect(() => {
-    setLocalTitle(title || "");
-  }, [title]);
+  const [showRaw, setShowRaw] = useState(false);
 
   const handleTitleChange = (next: string) => {
     setLocalTitle(next);
@@ -33,6 +30,9 @@ const DetailPage: React.FC<{
           onTitleChange={handleTitleChange}
           onBack={onBack}
           md={md}
+          showRaw={showRaw}
+          onToggleRaw={() => setShowRaw((v) => !v)}
+          onFullScreen={() => setOpenFull(true)}
         />
         <SplitSiderLayout
           className="p-0"
@@ -47,7 +47,7 @@ const DetailPage: React.FC<{
               <MarkdownPanel
                 md={md}
                 onChange={setMd}
-                onFullScreen={() => setOpenFull(true)}
+                showRaw={showRaw}
               />
             </>
           }
@@ -57,13 +57,12 @@ const DetailPage: React.FC<{
           data-oid="wc6ybz5"
         />
         {openFull && (
-          <MarkdownEditor
+          <FullScreenMarkdownCanvas
             value={md}
             onClose={(updated) => {
               if (updated !== null) setMd(updated);
               setOpenFull(false);
             }}
-            data-oid="_sz36z2"
           />
         )}
       </div>

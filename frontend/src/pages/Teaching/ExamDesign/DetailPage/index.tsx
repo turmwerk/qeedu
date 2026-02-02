@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState, type DragEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import ConfirmDialog from "@/components/ConfirmDialog";
-import { SplitSiderLayout } from "@/components/MarkdownView";
+import SplitSiderLayout from "@/layouts/SplitSiderLayout";
 import ToastContainer from "@/components/Toast";
 import {
   Header,

@@ -12,9 +12,20 @@ type HeaderProps = {
   onTitleChange: (next: string) => void;
   onBack: () => void;
   md: string;
+  showRaw: boolean;
+  onToggleRaw: () => void;
+  onFullScreen: () => void;
 };
 
-const Header: React.FC<HeaderProps> = ({ title, onTitleChange, onBack, md }) => {
+const Header: React.FC<HeaderProps> = ({
+  title,
+  onTitleChange,
+  onBack,
+  md,
+  showRaw,
+  onToggleRaw,
+  onFullScreen,
+}) => {
   const actionButtonClass =
     "bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1.5 rounded-xl font-semibold transition-[background,border-color,box-shadow,transform] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)] hover:-translate-y-[1px]";
   return (
@@ -35,6 +46,18 @@ const Header: React.FC<HeaderProps> = ({ title, onTitleChange, onBack, md }) => 
               90
             </div>
           </div>
+          <Button
+            className={actionButtonClass}
+            onClick={onToggleRaw}
+          >
+            {showRaw ? "渲染 Markdown" : "显示 Markdown"}
+          </Button>
+          <Button
+            className={actionButtonClass}
+            onClick={onFullScreen}
+          >
+            全屏编辑
+          </Button>
           <Button
             className={actionButtonClass}
             onClick={onBack}
