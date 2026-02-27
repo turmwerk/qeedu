@@ -25,14 +25,14 @@ const Introduction: React.FC<IntroductionProps> = ({ onScrollToNext }) => {
         {/* CTA buttons */}
         <div className="flex items-center gap-3 mt-2">
           <Button
-            className="flex items-center gap-1.5 px-5 py-2 text-[15px] font-semibold rounded-xl border border-[var(--brand-border)] text-blue-600 bg-transparent transition-[background,border-color,color,transform] hover:border-[#6d28d9] hover:text-[#6d28d9] select-none"
+            className="glass-btn flex items-center gap-1.5 px-5 py-2 text-[15px] font-semibold rounded-xl select-none"
             onClick={() => onScrollToNext?.()}
           >
             <RocketOutlined />
             立即开始
           </Button>
           <Button
-            className="flex items-center gap-1.5 px-5 py-2 text-[15px] font-semibold rounded-xl border border-[var(--brand-border)] text-blue-600 bg-transparent transition-[background,border-color,color,transform] hover:border-[#6d28d9] hover:text-[#6d28d9] select-none"
+            className="glass-btn flex items-center gap-1.5 px-5 py-2 text-[15px] font-semibold rounded-xl select-none"
             onClick={() => navigate("/login")}
           >
             <InfoCircleOutlined />

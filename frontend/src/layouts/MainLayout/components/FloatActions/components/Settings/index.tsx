@@ -12,7 +12,7 @@ const Settings: React.FC = () => {
       title="设置"
       size={40}
       shape="rounded-lg"
-      className="border-blue-600 text-blue-600 hover:border-[#6d28d9] hover:text-[#6d28d9] !bg-white !hover:bg-white"
+      className="glass-btn"
     />
   );
 };

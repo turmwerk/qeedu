@@ -209,7 +209,7 @@ const Dropdown: React.FC<DropdownProps> = ({
                   <div
                     ref={menuRef}
                     style={menuStyle}
-                    className={`p-1 min-w-[120px] flex flex-col gap-0.5 transition-[opacity,transform] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                    className={`dropdown-menu-panel p-1 min-w-[120px] flex flex-col gap-0.5 transition-[opacity,transform] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] ${
                       open
                         ? "opacity-100 scale-[1.01] translate-y-0 pointer-events-auto"
                         : `opacity-0 scale-[0.98] ${direction === "up" ? "translate-y-2" : "-translate-y-2"} pointer-events-none`
@@ -221,13 +221,7 @@ const Dropdown: React.FC<DropdownProps> = ({
                 {items.map((item, i) => (
                   <Button
                     key={i}
-                    className={`group/dropdown-item relative w-full px-3 py-1.5 rounded-lg text-sm font-semibold transition-[background,border-color,color] whitespace-nowrap ${
-                      item.active ? itemActiveClass : itemIdleClass
-                    } ${
-                      !showBorder
-                        ? "after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[1.5px] after:w-0 after:bg-current after:transition-all after:duration-200 hover:after:w-full"
-                        : ""
-                    }`}
+                    className={`dropdown-menu-item${item.active ? " item-active" : ""} group/dropdown-item relative w-full px-3 py-1.5 rounded-lg text-sm font-semibold transition-[background,border-color,color] whitespace-nowrap after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[1.5px] after:w-0 after:bg-current after:transition-all after:duration-200 hover:after:w-full`}
                     onClick={() => {
                       setOpen(false);
                       item.onClick?.();
@@ -246,7 +240,7 @@ const Dropdown: React.FC<DropdownProps> = ({
             : (
             <div
               ref={menuRef}
-              className={`absolute ${menuAlignClass} ${menuPositionClass} p-1 min-w-[120px] flex flex-col gap-0.5 opacity-0 scale-[0.98] pointer-events-none z-[2147483647] transition-[opacity,transform] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] ${direction === "up" ? "translate-y-2 origin-bottom-left" : "-translate-y-2 origin-top-right"} group-hover:opacity-100 group-hover:scale-[1.01] group-hover:translate-y-0 group-hover:pointer-events-auto group-hover:duration-150 group-focus-within:opacity-100 group-focus-within:scale-[1.01] group-focus-within:translate-y-0 group-focus-within:pointer-events-auto group-focus-within:duration-150`}
+              className={`dropdown-menu-panel absolute ${menuAlignClass} ${menuPositionClass} p-1 min-w-[120px] flex flex-col gap-0.5 opacity-0 scale-[0.98] pointer-events-none z-[2147483647] transition-[opacity,transform] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] ${direction === "up" ? "translate-y-2 origin-bottom-left" : "-translate-y-2 origin-top-right"} group-hover:opacity-100 group-hover:scale-[1.01] group-hover:translate-y-0 group-hover:pointer-events-auto group-hover:duration-150 group-focus-within:opacity-100 group-focus-within:scale-[1.01] group-focus-within:translate-y-0 group-focus-within:pointer-events-auto group-focus-within:duration-150`}
               data-oid="z7um0kb"
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
@@ -254,13 +248,7 @@ const Dropdown: React.FC<DropdownProps> = ({
               {items.map((item, i) => (
                 <Button
                   key={i}
-                  className={`group/dropdown-item relative w-full px-3 py-1.5 rounded-lg text-sm font-semibold transition-[background,border-color,color] whitespace-nowrap ${
-                    item.active ? itemActiveClass : itemIdleClass
-                  } ${
-                    !showBorder
-                      ? "after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[1.5px] after:w-0 after:bg-current after:transition-all after:duration-200 hover:after:w-full"
-                      : ""
-                  }`}
+                  className={`dropdown-menu-item${item.active ? " item-active" : ""} group/dropdown-item relative w-full px-3 py-1.5 rounded-lg text-sm font-semibold transition-[background,border-color,color] whitespace-nowrap after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[1.5px] after:w-0 after:bg-current after:transition-all after:duration-200 hover:after:w-full`}
                   onClick={() => {
                     setOpen(false);
                     item.onClick?.();

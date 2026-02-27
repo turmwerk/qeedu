@@ -81,7 +81,7 @@ export default function ForgetPassword() {
 
   return (
     <div
-      className="auth-panel w-[520px] max-w-[calc(100%-40px)] bg-white shadow-[0_10px_40px_rgba(0,0,0,0.12)] px-[22px] pt-[22px] pb-[18px] relative animate-[pageEnter_300ms_ease-out] rounded-xl border border-[#6d28d9] shadow-[var(--brand-shadow)]"
+      className="auth-panel w-[520px] max-w-[calc(100%-40px)] px-[22px] pt-[22px] pb-[18px] relative animate-[pageEnter_300ms_ease-out] rounded-xl"
       data-oid="gusoamy"
     >
       <div className="py-3 pb-1.5 text-center" data-oid="7zn4se7">

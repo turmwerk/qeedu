@@ -3,8 +3,11 @@ import { Outlet, useLocation } from "react-router-dom";
 import Footer from "@/layouts/MainLayout/components/Footer";
 import FloatActions from "@/layouts/MainLayout/components/FloatActions";
 import SnowLayer from "@/components/SnowLayer";
+import StarsLayer from "@/components/StarsLayer";
+import { getStoredTheme } from "@/utils/theme";
 const AuthLayout: React.FC = () => {
   const location = useLocation();
+  const isDark = getStoredTheme() === 'dark';
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
@@ -17,6 +20,8 @@ const AuthLayout: React.FC = () => {
     >
       {/* 全屏雪花特效 */}
       <SnowLayer />
+      {/* 深色主题独立星点背景 */}
+      {isDark && <StarsLayer />}
       <div
         className="absolute inset-0 overflow-hidden pointer-events-none auth-decor"
         data-oid=".fza9ll"

@@ -9,6 +9,7 @@ import SyllabusListModal from "@/pages/Teaching/Syllabus/components/ListModal";
 import ExamListModal from "@/pages/Teaching/ExamDesign/components/ListModal";
 import { getStoredTheme, applyTheme } from "@/utils/theme";
 import SnowLayer from "@/components/SnowLayer";
+import StarsLayer from "@/components/StarsLayer";
 
 const { Content } = Layout;
 
@@ -162,6 +163,8 @@ const MainLayout: React.FC = () => {
     <div data-theme={theme} className={`app-root flex h-screen relative overflow-hidden${isHomePage ? ' home-theme-bg' : ''}`}>
       {/* 全屏雪花特效：固定定位在最底层，pointer-events:none 不影响交互 */}
       <SnowLayer />
+      {/* 深色主题独立星点背景（不连线，不跟鼠标交互） */}
+      {theme === 'dark' && <StarsLayer />}
 
       {/* 左侧栏 */}
       <Sider

@@ -8,7 +8,7 @@
   --brand-shadow: none;
   --brand-text: #dde4f5;
   --brand-muted: #c4cce4;
-  --brand-bg: #080c18; /* 极深近黑，光晕对比突出 */
+  --brand-bg: #152236; /* 显青深蓝，不过暗，星点清晰浮现 */
   /* Nav button colors for dark (only arrow color needed when no box) */
   --nav-fg: #ffffff;
   --header-blue: #3b82f6; /* blue for headers in dark mode */
@@ -23,34 +23,46 @@
 }
 
 :root[data-theme="dark"] .app-root, [data-theme="dark"] .app-root {
-  /* Deep near-black base + vivid glow – night-friendly, strong contrast */
   background:
-    radial-gradient(60rem 50rem at 15% 25%, rgba(108, 60, 240, 0.40) 0%, rgba(108, 60, 240, 0) 65%),
-    radial-gradient(52rem 44rem at 82% 72%, rgba(30,  110, 255, 0.30) 0%, rgba(30,  110, 255, 0) 63%),
-    radial-gradient(40rem 34rem at 58% 4%,  rgba(160, 80, 255, 0.28) 0%, rgba(160, 80, 255, 0) 60%),
-    radial-gradient(36rem 30rem at 4%  82%, rgba(40,  80, 200, 0.22) 0%, rgba(40,  80, 200, 0) 58%),
-    linear-gradient(160deg, #0b0e1e 0%, #080c18 55%, #0a0c1c 100%) !important;
-  background-color: #080c18 !important;
+    radial-gradient(70rem 55rem at 10% 20%, rgba(90, 60, 200, 0.30) 0%, rgba(90, 60, 200, 0) 65%),
+    radial-gradient(55rem 45rem at 85% 75%, rgba(30, 80, 180, 0.22) 0%, rgba(30, 80, 180, 0) 62%),
+    linear-gradient(180deg, #152236 0%, #1a2d48 100%) !important;
+  background-color: #152236 !important;
 }
 
 /* Also apply the grid to body so portal-mounted elements show the grid behind when transparent */
 [data-theme="dark"] body {
-  background-color: #080c18 !important;
+  background-color: #152236 !important;
   background-image: none !important;
 }
 
 /* Auth page: medium-deep blue with vivid glow so blue content is clearly visible */
 [data-theme="dark"] .auth-layout {
   background:
-    radial-gradient(60rem 50rem at 15% 25%, rgba(108, 60, 240, 0.40) 0%, rgba(108, 60, 240, 0) 65%),
-    radial-gradient(52rem 44rem at 82% 72%, rgba(30,  110, 255, 0.30) 0%, rgba(30,  110, 255, 0) 63%),
-    radial-gradient(40rem 34rem at 58% 4%,  rgba(160, 80, 255, 0.28) 0%, rgba(160, 80, 255, 0) 60%),
-    radial-gradient(36rem 30rem at 4%  82%, rgba(40,  80, 200, 0.22) 0%, rgba(40,  80, 200, 0) 58%),
-    linear-gradient(160deg, #0b0e1e 0%, #080c18 55%, #0a0c1c 100%) !important;
-  background-color: #080c18 !important;
+    radial-gradient(70rem 55rem at 10% 20%, rgba(90, 60, 200, 0.30) 0%, rgba(90, 60, 200, 0) 65%),
+    radial-gradient(55rem 45rem at 85% 75%, rgba(30, 80, 180, 0.22) 0%, rgba(30, 80, 180, 0) 62%),
+    linear-gradient(180deg, #152236 0%, #1a2d48 100%) !important;
+  background-color: #152236 !important;
 }
 [data-theme="dark"] .auth-decor {
   display: block !important;
+}
+
+/* Glass-morphism button – matches module card style (dark) */
+[data-theme="dark"] .glass-btn {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: none !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.30) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  backdrop-filter: blur(18px) saturate(160%);
+  color: #93c5fd !important;
+  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s, color 0.2s, transform 0.15s !important;
+}
+[data-theme="dark"] .glass-btn:hover {
+  background: rgba(255, 255, 255, 0.09) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45) !important;
+  color: #c4b5fd !important;
+  transform: translateY(-1px);
 }
 
 /* Hide the page decorative gradient in dark mode so the deep-blue shows through */
@@ -77,7 +89,7 @@
 [data-theme="dark"] html,
 [data-theme="dark"] body,
 [data-theme="dark"] #root {
-  background-color: #080c18 !important;
+  background-color: #152236 !important;
   background-image: none !important;
 }
 [data-theme="dark"] .app-root {
@@ -96,10 +108,13 @@
   background-color: var(--keep-bg, rgba(255,255,255,0.06)) !important;
 }
 
-/* Auth panel: keep a subtle card background and distinct borders in dark mode */
+/* Auth panel – frosted glass (dark) */
 [data-theme="dark"] .auth-panel {
-  background-color: var(--auth-panel-bg) !important;
-  border-color: var(--auth-panel-border) !important;
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border: none !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.30) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  backdrop-filter: blur(18px) saturate(160%);
 }
 
 
@@ -150,12 +165,10 @@
 /* Home page: same glow as all pages – unified */
 [data-theme="dark"] .app-root.home-theme-bg {
   background:
-    radial-gradient(60rem 50rem at 15% 25%, rgba(108, 60, 240, 0.40) 0%, rgba(108, 60, 240, 0) 65%),
-    radial-gradient(52rem 44rem at 82% 72%, rgba(30,  110, 255, 0.30) 0%, rgba(30,  110, 255, 0) 63%),
-    radial-gradient(40rem 34rem at 58% 4%,  rgba(160, 80, 255, 0.28) 0%, rgba(160, 80, 255, 0) 60%),
-    radial-gradient(36rem 30rem at 4%  82%, rgba(40,  80, 200, 0.22) 0%, rgba(40,  80, 200, 0) 58%),
-    linear-gradient(160deg, #0b0e1e 0%, #080c18 55%, #0a0c1c 100%) !important;
-  background-color: #080c18 !important;
+    radial-gradient(70rem 55rem at 10% 20%, rgba(90, 60, 200, 0.30) 0%, rgba(90, 60, 200, 0) 65%),
+    radial-gradient(55rem 45rem at 85% 75%, rgba(30, 80, 180, 0.22) 0%, rgba(30, 80, 180, 0) 62%),
+    linear-gradient(180deg, #152236 0%, #1a2d48 100%) !important;
+  background-color: #152236 !important;
 }
 
 [data-theme="dark"] .home-page-bg {
@@ -168,28 +181,31 @@
   background: transparent !important;
 }
 
+/* ModuleHub card – frosted glass */
 [data-theme="dark"] .module-hub-card {
-  background-color: rgba(30, 36, 58, 0.45) !important;
-  border: 1px solid rgba(255, 255, 255, 0.09) !important;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.22) !important;
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border: none !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.30) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  backdrop-filter: blur(18px) saturate(160%);
 }
 
 [data-theme="dark"] .module-hub-card:hover {
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.48) !important;
+  background-color: rgba(255, 255, 255, 0.09) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45) !important;
 }
 
+/* Sub-links – fully transparent, underline-only style */
 [data-theme="dark"] .module-hub-sublink {
-  color: #93c5fd;
-  border-color: rgba(147, 197, 253, 0.25);
-  background: rgba(255, 255, 255, 0.04);
+  color: #93c5fd !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
-
 [data-theme="dark"] .module-hub-sublink:hover {
-  color: #c4b5fd;
-  border-color: #c4b5fd;
-  background: rgba(196, 181, 253, 0.08);
+  color: #c4b5fd !important;
+  background: transparent !important;
+  border: none !important;
 }
 
 [data-theme="dark"] .module-hub-card-icon {
@@ -199,5 +215,29 @@
 
 [data-theme="dark"] .module-hub-card-desc {
   color: #c1cbde !important;
+}
+
+/* Dropdown menu panel – frosted glass (dark) */
+[data-theme="dark"] .dropdown-menu-panel {
+  background-color: rgba(255, 255, 255, 0.07) !important;
+  border: none !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  backdrop-filter: blur(18px) saturate(160%);
+  border-radius: 12px;
+}
+[data-theme="dark"] .dropdown-menu-item {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: #93c5fd !important;
+}
+[data-theme="dark"] .dropdown-menu-item:hover {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  color: #c4b5fd !important;
+}
+[data-theme="dark"] .dropdown-menu-item.item-active {
+  background-color: rgba(139, 92, 246, 0.15) !important;
+  color: #c4b5fd !important;
 }
 
