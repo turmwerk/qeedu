@@ -4,11 +4,11 @@
   --brand-accent-strong: #6f3ae6;
   --brand-accent-soft: rgba(139, 92, 246, 0.08);
   --brand-accent-faint: rgba(139, 92, 246, 0.12);
-  --brand-border: rgba(255, 255, 255, 0.06);
+  --brand-border: rgba(255, 255, 255, 0.08);
   --brand-shadow: none;
-  --brand-text: #e6e6ee;
-  --brand-muted: #bfc3d6;
-  --brand-bg: #071028; /* 深蓝 */
+  --brand-text: #dde4f5;
+  --brand-muted: #c4cce4;
+  --brand-bg: #080c18; /* 极深近黑，光晕对比突出 */
   /* Nav button colors for dark (only arrow color needed when no box) */
   --nav-fg: #ffffff;
   --header-blue: #3b82f6; /* blue for headers in dark mode */
@@ -23,18 +23,34 @@
 }
 
 :root[data-theme="dark"] .app-root, [data-theme="dark"] .app-root {
-  background-color: var(--brand-bg);
-  /* Subtle single-color grid overlay (no colorful gradients or glow) */
-  background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
-  background-size: 48px 48px, 48px 48px;
-  background-position: 0 0, 0 0;
+  /* Deep near-black base + vivid glow – night-friendly, strong contrast */
+  background:
+    radial-gradient(60rem 50rem at 15% 25%, rgba(108, 60, 240, 0.40) 0%, rgba(108, 60, 240, 0) 65%),
+    radial-gradient(52rem 44rem at 82% 72%, rgba(30,  110, 255, 0.30) 0%, rgba(30,  110, 255, 0) 63%),
+    radial-gradient(40rem 34rem at 58% 4%,  rgba(160, 80, 255, 0.28) 0%, rgba(160, 80, 255, 0) 60%),
+    radial-gradient(36rem 30rem at 4%  82%, rgba(40,  80, 200, 0.22) 0%, rgba(40,  80, 200, 0) 58%),
+    linear-gradient(160deg, #0b0e1e 0%, #080c18 55%, #0a0c1c 100%) !important;
+  background-color: #080c18 !important;
 }
 
-/* Also apply the grid to body so portal-mounted elements (menus/modals) show the grid behind when transparent */
+/* Also apply the grid to body so portal-mounted elements show the grid behind when transparent */
 [data-theme="dark"] body {
-  background-color: var(--brand-bg) !important;
-  background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px) !important;
-  background-size: 48px 48px, 48px 48px !important;
+  background-color: #080c18 !important;
+  background-image: none !important;
+}
+
+/* Auth page: medium-deep blue with vivid glow so blue content is clearly visible */
+[data-theme="dark"] .auth-layout {
+  background:
+    radial-gradient(60rem 50rem at 15% 25%, rgba(108, 60, 240, 0.40) 0%, rgba(108, 60, 240, 0) 65%),
+    radial-gradient(52rem 44rem at 82% 72%, rgba(30,  110, 255, 0.30) 0%, rgba(30,  110, 255, 0) 63%),
+    radial-gradient(40rem 34rem at 58% 4%,  rgba(160, 80, 255, 0.28) 0%, rgba(160, 80, 255, 0) 60%),
+    radial-gradient(36rem 30rem at 4%  82%, rgba(40,  80, 200, 0.22) 0%, rgba(40,  80, 200, 0) 58%),
+    linear-gradient(160deg, #0b0e1e 0%, #080c18 55%, #0a0c1c 100%) !important;
+  background-color: #080c18 !important;
+}
+[data-theme="dark"] .auth-decor {
+  display: block !important;
 }
 
 /* Hide the page decorative gradient in dark mode so the deep-blue shows through */
@@ -57,11 +73,11 @@
   border-color: rgba(255,255,255,0.06) !important;
 }
 
-/* Force unified deep-blue background across the app in dark mode */
+/* Force unified background across the app in dark mode */
 [data-theme="dark"] html,
 [data-theme="dark"] body,
 [data-theme="dark"] #root {
-  background-color: var(--brand-bg) !important;
+  background-color: #080c18 !important;
   background-image: none !important;
 }
 [data-theme="dark"] .app-root {
@@ -86,10 +102,6 @@
   border-color: var(--auth-panel-border) !important;
 }
 
-/* Show auth page decorative gradients only in dark mode */
-[data-theme="dark"] .auth-decor {
-  display: none !important;
-}
 
 /* Scope auth-specific button/link overrides so light theme isn't affected */
 [data-theme="dark"] .auth-panel .bg-blue-600 {
@@ -135,13 +147,15 @@
   box-shadow: none !important;
 }
 
-/* Home page glow background + ModuleHub cards (dark) */
+/* Home page: same glow as all pages – unified */
 [data-theme="dark"] .app-root.home-theme-bg {
   background:
-    radial-gradient(60rem 38rem at 14% 16%, rgba(116, 77, 189, 0.48) 0%, rgba(116, 77, 189, 0) 70%),
-    radial-gradient(52rem 36rem at 82% 68%, rgba(190, 101, 142, 0.3) 0%, rgba(190, 101, 142, 0) 72%),
-    linear-gradient(135deg, #14172c 0%, #1c2038 48%, #1e212d 100%) !important;
-  background-color: transparent !important;
+    radial-gradient(60rem 50rem at 15% 25%, rgba(108, 60, 240, 0.40) 0%, rgba(108, 60, 240, 0) 65%),
+    radial-gradient(52rem 44rem at 82% 72%, rgba(30,  110, 255, 0.30) 0%, rgba(30,  110, 255, 0) 63%),
+    radial-gradient(40rem 34rem at 58% 4%,  rgba(160, 80, 255, 0.28) 0%, rgba(160, 80, 255, 0) 60%),
+    radial-gradient(36rem 30rem at 4%  82%, rgba(40,  80, 200, 0.22) 0%, rgba(40,  80, 200, 0) 58%),
+    linear-gradient(160deg, #0b0e1e 0%, #080c18 55%, #0a0c1c 100%) !important;
+  background-color: #080c18 !important;
 }
 
 [data-theme="dark"] .home-page-bg {

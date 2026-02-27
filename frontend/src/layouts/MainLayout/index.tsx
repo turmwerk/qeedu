@@ -8,6 +8,7 @@ import FloatActions from "./components/FloatActions";
 import SyllabusListModal from "@/pages/Teaching/Syllabus/components/ListModal";
 import ExamListModal from "@/pages/Teaching/ExamDesign/components/ListModal";
 import { getStoredTheme, applyTheme } from "@/utils/theme";
+import SnowLayer from "@/components/SnowLayer";
 
 const { Content } = Layout;
 
@@ -158,8 +159,10 @@ const MainLayout: React.FC = () => {
   }, [location.pathname]);
 
   return (
-    <div data-theme={theme} className={`app-root flex h-screen bg-[var(--brand-bg)] relative overflow-hidden${isHomePage ? ' home-theme-bg' : ''}`}>
-      
+    <div data-theme={theme} className={`app-root flex h-screen relative overflow-hidden${isHomePage ? ' home-theme-bg' : ''}`}>
+      {/* 全屏雪花特效：固定定位在最底层，pointer-events:none 不影响交互 */}
+      <SnowLayer />
+
       {/* 左侧栏 */}
       <Sider
         open={syllabusSiderOpen && isSyllabusDetail}
