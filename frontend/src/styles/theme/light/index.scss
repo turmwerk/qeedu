@@ -30,9 +30,71 @@
   background-image: none !important;
 }
 
-/* Ensure header, footer and ModuleHub hero are white in light theme */
-[data-theme="light"] .main-header,
-[data-theme="light"] footer,
-[data-theme="light"] .home-hero {
-  background-color: #ffffff !important;
+/* Home page: gradient on app-root covers header, content and footer */
+[data-theme="light"] .app-root.home-theme-bg {
+  background:
+    radial-gradient(58rem 40rem at 18% 22%, rgba(194, 173, 255, 0.45) 0%, rgba(194, 173, 255, 0) 70%),
+    radial-gradient(58rem 40rem at 84% 62%, rgba(255, 215, 219, 0.52) 0%, rgba(255, 215, 219, 0) 72%),
+    linear-gradient(135deg, #ddd4ff 0%, #f3e6ef 56%, #f7eedf 100%) !important;
 }
+
+/* Keep header/footer merged into page background in light theme */
+[data-theme="light"] .main-header,
+[data-theme="light"] footer {
+  background-color: transparent !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+/* Override Ant Design default white Header element */
+[data-theme="light"] .ant-layout-header {
+  background: transparent !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+}
+
+/* home-page-bg is now transparent – gradient handled by app-root.home-theme-bg */
+[data-theme="light"] .home-page-bg {
+  background: transparent !important;
+}
+
+[data-theme="light"] .module-hub-shell {
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+[data-theme="light"] .module-hub-card {
+  background-color: rgba(255, 255, 255, 0.55) !important;
+  border: 1px solid rgba(200, 190, 240, 0.55) !important;
+  box-shadow: 0 2px 12px rgba(104, 86, 180, 0.07) !important;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+[data-theme="light"] .module-hub-card:hover {
+  box-shadow: 0 12px 32px rgba(104, 86, 180, 0.18) !important;
+}
+
+[data-theme="light"] .module-hub-sublink {
+  color: #3b5bdb;
+  border-color: rgba(94, 80, 200, 0.3);
+  background: rgba(255, 255, 255, 0.6);
+}
+
+[data-theme="light"] .module-hub-sublink:hover {
+  color: #6d28d9;
+  border-color: #6d28d9;
+  background: rgba(109, 40, 217, 0.06);
+}
+
+[data-theme="light"] .module-hub-card-icon {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+[data-theme="light"] .module-hub-card-desc {
+  color: #5a6475 !important;
+}
+
+

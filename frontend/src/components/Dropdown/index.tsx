@@ -2,6 +2,8 @@ import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "re
 import { createPortal } from "react-dom";
 import Button from "@/components/Button";
 
+const TOP_Z = 2147483647;
+
 export type DropdownItem = {
   label: React.ReactNode;
   onClick?: () => void;
@@ -17,7 +19,7 @@ interface DropdownProps {
   showCheck?: boolean;
   direction?: "up" | "down"; // 上拉或下拉
   showSelected?: boolean; // 是否显示当前选择的内容
-  hideBorder?: boolean; // 是否隐藏按钮边框
+  showBorder?: boolean; // 按钮和菜单项是否显示边框，默认 true；false 时无边框，非激活项悬浮显示下划线
   portalToBody?: boolean; // 是否将菜单挂载到 body 以避免裁剪
 }
 
@@ -30,15 +32,25 @@ const Dropdown: React.FC<DropdownProps> = ({
   showCheck = false,
   direction = "down",
   showSelected = false,
-  hideBorder = false,
+  showBorder = true,
   portalToBody = false,
 }) => {
-  const defaultButtonClass =
-    "bg-white border border-[var(--brand-border)] text-[#1d4ed8] px-2.5 py-1.5 rounded-xl font-semibold transition-[background,border-color,color] hover:bg-[var(--brand-accent-soft)] hover:border-[#7c3aed] hover:text-[#7c3aed]";
+  // showBorder=true: 按钮和菜单项都有边框，悬浮无下划线
+  // showBorder=false: 按钮和菜单项都无边框，非激活项悬浮显示下划线
+
+  const defaultButtonClass = showBorder
+    ? "bg-white border border-[var(--brand-border)] text-[#1d4ed8] px-2.5 py-1.5 rounded-xl font-semibold transition-[background,border-color,color] hover:bg-[var(--brand-accent-soft)] hover:border-[#7c3aed] hover:text-[#7c3aed]"
+    : "bg-transparent border-0 text-blue-600 px-2.5 py-1.5 rounded-xl font-semibold transition-[color] hover:text-[#6d28d9]";
   const disabledButtonClass =
     "bg-[var(--brand-accent)] text-white border-0 px-3.5 py-[7px] rounded-[16px] font-semibold text-[15px] transition-[box-shadow,background]";
-  const noBorderButtonClass =
-    "bg-transparent text-[#1d4ed8] px-2.5 py-1 rounded-lg text-sm font-medium hover:text-[#7c3aed] hover:bg-[rgba(124,58,237,0.06)] transition-colors";
+
+  // 菜单项样式
+  const itemActiveClass = showBorder
+    ? "bg-[var(--brand-accent-soft)] text-[#6d28d9] border border-[#c4b5fd]"
+    : "bg-white text-[#6d28d9] border-0";
+  const itemIdleClass = showBorder
+    ? "bg-white text-blue-600 border border-[var(--brand-border)] hover:border-[#6d28d9] hover:text-[#6d28d9]"
+    : "bg-white text-blue-600 border-0 hover:text-[#6d28d9]";
 
   // 获取当前选中的项
   const selectedItem = showSelected ? items.find((item) => item.active) : null;
@@ -46,21 +58,43 @@ const Dropdown: React.FC<DropdownProps> = ({
 
   // 根据direction决定菜单位置和对齐方式
   const menuPositionClass = direction === "up" 
-    ? "bottom-[calc(100%+4px)] -translate-y-2 group-hover:translate-y-0" 
-    : "top-[calc(100%+4px)] -translate-y-2 group-hover:translate-y-0";
+    ? "bottom-[calc(100%+4px)]" 
+    : "top-[calc(100%+4px)]";
   
   const menuAlignClass = direction === "up" ? "left-0" : "right-0";
 
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
-  const [menuStyle, setMenuStyle] = useState<React.CSSProperties>({});
+  const [menuStyle, setMenuStyle] = useState<React.CSSProperties>({
+    position: "fixed",
+    top: -9999,
+    left: -9999,
+  });
   const [open, setOpen] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleMouseEnter = () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    setOpen(true);
+  };
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setOpen(false);
+    }, 150); // 增加延迟到 150ms，防止鼠标移动过快导致菜单消失
+  };
 
   const canPortal = portalToBody && typeof document !== "undefined";
   const portalContainer = useMemo(
     () => (canPortal ? document.body : null),
     [canPortal]
   );
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
 
   useLayoutEffect(() => {
     if (!open || !canPortal) return;
@@ -75,15 +109,21 @@ const Dropdown: React.FC<DropdownProps> = ({
     const top = direction === "up"
       ? rect.top - menuRect.height - gap
       : rect.bottom + gap;
-    const left = direction === "up"
-      ? rect.left
-      : rect.right - menuRect.width;
+    
+    // 确保菜单不会超出屏幕边界
+    let left = direction === "up" ? rect.left : rect.right - menuRect.width;
+      
+    if (left < 0) left = 8;
+    if (left + menuRect.width > window.innerWidth) {
+      left = window.innerWidth - menuRect.width - 8;
+    }
 
     setMenuStyle({
       position: "fixed",
       top: Math.max(8, top),
-      left: Math.max(8, left),
-      zIndex: 9999,
+      left: left,
+      zIndex: TOP_Z,
+      transformOrigin: direction === "up" ? "bottom left" : "top right",
     });
   }, [open, canPortal, direction]);
 
@@ -99,14 +139,21 @@ const Dropdown: React.FC<DropdownProps> = ({
       const top = direction === "up"
         ? rect.top - menuRect.height - gap
         : rect.bottom + gap;
-      const left = direction === "up"
-        ? rect.left
-        : rect.right - menuRect.width;
+      
+      // 确保菜单不会超出屏幕边界
+      let left = direction === "up" ? rect.left : rect.right - menuRect.width;
+        
+      if (left < 0) left = 8;
+      if (left + menuRect.width > window.innerWidth) {
+        left = window.innerWidth - menuRect.width - 8;
+      }
+      
       setMenuStyle({
         position: "fixed",
         top: Math.max(8, top),
-        left: Math.max(8, left),
-        zIndex: 9999,
+        left: left,
+        zIndex: TOP_Z,
+        transformOrigin: direction === "up" ? "bottom left" : "top right",
       });
     };
     window.addEventListener("resize", handle);
@@ -121,12 +168,13 @@ const Dropdown: React.FC<DropdownProps> = ({
     <div
       ref={wrapperRef}
       className="relative inline-block group"
+      style={{ isolation: "isolate" }}
       aria-haspopup="true"
       data-oid="td9_50p"
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
-      onFocusCapture={() => setOpen(true)}
-      onBlurCapture={() => setOpen(false)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onFocusCapture={handleMouseEnter}
+      onBlurCapture={handleMouseLeave}
     >
       <span
         aria-hidden="true"
@@ -135,16 +183,18 @@ const Dropdown: React.FC<DropdownProps> = ({
       />
 
       <Button
-        className={
+        className={`group/dropdown-trigger ${
           buttonClassName ||
-          (buttonDisabled ? disabledButtonClass : (hideBorder ? noBorderButtonClass : defaultButtonClass))
-        }
+          (buttonDisabled ? disabledButtonClass : defaultButtonClass)
+        }`}
         aria-expanded="false"
         onClick={onButtonClick}
         disabled={buttonDisabled}
         data-oid="2k_c_27"
       >
-        <span className="flex items-center gap-1.5">
+        <span
+          className="inline-flex items-center gap-1.5 text-[14px] leading-[1.2] [&_.anticon]:text-[1em] [&_.anticon>svg]:h-[1em] [&_.anticon>svg]:w-[1em]"
+        >
           {displayButton}
           {direction === "up" && (
             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -153,63 +203,79 @@ const Dropdown: React.FC<DropdownProps> = ({
           )}
         </span>
       </Button>
-      {canPortal && portalContainer
-        ? createPortal(
-                <div
-                  ref={menuRef}
-                  style={menuStyle}
-                  className={`data-[theme=dark]:bg-transparent data-[theme=light]:bg-white/95 rounded-2xl p-1.5 min-w-[120px] border border-[rgba(59,130,246,0.06)] flex flex-col transition-[opacity,transform] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-                    open
-                      ? "opacity-100 scale-[1.01] pointer-events-auto"
-                      : "opacity-0 scale-[0.98] pointer-events-none"
-                  }`}
-                  data-oid="z7um0kb"
-                >
+      {items && items.length > 0 && (
+        canPortal && portalContainer
+          ? createPortal(
+                  <div
+                    ref={menuRef}
+                    style={menuStyle}
+                    className={`p-1 min-w-[120px] flex flex-col gap-0.5 transition-[opacity,transform] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                      open
+                        ? "opacity-100 scale-[1.01] translate-y-0 pointer-events-auto"
+                        : `opacity-0 scale-[0.98] ${direction === "up" ? "translate-y-2" : "-translate-y-2"} pointer-events-none`
+                    }`}
+                    data-oid="z7um0kb"
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                  >
+                {items.map((item, i) => (
+                  <Button
+                    key={i}
+                    className={`group/dropdown-item relative w-full px-3 py-1.5 rounded-lg text-sm font-semibold transition-[background,border-color,color] whitespace-nowrap ${
+                      item.active ? itemActiveClass : itemIdleClass
+                    } ${
+                      !showBorder
+                        ? "after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[1.5px] after:w-0 after:bg-current after:transition-all after:duration-200 hover:after:w-full"
+                        : ""
+                    }`}
+                    onClick={() => {
+                      setOpen(false);
+                      item.onClick?.();
+                    }}
+                    data-oid="i7-h8ep"
+                  >
+                    <span className="inline-flex items-center justify-center gap-2 text-[14px] leading-[1.2] [&_.anticon]:text-[1em] [&_.anticon>svg]:h-[1em] [&_.anticon>svg]:w-[1em]">
+                      {item.label}
+                      {showCheck && item.active && <span>✓</span>}
+                    </span>
+                  </Button>
+                ))}
+              </div>,
+              portalContainer
+            )
+            : (
+            <div
+              ref={menuRef}
+              className={`absolute ${menuAlignClass} ${menuPositionClass} p-1 min-w-[120px] flex flex-col gap-0.5 opacity-0 scale-[0.98] pointer-events-none z-[2147483647] transition-[opacity,transform] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] ${direction === "up" ? "translate-y-2 origin-bottom-left" : "-translate-y-2 origin-top-right"} group-hover:opacity-100 group-hover:scale-[1.01] group-hover:translate-y-0 group-hover:pointer-events-auto group-hover:duration-150 group-focus-within:opacity-100 group-focus-within:scale-[1.01] group-focus-within:translate-y-0 group-focus-within:pointer-events-auto group-focus-within:duration-150`}
+              data-oid="z7um0kb"
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+            >
               {items.map((item, i) => (
                 <Button
                   key={i}
-                  className={`w-full px-3 py-1.5 rounded-lg border text-sm font-semibold transition-[background,border-color,color,box-shadow] whitespace-nowrap ${
-                    item.active
-                      ? "bg-[#eff6ff] text-[#1d4ed8] border-[#bfdbfe]"
-                      : "bg-white/70 text-[#374151] border-transparent hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)]"
+                  className={`group/dropdown-item relative w-full px-3 py-1.5 rounded-lg text-sm font-semibold transition-[background,border-color,color] whitespace-nowrap ${
+                    item.active ? itemActiveClass : itemIdleClass
+                  } ${
+                    !showBorder
+                      ? "after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[1.5px] after:w-0 after:bg-current after:transition-all after:duration-200 hover:after:w-full"
+                      : ""
                   }`}
-                  onClick={item.onClick}
+                  onClick={() => {
+                    setOpen(false);
+                    item.onClick?.();
+                  }}
                   data-oid="i7-h8ep"
                 >
-                  <span className="flex items-center justify-center gap-2">
-                    <span>{item.label}</span>
+                  <span className="inline-flex items-center justify-center gap-2 text-[14px] leading-[1.2] [&_.anticon]:text-[1em] [&_.anticon>svg]:h-[1em] [&_.anticon>svg]:w-[1em]">
+                    {item.label}
                     {showCheck && item.active && <span>✓</span>}
                   </span>
                 </Button>
               ))}
-            </div>,
-            portalContainer
+            </div>
           )
-          : (
-          <div
-            ref={menuRef}
-            className={`absolute ${menuAlignClass} ${menuPositionClass} data-[theme=dark]:bg-transparent data-[theme=light]:bg-white/95 rounded-2xl p-1.5 min-w-[120px] border border-[rgba(59,130,246,0.06)] opacity-0 scale-[0.98] pointer-events-none z-[999] flex flex-col transition-[opacity,transform] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:opacity-100 group-hover:scale-[1.01] group-hover:pointer-events-auto group-hover:duration-150 group-focus-within:opacity-100 group-focus-within:translate-y-0 group-focus-within:scale-[1.01] group-focus-within:pointer-events-auto group-focus-within:duration-150`}
-            data-oid="z7um0kb"
-          >
-            {items.map((item, i) => (
-              <Button
-                key={i}
-                className={`w-full px-3 py-1.5 rounded-lg border text-sm font-semibold transition-[background,border-color,color,box-shadow] whitespace-nowrap ${
-                  item.active
-                    ? "bg-[#eff6ff] text-[#1d4ed8] border-[#bfdbfe]"
-                    : "bg-white/70 text-[#374151] border-transparent hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)]"
-                }`}
-                onClick={item.onClick}
-                data-oid="i7-h8ep"
-              >
-                <span className="flex items-center justify-center gap-2">
-                  <span>{item.label}</span>
-                  {showCheck && item.active && <span>✓</span>}
-                </span>
-              </Button>
-            ))}
-          </div>
-        )}
+      )}
     </div>
   );
 };

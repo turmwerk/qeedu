@@ -120,3 +120,70 @@
 [data-theme="dark"] .auth-panel .tab-underline {
   background-color: var(--brand-accent) !important;
 }
+
+[data-theme="dark"] .main-header,
+[data-theme="dark"] footer {
+  background-color: transparent !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+/* Override Ant Design default Header element */
+[data-theme="dark"] .ant-layout-header {
+  background: transparent !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+}
+
+/* Home page glow background + ModuleHub cards (dark) */
+[data-theme="dark"] .app-root.home-theme-bg {
+  background:
+    radial-gradient(60rem 38rem at 14% 16%, rgba(116, 77, 189, 0.48) 0%, rgba(116, 77, 189, 0) 70%),
+    radial-gradient(52rem 36rem at 82% 68%, rgba(190, 101, 142, 0.3) 0%, rgba(190, 101, 142, 0) 72%),
+    linear-gradient(135deg, #14172c 0%, #1c2038 48%, #1e212d 100%) !important;
+  background-color: transparent !important;
+}
+
+[data-theme="dark"] .home-page-bg {
+  background: transparent !important;
+}
+
+[data-theme="dark"] .module-hub-shell {
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+[data-theme="dark"] .module-hub-card {
+  background-color: rgba(30, 36, 58, 0.45) !important;
+  border: 1px solid rgba(255, 255, 255, 0.09) !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.22) !important;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+[data-theme="dark"] .module-hub-card:hover {
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.48) !important;
+}
+
+[data-theme="dark"] .module-hub-sublink {
+  color: #93c5fd;
+  border-color: rgba(147, 197, 253, 0.25);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .module-hub-sublink:hover {
+  color: #c4b5fd;
+  border-color: #c4b5fd;
+  background: rgba(196, 181, 253, 0.08);
+}
+
+[data-theme="dark"] .module-hub-card-icon {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+[data-theme="dark"] .module-hub-card-desc {
+  color: #c1cbde !important;
+}
+

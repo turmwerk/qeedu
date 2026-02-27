@@ -1,22 +1,43 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import NavButton from "./components/NavButton";
+import { InfoCircleOutlined, RocketOutlined } from "@ant-design/icons";
+import Button from "@/components/Button";
 
 interface IntroductionProps {
   onScrollToNext?: () => void;
 }
 
 const Introduction: React.FC<IntroductionProps> = ({ onScrollToNext }) => {
-  // Header 背景色已简化：移除 blur 与发光
+  const navigate = useNavigate();
+
   return (
     <section
       className="relative w-full flex flex-col items-center justify-center min-h-[90vh] h-[90vh] bg-transparent overflow-hidden -mt-px z-[1]"
     >
-      <div className="flex-1 flex flex-col items-center justify-center w-full h-full">
-        <h1 className="text-[48px] font-black text-[var(--header-blue)] text-center mb-4 select-none">
+      <div className="flex-1 flex flex-col items-center justify-center w-full h-full gap-6">
+        <h1 className="text-[48px] font-black text-[var(--header-blue)] text-center mb-2 select-none">
           南京大学教育AI应用
         </h1>
-        <div className="text-[20px] text-[#666] text-center mb-8 select-none">
+        <div className="text-[20px] text-[#666] text-center select-none">
           让 AI 赋能学习、教学、科研与管理
+        </div>
+        {/* CTA buttons */}
+        <div className="flex items-center gap-3 mt-2">
+          <Button
+            className="flex items-center gap-1.5 px-5 py-2 text-[15px] font-semibold rounded-xl border border-[var(--brand-border)] text-blue-600 bg-transparent transition-[background,border-color,color,transform] hover:border-[#6d28d9] hover:text-[#6d28d9] select-none"
+            onClick={() => onScrollToNext?.()}
+          >
+            <RocketOutlined />
+            立即开始
+          </Button>
+          <Button
+            className="flex items-center gap-1.5 px-5 py-2 text-[15px] font-semibold rounded-xl border border-[var(--brand-border)] text-blue-600 bg-transparent transition-[background,border-color,color,transform] hover:border-[#6d28d9] hover:text-[#6d28d9] select-none"
+            onClick={() => navigate("/login")}
+          >
+            <InfoCircleOutlined />
+            了解更多
+          </Button>
         </div>
       </div>
       <div className="absolute left-1/2 -translate-x-1/2 bottom-8 z-10">

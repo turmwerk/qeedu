@@ -5,6 +5,11 @@ import {
   ExperimentOutlined,
   ControlOutlined,
   TeamOutlined,
+  CodeOutlined,
+  BookOutlined,
+  FormOutlined,
+  BuildOutlined,
+  NotificationOutlined,
 } from "@ant-design/icons";
 
 const modules = [
@@ -14,6 +19,9 @@ const modules = [
     desc: "自学导航、练习计划、随问随答。",
     to: "/study",
     icon: <ReadOutlined data-oid="r9i6-at" />,
+    subLinks: [
+      { label: "编程辅导", to: "/study/code-tutor", icon: <CodeOutlined /> },
+    ],
   },
   {
     key: "teaching",
@@ -21,6 +29,10 @@ const modules = [
     desc: "试卷生成、大纲设计、作业批改与反馈。",
     to: "/teaching",
     icon: <ExperimentOutlined data-oid="4hschjv" />,
+    subLinks: [
+      { label: "大纲设计", to: "/teaching/syllabus/ListPage", icon: <BookOutlined /> },
+      { label: "试卷设计", to: "/teaching/exam/ListPage", icon: <FormOutlined /> },
+    ],
   },
   {
     key: "research",
@@ -28,6 +40,9 @@ const modules = [
     desc: "科研协作、资料整理、进度跟踪。",
     to: "/research",
     icon: <TeamOutlined data-oid="ga65l.j" />,
+    subLinks: [
+      { label: "科研协作", to: "/research/collaboration", icon: <TeamOutlined /> },
+    ],
   },
   {
     key: "management",
@@ -35,6 +50,10 @@ const modules = [
     desc: "班级管理、通知发布、资料归档与跟进。",
     to: "/management",
     icon: <ControlOutlined data-oid="5f1:ofq" />,
+    subLinks: [
+      { label: "专业建设", to: "/management/major", icon: <BuildOutlined /> },
+      { label: "政策响应", to: "/management/policy", icon: <NotificationOutlined /> },
+    ],
   },
 ];
 

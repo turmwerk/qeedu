@@ -138,6 +138,7 @@ const MainLayout: React.FC = () => {
 
   // 只要路径包含 detail 视为 detail 页面
   const isDetailPage = /\/detail(\/|$)/.test(location.pathname);
+  const isHomePage = location.pathname === "/";
   // 侧边栏切换按钮逻辑：只在大纲/试卷详情页显示
   const isSyllabusDetail = location.pathname.startsWith("/teaching/syllabus") && location.pathname !== "/teaching/syllabus/ListPage";
   const isExamDetail = location.pathname.startsWith("/teaching/exam/detail");
@@ -157,7 +158,7 @@ const MainLayout: React.FC = () => {
   }, [location.pathname]);
 
   return (
-    <div data-theme={theme} className="app-root flex h-screen bg-[var(--brand-bg)] relative overflow-hidden">
+    <div data-theme={theme} className={`app-root flex h-screen bg-[var(--brand-bg)] relative overflow-hidden${isHomePage ? ' home-theme-bg' : ''}`}>
       
       {/* 左侧栏 */}
       <Sider

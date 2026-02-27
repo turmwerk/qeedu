@@ -78,20 +78,28 @@ const routeConfig: Record<string, { title: string; icon?: React.ReactNode }> = {
 };
 
 const menuButtonBase =
-  "flex items-center gap-1.5 px-3.5 py-1.5 text-sm font-semibold rounded-xl border border-[var(--brand-border)] transition-[background,border-color,transform] hover:border-[#6d28d9] hover:text-[#6d28d9] !hover:bg-white";
-const menuButtonIdle = "text-blue-600 bg-white";
+  "relative inline-flex items-center gap-1.5 px-3.5 py-1.5 text-[14px] font-semibold rounded-xl transition-[color] hover:text-[#6d28d9]";
+const menuButtonUnderline = 
+  "after:content-[''] after:absolute after:left-0 after:-bottom-[1px] after:h-[1.5px] after:w-0 after:bg-current after:transition-all after:duration-200 hover:after:w-full";
+const menuButtonIdle = "text-blue-600 bg-transparent";
 const menuButtonActive =
-  "text-[#4a2aa6] bg-[var(--brand-accent-soft)] border-[var(--brand-accent)]";
+  "text-[#6d28d9] bg-[var(--brand-accent-soft)]";
 
 const buildItems = (
   pathname: string,
   navigate: ReturnType<typeof useNavigate>,
-  items: Array<{ label: string; path: string }>,
+  items: Array<{ label: string; path: string; icon?: React.ReactNode }>,
 ) =>
   items.map((item) => {
-    const itemActive = pathname === item.path;
+    const normalizedItemPath = item.path.replace(/\/ListPage$/i, "");
+    const itemActive =
+      pathname === item.path ||
+      pathname === normalizedItemPath ||
+      pathname.startsWith(`${normalizedItemPath}/`);
     return {
-      label: item.label,
+      label: item.icon ? (
+        <span className="inline-flex items-center gap-1.5">{item.icon}{item.label}</span>
+      ) : item.label,
       active: itemActive,
       onClick: () => {
         if (!itemActive) navigate(item.path);
@@ -132,7 +140,7 @@ const MainHeader: React.FC<{
 
   return (
     <Header
-      className="main-header bg-white py-2 px-4 flex items-center justify-between relative z-[100] leading-[20px] h-[56px]"
+      className="main-header bg-transparent border-0 shadow-none py-2 px-4 flex items-center justify-between relative z-[100] leading-[20px] h-[56px]"
       data-oid="hoa5tyk"
     >
       <Modal
@@ -174,7 +182,7 @@ const MainHeader: React.FC<{
       </div>
       <div className="flex items-center gap-3" data-oid="lg2sztd">
         <button
-          className={`${menuButtonBase} ${menuButtonIdle}`}
+          className={`${menuButtonBase} ${menuButtonUnderline} ${menuButtonIdle}`}
           onClick={() => setSearchVisible(true)}
           data-oid="search-button"
         >
@@ -183,7 +191,7 @@ const MainHeader: React.FC<{
         </button>
         {!isHomePage && (
           <button
-            className={`${menuButtonBase} ${menuButtonIdle}`}
+            className={`${menuButtonBase} ${menuButtonUnderline} ${menuButtonIdle}`}
             onClick={() => navigate("/")}
             data-oid="obxmeer"
           >
@@ -206,8 +214,10 @@ const MainHeader: React.FC<{
             if (!isStudy) navigate("/study");
           }}
           items={buildItems(location.pathname, navigate, [
-            { label: "编程辅导", path: "/study/code-tutor" },
+            { label: "编程辅导", path: "/study/code-tutor", icon: <CodeOutlined /> },
           ])}
+          showBorder={false}
+          portalToBody={true}
         />
         <Dropdown
           button={
@@ -223,9 +233,11 @@ const MainHeader: React.FC<{
             if (!isTeaching) navigate("/teaching");
           }}
           items={buildItems(location.pathname, navigate, [
-            { label: "大纲设计", path: "/teaching/syllabus/ListPage" },
-            { label: "试卷设计", path: "/teaching/exam/ListPage" },
+            { label: "大纲设计", path: "/teaching/syllabus/ListPage", icon: <BookOutlined /> },
+            { label: "试卷设计", path: "/teaching/exam/ListPage", icon: <FormOutlined /> },
           ])}
+          showBorder={false}
+          portalToBody={true}
         />
         <Dropdown
           button={
@@ -241,9 +253,11 @@ const MainHeader: React.FC<{
             if (!isManagement) navigate("/management");
           }}
           items={buildItems(location.pathname, navigate, [
-            { label: "专业建设", path: "/management/major" },
-            { label: "政策响应", path: "/management/policy" },
+            { label: "专业建设", path: "/management/major", icon: <BuildOutlined /> },
+            { label: "政策响应", path: "/management/policy", icon: <NotificationOutlined /> },
           ])}
+          showBorder={false}
+          portalToBody={true}
         />
         <Dropdown
           button={
@@ -259,13 +273,15 @@ const MainHeader: React.FC<{
             if (!isResearch) navigate("/research");
           }}
           items={buildItems(location.pathname, navigate, [
-            { label: "科研协作", path: "/research/collaboration" },
+            { label: "科研协作", path: "/research/collaboration", icon: <TeamOutlined /> },
           ])}
+          showBorder={false}
+          portalToBody={true}
         />
 
         {isHomePage ? (
           <button
-            className={`${menuButtonBase} ${menuButtonIdle}`}
+            className={`${menuButtonBase} ${menuButtonUnderline} ${menuButtonIdle}`}
             onClick={() => navigate("/login")}
             data-oid=".99sosb"
           >
@@ -274,7 +290,7 @@ const MainHeader: React.FC<{
           </button>
         ) : (
           <button
-            className={`${menuButtonBase} ${menuButtonIdle}`}
+            className={`${menuButtonBase} ${menuButtonUnderline} ${menuButtonIdle}`}
             onClick={() => (backTarget ? navigate(backTarget) : navigate(-1))}
             data-oid="36x2h-h"
           >

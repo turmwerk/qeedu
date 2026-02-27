@@ -12,7 +12,7 @@ const Home: React.FC = () => {
   };
 
   return (
-    <div className="w-full">
+    <div className="home-page-bg w-full">
       <Introduction onScrollToNext={handleScrollToFeatureHub} />
       <div ref={featureHubRef}>
         <FeatureHub />
