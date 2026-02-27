@@ -1,4 +1,4 @@
-import type { FormField } from "@/components/Form";
+﻿import type { FormField } from "@/components/Form";
 import { showToast } from "@/components/Toast";
 import KeyIcon from "../../../../components/Icon/KeyIcon";
 import IdIcon from "../../../../components/Icon/IdIcon";
@@ -29,7 +29,7 @@ export function buildFields(kind: "login-password" | "login-sms" | "register" | 
         label: "用户名/邮箱/手机号",
         placeholder: "用户名、邮箱或手机号",
         render: (value, onChange) => (
-          <div className="w-full flex items-stretch box-border border border-blue-600 hover:border-[#6d28d9] focus-within:border-[#6d28d9] transition-colors bg-white overflow-hidden relative">
+          <div className="w-full flex items-stretch box-border border border-[var(--brand-blue)] hover:border-[var(--brand-purple)] focus-within:border-[var(--brand-purple)] transition-colors bg-white overflow-hidden relative">
             <div className="absolute left-0 top-0 w-[56px] h-[56px] flex items-center justify-center text-[var(--brand-muted)] pointer-events-none">
               <IdIcon />
             </div>
@@ -42,7 +42,7 @@ export function buildFields(kind: "login-password" | "login-sms" | "register" | 
         label: "密码",
         placeholder: "密码",
         render: (value, onChange) => (
-          <div className="w-full flex items-stretch box-border border border-blue-600 hover:border-[#6d28d9] focus-within:border-[#6d28d9] transition-colors bg-white overflow-visible relative">
+          <div className="w-full flex items-stretch box-border border border-[var(--brand-blue)] hover:border-[var(--brand-purple)] focus-within:border-[var(--brand-purple)] transition-colors bg-white overflow-visible relative">
             <div className="absolute left-0 top-0 w-[56px] h-[56px] flex items-center justify-center text-[var(--brand-muted)] pointer-events-none">
               <LockIcon />
             </div>
@@ -66,7 +66,7 @@ export function buildFields(kind: "login-password" | "login-sms" | "register" | 
         label: "手机号/邮箱",
         placeholder: "手机号或邮箱",
         render: (value, onChange) => (
-          <div className="w-full flex items-stretch box-border border border-blue-600 hover:border-[#6d28d9] focus-within:border-[#6d28d9] transition-colors bg-white overflow-hidden relative">
+          <div className="w-full flex items-stretch box-border border border-[var(--brand-blue)] hover:border-[var(--brand-purple)] focus-within:border-[var(--brand-purple)] transition-colors bg-white overflow-hidden relative">
             <div className="absolute left-0 top-0 w-[56px] h-[56px] flex items-center justify-center text-[var(--brand-muted)] pointer-events-none">
               <IdIcon />
             </div>
@@ -79,13 +79,13 @@ export function buildFields(kind: "login-password" | "login-sms" | "register" | 
         label: "验证码",
         placeholder: "验证码",
         render: (value, onChange) => (
-          <div className="w-full flex items-stretch box-border border border-blue-600 hover:border-[#6d28d9] focus-within:border-[#6d28d9] transition-colors bg-white overflow-hidden relative">
+          <div className="w-full flex items-stretch box-border border border-[var(--brand-blue)] hover:border-[var(--brand-purple)] focus-within:border-[var(--brand-purple)] transition-colors bg-white overflow-hidden relative">
             <div className="absolute left-0 top-0 w-[56px] h-[56px] flex items-center justify-center text-[var(--brand-muted)] pointer-events-none z-10">
               <KeyIcon />
             </div>
             <input className="h-[56px] flex-1 w-full pl-[56px] pr-[110px] box-border border-0 bg-white text-[16px] outline-none" id="login-sms-code" name="smsCode" value={value} onChange={(e) => onChange(e.target.value)} placeholder="验证码" autoComplete="one-time-code" />
 
-            <button type="button" onClick={() => showToast("验证码发送未实现")} className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-600 hover:text-[#6d28d9] font-bold bg-transparent border-0">
+            <button type="button" onClick={() => showToast("验证码发送未实现")} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--brand-blue)] hover:text-[var(--brand-purple)] font-bold bg-transparent border-0">
               获取验证码
             </button>
           </div>
@@ -106,7 +106,7 @@ export function buildFields(kind: "login-password" | "login-sms" | "register" | 
         label: "邮箱/手机号",
         placeholder: "邮箱或手机号",
         render: (value, onChange) => (
-          <div className="w-full flex items-stretch box-border border border-blue-600 bg-white overflow-hidden relative">
+          <div className="w-full flex items-stretch box-border border border-[var(--brand-blue)] bg-white overflow-hidden relative">
             <div className="absolute left-0 top-0 w-[56px] h-[56px] flex items-center justify-center text-[var(--brand-muted)] pointer-events-none">
               <IdIcon />
             </div>
@@ -119,13 +119,13 @@ export function buildFields(kind: "login-password" | "login-sms" | "register" | 
         label: "验证码",
         placeholder: "验证码",
         render: (value, onChange) => (
-          <div className="w-full flex items-stretch box-border border border-blue-600 bg-white overflow-hidden relative">
+          <div className="w-full flex items-stretch box-border border border-[var(--brand-blue)] bg-white overflow-hidden relative">
             <div className="absolute left-0 top-0 w-[56px] h-[56px] flex items-center justify-center text-[var(--brand-muted)] pointer-events-none z-10">
               <KeyIcon />
             </div>
             <input className="h-[56px] flex-1 w-full pl-[56px] pr-[110px] box-border border-0 bg-white text-[16px] outline-none" id={`${kind}-${codeName}`} name={codeName} value={value} onChange={(e) => onChange(e.target.value)} placeholder="验证码" autoComplete="one-time-code" />
 
-            <button type="button" onClick={() => showToast("验证码发送未实现")} className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-600 hover:text-[#6d28d9] font-bold bg-transparent border-0">
+            <button type="button" onClick={() => showToast("验证码发送未实现")} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--brand-blue)] hover:text-[var(--brand-purple)] font-bold bg-transparent border-0">
               获取验证码
             </button>
           </div>
@@ -136,7 +136,7 @@ export function buildFields(kind: "login-password" | "login-sms" | "register" | 
         label: "密码",
         placeholder: "密码",
         render: (value, onChange) => (
-          <div className="w-full flex items-stretch box-border border border-blue-600 hover:border-[#6d28d9] focus-within:border-[#6d28d9] transition-colors bg-white overflow-visible relative">
+          <div className="w-full flex items-stretch box-border border border-[var(--brand-blue)] hover:border-[var(--brand-purple)] focus-within:border-[var(--brand-purple)] transition-colors bg-white overflow-visible relative">
             <div className="absolute left-0 top-0 w-[56px] h-[56px] flex items-center justify-center text-[var(--brand-muted)] pointer-events-none">
               <LockIcon />
             </div>
@@ -153,7 +153,7 @@ export function buildFields(kind: "login-password" | "login-sms" | "register" | 
         label: "再次输入密码",
         placeholder: "再次输入密码",
         render: (value, onChange) => (
-          <div className="w-full flex items-stretch box-border border border-blue-600 hover:border-[#6d28d9] focus-within:border-[#6d28d9] transition-colors bg-white overflow-visible relative">
+          <div className="w-full flex items-stretch box-border border border-[var(--brand-blue)] hover:border-[var(--brand-purple)] focus-within:border-[var(--brand-purple)] transition-colors bg-white overflow-visible relative">
             <div className="absolute left-0 top-0 w-[56px] h-[56px] flex items-center justify-center text-[var(--brand-muted)] pointer-events-none">
               <LockIcon />
             </div>

@@ -79,7 +79,7 @@ export default function Resister() {
   };
 
   const primaryButtonClass =
-    "w-full h-[56px] flex items-center justify-center gap-1.5 text-[18px] font-extrabold rounded-xl bg-blue-600 text-white border-0 shadow-[var(--brand-shadow)] transition-[background,border-color,box-shadow,transform] hover:bg-[#6d28d9] hover:shadow-[var(--brand-shadow)] active:scale-95";
+    "w-full h-[56px] flex items-center justify-center gap-1.5 text-[18px] font-extrabold rounded-xl bg-[var(--brand-blue)] text-white border-0 shadow-[var(--brand-shadow)] transition-[background,border-color,box-shadow,transform] hover:bg-[var(--brand-purple)] hover:shadow-[var(--brand-shadow)] active:scale-95";
   
 
 
@@ -89,7 +89,7 @@ export default function Resister() {
       label: "邮箱/手机号",
       placeholder: "邮箱或手机号",
       render: (value, onChange) => (
-          <div className="w-full flex items-stretch box-border border border-blue-600 hover:border-[#6d28d9] focus-within:border-[#6d28d9] transition-colors bg-white overflow-hidden relative">
+          <div className="w-full flex items-stretch box-border border border-[var(--brand-blue)] hover:border-[var(--brand-purple)] focus-within:border-[var(--brand-purple)] transition-colors bg-white overflow-hidden relative">
           <div className="absolute left-0 top-0 w-[56px] h-[56px] flex items-center justify-center text-[var(--brand-muted)] pointer-events-none">
             <IdIcon />
           </div>
@@ -110,7 +110,7 @@ export default function Resister() {
       placeholder: "验证码",
       render: (value, onChange) => (
         <div
-          className="w-full flex items-stretch box-border border border-blue-600 hover:border-[#6d28d9] focus-within:border-[#6d28d9] transition-colors bg-white overflow-hidden relative"
+          className="w-full flex items-stretch box-border border border-[var(--brand-blue)] hover:border-[var(--brand-purple)] focus-within:border-[var(--brand-purple)] transition-colors bg-white overflow-hidden relative"
           data-oid="0gz.p8p"
         >
           <div
@@ -132,7 +132,7 @@ export default function Resister() {
 
           <button
             type="button"
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-600 hover:text-[#6d28d9] font-bold bg-transparent border-0"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--brand-blue)] hover:text-[var(--brand-purple)] font-bold bg-transparent border-0"
             onClick={() => showToast("验证码发送未实现")}
             data-oid="c860_1o"
           >
@@ -147,7 +147,7 @@ export default function Resister() {
       placeholder: "密码",
       render: (value, onChange) => (
         <div
-          className="w-full flex items-stretch box-border border border-blue-600 hover:border-[#6d28d9] focus-within:border-[#6d28d9] transition-colors bg-white overflow-visible relative"
+          className="w-full flex items-stretch box-border border border-[var(--brand-blue)] hover:border-[var(--brand-purple)] focus-within:border-[var(--brand-purple)] transition-colors bg-white overflow-visible relative"
           data-oid="yhovq6e"
         >
           <div
@@ -180,7 +180,7 @@ export default function Resister() {
       placeholder: "再次输入密码",
       render: (value, onChange) => (
         <div
-          className="w-full flex items-stretch box-border border border-blue-600 hover:border-[#6d28d9] focus-within:border-[#6d28d9] transition-colors bg-white overflow-visible relative"
+          className="w-full flex items-stretch box-border border border-[var(--brand-blue)] hover:border-[var(--brand-purple)] focus-within:border-[var(--brand-purple)] transition-colors bg-white overflow-visible relative"
           data-oid="hkpjtmk"
         >
           <div

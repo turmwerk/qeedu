@@ -18,6 +18,7 @@ const App: React.FC = () => {
         token: {
           colorPrimary: "#6236FF", // 南大紫
           borderRadius: 6,
+          fontFamily: "var(--font-family-base)",
         },
         components: {
           Layout: {
@@ -30,7 +31,6 @@ const App: React.FC = () => {
       <style data-oid="bf_-q_z">{`
         .app-root {
           min-height: 100vh;
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
         }
         @keyframes pageEnter {
           from {

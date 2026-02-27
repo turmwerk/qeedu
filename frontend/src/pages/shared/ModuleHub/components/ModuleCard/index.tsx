@@ -24,7 +24,7 @@ const ModuleCard: React.FC<ModuleCardProps> = ({ title, desc, to, icon, subLinks
       className="module-hub-card flex flex-col gap-3 cursor-default rounded-2xl px-7 py-6 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl"
     >
       {/* icon + title row — named group so only this row triggers color change */}
-      <div className="group/title relative inline-flex items-center gap-3 pl-[34px] pb-1 cursor-pointer w-fit after:content-[''] after:absolute after:left-[34px] after:bottom-0 after:h-[2px] after:w-0 after:bg-current after:transition-all after:duration-200 hover:after:w-[calc(100%-34px)] text-blue-600 hover:text-[#6d28d9]"
+      <div className="group/title relative inline-flex items-center gap-3 pl-[34px] pb-1 cursor-pointer w-fit after:content-[''] after:absolute after:left-[34px] after:bottom-0 after:h-[2px] after:w-0 after:bg-current after:transition-all after:duration-200 hover:after:w-[calc(100%-34px)] text-[var(--brand-blue)] hover:text-[var(--brand-purple)]"
         onClick={() => navigate(to)}
         role="button"
         tabIndex={0}
@@ -54,7 +54,7 @@ const ModuleCard: React.FC<ModuleCardProps> = ({ title, desc, to, icon, subLinks
             <Button
               key={link.to}
               type="button"
-              className="group/module-sublink module-hub-sublink relative inline-flex items-center gap-1.5 p-0 pb-1 text-[14px] font-semibold text-blue-600 bg-transparent border-0 hover:text-[#6d28d9] transition-colors duration-200 cursor-pointer select-none after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[1.5px] after:w-0 after:bg-current after:transition-all after:duration-200 hover:after:w-full"
+              className="group/module-sublink module-hub-sublink relative inline-flex items-center gap-1.5 p-0 pb-1 text-[14px] font-semibold text-[var(--brand-blue)] bg-transparent border-0 hover:text-[var(--brand-purple)] transition-colors duration-200 cursor-pointer select-none after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[1.5px] after:w-0 after:bg-current after:transition-all after:duration-200 hover:after:w-full"
               onClick={(e) => { e.stopPropagation(); navigate(link.to); }}
             >
               {link.icon && link.icon}

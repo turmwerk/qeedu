@@ -15,7 +15,7 @@ const NavButton: React.FC<NavButtonProps> = ({ onClick, ariaLabel }) => {
         type="button"
         onClick={onClick || (() => {})}
         aria-label={ariaLabel || "向下导航"}
-        className="w-10 h-10 flex items-center justify-center transition text-blue-600 hover:text-[#6d28d9] bg-transparent border-none p-0"
+        className="w-10 h-10 flex items-center justify-center transition text-[var(--brand-blue)] hover:text-[var(--brand-purple)] bg-transparent border-none p-0"
         onMouseEnter={() => {
           setIsJumping(true);
           if (jumpTimer.current) {

@@ -20,6 +20,8 @@
   --auth-btn-text: #ffffff;
   --auth-link: #93c5fd; /* lighter blue for inline links */
   --auth-link-hover: #c4b5fd; /* lighter purple on hover */
+  --brand-blue: #93c5fd;
+  --brand-purple: #c4b5fd;
 }
 
 :root[data-theme="dark"] .app-root, [data-theme="dark"] .app-root {
@@ -118,29 +120,25 @@
 }
 
 
-/* Scope auth-specific button/link overrides so light theme isn't affected */
-[data-theme="dark"] .auth-panel .bg-blue-600 {
-  background-color: var(--auth-btn-bg) !important;
-}
-[data-theme="dark"] .auth-panel .bg-blue-600:hover {
-  background-color: var(--auth-btn-hover) !important;
-}
+/* Auth panel text-white override (e.g. submit button label) */
 [data-theme="dark"] .auth-panel .text-white {
   color: var(--auth-btn-text) !important;
 }
 
-/* Links and small buttons inside auth panel */
-[data-theme="dark"] .auth-panel .text-blue-600 {
-  color: var(--auth-link) !important;
+/* Auth submit button: keep same solid primary style as light theme */
+[data-theme="dark"] .auth-panel button[type="submit"] {
+  background-color: var(--auth-btn-bg) !important;
+  color: var(--auth-btn-text) !important;
+  border: none !important;
+  box-shadow: 0 6px 16px rgba(30, 64, 175, 0.35) !important;
 }
-[data-theme="dark"] .auth-panel .text-blue-600:hover {
-  color: var(--auth-link-hover) !important;
+
+[data-theme="dark"] .auth-panel button[type="submit"]:hover {
+  background-color: var(--auth-btn-hover) !important;
 }
-[data-theme="dark"] .auth-panel .border-blue-600 {
-  border-color: var(--auth-panel-border) !important;
-}
-[data-theme="dark"] .auth-panel .border-blue-600:hover {
-  border-color: var(--auth-btn-hover) !important;
+
+[data-theme="dark"] .auth-panel button[type="submit"]:disabled {
+  opacity: 0.7;
 }
 
 /* Ensure tab underline is visible in dark auth panels */
@@ -230,14 +228,67 @@
   background-color: transparent !important;
   border: none !important;
   box-shadow: none !important;
-  color: #93c5fd !important;
+  color: var(--brand-blue) !important;
 }
 [data-theme="dark"] .dropdown-menu-item:hover {
   background-color: rgba(255, 255, 255, 0.08) !important;
-  color: #c4b5fd !important;
+  color: var(--brand-purple) !important;
 }
 [data-theme="dark"] .dropdown-menu-item.item-active {
   background-color: rgba(139, 92, 246, 0.15) !important;
+  color: var(--brand-purple) !important;
+}
+/* Dropdown trigger button – match menu item colors (dark) */
+[data-theme="dark"] .dropdown-trigger-btn {
+  color: var(--brand-blue) !important;
+}
+[data-theme="dark"] .dropdown-trigger-btn:hover {
+  color: var(--brand-purple) !important;
+}
+[data-theme="dark"] .dropdown-trigger-btn.trigger-active {
+  color: var(--brand-purple) !important;
+}
+
+/* Search Modal – 高对比玻璃态 (dark) */
+[data-theme="dark"] .search-modal .ant-modal-content {
+  background-color: rgba(16, 8, 44, 0.82) !important;
+  border: 1px solid rgba(167, 139, 250, 0.30) !important;
+  box-shadow:
+    0 0 0 1px rgba(167, 139, 250, 0.12),
+    0 16px 60px rgba(0, 0, 0, 0.65),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(200%);
+  backdrop-filter: blur(32px) saturate(200%);
+  border-radius: 16px;
+}
+[data-theme="dark"] .search-modal .ant-modal-header {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(167, 139, 250, 0.18) !important;
+}
+[data-theme="dark"] .search-modal .ant-modal-title {
+  color: #ede9fe !important;
+  background: transparent !important;
+}
+[data-theme="dark"] .search-modal .ant-modal-body {
+  background: transparent !important;
+}
+[data-theme="dark"] .search-modal .ant-modal-close {
   color: #c4b5fd !important;
+}
+[data-theme="dark"] .search-modal .ant-modal-close:hover {
+  background-color: rgba(167, 139, 250, 0.15) !important;
+  color: #ede9fe !important;
+}
+[data-theme="dark"] .search-modal .ant-input {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(167, 139, 250, 0.30) !important;
+  color: #ede9fe !important;
+}
+[data-theme="dark"] .search-modal .ant-input::placeholder {
+  color: rgba(196, 181, 253, 0.50) !important;
+}
+[data-theme="dark"] .search-modal .ant-input:focus {
+  border-color: #a78bfa !important;
+  box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.22) !important;
 }
 

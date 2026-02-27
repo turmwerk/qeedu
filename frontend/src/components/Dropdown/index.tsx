@@ -1,6 +1,7 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import Button from "@/components/Button";
+import DropdownButton from "@/components/Dropdown/components/DropdownButton";
+import DropdownMenu from "@/components/Dropdown/components/DropdownMenu";
 
 const TOP_Z = 2147483647;
 
@@ -13,6 +14,7 @@ export type DropdownItem = {
 interface DropdownProps {
   button?: React.ReactNode;
   items: DropdownItem[];
+  active?: boolean;
   buttonClassName?: string;
   onButtonClick?: () => void;
   buttonDisabled?: boolean;
@@ -26,6 +28,7 @@ interface DropdownProps {
 const Dropdown: React.FC<DropdownProps> = ({
   button = "菜单",
   items,
+  active = false,
   buttonClassName,
   onButtonClick,
   buttonDisabled,
@@ -38,22 +41,10 @@ const Dropdown: React.FC<DropdownProps> = ({
   // showBorder=true: 按钮和菜单项都有边框，悬浮无下划线
   // showBorder=false: 按钮和菜单项都无边框，非激活项悬浮显示下划线
 
-  const defaultButtonClass = showBorder
-    ? "bg-white border border-[var(--brand-border)] text-[#1d4ed8] px-2.5 py-1.5 rounded-xl font-semibold transition-[background,border-color,color] hover:bg-[var(--brand-accent-soft)] hover:border-[#7c3aed] hover:text-[#7c3aed]"
-    : "bg-transparent border-0 text-blue-600 px-2.5 py-1.5 rounded-xl font-semibold transition-[color] hover:text-[#6d28d9]";
-  const disabledButtonClass =
-    "bg-[var(--brand-accent)] text-white border-0 px-3.5 py-[7px] rounded-[16px] font-semibold text-[15px] transition-[box-shadow,background]";
-
-  // 菜单项样式
-  const itemActiveClass = showBorder
-    ? "bg-[var(--brand-accent-soft)] text-[#6d28d9] border border-[#c4b5fd]"
-    : "bg-white text-[#6d28d9] border-0";
-  const itemIdleClass = showBorder
-    ? "bg-white text-blue-600 border border-[var(--brand-border)] hover:border-[#6d28d9] hover:text-[#6d28d9]"
-    : "bg-white text-blue-600 border-0 hover:text-[#6d28d9]";
-
   // 获取当前选中的项
   const selectedItem = showSelected ? items.find((item) => item.active) : null;
+  const hasActiveItem = items.some((item) => item.active);
+  const buttonActive = active || hasActiveItem;
   const displayButton = selectedItem ? selectedItem.label : button;
 
   // 根据direction决定菜单位置和对齐方式
@@ -182,86 +173,56 @@ const Dropdown: React.FC<DropdownProps> = ({
         data-oid="hd02w-p"
       />
 
-      <Button
-        className={`group/dropdown-trigger ${
-          buttonClassName ||
-          (buttonDisabled ? disabledButtonClass : defaultButtonClass)
-        }`}
-        aria-expanded="false"
-        onClick={onButtonClick}
+      <DropdownButton
+        showBorder={showBorder}
         disabled={buttonDisabled}
-        data-oid="2k_c_27"
+        active={buttonActive}
+        className={buttonClassName}
+        onClick={onButtonClick}
+        direction={direction}
       >
-        <span
-          className="inline-flex items-center gap-1.5 text-[14px] leading-[1.2] [&_.anticon]:text-[1em] [&_.anticon>svg]:h-[1em] [&_.anticon>svg]:w-[1em]"
-        >
-          {displayButton}
-          {direction === "up" && (
-            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-            </svg>
-          )}
-        </span>
-      </Button>
+        {displayButton}
+      </DropdownButton>
+
       {items && items.length > 0 && (
         canPortal && portalContainer
           ? createPortal(
-                  <div
-                    ref={menuRef}
-                    style={menuStyle}
-                    className={`dropdown-menu-panel p-1 min-w-[120px] flex flex-col gap-0.5 transition-[opacity,transform] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-                      open
-                        ? "opacity-100 scale-[1.01] translate-y-0 pointer-events-auto"
-                        : `opacity-0 scale-[0.98] ${direction === "up" ? "translate-y-2" : "-translate-y-2"} pointer-events-none`
-                    }`}
-                    data-oid="z7um0kb"
-                    onMouseEnter={handleMouseEnter}
-                    onMouseLeave={handleMouseLeave}
-                  >
-                {items.map((item, i) => (
-                  <Button
-                    key={i}
-                    className={`dropdown-menu-item${item.active ? " item-active" : ""} group/dropdown-item relative w-full px-3 py-1.5 rounded-lg text-sm font-semibold transition-[background,border-color,color] whitespace-nowrap after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[1.5px] after:w-0 after:bg-current after:transition-all after:duration-200 hover:after:w-full`}
-                    onClick={() => {
-                      setOpen(false);
-                      item.onClick?.();
-                    }}
-                    data-oid="i7-h8ep"
-                  >
-                    <span className="inline-flex items-center justify-center gap-2 text-[14px] leading-[1.2] [&_.anticon]:text-[1em] [&_.anticon>svg]:h-[1em] [&_.anticon>svg]:w-[1em]">
-                      {item.label}
-                      {showCheck && item.active && <span>✓</span>}
-                    </span>
-                  </Button>
-                ))}
-              </div>,
+              <DropdownMenu
+                menuRef={menuRef}
+                items={items}
+                open={open}
+                showCheck={showCheck}
+                direction={direction}
+                showBorder={showBorder}
+                style={menuStyle}
+                isPortal
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+                onItemClick={(item) => {
+                  setOpen(false);
+                  item.onClick?.();
+                }}
+              />,
               portalContainer
             )
-            : (
-            <div
-              ref={menuRef}
-              className={`dropdown-menu-panel absolute ${menuAlignClass} ${menuPositionClass} p-1 min-w-[120px] flex flex-col gap-0.5 opacity-0 scale-[0.98] pointer-events-none z-[2147483647] transition-[opacity,transform] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] ${direction === "up" ? "translate-y-2 origin-bottom-left" : "-translate-y-2 origin-top-right"} group-hover:opacity-100 group-hover:scale-[1.01] group-hover:translate-y-0 group-hover:pointer-events-auto group-hover:duration-150 group-focus-within:opacity-100 group-focus-within:scale-[1.01] group-focus-within:translate-y-0 group-focus-within:pointer-events-auto group-focus-within:duration-150`}
-              data-oid="z7um0kb"
+          : (
+            <DropdownMenu
+              menuRef={menuRef}
+              items={items}
+              open={open}
+              showCheck={showCheck}
+              direction={direction}
+              showBorder={showBorder}
+              menuAlignClass={menuAlignClass}
+              menuPositionClass={menuPositionClass}
+              isPortal={false}
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
-            >
-              {items.map((item, i) => (
-                <Button
-                  key={i}
-                  className={`dropdown-menu-item${item.active ? " item-active" : ""} group/dropdown-item relative w-full px-3 py-1.5 rounded-lg text-sm font-semibold transition-[background,border-color,color] whitespace-nowrap after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[1.5px] after:w-0 after:bg-current after:transition-all after:duration-200 hover:after:w-full`}
-                  onClick={() => {
-                    setOpen(false);
-                    item.onClick?.();
-                  }}
-                  data-oid="i7-h8ep"
-                >
-                  <span className="inline-flex items-center justify-center gap-2 text-[14px] leading-[1.2] [&_.anticon]:text-[1em] [&_.anticon>svg]:h-[1em] [&_.anticon>svg]:w-[1em]">
-                    {item.label}
-                    {showCheck && item.active && <span>✓</span>}
-                  </span>
-                </Button>
-              ))}
-            </div>
+              onItemClick={(item) => {
+                setOpen(false);
+                item.onClick?.();
+              }}
+            />
           )
       )}
     </div>

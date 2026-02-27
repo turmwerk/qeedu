@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Layout, Modal, Input } from "antd";
+import { Layout } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   ReadOutlined,
@@ -18,6 +18,8 @@ import {
   MenuOutlined,
 } from "@ant-design/icons";
 import Dropdown from "@/components/Dropdown";
+import Button from "@/components/Button";
+import SearchModal from "@/layouts/MainLayout/components/SearchModal";
 
 const { Header } = Layout;
 
@@ -78,12 +80,12 @@ const routeConfig: Record<string, { title: string; icon?: React.ReactNode }> = {
 };
 
 const menuButtonBase =
-  "relative inline-flex items-center gap-1.5 px-3.5 py-1.5 text-[14px] font-semibold rounded-xl transition-[color] hover:text-[#6d28d9]";
+  "relative inline-flex items-center gap-1.5 px-3.5 py-1.5 text-[14px] font-semibold rounded-xl transition-[color] hover:text-[var(--brand-purple)]";
 const menuButtonUnderline = 
   "after:content-[''] after:absolute after:left-0 after:-bottom-[1px] after:h-[1.5px] after:w-0 after:bg-current after:transition-all after:duration-200 hover:after:w-full";
-const menuButtonIdle = "text-blue-600 bg-transparent";
+const menuButtonIdle = "text-[var(--brand-blue)] bg-transparent";
 const menuButtonActive =
-  "text-[#6d28d9] bg-[var(--brand-accent-soft)]";
+  "text-[var(--brand-purple)] bg-[var(--brand-accent-soft)]";
 
 const buildItems = (
   pathname: string,
@@ -143,27 +145,17 @@ const MainHeader: React.FC<{
       className="main-header bg-transparent border-0 shadow-none py-2 px-4 flex items-center justify-between relative z-[100] leading-[20px] h-[56px]"
       data-oid="hoa5tyk"
     >
-      <Modal
-        open={searchVisible}
-        onCancel={() => setSearchVisible(false)}
-        footer={null}
-        title="搜索"
-        centered
-      >
-        <div className="p-2">
-          <Input size="large" placeholder="输入即搜索" />
-        </div>
-      </Modal>
+      <SearchModal open={searchVisible} onClose={() => setSearchVisible(false)} />
       <div className="flex items-center gap-3" data-oid="40dtg53">
         {showSiderToggle && !siderOpen && (
-          <button
-            className="flex items-center justify-center w-9 h-9 rounded-lg bg-white border border-[var(--brand-border)] text-blue-600 hover:border-[#6d28d9] hover:text-[#6d28d9] !hover:bg-white transition"
+          <Button
+            className="flex items-center justify-center w-9 h-9 rounded-lg bg-white border border-[var(--brand-border)] text-[var(--brand-blue)] hover:border-[var(--brand-purple)] hover:text-[var(--brand-purple)] transition"
             onClick={onToggleSider}
             aria-label="打开侧边栏"
             data-oid="sider-toggle"
           >
             <MenuOutlined />
-          </button>
+          </Button>
         )}
         {currentConfig.icon && (
           <span
@@ -181,26 +173,27 @@ const MainHeader: React.FC<{
         </h1>
       </div>
       <div className="flex items-center gap-3" data-oid="lg2sztd">
-        <button
+        <Button
           className={`${menuButtonBase} ${menuButtonUnderline} ${menuButtonIdle}`}
           onClick={() => setSearchVisible(true)}
           data-oid="search-button"
         >
           <SearchOutlined />
           <span>搜索</span>
-        </button>
+        </Button>
         {!isHomePage && (
-          <button
+          <Button
             className={`${menuButtonBase} ${menuButtonUnderline} ${menuButtonIdle}`}
             onClick={() => navigate("/")}
             data-oid="obxmeer"
           >
-            <HomeOutlined data-oid="n:k00v0" />
-            <span data-oid="wwhcunl">首页</span>
-          </button>
+            <HomeOutlined />
+            <span>首页</span>
+          </Button>
         )}
 
         <Dropdown
+          active={isStudy}
           button={
             <span className="inline-flex items-center gap-1.5">
               <ReadOutlined />
@@ -211,7 +204,7 @@ const MainHeader: React.FC<{
             isStudy ? menuButtonActive : menuButtonIdle
           }`}
           onButtonClick={() => {
-            if (!isStudy) navigate("/study");
+            if (location.pathname !== "/study") navigate("/study");
           }}
           items={buildItems(location.pathname, navigate, [
             { label: "编程辅导", path: "/study/code-tutor", icon: <CodeOutlined /> },
@@ -220,6 +213,7 @@ const MainHeader: React.FC<{
           portalToBody={true}
         />
         <Dropdown
+          active={isTeaching}
           button={
             <span className="inline-flex items-center gap-1.5">
               <ExperimentOutlined />
@@ -230,7 +224,7 @@ const MainHeader: React.FC<{
             isTeaching ? menuButtonActive : menuButtonIdle
           }`}
           onButtonClick={() => {
-            if (!isTeaching) navigate("/teaching");
+            if (location.pathname !== "/teaching") navigate("/teaching");
           }}
           items={buildItems(location.pathname, navigate, [
             { label: "大纲设计", path: "/teaching/syllabus/ListPage", icon: <BookOutlined /> },
@@ -240,6 +234,7 @@ const MainHeader: React.FC<{
           portalToBody={true}
         />
         <Dropdown
+          active={isManagement}
           button={
             <span className="inline-flex items-center gap-1.5">
               <ControlOutlined />
@@ -250,7 +245,7 @@ const MainHeader: React.FC<{
             isManagement ? menuButtonActive : menuButtonIdle
           }`}
           onButtonClick={() => {
-            if (!isManagement) navigate("/management");
+            if (location.pathname !== "/management") navigate("/management");
           }}
           items={buildItems(location.pathname, navigate, [
             { label: "专业建设", path: "/management/major", icon: <BuildOutlined /> },
@@ -260,6 +255,7 @@ const MainHeader: React.FC<{
           portalToBody={true}
         />
         <Dropdown
+          active={isResearch}
           button={
             <span className="inline-flex items-center gap-1.5">
               <TeamOutlined />
@@ -270,7 +266,7 @@ const MainHeader: React.FC<{
             isResearch ? menuButtonActive : menuButtonIdle
           }`}
           onButtonClick={() => {
-            if (!isResearch) navigate("/research");
+            if (location.pathname !== "/research") navigate("/research");
           }}
           items={buildItems(location.pathname, navigate, [
             { label: "科研协作", path: "/research/collaboration", icon: <TeamOutlined /> },
@@ -280,23 +276,23 @@ const MainHeader: React.FC<{
         />
 
         {isHomePage ? (
-          <button
+          <Button
             className={`${menuButtonBase} ${menuButtonUnderline} ${menuButtonIdle}`}
             onClick={() => navigate("/login")}
             data-oid=".99sosb"
           >
-            <UserOutlined data-oid="gg7zr4f" />
-            <span data-oid="-boqnsj">登录 / 注册</span>
-          </button>
+            <UserOutlined />
+            <span>登录 / 注册</span>
+          </Button>
         ) : (
-          <button
+          <Button
             className={`${menuButtonBase} ${menuButtonUnderline} ${menuButtonIdle}`}
             onClick={() => (backTarget ? navigate(backTarget) : navigate(-1))}
             data-oid="36x2h-h"
           >
-            <ArrowLeftOutlined data-oid="o9u1a7c" />
-            <span data-oid="8-4d5cu">返回</span>
-          </button>
+            <ArrowLeftOutlined />
+            <span>返回</span>
+          </Button>
         )}
       </div>
     </Header>

@@ -1,4 +1,5 @@
 /* Aggregate style entry - use modular style parts (Dart Sass: prefer @use over @import) */
+@use "./fonts/index.scss" as *;
 @use "./tailwind/index.scss" as *;
 @use "./scrollbars/index.scss" as *;
 @use "./cursor/index.scss" as *;
