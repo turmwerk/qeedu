@@ -28,6 +28,12 @@ export interface ListProps<T = any> {
   isItemDisabled?: (item: T) => boolean;
   /** 自定义条目容器样式 */
   itemClassName?: (item: T) => string;
+  /** 是否显示条目悬浮光晕（默认 true） */
+  hoverGlow?: boolean;
+  /** 操作按钮默认样式（当 action 未提供 className 时） */
+  defaultActionClassName?: string;
+  /** 编辑态（确定/取消）按钮样式 */
+  editingActionClassName?: string;
 }
 
 function List<T = any>({
@@ -40,6 +46,9 @@ function List<T = any>({
   onItemClick,
   isItemDisabled,
   itemClassName,
+  hoverGlow = true,
+  defaultActionClassName,
+  editingActionClassName,
 }: ListProps<T>) {
   const [editingKey, setEditingKey] = useState<string | null>(null);
   const [editingValue, setEditingValue] = useState<string>("");
@@ -69,7 +78,7 @@ function List<T = any>({
         return (
           <div
             key={key}
-            className={`group relative flex justify-between items-center bg-white/70 p-4 rounded-[12px] border border-[var(--brand-border)] transition-[box-shadow,border-color,background] hover:shadow-[0_12px_26px_rgba(17,24,39,0.12)] hover:border-[var(--brand-accent)] hover:bg-white ${
+            className={`teaching-list-item group relative flex justify-between items-center bg-white/70 p-4 rounded-[12px] border border-[var(--brand-border)] transition-[box-shadow,border-color,background] hover:shadow-[0_12px_26px_rgba(17,24,39,0.12)] hover:border-[var(--brand-accent)] hover:bg-white ${
               onItemClick && !disabled ? "cursor-pointer" : ""
             } ${itemClassName ? itemClassName(item) : ""}`}
             onClick={() => {
@@ -79,13 +88,13 @@ function List<T = any>({
             }}
             data-oid="_99fzva"
           >
-            {onItemClick && (
+            {onItemClick && hoverGlow && (
               <div className="pointer-events-none absolute inset-0 rounded-[10px] opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                 <div className="absolute -inset-2 rounded-[14px] bg-[radial-gradient(circle_at_50%_0%,rgba(99,102,241,0.18),transparent_70%)] blur-[10px]" />
               </div>
             )}
             <div
-              className="w-10 text-center text-[var(--brand-accent)] font-bold mr-3"
+              className="teaching-list-index w-10 text-center text-[var(--brand-blue)] font-bold mr-3"
               data-oid="9yfs1_:"
             >
               {idx + 1}
@@ -128,6 +137,7 @@ function List<T = any>({
                         key={i}
                         className={
                           action.className ||
+                          defaultActionClassName ||
                           "bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1.5 rounded-lg cursor-pointer font-semibold hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)]"
                         }
                         onClick={(e) => {
@@ -148,6 +158,7 @@ function List<T = any>({
                       key={i}
                       className={
                         action.className ||
+                        defaultActionClassName ||
                         "bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1.5 rounded-lg cursor-pointer font-semibold hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)]"
                       }
                       onClick={(e) => {
@@ -166,7 +177,11 @@ function List<T = any>({
             {isEditing && (
               <div className="flex gap-2" data-oid="ylq3eih">
                 <Button
-                  className="bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1.5 rounded-lg cursor-pointer font-semibold hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)]"
+                  className={
+                    editingActionClassName ||
+                    defaultActionClassName ||
+                    "bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1.5 rounded-lg cursor-pointer font-semibold hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)]"
+                  }
                   onClick={(e) => {
                     e.stopPropagation();
                     const renameAction = actions?.find((a) => a.isRename);
@@ -178,7 +193,11 @@ function List<T = any>({
                   确定
                 </Button>
                 <Button
-                  className="bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1.5 rounded-lg cursor-pointer font-semibold hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)]"
+                  className={
+                    editingActionClassName ||
+                    defaultActionClassName ||
+                    "bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1.5 rounded-lg cursor-pointer font-semibold hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)]"
+                  }
                   onClick={(e) => {
                     e.stopPropagation();
                     setEditingKey(null);

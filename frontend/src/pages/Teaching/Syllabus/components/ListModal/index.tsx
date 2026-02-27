@@ -115,7 +115,7 @@ const ListModal: React.FC<Props> = ({
       <div className={modalMode ? "p-2 text-[#444]" : "p-6 text-[#444]"}>
         <div className="grid grid-cols-1 gap-5 items-start">
           <div>
-            <div className="bg-white/40 backdrop-blur-[16px] rounded-xl p-[18px] shadow-[0_8px_32px_rgba(147,51,234,0.12)] border border-white/40 min-h-[520px]">
+            <div className="teaching-list-glass rounded-xl p-[18px] min-h-[520px]">
               <Header
                 count={items.length}
                 sortBy={sortBy}
@@ -137,6 +137,9 @@ const ListModal: React.FC<Props> = ({
                 <List<Outline>
                   items={searchedItems}
                   keyExtractor={(i) => i.id}
+                  hoverGlow={false}
+                  defaultActionClassName="flex items-center gap-1.5 px-5 py-2 text-[15px] font-semibold rounded-xl select-none bg-white border border-transparent text-[#22c55e] cursor-pointer transition-[background,border-color,transform,color] hover:bg-[#f0fdf4] hover:border-[#bbf7d0] hover:text-[#16a34a] hover:-translate-y-[1px]"
+                  editingActionClassName="flex items-center gap-1.5 px-5 py-2 text-[15px] font-semibold rounded-xl select-none bg-white border border-transparent text-[#22c55e] cursor-pointer transition-[background,border-color,transform,color] hover:bg-[#f0fdf4] hover:border-[#bbf7d0] hover:text-[#16a34a] hover:-translate-y-[1px]"
                   editable={{ getValue: (i) => i.title }}
                   onItemClick={(item) => onEdit(item.id)}
                   isItemDisabled={(item) => !!currentId && item.id === currentId}
@@ -147,15 +150,15 @@ const ListModal: React.FC<Props> = ({
                   }
                   renderItem={(item) => (
                     <>
-                      <div className="font-bold text-[#2d1b4f]">
+                      <div className="teaching-list-title font-bold text-[var(--brand-blue)]">
                         {item.title}
                       </div>
                       <div className="mt-1.5 flex gap-3 items-center">
                         {item.subtitle && (
-                          <span className="text-[#888]">{item.subtitle}</span>
+                          <span className="teaching-list-subtitle text-[#888]">{item.subtitle}</span>
                         )}
                         {item.createdAt && (
-                          <span className="text-[#999] text-[12px]">
+                          <span className="teaching-list-time text-[#999] text-[12px]">
                             {new Date(item.createdAt).toLocaleString()}
                           </span>
                         )}
@@ -167,7 +170,7 @@ const ListModal: React.FC<Props> = ({
                       label: "继续编辑",
                       onClick: (item) => onEdit(item.id),
                       className:
-                        "bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1.5 rounded-lg cursor-pointer font-semibold transition-[background,border-color,box-shadow,transform] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)] hover:-translate-y-[1px]",
+                        "flex items-center gap-1.5 px-5 py-2 text-[15px] font-semibold rounded-xl select-none bg-white border border-transparent text-[#22c55e] cursor-pointer transition-[background,border-color,transform,color] hover:bg-[#f0fdf4] hover:border-[#bbf7d0] hover:text-[#16a34a] hover:-translate-y-[1px]",
                     },
                     {
                       label: "重命名",
@@ -175,7 +178,7 @@ const ListModal: React.FC<Props> = ({
                       onClick: (item, newName?: string) =>
                         newName && onRename(item.id, newName),
                       className:
-                        "bg-[#e8f3ff] text-[#1d4ed8] border border-[#bfdbfe] px-2.5 py-1.5 rounded-lg cursor-pointer font-semibold transition-[background,border-color,box-shadow,transform] hover:bg-[#dbeafe] hover:border-[#93c5fd] hover:shadow-[0_6px_14px_rgba(59,130,246,0.2)] hover:-translate-y-[1px]",
+                        "flex items-center gap-1.5 px-5 py-2 text-[15px] font-semibold rounded-xl select-none bg-white text-[var(--brand-blue)] border border-transparent cursor-pointer transition-[background,border-color,color,transform] hover:bg-[#e8f3ff] hover:border-[#93c5fd] hover:text-[var(--brand-blue)] hover:-translate-y-[1px]",
                     },
                     {
                       label: "删除",
@@ -184,7 +187,7 @@ const ListModal: React.FC<Props> = ({
                         setConfirmDeleteTitle(item.title || "未命名课程");
                       },
                       className:
-                        "bg-white border border-[rgba(200,30,30,0.16)] text-[#b02a37] px-2.5 py-1.5 rounded-lg cursor-pointer font-semibold hover:bg-[#ffecec] hover:border-[#f1a1a1]",
+                        "flex items-center gap-1.5 px-5 py-2 text-[15px] font-semibold rounded-xl select-none bg-white border border-transparent text-[#dc2626] cursor-pointer transition-[background,border-color,color,transform] hover:bg-[#fef2f2] hover:border-[#fecaca] hover:text-[#b91c1c] hover:-translate-y-[1px]",
                     },
                   ]}
                   emptyText="暂无课程大纲。"

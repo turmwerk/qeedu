@@ -69,11 +69,16 @@
 }
 
 /* Glass-morphism button – matches module card style (light) */
-/* Search Modal – 淡紫色 (light) */
+/* Search Modal – 浅白玻璃态 (light) */
 [data-theme="light"] .search-modal .ant-modal-content {
-  background-color: #ede9fe !important;
-  border: 1px solid rgba(139, 92, 246, 0.20) !important;
-  box-shadow: 0 8px 40px rgba(109, 40, 217, 0.12) !important;
+  background: rgba(255, 255, 255, 0.88) !important;
+  border: 1px solid rgba(255, 255, 255, 0.9) !important;
+  box-shadow:
+    0 10px 34px rgba(120, 90, 200, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.92),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.56) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(210%);
+  backdrop-filter: blur(40px) saturate(210%);
   border-radius: 16px;
 }
 [data-theme="light"] .search-modal .ant-modal-header {
@@ -88,11 +93,11 @@
   background: transparent !important;
 }
 [data-theme="light"] .search-modal .ant-modal-close {
-  color: #7c3aed !important;
+  color: #dc2626 !important;
 }
 [data-theme="light"] .search-modal .ant-modal-close:hover {
-  background-color: rgba(139, 92, 246, 0.12) !important;
-  color: #5b21b6 !important;
+  background-color: #fef2f2 !important;
+  color: #b91c1c !important;
 }
 [data-theme="light"] .search-modal .ant-input {
   background-color: rgba(255, 255, 255, 0.75) !important;
@@ -108,18 +113,23 @@
 }
 
 [data-theme="light"] .glass-btn {
-  background: rgba(255, 255, 255, 0.45) !important;
-  border: none !important;
-  box-shadow: 0 4px 24px rgba(120, 90, 200, 0.08) !important;
-  -webkit-backdrop-filter: blur(16px) saturate(160%);
-  backdrop-filter: blur(16px) saturate(160%);
-  color: #3b5bdb !important;
-  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s, color 0.2s, transform 0.15s !important;
+  background: rgba(255, 255, 255, 0.35) !important;
+  border: 1px solid rgba(255, 255, 255, 0.45) !important;
+  box-shadow:
+    0 8px 32px rgba(120, 90, 200, 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  backdrop-filter: blur(16px) saturate(180%);
+  color: var(--brand-blue) !important;
+  transition: background 0.2s, box-shadow 0.2s, color 0.2s, transform 0.15s, border-color 0.2s !important;
 }
 [data-theme="light"] .glass-btn:hover {
-  background: rgba(255, 255, 255, 0.62) !important;
-  box-shadow: 0 12px 36px rgba(104, 86, 180, 0.16) !important;
-  color: #6d28d9 !important;
+  background: rgba(255, 255, 255, 0.50) !important;
+  border-color: rgba(255, 255, 255, 0.60) !important;
+  box-shadow:
+    0 14px 40px rgba(104, 86, 180, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.70) !important;
+  color: var(--brand-purple) !important;
   transform: translateY(-1px);
 }
 
@@ -151,16 +161,34 @@
 
 /* ModuleHub card – frosted glass (light) */
 [data-theme="light"] .module-hub-card {
-  background-color: rgba(255, 255, 255, 0.45) !important;
-  border: none !important;
-  box-shadow: 0 4px 24px rgba(120, 90, 200, 0.08) !important;
-  -webkit-backdrop-filter: blur(16px) saturate(160%);
-  backdrop-filter: blur(16px) saturate(160%);
+  background: rgba(255, 255, 255, 0.58) !important;
+  border: 0 none transparent !important;
+  box-shadow:
+    0 8px 30px rgba(120, 90, 200, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.74),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.34) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(210%);
+  backdrop-filter: blur(40px) saturate(210%);
+}
+
+[data-theme="light"] .teaching-list-glass {
+  background: rgba(255, 255, 255, 0.58) !important;
+  border: 0 none transparent !important;
+  box-shadow:
+    0 8px 30px rgba(120, 90, 200, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.74),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.34) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(210%);
+  backdrop-filter: blur(40px) saturate(210%);
 }
 
 [data-theme="light"] .module-hub-card:hover {
-  background-color: rgba(255, 255, 255, 0.62) !important;
-  box-shadow: 0 12px 36px rgba(104, 86, 180, 0.16) !important;
+  background: rgba(255, 255, 255, 0.74) !important;
+  border: 0 none transparent !important;
+  box-shadow:
+    0 14px 40px rgba(104, 86, 180, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.42) !important;
 }
 
 /* Sub-links – fully transparent, underline-only style */
@@ -187,11 +215,14 @@
 
 /* Auth panel – frosted glass (light) */
 [data-theme="light"] .auth-panel {
-  background-color: rgba(255, 255, 255, 0.45) !important;
-  border: none !important;
-  box-shadow: 0 4px 24px rgba(120, 90, 200, 0.08) !important;
-  -webkit-backdrop-filter: blur(16px) saturate(160%);
-  backdrop-filter: blur(16px) saturate(160%);
+  background: rgba(255, 255, 255, 0.60) !important;
+  border: 0 none transparent !important;
+  box-shadow:
+    0 12px 38px rgba(120, 90, 200, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.78),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.36) !important;
+  -webkit-backdrop-filter: blur(44px) saturate(215%);
+  backdrop-filter: blur(44px) saturate(215%);
 }
 
 /* Dropdown menu panel – frosted glass (light) */

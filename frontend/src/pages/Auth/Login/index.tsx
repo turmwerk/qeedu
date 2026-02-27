@@ -61,7 +61,7 @@ export default function Login() {
 
   // 两种表单会通过共享 builder 生成（下方 buildFields）
   const primaryButtonClass =
-    "w-full h-[56px] flex items-center justify-center gap-1.5 text-[18px] font-extrabold rounded-xl bg-[var(--brand-blue)] text-white border-0 shadow-[var(--brand-shadow)] transition-[background,border-color,box-shadow,transform] hover:bg-[var(--brand-purple)] hover:shadow-[var(--brand-shadow)] active:scale-95";
+    "w-full h-[56px] flex items-center justify-center gap-1.5 text-[18px] font-extrabold rounded-xl bg-[var(--brand-blue)] text-white border-0 shadow-[var(--brand-shadow)] transition-[background,border-color,box-shadow,transform] hover:bg-[var(--brand-blue)] hover:shadow-[var(--brand-shadow)] active:scale-95";
   
   const sendButtonClass =
     "h-[56px] min-w-[96px] px-[18px] box-border border border-[var(--brand-blue)] bg-white text-[var(--brand-blue)] text-[16px] font-bold hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-purple)] active:scale-95";

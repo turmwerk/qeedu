@@ -157,16 +157,26 @@ const MainHeader: React.FC<{
             <MenuOutlined />
           </Button>
         )}
+        {!isHomePage && (
+          <Button
+            className={`${menuButtonBase} ${menuButtonUnderline} ${menuButtonIdle}`}
+            onClick={() => (backTarget ? navigate(backTarget) : navigate(-1))}
+            data-oid="36x2h-h"
+          >
+            <ArrowLeftOutlined />
+            <span>返回</span>
+          </Button>
+        )}
         {currentConfig.icon && (
           <span
-            className="text-[24px] text-[#6236ff] flex items-center"
+            className="text-[24px] text-[var(--brand-blue)] flex items-center"
             data-oid="rx_r2du"
           >
             {currentConfig.icon}
           </span>
         )}
         <h1
-          className="m-0 text-[20px] font-bold text-[var(--header-blue)]"
+          className="m-0 text-[20px] font-bold text-[var(--brand-blue)]"
           data-oid="62z39-1"
         >
           {currentConfig.title}
@@ -275,25 +285,14 @@ const MainHeader: React.FC<{
           portalToBody={true}
         />
 
-        {isHomePage ? (
-          <Button
-            className={`${menuButtonBase} ${menuButtonUnderline} ${menuButtonIdle}`}
-            onClick={() => navigate("/login")}
-            data-oid=".99sosb"
-          >
-            <UserOutlined />
-            <span>登录 / 注册</span>
-          </Button>
-        ) : (
-          <Button
-            className={`${menuButtonBase} ${menuButtonUnderline} ${menuButtonIdle}`}
-            onClick={() => (backTarget ? navigate(backTarget) : navigate(-1))}
-            data-oid="36x2h-h"
-          >
-            <ArrowLeftOutlined />
-            <span>返回</span>
-          </Button>
-        )}
+        <Button
+          className={`${menuButtonBase} ${menuButtonUnderline} ${menuButtonIdle}`}
+          onClick={() => navigate("/login")}
+          data-oid=".99sosb"
+        >
+          <UserOutlined />
+          <span>登录 / 注册</span>
+        </Button>
       </div>
     </Header>
   );

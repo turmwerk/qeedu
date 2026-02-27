@@ -19,8 +19,8 @@ const SearchBar: React.FC<Props> = ({
 	const [expanded, setExpanded] = useState(defaultExpanded);
 
 	const iconButtonClass =
-		"flex items-center justify-center w-9 h-9 border border-[var(--brand-border)] bg-white text-[var(--brand-accent)] transition-[background,border-color,box-shadow] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[0_6px_14px_rgba(59,130,246,0.18)]";
-	const staticIconClass = "text-[var(--brand-accent)]";
+		"flex items-center justify-center w-9 h-9 border border-transparent bg-white text-[var(--brand-blue)] transition-[background,border-color,color] hover:text-[var(--brand-purple)] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-purple)]";
+	const staticIconClass = "text-[var(--brand-blue)]";
 	const hintText = `${placeholder}（输入即搜索）`;
 
 	return (

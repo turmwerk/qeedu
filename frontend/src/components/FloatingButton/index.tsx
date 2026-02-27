@@ -56,8 +56,11 @@ const FloatingButton: React.FC<FloatingButtonProps> = ({
 
   // 默认样式仿照 Header 中的侧边按钮
   // 如果调用方没有传 bgColor，则使用默认白底；否则让调用方控制背景（可设为透明）
-  const bgClass = bgColor ? "" : "bg-white";
-  const defaultClasses = `inline-flex items-center justify-center p-0 border ${bgClass} border-[var(--brand-border)] text-[var(--brand-accent)] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] transition`;
+  // 当 className 含 glass-btn 时，去掉 border/bg 默认值，完全交给 CSS glass 规则
+  const isGlass = className.includes('glass');
+  const bgClass = isGlass ? '' : (bgColor ? '' : 'bg-white');
+  const borderClass = isGlass ? '' : 'border border-[var(--brand-border)] hover:border-[var(--brand-accent)]';
+  const defaultClasses = `inline-flex items-center justify-center p-0 ${borderClass} ${bgClass} text-[var(--brand-accent)] hover:bg-[var(--brand-accent-soft)] transition`;
 
   // hover/active 颜色通过 className 传递或外部覆盖
   // 合并 hover/active 样式

@@ -30,10 +30,7 @@ const CreateModal: React.FC<CreateModalProps> = ({ open, onClose, onCreate }) =>
       onClose={onClose}
     >
       <div>
-        <p className="text-[#666]">
-          简要表单保证必填槽位，然后进入双栏协作。
-        </p>
-        <div className="mt-3">
+        <div>
           <Form
             mode="table"
             fields={syllabusCreateFields}

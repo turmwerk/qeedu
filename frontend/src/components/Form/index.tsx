@@ -147,8 +147,8 @@ const Form: React.FC<FormProps> = ({
         );
       })}
 
-      <div className="mt-3 col-span-2" data-oid="sfs651y">
-        <Button className={submitClassName ? `bg-[var(--brand-accent)] text-white border-0 px-3.5 py-2 rounded-md shadow-[var(--brand-shadow)] transition-[background,box-shadow] hover:bg-[var(--brand-accent-strong)] hover:shadow-[var(--brand-shadow)] ${submitClassName}` : "bg-[var(--brand-accent)] text-white border-0 px-3.5 py-2 rounded-md shadow-[var(--brand-shadow)] transition-[background,box-shadow] hover:bg-[var(--brand-accent-strong)] hover:shadow-[var(--brand-shadow)]"} type="submit" disabled={!!submitDisabled || !!submitLoading} data-oid="74vesmy">
+      <div className="mt-3 col-span-2 flex justify-end glass-form-submit-bar" data-oid="sfs651y">
+        <Button className={submitClassName ? `bg-transparent border border-transparent text-[var(--brand-blue)] px-3.5 py-2 rounded-md transition-[background,box-shadow,border-color,color] hover:border-[var(--brand-purple)] hover:text-[var(--brand-purple)] hover:bg-[rgba(109,40,217,0.06)] ${submitClassName}` : "bg-transparent border border-transparent text-[var(--brand-blue)] px-3.5 py-2 rounded-md transition-[background,box-shadow,border-color,color] hover:border-[var(--brand-purple)] hover:text-[var(--brand-purple)] hover:bg-[rgba(109,40,217,0.06)]"} type="submit" disabled={!!submitDisabled || !!submitLoading} data-oid="74vesmy">
           {submitLoading ? (
             <span className="inline-flex items-center gap-1.5" data-oid="1cfqmxu">
               {submitLoadingText ?? submitText}

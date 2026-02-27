@@ -27,7 +27,7 @@ const ModuleHub: React.FC<Props> = ({ headline, subtitle, features }) => {
         >
           {headline && (
             <h1
-              className="m-0 font-black text-[var(--header-blue)] text-center relative z-[1] text-[40px]"
+              className="m-0 font-black text-[var(--brand-blue)] text-center relative z-[1] text-[40px]"
               data-oid="x_3t9uw"
             >
               {headline}

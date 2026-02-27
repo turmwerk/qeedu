@@ -35,13 +35,34 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
             border: 2px solid ${danger ? '#c21e1e' : 'var(--brand-accent)'};
             max-width: 480px;
           }
+          /* 取消按钮：绿色无边框，hover显示边框 */
+          [data-oid="dpclpq8"] {
+            border-color: transparent !important;
+            color: #16a34a !important;
+            background: transparent !important;
+            transition: border-color 0.2s, background 0.2s, color 0.2s !important;
+          }
+          [data-oid="dpclpq8"]:hover {
+            border-color: #16a34a !important;
+            background: rgba(22, 163, 74, 0.06) !important;
+            color: #15803d !important;
+          }
+          /* 确认按钮：无边框，hover显示边框 */
+          [data-oid="a6y_157"] {
+            border-color: transparent !important;
+            transition: border-color 0.2s, background 0.2s, color 0.2s !important;
+          }
+          [data-oid="a6y_157"]:hover {
+            border-color: var(--brand-accent) !important;
+            background: var(--brand-accent-soft) !important;
+          }
           [data-oid="a6y_157"].danger-btn {
-            border-color: #c21e1e !important;
+            border-color: transparent !important;
             color: #c21e1e !important;
           }
           [data-oid="a6y_157"].danger-btn:hover {
-            background: rgba(194, 30, 30, 0.1) !important;
-            border-color: #a30f0f !important;
+            background: rgba(194, 30, 30, 0.08) !important;
+            border-color: #c21e1e !important;
             color: #a30f0f !important;
           }
           [data-oid="qaytm5."]:hover {

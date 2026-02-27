@@ -1,6 +1,6 @@
 import React, { useId, useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import Button from "@/components/Button";
+import { CloseOutlined } from "@ant-design/icons";
 
 const Modal: React.FC<{
   visible: boolean;
@@ -59,7 +59,7 @@ const Modal: React.FC<{
         {width ? `.${widthClass} { width: ${widthValue}; }` : ""}
       </style>
       <div
-        className={`w-[780px] max-w-[calc(100%-40px)] bg-white/90 backdrop-blur-[24px] rounded-xl shadow-[0_20px_60px_rgba(147,51,234,0.25)] border border-white/40 overflow-hidden transition-all duration-300 ease-out ${widthClass} ${
+        className={`glass-modal-panel w-[780px] max-w-[calc(100%-40px)] rounded-xl overflow-hidden transition-all duration-300 ease-out ${widthClass} ${
           isAnimating 
             ? "opacity-100 scale-100 translate-y-0" 
             : "opacity-0 scale-95 translate-y-4"
@@ -69,21 +69,20 @@ const Modal: React.FC<{
       >
         {showHeader && (
           <div
-            className="flex items-center justify-between px-5 py-4 border-b border-[#f1f1f1]"
+            className="glass-modal-header flex items-center justify-between px-5 py-4 border-b border-black/10"
             data-oid="rkufj.y"
           >
-            <div className="font-bold text-[#2d1b4f]" data-oid="0pbqih6">
+            <div className="glass-modal-title font-bold" data-oid="0pbqih6">
               {title}
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              className="!px-2 !py-1 !text-[16px] !min-w-[28px] !h-[28px] !border-green-500 !text-green-600 hover:!bg-green-50 hover:!border-green-600"
+            <button
               onClick={onClose}
+              title="关闭"
+              className="search-modal-close w-8 h-8 flex items-center justify-center rounded-full"
               data-oid="t:bcga_"
             >
-              ×
-            </Button>
+              <CloseOutlined className="search-modal-close-icon" />
+            </button>
           </div>
         )}
         <div

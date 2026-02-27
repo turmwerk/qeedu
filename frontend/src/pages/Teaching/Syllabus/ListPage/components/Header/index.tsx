@@ -41,17 +41,17 @@ const Header: React.FC<Props> = ({
 	onCloseModal,
 }) => {
 	const sortButtonClass =
-		"bg-white border border-[#bfdbfe] text-[#1d4ed8] w-9 h-9 rounded-xl font-semibold transition-[background,border-color,box-shadow,transform] hover:bg-[#eff6ff] hover:border-[#93c5fd] hover:shadow-[0_8px_18px_rgba(59,130,246,0.18)] active:scale-95 flex items-center justify-center";
+		"bg-white border border-transparent text-[var(--brand-blue)] h-9 min-w-9 px-3 rounded-xl text-[15px] font-semibold transition-[background,border-color,color,transform] hover:text-[var(--brand-purple)] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-purple)] active:scale-95 flex items-center justify-center gap-1.5 select-none";
 	const filterButtonClass =
-		"bg-white border border-[#a7f3d0] text-[#047857] px-2.5 py-1.5 rounded-xl font-semibold transition-[background,border-color,box-shadow,transform] hover:bg-[#ecfdf3] hover:border-[#6ee7b7] hover:shadow-[0_8px_18px_rgba(16,185,129,0.18)] active:scale-95";
+		"bg-white border border-transparent text-[var(--brand-blue)] px-5 py-2 text-[15px] rounded-xl font-semibold transition-[background,border-color,color,transform] hover:text-[var(--brand-purple)] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-purple)] active:scale-95 select-none";
 	const createButtonClass =
-		"bg-white border border-[#c7d2fe] text-[#3730a3] w-9 h-9 rounded-xl font-semibold transition-[background,border-color,box-shadow,transform] hover:bg-[#eef2ff] hover:border-[#a5b4fc] hover:shadow-[0_8px_18px_rgba(99,102,241,0.18)] active:scale-95 flex items-center justify-center";
+		"bg-white border border-transparent text-[#22c55e] h-9 min-w-9 px-3 rounded-xl text-[15px] font-semibold transition-[background,border-color,color,transform] hover:bg-[#f0fdf4] hover:border-[#bbf7d0] hover:text-[#16a34a] active:scale-95 flex items-center justify-center gap-1.5 select-none";
 	const closeButtonClass =
-		"bg-white border border-[#e2e8f0] text-[#475569] w-9 h-9 rounded-xl font-semibold transition-[background,border-color,box-shadow,transform] hover:bg-[#f8fafc] hover:border-[#cbd5f5] hover:shadow-[0_8px_18px_rgba(15,23,42,0.12)] active:scale-95 flex items-center justify-center";
+		"bg-white border border-transparent text-[#dc2626] h-9 min-w-9 px-3 rounded-xl text-[15px] font-semibold transition-[background,border-color,color,transform] hover:bg-[#ffecec] hover:border-[#f1a1a1] hover:text-[#b91c1c] active:scale-95 flex items-center justify-center gap-1.5 select-none";
 
 	return (
 		<div className="flex justify-between items-center font-bold mb-3">
-			<div className="text-[var(--brand-accent)] font-bold">
+			<div className="text-[var(--brand-blue)] font-bold">
 				已创建的大纲 ({count})
 			</div>
 			<div className="flex items-center gap-2">
@@ -66,6 +66,7 @@ const Header: React.FC<Props> = ({
 				<Dropdown
 					button={order === "asc" ? <SortAscendingOutlined /> : <SortDescendingOutlined />}
 					buttonClassName={sortButtonClass}
+					portalToBody
 					onButtonClick={onToggleOrder}
 					items={[
 						{
@@ -84,6 +85,7 @@ const Header: React.FC<Props> = ({
 				<Dropdown
 					button={`筛选：${filterLabel}`}
 					buttonClassName={filterButtonClass}
+					portalToBody
 					items={([
 						{ key: "all", label: "全部" },
 						{ key: "intro", label: "含“导论”" },
