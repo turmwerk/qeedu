@@ -121,6 +121,26 @@ const ListModal: React.FC<Props> = ({
 							className="teaching-list-glass rounded-xl p-[18px] min-h-[520px]"
 							data-oid=".m9p1gd"
 						>
+							<style>{`
+								.teaching-list-glass {
+									background: rgba(255, 255, 255, 0.58) !important;
+									border: 0 none transparent !important;
+									box-shadow:
+										0 8px 30px rgba(120, 90, 200, 0.14),
+										inset 0 1px 0 rgba(255, 255, 255, 0.74),
+										inset 0 -1px 0 rgba(255, 255, 255, 0.34) !important;
+									-webkit-backdrop-filter: blur(40px) saturate(210%);
+									backdrop-filter: blur(40px) saturate(210%);
+								}
+								[data-theme="dark"] .teaching-list-glass {
+									background: rgba(255, 255, 255, 0.18) !important;
+									border: 1px solid rgba(255, 255, 255, 0.28) !important;
+									box-shadow:
+										0 10px 32px rgba(0, 0, 0, 0.42),
+										inset 0 1px 0 rgba(255, 255, 255, 0.22),
+										inset 0 -1px 0 rgba(255, 255, 255, 0.12) !important;
+								}
+							`}</style>
 							<Header
 								count={items.length}
 								sortBy={sortBy}
@@ -156,7 +176,7 @@ const ListModal: React.FC<Props> = ({
 									renderItem={(item) => (
 										<>
 											<div
-												className="teaching-list-title font-bold text-[var(--brand-blue)]"
+												className="teaching-list-title font-bold text-[var(--brand-blue)] dark:text-[#f8fbff]"
 												data-oid="k.npzg7"
 											>
 												{item.title}
@@ -166,13 +186,13 @@ const ListModal: React.FC<Props> = ({
 												data-oid="-kd074w"
 											>
 												{item.subtitle && (
-													<span className="teaching-list-subtitle text-[#888]" data-oid=".dokdd-">
+													<span className="teaching-list-subtitle text-[#888] dark:text-[#d1d9e6]" data-oid=".dokdd-">
 														{item.subtitle}
 													</span>
 												)}
 												{item.createdAt && (
 													<span
-														className="teaching-list-time text-[#999] text-[12px]"
+														className="teaching-list-time text-[#999] text-[12px] dark:text-[#c0cadb]"
 														data-oid="jzpmgij"
 													>
 														{new Date(item.createdAt).toLocaleString()}

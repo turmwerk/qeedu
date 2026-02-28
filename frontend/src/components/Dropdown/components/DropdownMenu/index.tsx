@@ -37,12 +37,28 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
   onMouseLeave,
   onItemClick,
 }) => {
+  // dropdown 面板毛玻璃样式
+  const dropdownStyles = `
+    .dropdown-menu-panel {
+      background-color: rgba(255, 255, 255, 0.55) !important;
+      border: none !important;
+      box-shadow: 0 4px 24px rgba(120, 90, 200, 0.10) !important;
+      -webkit-backdrop-filter: blur(18px) saturate(160%);
+      backdrop-filter: blur(18px) saturate(160%);
+      border-radius: 12px;
+    }
+    [data-theme="dark"] .dropdown-menu-panel {
+      background-color: rgba(255, 255, 255, 0.07) !important;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35) !important;
+    }
+  `;
   // 菜单项样式（使用 showBorder 区分有/无边框两种风格）
+  // 面板已有毛玻璃背景，菜单项不再额外加背景/边框
   const itemActiveClass = showBorder
-    ? "bg-[var(--brand-accent-soft)] !text-[var(--brand-purple)] border border-[var(--brand-purple)]"
+    ? "bg-transparent !text-[var(--brand-purple)] hover:bg-white/20"
     : "!text-[var(--brand-purple)] border-0 after:!w-full";
   const itemIdleClass = showBorder
-    ? "bg-white text-[var(--brand-blue)] border border-[var(--brand-border)] hover:border-[var(--brand-purple)] hover:text-[var(--brand-purple)]"
+    ? "bg-transparent text-[var(--brand-blue)] border-0 hover:bg-white/20 hover:text-[var(--brand-purple)]"
     : "text-[var(--brand-blue)] border-0 hover:text-[var(--brand-purple)]";
 
   const portalPanelClass = `dropdown-menu-panel p-1 min-w-[120px] flex flex-col gap-0.5 transition-[opacity,transform] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] ${
@@ -60,6 +76,8 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
   } group-hover:opacity-100 group-hover:scale-[1.01] group-hover:translate-y-0 group-hover:pointer-events-auto group-hover:duration-150 group-focus-within:opacity-100 group-focus-within:scale-[1.01] group-focus-within:translate-y-0 group-focus-within:pointer-events-auto group-focus-within:duration-150`;
 
   return (
+    <>
+    <style>{dropdownStyles}</style>
     <div
       ref={menuRef}
       style={isPortal ? style : undefined}
@@ -82,6 +100,7 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
         </Button>
       ))}
     </div>
+    </>
   );
 };
 

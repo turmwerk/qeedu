@@ -22,13 +22,12 @@ export default function EyeTooltip({ on, onToggle, ariaLabel, children }: EyeToo
         </Button>
 
         <div
-          className="hidden group-hover:block absolute bottom-full mb-2 bg-black text-white text-sm leading-5 p-3 rounded shadow-lg z-50"
-          style={{ width: 220, left: "50%", transform: "translateX(-50%)" }}
+          className="auth-eye-tooltip hidden group-hover:block absolute bottom-full mb-2 w-[220px] left-1/2 -translate-x-1/2 text-sm leading-5 p-3 rounded-xl shadow-lg z-50 bg-black/90 text-white"
         >
           <div>长度为 8-16 位字符</div>
           <div>字母/数字以及标点符号至少包含 2 种</div>
           <div>不允许有空格、中英文</div>
-          <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-8 border-transparent border-t-black" />
+          <div className="auth-eye-tooltip-arrow absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-8 border-transparent border-t-black/90" />
         </div>
       </div>
     </div>

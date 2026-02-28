@@ -116,6 +116,27 @@ const ListModal: React.FC<Props> = ({
         <div className="grid grid-cols-1 gap-5 items-start">
           <div>
             <div className="teaching-list-glass rounded-xl p-[18px] min-h-[520px]">
+              <style>{`
+                /* teaching-list 毛玻璃 (light) */
+                .teaching-list-glass {
+                  background: rgba(255, 255, 255, 0.58) !important;
+                  border: 0 none transparent !important;
+                  box-shadow:
+                    0 8px 30px rgba(120, 90, 200, 0.14),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.74),
+                    inset 0 -1px 0 rgba(255, 255, 255, 0.34) !important;
+                  -webkit-backdrop-filter: blur(40px) saturate(210%);
+                  backdrop-filter: blur(40px) saturate(210%);
+                }
+                [data-theme="dark"] .teaching-list-glass {
+                  background: rgba(255, 255, 255, 0.18) !important;
+                  border: 1px solid rgba(255, 255, 255, 0.28) !important;
+                  box-shadow:
+                    0 10px 32px rgba(0, 0, 0, 0.42),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+                    inset 0 -1px 0 rgba(255, 255, 255, 0.12) !important;
+                }
+              `}</style>
               <Header
                 count={items.length}
                 sortBy={sortBy}
@@ -150,15 +171,15 @@ const ListModal: React.FC<Props> = ({
                   }
                   renderItem={(item) => (
                     <>
-                      <div className="teaching-list-title font-bold text-[var(--brand-blue)]">
+                      <div className="teaching-list-title font-bold text-[var(--brand-blue)] dark:text-[#f8fbff]">
                         {item.title}
                       </div>
                       <div className="mt-1.5 flex gap-3 items-center">
                         {item.subtitle && (
-                          <span className="teaching-list-subtitle text-[#888]">{item.subtitle}</span>
+                          <span className="teaching-list-subtitle text-[#888] dark:text-[#d1d9e6]">{item.subtitle}</span>
                         )}
                         {item.createdAt && (
-                          <span className="teaching-list-time text-[#999] text-[12px]">
+                          <span className="teaching-list-time text-[#999] text-[12px] dark:text-[#c0cadb]">
                             {new Date(item.createdAt).toLocaleString()}
                           </span>
                         )}

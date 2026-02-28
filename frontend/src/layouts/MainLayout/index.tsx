@@ -161,6 +161,32 @@ const MainLayout: React.FC = () => {
 
   return (
     <div data-theme={theme} className={`app-root flex h-screen relative overflow-hidden${isHomePage ? ' home-theme-bg' : ''}`}>
+      {/* 主题梯度背景 + header/footer 透明 */}
+      <style>{`
+        .app-root {
+          background:
+            radial-gradient(44rem 34rem at 18% 28%, rgba(255, 150, 190, 0.52) 0%, rgba(255, 150, 190, 0) 68%),
+            radial-gradient(38rem 30rem at 82% 72%, rgba(195, 130, 255, 0.45) 0%, rgba(195, 130, 255, 0) 66%),
+            radial-gradient(32rem 26rem at 62% 8%, rgba(255, 210, 230, 0.5) 0%, rgba(255, 210, 230, 0) 64%),
+            radial-gradient(28rem 22rem at 5% 80%, rgba(180, 155, 255, 0.38) 0%, rgba(180, 155, 255, 0) 60%),
+            linear-gradient(135deg, #fce4f0 0%, #f3d6ff 45%, #dce4ff 100%) !important;
+          background-color: #fce4f0 !important;
+          color: var(--brand-text);
+        }
+        [data-theme="dark"] .app-root {
+          background:
+            radial-gradient(70rem 55rem at 10% 20%, rgba(90, 60, 200, 0.30) 0%, rgba(90, 60, 200, 0) 65%),
+            radial-gradient(55rem 45rem at 85% 75%, rgba(30, 80, 180, 0.22) 0%, rgba(30, 80, 180, 0) 62%),
+            linear-gradient(180deg, #152236 0%, #1a2d48 100%) !important;
+          background-color: #152236 !important;
+        }
+        .main-header, footer {
+          background-color: transparent !important;
+          background: transparent !important;
+          border: none !important;
+          box-shadow: none !important;
+        }
+      `}</style>
       {/* 全屏雪花特效：固定定位在最底层，pointer-events:none 不影响交互 */}
       <SnowLayer />
       {/* 深色主题独立星点背景（不连线，不跟鼠标交互） */}

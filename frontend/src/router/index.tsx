@@ -84,6 +84,10 @@ const router = createBrowserRouter([
         element: <Navigate to="/teaching/exam/ListPage" replace />,
       },
       {
+        path: "teaching/syllabus",
+        element: <Navigate to="/teaching/syllabus/ListPage" replace />,
+      },
+      {
         path: "teaching/syllabus/ListPage",
         element: LazyLoad(<SyllabusList />),
       },

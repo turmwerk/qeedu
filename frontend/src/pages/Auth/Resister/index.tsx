@@ -79,7 +79,7 @@ export default function Resister() {
   };
 
   const primaryButtonClass =
-    "w-full h-[56px] flex items-center justify-center gap-1.5 text-[18px] font-extrabold rounded-xl bg-[var(--brand-blue)] text-white border-0 shadow-[var(--brand-shadow)] transition-[background,border-color,box-shadow,transform] hover:bg-[var(--brand-blue)] hover:shadow-[var(--brand-shadow)] active:scale-95";
+    "w-full h-[56px] flex items-center justify-center gap-1.5 text-[18px] font-extrabold rounded-xl bg-[var(--brand-blue)] text-white border-0 shadow-[var(--brand-shadow)] transition-[background,border-color,box-shadow,transform] hover:bg-[var(--brand-purple)] hover:shadow-[var(--brand-shadow)] active:scale-95";
   
 
 
@@ -89,12 +89,12 @@ export default function Resister() {
       label: "邮箱/手机号",
       placeholder: "邮箱或手机号",
       render: (value, onChange) => (
-          <div className="w-full flex items-stretch box-border border border-[var(--brand-blue)] hover:border-[var(--brand-purple)] focus-within:border-[var(--brand-purple)] transition-colors bg-white overflow-hidden relative">
+          <div className="w-full flex items-stretch box-border border border-[var(--brand-blue)] hover:border-[var(--brand-purple)] focus-within:border-[var(--brand-purple)] transition-colors bg-white overflow-hidden relative rounded-2xl">
           <div className="absolute left-0 top-0 w-[56px] h-[56px] flex items-center justify-center text-[var(--brand-muted)] pointer-events-none">
             <IdIcon />
           </div>
           <input
-            className="w-full h-[56px] pl-[56px] pr-4 box-border border-0 bg-transparent text-[16px] outline-none"
+            className="auth-field-input w-full h-[56px] pl-[56px] pr-4 box-border border-0 bg-transparent text-[16px] outline-none rounded-2xl appearance-none"
             id="register-email"
             name="email"
             value={value}
@@ -110,7 +110,7 @@ export default function Resister() {
       placeholder: "验证码",
       render: (value, onChange) => (
         <div
-          className="w-full flex items-stretch box-border border border-[var(--brand-blue)] hover:border-[var(--brand-purple)] focus-within:border-[var(--brand-purple)] transition-colors bg-white overflow-hidden relative"
+          className="w-full flex items-stretch box-border border border-[var(--brand-blue)] hover:border-[var(--brand-purple)] focus-within:border-[var(--brand-purple)] transition-colors bg-white overflow-hidden relative rounded-2xl"
           data-oid="0gz.p8p"
         >
           <div
@@ -120,7 +120,7 @@ export default function Resister() {
             <KeyIcon data-oid="ua0ofky" />
           </div>
           <input
-            className="h-[56px] flex-1 w-full pl-[56px] pr-[110px] box-border border-0 bg-transparent text-[16px] outline-none"
+            className="auth-field-input h-[56px] flex-1 w-full pl-[56px] pr-[110px] box-border border-0 bg-transparent text-[16px] outline-none rounded-2xl appearance-none"
             id="register-email-code"
             name="emailCode"
             value={value}
@@ -147,7 +147,7 @@ export default function Resister() {
       placeholder: "密码",
       render: (value, onChange) => (
         <div
-          className="w-full flex items-stretch box-border border border-[var(--brand-blue)] hover:border-[var(--brand-purple)] focus-within:border-[var(--brand-purple)] transition-colors bg-white overflow-visible relative"
+          className="w-full flex items-stretch box-border border border-[var(--brand-blue)] hover:border-[var(--brand-purple)] focus-within:border-[var(--brand-purple)] transition-colors bg-white overflow-visible relative rounded-2xl"
           data-oid="yhovq6e"
         >
           <div
@@ -157,7 +157,7 @@ export default function Resister() {
             <LockIcon data-oid="f.p.2sn" />
           </div>
           <input
-            className="h-[56px] w-full pl-[56px] pr-[56px] box-border border-0 bg-transparent text-[16px] outline-none"
+            className="auth-field-input h-[56px] w-full pl-[56px] pr-[56px] box-border border-0 bg-transparent text-[16px] outline-none rounded-2xl appearance-none"
             id="register-password"
             name="password"
             type={showPassword ? "text" : "password"}
@@ -180,7 +180,7 @@ export default function Resister() {
       placeholder: "再次输入密码",
       render: (value, onChange) => (
         <div
-          className="w-full flex items-stretch box-border border border-[var(--brand-blue)] hover:border-[var(--brand-purple)] focus-within:border-[var(--brand-purple)] transition-colors bg-white overflow-visible relative"
+          className="w-full flex items-stretch box-border border border-[var(--brand-blue)] hover:border-[var(--brand-purple)] focus-within:border-[var(--brand-purple)] transition-colors bg-white overflow-visible relative rounded-2xl"
           data-oid="hkpjtmk"
         >
           <div
@@ -190,7 +190,7 @@ export default function Resister() {
             <LockIcon data-oid="ch_vh-t" />
           </div>
           <input
-            className="h-[56px] w-full pl-[56px] pr-[56px] box-border border-0 bg-transparent text-[16px] outline-none"
+            className="auth-field-input h-[56px] w-full pl-[56px] pr-[56px] box-border border-0 bg-transparent text-[16px] outline-none rounded-2xl appearance-none"
             id="register-password-confirm"
             name="password2"
             type={showPassword2 ? "text" : "password"}

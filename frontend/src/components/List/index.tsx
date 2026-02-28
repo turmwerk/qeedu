@@ -78,7 +78,7 @@ function List<T = any>({
         return (
           <div
             key={key}
-            className={`teaching-list-item group relative flex justify-between items-center bg-white/70 p-4 rounded-[12px] border border-[var(--brand-border)] transition-[box-shadow,border-color,background] hover:shadow-[0_12px_26px_rgba(17,24,39,0.12)] hover:border-[var(--brand-accent)] hover:bg-white ${
+            className={`teaching-list-item group relative flex justify-between items-center bg-white/70 dark:!bg-white/[0.14] p-4 rounded-[12px] border border-[var(--brand-border)] dark:border-[rgba(255,255,255,0.22)] transition-[box-shadow,border-color,background] hover:shadow-[0_12px_26px_rgba(17,24,39,0.12)] hover:border-[var(--brand-accent)] hover:bg-white dark:hover:!bg-white/20 dark:hover:border-[rgba(255,255,255,0.34)] ${
               onItemClick && !disabled ? "cursor-pointer" : ""
             } ${itemClassName ? itemClassName(item) : ""}`}
             onClick={() => {
@@ -94,7 +94,7 @@ function List<T = any>({
               </div>
             )}
             <div
-              className="teaching-list-index w-10 text-center text-[var(--brand-blue)] font-bold mr-3"
+              className="teaching-list-index w-10 text-center text-[var(--brand-blue)] dark:text-[#dbeafe] font-bold mr-3"
               data-oid="9yfs1_:"
             >
               {idx + 1}
