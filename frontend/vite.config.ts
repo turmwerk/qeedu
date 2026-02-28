@@ -8,5 +8,11 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src') // 关键配置
     }
-  }
+  },
+  optimizeDeps: {
+    // 强制将某些 CJS 包预打包，确保 default 导出兼容（避免运行时 "does not provide an export named 'default'"）
+    include: [
+      'style-to-js',
+    ],
+  },
 })

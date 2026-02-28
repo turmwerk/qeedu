@@ -1,6 +1,7 @@
 import React, { useRef } from "react";
 import Introduction from "./components/Introduction";
 import FeatureHub from "./components/FeatureHub";
+import Footer from "@/layouts/MainLayout/components/Footer";
 
 const Home: React.FC = () => {
   const featureHubRef = useRef<HTMLDivElement>(null);
@@ -17,6 +18,7 @@ const Home: React.FC = () => {
       <div ref={featureHubRef}>
         <FeatureHub />
       </div>
+      <Footer />
     </div>
   );
 };

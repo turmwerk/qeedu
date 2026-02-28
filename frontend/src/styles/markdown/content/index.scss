@@ -1,0 +1,20 @@
+.markdown-view .markdown-body p {
+  @apply my-3;
+}
+
+.markdown-view .markdown-body ul,
+.markdown-view .markdown-body ol {
+  @apply my-3 pl-6;
+}
+
+.markdown-view .markdown-body li {
+  @apply my-1;
+}
+
+.markdown-view .markdown-body hr {
+  @apply my-6 h-px border-0 bg-slate-200;
+}
+
+[data-theme="dark"] .markdown-view .markdown-body hr {
+  @apply bg-white/10;
+}

@@ -1,0 +1,7 @@
+.markdown-view .markdown-body blockquote {
+  @apply my-4 pl-4 border-l-4 border-slate-300 text-slate-600;
+}
+
+[data-theme="dark"] .markdown-view .markdown-body blockquote {
+  @apply border-white/15 text-slate-400;
+}

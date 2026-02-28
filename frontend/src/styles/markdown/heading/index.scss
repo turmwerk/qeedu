@@ -1,0 +1,29 @@
+.markdown-view .markdown-body h1,
+.markdown-view .markdown-body h2,
+.markdown-view .markdown-body h3,
+.markdown-view .markdown-body h4,
+.markdown-view .markdown-body h5,
+.markdown-view .markdown-body h6 {
+  @apply text-slate-900 dark:text-slate-100 font-semibold;
+}
+
+.markdown-view .markdown-body h1 {
+  @apply mt-8 mb-4 pb-2 text-3xl border-b border-slate-200 dark:border-white/10;
+}
+
+.markdown-view .markdown-body h2 {
+  @apply mt-7 mb-3 pb-2 text-2xl border-b border-slate-200 dark:border-white/10;
+}
+
+.markdown-view .markdown-body h3 {
+  @apply mt-6 mb-2 text-xl;
+}
+
+.markdown-view .markdown-body h4 {
+  @apply mt-5 mb-2 text-lg;
+}
+
+.markdown-view .markdown-body h5,
+.markdown-view .markdown-body h6 {
+  @apply mt-4 mb-2 text-base;
+}

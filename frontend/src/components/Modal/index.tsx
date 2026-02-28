@@ -10,6 +10,8 @@ const Modal: React.FC<{
   width?: number | string;
   showHeader?: boolean;
   bodyClassName?: string;
+  panelClassName?: string;
+  opaque?: boolean;
 }> = ({
   visible,
   title,
@@ -18,6 +20,8 @@ const Modal: React.FC<{
   width,
   showHeader = true,
   bodyClassName,
+  panelClassName,
+  opaque = false,
 }) => {
   const id = useId().replace(/[:]/g, "");
   const widthClass = width ? `modal-width-${id}` : "";
@@ -114,7 +118,7 @@ const Modal: React.FC<{
         {width ? `.${widthClass} { width: ${widthValue}; }` : ""}
       </style>
       <div
-        className={`glass-modal-panel w-[780px] max-w-[calc(100%-40px)] rounded-xl overflow-hidden transition-all duration-300 ease-out bg-white/[0.38] dark:bg-white/[0.52] border border-white/50 dark:border-white/[0.45] shadow-[0_20px_60px_rgba(120,90,200,0.12),inset_0_1px_0_rgba(255,255,255,0.60)] dark:shadow-[0_20px_60px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.5)] backdrop-blur-[24px] ${widthClass} ${
+        className={`glass-modal-panel w-[780px] max-w-[calc(100%-40px)] rounded-xl overflow-hidden transition-all duration-300 ease-out ${opaque ? "bg-white dark:bg-white border border-[#e5e7eb] dark:border-[#e5e7eb] shadow-[0_20px_60px_rgba(16,24,40,0.2)]" : "bg-white/[0.38] dark:bg-white/[0.52] border border-white/50 dark:border-white/[0.45] shadow-[0_20px_60px_rgba(120,90,200,0.12),inset_0_1px_0_rgba(255,255,255,0.60)] dark:shadow-[0_20px_60px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.5)] backdrop-blur-[24px]"} ${panelClassName || ""} ${widthClass} ${
           isAnimating 
             ? "opacity-100 scale-100 translate-y-0" 
             : "opacity-0 scale-95 translate-y-4"

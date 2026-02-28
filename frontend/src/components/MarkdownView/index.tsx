@@ -1,73 +1,64 @@
-import React from "react";
-import ReactMarkdown from "react-markdown";
+                                                                                                                                                    import React from "react";
+import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
-import rehypeKatex from "rehype-katex";
 import rehypeHighlight from "rehype-highlight";
+import rehypeKatex from "rehype-katex";
 import rehypeRaw from "rehype-raw";
+import CopyButton from "./components/CopyButton";
 import "katex/dist/katex.min.css";
 import "highlight.js/styles/github-dark.css";
 import "github-markdown-css/github-markdown-light.css";
+import "@/styles/markdown/index.scss";
+
+/** 递归提取 React 节点树中的纯文本（用于代码块复制） */
+function extractText(node: React.ReactNode): string {
+  if (typeof node === "string") return node;
+  if (typeof node === "number") return String(node);
+  if (Array.isArray(node)) return node.map(extractText).join("");
+  if (React.isValidElement(node)) {
+    return extractText(
+      (node.props as { children?: React.ReactNode }).children,
+    );
+  }
+  return "";
+}
+
+const markdownComponents: Components = {
+  // 为每个代码块添加圆角包裹层 + Copy 按钮
+  pre({ children, ...props }) {
+    const codeChild = React.Children.toArray(children).find(
+      (c): c is React.ReactElement => React.isValidElement(c),
+    );
+    const codeText = codeChild
+      ? extractText(
+          (codeChild.props as { children?: React.ReactNode }).children,
+        )
+      : "";
+
+    return (
+      <div className="relative group my-4 rounded-xl overflow-hidden">
+        <pre {...props} className="!my-0 !rounded-none">
+          {children}
+        </pre>
+        <CopyButton text={codeText} />
+      </div>
+    );
+  },
+};
 
 export const Markdown: React.FC<{
   value?: string;
 }> = ({ value = "" }) => {
   return (
-    <div
-      className="markdown-view border-0 p-0 h-full box-border bg-white dark:bg-[#1e293b] min-h-0 flex flex-col"
-      data-oid="e0jucw2"
-    >
-      <style data-oid="ghf.b4-">{`
-        .markdown-view .content {
-          height: 100%;
-          overflow: auto;
-          box-sizing: border-box;
-          padding: 16px 18px;
-        }
-        .markdown-view .markdown-body {
-          background: transparent;
-        }
-        [data-theme="dark"] .markdown-view .markdown-body {
-          color: #e2e8f0;
-        }
-        [data-theme="dark"] .markdown-view .markdown-body h1,
-        [data-theme="dark"] .markdown-view .markdown-body h2,
-        [data-theme="dark"] .markdown-view .markdown-body h3,
-        [data-theme="dark"] .markdown-view .markdown-body h4,
-        [data-theme="dark"] .markdown-view .markdown-body h5,
-        [data-theme="dark"] .markdown-view .markdown-body h6 {
-          color: #f1f5f9;
-          border-color: rgba(255,255,255,0.1);
-        }
-        [data-theme="dark"] .markdown-view .markdown-body table tr {
-          background-color: transparent;
-          border-color: rgba(255,255,255,0.1);
-        }
-        [data-theme="dark"] .markdown-view .markdown-body table td,
-        [data-theme="dark"] .markdown-view .markdown-body table th {
-          border-color: rgba(255,255,255,0.1);
-        }
-        [data-theme="dark"] .markdown-view .markdown-body hr {
-          background-color: rgba(255,255,255,0.1);
-        }
-        [data-theme="dark"] .markdown-view .markdown-body blockquote {
-          color: #94a3b8;
-          border-color: rgba(255,255,255,0.15);
-        }
-        [data-theme="dark"] .markdown-view .markdown-body code {
-          background: rgba(255,255,255,0.08);
-          color: #e2e8f0;
-        }
-        [data-theme="dark"] .markdown-view .markdown-body a {
-          color: #93c5fd;
-        }
-      `}</style>
-        <div className="content h-full overflow-y-auto" data-oid="f6t.rff">
+    <div className="markdown-view">
+      <div className="content">
         <div className="markdown-body">
           <ReactMarkdown
             remarkPlugins={[remarkGfm, remarkMath]}
-            // @ts-expect-error
+            // @ts-expect-error rehype plugin tuple typing is narrower than runtime-compatible plugins
             rehypePlugins={[rehypeRaw, rehypeKatex, rehypeHighlight]}
+            components={markdownComponents}
           >
             {value}
           </ReactMarkdown>

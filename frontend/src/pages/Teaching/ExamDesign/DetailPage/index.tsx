@@ -385,7 +385,7 @@ const DetailPage: React.FC<{
 
   return (
     <>
-      <div className="h-full min-h-0 w-full" data-oid="vqmja1r">
+      <div className="h-full min-h-0 w-full overflow-hidden" data-oid="vqmja1r">
         <ToastContainer data-oid="d_rl_f6" />
         <style data-oid="ykkejm8">{`
         @keyframes analysisReveal {
@@ -395,7 +395,7 @@ const DetailPage: React.FC<{
         .analysis-reveal { animation: analysisReveal 0.32s cubic-bezier(0.22, 1, 0.36, 1); }
       `}</style>
         <div
-          className="p-0 text-[#444] h-full min-h-0 flex flex-col"
+          className="p-0 text-[#444] h-full min-h-0 flex flex-col overflow-hidden"
           data-oid="j-6j29_"
         >
           <Header

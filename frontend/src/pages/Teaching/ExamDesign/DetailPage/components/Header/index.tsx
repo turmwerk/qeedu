@@ -59,7 +59,7 @@ const Header: React.FC<HeaderProps> = ({
           </Button>
         )}
         <input
-          className="flex-1 border-0 border-b-2 border-b-[rgba(75,42,133,0.18)] bg-transparent rounded-none px-1 py-1.5 text-[18px] font-bold text-[var(--brand-blue)] min-h-[40px] transition-[border-color] focus:outline-none focus:border-b-[var(--brand-blue)]"
+          className="flex-1 border-0 border-b-2 border-b-[rgba(75,42,133,0.18)] dark:border-b-white/20 bg-transparent rounded-none px-1 py-1.5 text-[18px] font-bold text-[var(--brand-blue)] dark:text-white/90 min-h-[40px] transition-[border-color] focus:outline-none focus:border-b-[var(--brand-blue)] dark:focus:border-b-white/60"
           type="text"
           value={title}
           onChange={(event) => onTitleChange(event.target.value)}
@@ -68,8 +68,8 @@ const Header: React.FC<HeaderProps> = ({
 
         <div className="flex items-center gap-2">
           <div className="flex flex-col items-start justify-center gap-0.5 mr-2">
-            <div className="text-[12px] text-[#6b6b6b] font-semibold">总分</div>
-            <div className="text-[22px] font-extrabold text-[#4b2a85] leading-none">
+            <div className="text-[12px] text-[#6b6b6b] dark:text-white/50 font-semibold">总分</div>
+            <div className="text-[22px] font-extrabold text-[#4b2a85] dark:text-white/90 leading-none">
               {totalScore}
             </div>
           </div>

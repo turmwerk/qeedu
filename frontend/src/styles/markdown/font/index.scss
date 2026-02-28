@@ -1,0 +1,15 @@
+.markdown-view,
+.markdown-view .markdown-body,
+.markdown-view .markdown-body * {
+  font-family: var(--font-family-base);
+}
+
+.markdown-view .markdown-body {
+  font-size: 15px;
+  line-height: 1.75;
+  color: rgb(30 41 59);
+}
+
+[data-theme="dark"] .markdown-view .markdown-body {
+  color: rgb(226 232 240);
+}

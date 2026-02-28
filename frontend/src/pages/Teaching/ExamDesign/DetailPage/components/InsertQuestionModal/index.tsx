@@ -63,6 +63,8 @@ const InsertQuestionModal: React.FC<InsertQuestionModalProps> = ({
       visible={open}
       title={editingQuestionId ? "修改题目" : "生成插入题目"}
       width={920}
+      opaque
+      panelClassName="!backdrop-blur-0"
       onClose={onClose}
     >
       <div className="flex gap-3">
@@ -85,7 +87,7 @@ const InsertQuestionModal: React.FC<InsertQuestionModalProps> = ({
                   value={modalKnowledge}
                   onChange={(e) => onChangeKnowledge(e.target.value)}
                   placeholder="例如：数据库"
-                  className="w-full p-2 rounded-lg border border-[#eee]"
+                  className="w-full p-2 rounded-lg border border-[#eee] dark:border-white/20 bg-transparent dark:text-black/85"
                   aria-label="知识点"
                 />
               </div>
@@ -94,7 +96,7 @@ const InsertQuestionModal: React.FC<InsertQuestionModalProps> = ({
                 <select
                   value={modalQType}
                   onChange={(e) => onChangeQType(e.target.value)}
-                  className="w-full p-2 rounded-lg border border-[#eee]"
+                  className="w-full p-2 rounded-lg border border-[#eee] dark:border-white/20 bg-transparent dark:text-black/85"
                   aria-label="题型"
                 >
                   <option>简答</option>
@@ -111,7 +113,7 @@ const InsertQuestionModal: React.FC<InsertQuestionModalProps> = ({
                 <select
                   value={modalDifficulty}
                   onChange={(e) => onChangeDifficulty(e.target.value)}
-                  className="w-full p-2 rounded-lg border border-[#eee]"
+                  className="w-full p-2 rounded-lg border border-[#eee] dark:border-white/20 bg-transparent dark:text-black/85"
                   aria-label="难度"
                 >
                   <option>简单</option>
@@ -124,7 +126,7 @@ const InsertQuestionModal: React.FC<InsertQuestionModalProps> = ({
                 <select
                   value={modalCognition}
                   onChange={(e) => onChangeCognition(e.target.value)}
-                  className="w-full p-2 rounded-lg border border-[#eee]"
+                  className="w-full p-2 rounded-lg border border-[#eee] dark:border-white/20 bg-transparent dark:text-black/85"
                   aria-label="认知层次"
                 >
                   <option>记忆</option>
@@ -150,12 +152,12 @@ const InsertQuestionModal: React.FC<InsertQuestionModalProps> = ({
                         onChangeOptions(copy);
                       }}
                       placeholder={`选项 ${String.fromCharCode(65 + i)}`}
-                      className="flex-1 p-2 rounded-lg border border-[#eee]"
+                      className="flex-1 p-2 rounded-lg border border-[#eee] dark:border-white/20 bg-transparent dark:text-black/85"
                       aria-label={`选项 ${String.fromCharCode(65 + i)}`}
                     />
 
                     <Button
-                      className="bg-white border border-[rgba(200,30,30,0.16)] text-[#c21e1e] px-2 py-1.5 rounded-lg transition-[background,border-color,box-shadow] hover:bg-[#fff1f2] hover:border-[rgba(200,30,30,0.35)] hover:shadow-[0_8px_18px_rgba(200,30,30,0.15)]"
+                      className="bg-white dark:bg-white/10 border border-[rgba(200,30,30,0.16)] dark:border-[rgba(200,30,30,0.3)] text-[#c21e1e] dark:text-[#ff6b6b] px-2 py-1.5 rounded-lg transition-[background,border-color,box-shadow] hover:bg-[#fff1f2] dark:hover:bg-[rgba(200,30,30,0.15)] hover:border-[rgba(200,30,30,0.35)] hover:shadow-[0_8px_18px_rgba(200,30,30,0.15)]"
                       onClick={() => {
                         onOpenConfirm({
                           title: "删除选项",
@@ -193,15 +195,15 @@ const InsertQuestionModal: React.FC<InsertQuestionModalProps> = ({
                 value={modalAnswerAnalysis}
                 onChange={(e) => onChangeAnswerAnalysis(e.target.value)}
                 rows={3}
-                className="w-full p-2 rounded-lg border border-[#eee]"
+                className="w-full p-2 rounded-lg border border-[#eee] dark:border-white/20 bg-transparent dark:text-black/85"
                 aria-label="答案分析"
               />
             </div>
           </div>
           <div className="w-[360px] ml-4">
-            <div className="font-bold mb-2">对话记录</div>
-            <div className="bg-white rounded-[10px] p-3 shadow-[0_1px_6px_rgba(0,0,0,0.06)] flex flex-col h-[360px] mt-2">
-              <div className="flex-1 flex flex-col min-h-0 text-[#666]">
+            <div className="font-bold mb-2 text-[var(--brand-text)] dark:text-black/85">对话记录</div>
+            <div className="bg-white dark:bg-white/10 rounded-[10px] p-3 shadow-[0_1px_6px_rgba(0,0,0,0.06)] dark:shadow-[0_1px_6px_rgba(0,0,0,0.2)] flex flex-col h-[360px] mt-2">
+              <div className="flex-1 flex flex-col min-h-0 text-[#666] dark:text-black/55">
                 <Dialog
                   dialogId={`${examId}-gen`}
                   botName="生成助手"

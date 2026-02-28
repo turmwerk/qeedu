@@ -218,14 +218,14 @@ const MainLayout: React.FC = () => {
         <Layout className={`flex-1 relative flex flex-col min-h-0 h-full${isDetailPage ? ' bg-white/[0.45] dark:bg-white/[0.06] backdrop-blur-[18px] backdrop-saturate-[160%]' : ''}`}>
           <Content className="m-0 p-0 relative z-10 flex-1 min-h-0" data-oid="gzlcfm-">
             <div
-              className="h-full min-h-0 flex flex-col overflow-y-auto"
+              className={`h-full min-h-0 flex flex-col ${isDetailPage ? "overflow-hidden" : "overflow-y-auto"}`}
               data-oid="giq3cbp"
               ref={scrollContainerRef}
             >
-              <div className="flex-1">
+              <div className="flex-1 min-h-0">
                 <Outlet />
               </div>
-              {!isDetailPage && <Footer />}
+              {!isDetailPage && !isHomePage && <Footer />}
             </div>
             {/* 除了 detail 页面，所有页面都显示 FloatActions */}
             {!isDetailPage && <FloatActions />}

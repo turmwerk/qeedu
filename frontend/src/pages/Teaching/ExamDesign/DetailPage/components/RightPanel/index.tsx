@@ -49,14 +49,14 @@ const RightPanel: React.FC<RightPanelProps> = ({
           opacity: 0;
         }
       `}</style>
-      <div className="bg-white/40 backdrop-blur-[16px] rounded-xl p-[18px] shadow-[0_8px_32px_rgba(147,51,234,0.12)] border border-white/40 flex-1 min-h-0 flex flex-col gap-3 overflow-y-auto relative">
-        <div className="flex flex-col gap-3">
-          <div className="bg-white rounded-[10px] p-3 shadow-[0_1px_6px_rgba(0,0,0,0.06)] min-h-[320px]">
-            <div className="font-bold mb-2">试卷质量画像</div>
+      <div className="rounded-xl p-[18px] flex-1 min-h-0 flex flex-col gap-3 overflow-y-auto relative bg-white/[0.88] dark:bg-white/[0.28] border-0 dark:border dark:border-white/[0.28] shadow-[0_8px_30px_rgba(120,90,200,0.14),inset_0_1px_0_rgba(255,255,255,0.74),inset_0_-1px_0_rgba(255,255,255,0.34)] dark:shadow-[0_10px_32px_rgba(0,0,0,0.42),inset_0_1px_0_rgba(255,255,255,0.22),inset_0_-1px_0_rgba(255,255,255,0.12)] backdrop-blur-[40px] backdrop-saturate-[210%]">
+        <div className={`flex flex-col gap-3 transition-opacity ${recommendActive ? "opacity-0 pointer-events-none" : "opacity-100"}`}>
+          <div className="bg-white dark:bg-white/10 rounded-[10px] p-3 shadow-[0_1px_6px_rgba(0,0,0,0.06)] dark:shadow-[0_1px_6px_rgba(0,0,0,0.2)] min-h-[320px]">
+            <div className="font-bold mb-2 text-[var(--brand-text)] dark:text-black/85">试卷质量画像</div>
 
             <div className="mb-3">
               <div className="bg-[var(--brand-accent-soft)] p-3 rounded-lg flex items-center gap-3">
-                <div className="text-[#666] text-[12px]">综合评价</div>
+                <div className="text-[#666] dark:text-black/55 text-[12px]">综合评价</div>
                 <div className="flex flex-col">
                   <div className="text-[var(--brand-accent)] font-bold text-[14px]">
                     可用
@@ -67,7 +67,7 @@ const RightPanel: React.FC<RightPanelProps> = ({
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="text-[#666] w-[64px]">覆盖度</div>
+              <div className="text-[#666] dark:text-black/55 w-[64px]">覆盖度</div>
               <div className="flex-1">
                 <div className="bg-[#efe9fb] h-2 rounded-lg overflow-hidden">
                   <div className="bg-[var(--brand-accent)] h-full rounded-lg w-[83%]" />
@@ -78,11 +78,11 @@ const RightPanel: React.FC<RightPanelProps> = ({
               </div>
             </div>
 
-            <div className="flex justify-between items-center mt-2 text-[#666]">
+            <div className="flex justify-between items-center mt-2 text-[#666] dark:text-black/55">
               <div>难度结构</div>
               <div>合理</div>
             </div>
-            <div className="flex gap-[18px] text-[#666] mt-1.5 text-[13px]">
+            <div className="flex gap-[18px] text-[#666] dark:text-black/55 mt-1.5 text-[13px]">
               <div>易 30%</div>
               <div>中 50%</div>
               <div>难 20%</div>
@@ -90,41 +90,41 @@ const RightPanel: React.FC<RightPanelProps> = ({
 
             <div className="flex justify-between mt-3">
               <div className="flex flex-col gap-1.5 items-start">
-                <div className="text-[#666] text-[12px]">区分度</div>
+                <div className="text-[#666] dark:text-black/55 text-[12px]">区分度</div>
                 <div className="font-bold text-[var(--brand-accent)] text-[16px]">
                   0.42
                 </div>
-                <div className="text-[#666] text-[12px]">良好</div>
+                <div className="text-[#666] dark:text-black/55 text-[12px]">良好</div>
               </div>
               <div className="flex flex-col gap-1.5 items-start">
-                <div className="text-[#666] text-[12px]">信度</div>
+                <div className="text-[#666] dark:text-black/55 text-[12px]">信度</div>
                 <div className="font-bold text-[var(--brand-accent)] text-[16px]">
                   0.78
                 </div>
-                <div className="text-[#666] text-[12px]">可接受</div>
+                <div className="text-[#666] dark:text-black/55 text-[12px]">可接受</div>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-[10px] p-3 shadow-[0_1px_6px_rgba(0,0,0,0.06)]">
-            <div className="flex items-center border-b border-dashed border-[var(--brand-border)] pb-2 mb-2.5">
-              <div className="font-bold mb-2">试卷概览</div>
+          <div className="bg-white dark:bg-white/10 rounded-[10px] p-3 shadow-[0_1px_6px_rgba(0,0,0,0.06)] dark:shadow-[0_1px_6px_rgba(0,0,0,0.2)]">
+            <div className="flex items-center border-b border-dashed border-[var(--brand-border)] dark:border-white/20 pb-2 mb-2.5">
+              <div className="font-bold mb-2 text-[var(--brand-text)] dark:text-black/85">试卷概览</div>
             </div>
             <div className="flex flex-col gap-2.5">
               <div className="flex gap-3 items-start">
-                <div className="min-w-[72px] text-[#666] text-[12px]">题型分布</div>
-                <div className="text-[var(--brand-text)] text-[13px] leading-[1.6]">
+                <div className="min-w-[72px] text-[#666] dark:text-black/55 text-[12px]">题型分布</div>
+                <div className="text-[var(--brand-text)] dark:text-black/75 text-[13px] leading-[1.6]">
                   {typeSummary}
                 </div>
               </div>
               <div className="flex gap-3 items-start">
-                <div className="min-w-[72px] text-[#666] text-[12px]">难度分布</div>
-                <div className="text-[var(--brand-text)] text-[13px] leading-[1.6]">
+                <div className="min-w-[72px] text-[#666] dark:text-black/55 text-[12px]">难度分布</div>
+                <div className="text-[var(--brand-text)] dark:text-black/75 text-[13px] leading-[1.6]">
                   {difficultySummary}
                 </div>
               </div>
               <div className="flex gap-3 items-start">
-                <div className="min-w-[72px] text-[#666] text-[12px]">知识点覆盖</div>
+                <div className="min-w-[72px] text-[#666] dark:text-black/55 text-[12px]">知识点覆盖</div>
                 <div className="flex flex-wrap gap-2">
                   {knowledgeEntries.length ? (
                     knowledgeEntries.map(([label, count]) => (
@@ -145,12 +145,12 @@ const RightPanel: React.FC<RightPanelProps> = ({
         </div>
 
         <div
-          className={`absolute inset-[18px] bg-white rounded-xl flex flex-col z-[2] transition-[opacity,transform] shadow-[0_6px_18px_rgba(16,24,40,0.08)] will-change-[transform,opacity] ${!recommendActive ? "opacity-0 translate-y-[18px] pointer-events-none" : "opacity-100 translate-y-0"}`}
+          className={`absolute inset-[18px] bg-white dark:bg-white rounded-xl flex flex-col z-[20] transition-[opacity,transform] shadow-[0_10px_30px_rgba(16,24,40,0.14)] dark:shadow-[0_10px_30px_rgba(16,24,40,0.2)] will-change-[transform,opacity] ${!recommendActive ? "opacity-0 translate-y-[18px] pointer-events-none" : "opacity-100 translate-y-0"}`}
         >
-          <div className="flex flex-col gap-0 p-0 overflow-y-auto flex-1 min-h-0">
-            <div className="bg-white rounded-[10px] p-3 shadow-[0_1px_6px_rgba(0,0,0,0.06)] relative">
+          <div className="flex flex-col gap-3 p-0 overflow-y-auto overscroll-contain flex-1 min-h-0 pr-1">
+            <div className="bg-white dark:bg-white rounded-[10px] p-3 shadow-[0_1px_6px_rgba(0,0,0,0.06)] dark:shadow-[0_1px_6px_rgba(0,0,0,0.2)] relative shrink-0">
               <div className="flex items-center justify-between">
-                <div className="font-bold">推荐变题</div>
+                <div className="font-bold text-[var(--brand-text)] dark:text-black/85">推荐变题</div>
                 <div className="flex items-center gap-2">
                   {!recsCollapsed && (
                     <Button
@@ -175,11 +175,11 @@ const RightPanel: React.FC<RightPanelProps> = ({
                 {recList.map((r, idx) => (
                   <div
                     key={r.id}
-                    className="bg-[#fbf7ff] rounded-xl p-3 flex flex-col gap-3 animate-fadeSlideIn"
+                    className="bg-[#fbf7ff] dark:bg-[#f5f2ff] rounded-xl p-3 flex flex-col gap-3 animate-fadeSlideIn"
                     style={{ animationDelay: `${idx * 50}ms` }}
                   >
                     <div className="flex justify-between items-center">
-                      <div className="flex gap-2 text-[#888] text-[12px]">
+                      <div className="flex gap-2 text-[#888] dark:text-black/45 text-[12px]">
                         {r.tags.map((t) => (
                           <span
                             key={t}
@@ -196,13 +196,13 @@ const RightPanel: React.FC<RightPanelProps> = ({
                         替换
                       </Button>
                     </div>
-                    <div className="text-[#222] font-semibold mt-2">{r.stem}</div>
+                    <div className="text-[#222] dark:text-black/85 font-semibold mt-2">{r.stem}</div>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="bg-white rounded-[10px] p-3 shadow-[0_1px_6px_rgba(0,0,0,0.06)] flex flex-col h-[720px] min-h-0">
+            <div className="bg-white dark:bg-white rounded-[10px] p-3 shadow-[0_1px_6px_rgba(0,0,0,0.06)] dark:shadow-[0_1px_6px_rgba(0,0,0,0.2)] flex flex-col shrink-0 min-h-[560px]">
               <div className="h-full flex flex-col min-h-0">
                 <Dialog
                   dialogId={dialogId}

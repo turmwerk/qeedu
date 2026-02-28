@@ -1,0 +1,16 @@
+.markdown-view .markdown-body code {
+  @apply px-1.5 py-0.5 rounded bg-slate-100 text-slate-800 text-[0.9em];
+}
+
+/* pre 本身不设 my / rounded，由外层 .group 包裹 div 统一控制 */
+.markdown-view .markdown-body pre {
+  @apply p-4 overflow-auto bg-slate-900 text-slate-100;
+}
+
+.markdown-view .markdown-body pre code {
+  @apply bg-transparent p-0 text-inherit;
+}
+
+[data-theme="dark"] .markdown-view .markdown-body code {
+  @apply bg-white/10 text-slate-100;
+}

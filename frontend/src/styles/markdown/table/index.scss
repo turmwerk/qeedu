@@ -1,0 +1,16 @@
+.markdown-view .markdown-body table {
+  @apply w-full my-4 border-collapse block overflow-x-auto;
+}
+
+.markdown-view .markdown-body table thead th {
+  @apply bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-slate-200;
+}
+
+.markdown-view .markdown-body table th,
+.markdown-view .markdown-body table td {
+  @apply border border-slate-200 dark:border-white/10 px-3 py-2 text-left;
+}
+
+.markdown-view .markdown-body table tr {
+  @apply bg-transparent;
+}
