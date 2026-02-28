@@ -20,72 +20,36 @@ const AuthLayout: React.FC = () => {
     >
       {/* Auth 页面主题样式 */}
       <style>{`
-        /* Auth layout 背景 (light) */
+        /* Auth layout 背景 – reuses app-root gradient variable */
         .auth-layout {
-          background:
-            radial-gradient(44rem 34rem at 18% 28%, rgba(255, 150, 190, 0.52) 0%, rgba(255, 150, 190, 0) 68%),
-            radial-gradient(38rem 30rem at 82% 72%, rgba(195, 130, 255, 0.45) 0%, rgba(195, 130, 255, 0) 66%),
-            radial-gradient(32rem 26rem at 62% 8%, rgba(255, 210, 230, 0.5) 0%, rgba(255, 210, 230, 0) 64%),
-            radial-gradient(28rem 22rem at 5% 80%, rgba(180, 155, 255, 0.38) 0%, rgba(180, 155, 255, 0) 60%),
-            linear-gradient(135deg, #fce4f0 0%, #f3d6ff 45%, #dce4ff 100%) !important;
-          background-color: #fce4f0 !important;
+          background: var(--app-root-bg) !important;
+          background-color: var(--app-root-bg-color) !important;
         }
-        [data-theme="dark"] .auth-layout {
-          background:
-            radial-gradient(70rem 55rem at 10% 20%, rgba(90, 60, 200, 0.30) 0%, rgba(90, 60, 200, 0) 65%),
-            radial-gradient(55rem 45rem at 85% 75%, rgba(30, 80, 180, 0.22) 0%, rgba(30, 80, 180, 0) 62%),
-            linear-gradient(180deg, #152236 0%, #1a2d48 100%) !important;
-          background-color: #152236 !important;
-        }
-        /* Auth 面板 – 毛玻璃 (light) */
+        /* Auth 面板 – 毛玻璃 */
         .auth-panel {
-          background: rgba(255, 255, 255, 0.60) !important;
+          background: var(--auth-panel-bg) !important;
           border: 0 none transparent !important;
-          box-shadow:
-            0 12px 38px rgba(120, 90, 200, 0.16),
-            inset 0 1px 0 rgba(255, 255, 255, 0.78),
-            inset 0 -1px 0 rgba(255, 255, 255, 0.36) !important;
+          box-shadow: var(--auth-panel-shadow) !important;
           -webkit-backdrop-filter: blur(44px) saturate(215%);
           backdrop-filter: blur(44px) saturate(215%);
         }
-        [data-theme="dark"] .auth-panel {
-          background: rgba(255, 255, 255, 0.11) !important;
-          box-shadow:
-            0 12px 38px rgba(0, 0, 0, 0.52),
-            inset 0 1px 0 rgba(255, 255, 255, 0.16),
-            inset 0 -1px 0 rgba(255, 255, 255, 0.08) !important;
+        /* Auth 提交按钮 */
+        .auth-panel button[type="submit"] {
+          background-color: var(--auth-submit-bg) !important;
+          color: var(--auth-submit-text) !important;
+          box-shadow: var(--auth-submit-shadow) !important;
         }
-        /* Auth 提交按钮 dark 样式 */
-        [data-theme="dark"] .auth-panel button[type="submit"] {
-          background-color: var(--auth-btn-bg) !important;
-          color: var(--auth-btn-text) !important;
-          border: none !important;
-          box-shadow: 0 6px 16px rgba(30, 64, 175, 0.35) !important;
+        .auth-panel button[type="submit"]:hover {
+          background-color: var(--auth-submit-hover) !important;
         }
-        [data-theme="dark"] .auth-panel button[type="submit"]:hover {
-          background-color: var(--auth-btn-hover) !important;
-        }
-        [data-theme="dark"] .auth-panel button[type="submit"]:disabled {
+        .auth-panel button[type="submit"]:disabled {
           opacity: 0.7;
         }
-        /* Tab 下划线 dark 可见 */
-        [data-theme="dark"] .auth-panel .tab-underline {
+        /* Tab 下划线 */
+        .auth-panel .tab-underline {
           background-color: var(--brand-accent) !important;
         }
-        [data-theme="dark"] .auth-eye-tooltip {
-          background: #ffffff !important;
-          color: #0f172a !important;
-          border: 1px solid #ffffff !important;
-          font-weight: 500;
-          opacity: 1 !important;
-          -webkit-backdrop-filter: none !important;
-          backdrop-filter: none !important;
-        }
-        [data-theme="dark"] .auth-eye-tooltip-arrow {
-          border-top-color: #ffffff !important;
-          opacity: 1 !important;
-        }
-        /* Auth 输入框：autofill 保持圆角与背景一致，避免方形覆盖 */
+        /* Auth 输入框：autofill 保持圆角与背景一致 */
         .auth-panel .auth-field-input {
           border-radius: inherit;
         }
@@ -93,20 +57,12 @@ const AuthLayout: React.FC = () => {
         .auth-panel .auth-field-input:-webkit-autofill:hover,
         .auth-panel .auth-field-input:-webkit-autofill:focus,
         .auth-panel .auth-field-input:-webkit-autofill:active {
-          -webkit-text-fill-color: var(--brand-text) !important;
+          -webkit-text-fill-color: var(--auth-autofill-text) !important;
           transition: background-color 9999s ease-out 0s;
-          -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
-          box-shadow: 0 0 0 1000px #ffffff inset !important;
+          -webkit-box-shadow: var(--auth-autofill-shadow) !important;
+          box-shadow: var(--auth-autofill-shadow) !important;
           border-radius: inherit !important;
           background-clip: padding-box !important;
-        }
-        [data-theme="dark"] .auth-panel .auth-field-input:-webkit-autofill,
-        [data-theme="dark"] .auth-panel .auth-field-input:-webkit-autofill:hover,
-        [data-theme="dark"] .auth-panel .auth-field-input:-webkit-autofill:focus,
-        [data-theme="dark"] .auth-panel .auth-field-input:-webkit-autofill:active {
-          -webkit-text-fill-color: #f8fafc !important;
-          -webkit-box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.12) inset !important;
-          box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.12) inset !important;
         }
       `}</style>
       {/* 全屏雪花特效 */}

@@ -24,7 +24,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
 
 	return (
 		<div
-			className={`relative flex items-center h-9 rounded-xl border border-[var(--brand-border)] bg-white/90 shadow-[0_6px_16px_rgba(15,23,42,0.08)] transition-[border-color,box-shadow] focus-within:border-[var(--brand-accent)] focus-within:shadow-[0_8px_20px_rgba(59,130,246,0.16)] ${
+			className={`relative flex items-center h-9 rounded-xl border border-transparent dark:border-white/[0.45] bg-white/90 shadow-[0_6px_16px_rgba(15,23,42,0.08)] transition-[border-color,box-shadow] hover:border-[var(--brand-accent)] focus-within:border-[var(--brand-accent)] focus-within:shadow-[0_8px_20px_rgba(59,130,246,0.16)] ${
 				className || ""
 			}`}
 		>

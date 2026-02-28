@@ -47,8 +47,6 @@ const Sider: React.FC<Props> = ({
 	const widthId = useId().replace(/[:]/g, "");
 	const widthClass = `sider-width-${widthId}`;
 	const [selectedId, setSelectedId] = useState<string | null>(null);
-	const [sortBy, setSortBy] = useState<"time" | "name">("time");
-	const [order, setOrder] = useState<"asc" | "desc">("asc");
 	const [width, setWidth] = useState(300);
 	const isDragging = useRef(false);
 	const [editingId, setEditingId] = useState<string | null>(null);
@@ -199,14 +197,9 @@ const Sider: React.FC<Props> = ({
 
 	const sortedItems = useMemo(() => {
 		const next = [...items];
-		if (sortBy === "name") {
-			next.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
-		} else {
-			next.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
-		}
-		if (order === "desc") next.reverse();
+		next.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 		return next;
-	}, [items, sortBy, order]);
+	}, [items]);
 
 	const listModalItems = useMemo<ListModalItem[]>(
 		() =>
@@ -290,16 +283,12 @@ const Sider: React.FC<Props> = ({
 
 	return (
 		<div
-			className={`relative h-screen z-[10000] transition-all duration-200 ease-out overflow-hidden ${widthClass}`}
+			className={`relative h-full z-[10000] transition-all duration-200 ease-out overflow-hidden ${widthClass}`}
 			data-oid="syllabus-sider"
 		>
 			<style data-oid="sider-width">{widthStyle}</style>
-			<div className="h-full bg-white/70 backdrop-blur-[18px] shadow-[0_12px_40px_rgba(124,58,237,0.2)] border-r border-white/60 flex flex-col">
+			<div className="h-full flex flex-col bg-white/[0.58] dark:bg-white/[0.26] border-r-0 dark:border-r dark:border-r-white/[0.28] shadow-[0_8px_30px_rgba(120,90,200,0.14),inset_0_1px_0_rgba(255,255,255,0.74),inset_0_-1px_0_rgba(255,255,255,0.34)] dark:shadow-[0_10px_32px_rgba(0,0,0,0.42),inset_0_1px_0_rgba(255,255,255,0.22),inset_0_-1px_0_rgba(255,255,255,0.12)] backdrop-blur-[40px] backdrop-saturate-[210%]">
 				<Header
-					order={order}
-					sortBy={sortBy}
-					onToggleOrder={() => setOrder((v) => (v === "asc" ? "desc" : "asc"))}
-					onSortByChange={(value) => setSortBy(value)}
 					onSearch={() => setListModalOpen(true)}
 					onCreate={() => window.dispatchEvent(new Event(createEventName))}
 					onClose={onClose}

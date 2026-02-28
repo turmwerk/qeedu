@@ -15,6 +15,30 @@
   /* Nav button colors for light */
   --nav-bg: #ffffff;
   --nav-fg: #1f2937; /* dark text */
+  /* Glass button */
+  --glass-btn-bg: rgba(255, 255, 255, 0.35);
+  --glass-btn-border: rgba(255, 255, 255, 0.45);
+  --glass-btn-shadow: 0 8px 32px rgba(120, 90, 200, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.55);
+  --glass-btn-hover-bg: rgba(255, 255, 255, 0.50);
+  --glass-btn-hover-border: rgba(255, 255, 255, 0.60);
+  --glass-btn-hover-shadow: 0 14px 40px rgba(104, 86, 180, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.70);
+  /* App root gradient */
+  --app-root-bg:
+    radial-gradient(44rem 34rem at 18% 28%, rgba(255, 150, 190, 0.52) 0%, rgba(255, 150, 190, 0) 68%),
+    radial-gradient(38rem 30rem at 82% 72%, rgba(195, 130, 255, 0.45) 0%, rgba(195, 130, 255, 0) 66%),
+    radial-gradient(32rem 26rem at 62% 8%, rgba(255, 210, 230, 0.5) 0%, rgba(255, 210, 230, 0) 64%),
+    radial-gradient(28rem 22rem at 5% 80%, rgba(180, 155, 255, 0.38) 0%, rgba(180, 155, 255, 0) 60%),
+    linear-gradient(135deg, #fce4f0 0%, #f3d6ff 45%, #dce4ff 100%);
+  --app-root-bg-color: #fce4f0;
+  /* Auth panel */
+  --auth-panel-bg: rgba(255, 255, 255, 0.60);
+  --auth-panel-shadow: 0 12px 38px rgba(120, 90, 200, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.78), inset 0 -1px 0 rgba(255, 255, 255, 0.36);
+  --auth-submit-bg: var(--brand-accent);
+  --auth-submit-text: #ffffff;
+  --auth-submit-hover: var(--brand-accent-strong);
+  --auth-submit-shadow: none;
+  --auth-autofill-shadow: 0 0 0 1000px #ffffff inset;
+  --auth-autofill-text: var(--brand-text);
 }
 
 /* Ensure root & body have light background fallback */

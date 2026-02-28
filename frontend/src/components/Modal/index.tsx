@@ -56,35 +56,6 @@ const Modal: React.FC<{
       data-oid="owobl1e"
     >
       <style>{`
-        /* Glass Modal 面板 (light) */
-        .glass-modal-panel {
-          background: rgba(255, 255, 255, 0.55) !important;
-          border: 1px solid rgba(255, 255, 255, 0.50) !important;
-          box-shadow:
-            0 20px 60px rgba(120, 90, 200, 0.12),
-            inset 0 1px 0 rgba(255, 255, 255, 0.60) !important;
-          -webkit-backdrop-filter: blur(24px);
-          backdrop-filter: blur(24px);
-        }
-        [data-theme="dark"] .glass-modal-panel {
-          background: rgba(255, 255, 255, 0.72) !important;
-          border: 1px solid rgba(255, 255, 255, 0.45) !important;
-          box-shadow:
-            0 20px 60px rgba(0, 0, 0, 0.4),
-            inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
-        }
-        .glass-modal-title {
-          color: #2d1b4f !important;
-        }
-        [data-theme="dark"] .glass-modal-title {
-          color: #1e293b !important;
-        }
-        .glass-modal-panel .glass-modal-header {
-          border-bottom-color: rgba(0, 0, 0, 0.08) !important;
-        }
-        [data-theme="dark"] .glass-modal-panel .glass-modal-header {
-          border-bottom-color: rgba(0, 0, 0, 0.10) !important;
-        }
         /* Search/glass modal close button */
         .search-modal-close {
           color: #dc2626 !important;
@@ -126,8 +97,6 @@ const Modal: React.FC<{
         .glass-modal-panel form[data-oid="l:34:qo"] > div[data-oid="hyu7xgg"] > label[data-oid="q6s8k:o"] {
           background: rgba(255, 255, 255, 0.18) !important;
           border-right-color: rgba(0, 0, 0, 0.08) !important;
-        }
-        [data-theme="dark"] .glass-modal-panel form[data-oid="l:34:qo"] > div[data-oid="hyu7xgg"] > label[data-oid="q6s8k:o"] {
           color: #334155 !important;
         }
         .glass-modal-panel form[data-oid="l:34:qo"] input,
@@ -145,7 +114,7 @@ const Modal: React.FC<{
         {width ? `.${widthClass} { width: ${widthValue}; }` : ""}
       </style>
       <div
-        className={`glass-modal-panel w-[780px] max-w-[calc(100%-40px)] rounded-xl overflow-hidden transition-all duration-300 ease-out ${widthClass} ${
+        className={`glass-modal-panel w-[780px] max-w-[calc(100%-40px)] rounded-xl overflow-hidden transition-all duration-300 ease-out bg-white/[0.38] dark:bg-white/[0.52] border border-white/50 dark:border-white/[0.45] shadow-[0_20px_60px_rgba(120,90,200,0.12),inset_0_1px_0_rgba(255,255,255,0.60)] dark:shadow-[0_20px_60px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.5)] backdrop-blur-[24px] ${widthClass} ${
           isAnimating 
             ? "opacity-100 scale-100 translate-y-0" 
             : "opacity-0 scale-95 translate-y-4"
@@ -155,10 +124,10 @@ const Modal: React.FC<{
       >
         {showHeader && (
           <div
-            className="glass-modal-header flex items-center justify-between px-5 py-4 border-b border-black/10"
+            className="flex items-center justify-between px-5 py-4 border-b border-black/[0.08] dark:border-black/10"
             data-oid="rkufj.y"
           >
-            <div className="glass-modal-title font-bold" data-oid="0pbqih6">
+            <div className="font-bold text-[#2d1b4f] dark:text-[#1e293b]" data-oid="0pbqih6">
               {title}
             </div>
             <button

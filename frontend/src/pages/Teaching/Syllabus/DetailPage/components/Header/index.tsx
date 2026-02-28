@@ -1,6 +1,15 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Dropdown from "@/components/Dropdown";
 import Button from "@/components/Button";
+import {
+  MenuOutlined,
+  CodeOutlined,
+  ExpandOutlined,
+  ExportOutlined,
+  FilePdfOutlined,
+  FileWordOutlined,
+  FileMarkdownOutlined,
+} from "@ant-design/icons";
 import {
   downloadMarkdown,
   downloadDocx,
@@ -20,64 +29,80 @@ type HeaderProps = {
 const Header: React.FC<HeaderProps> = ({
   title,
   onTitleChange,
-  onBack,
   md,
   showRaw,
   onToggleRaw,
   onFullScreen,
 }) => {
+  const [siderOpen, setSiderOpen] = useState(false);
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (detail) setSiderOpen(!!detail.open);
+    };
+    window.addEventListener("syllabus-sider-state", handler);
+    window.dispatchEvent(new Event("get-syllabus-sider-state"));
+    return () => window.removeEventListener("syllabus-sider-state", handler);
+  }, []);
+
   const actionButtonClass =
-    "bg-white border border-[var(--brand-border)] text-[var(--brand-accent)] px-2.5 py-1.5 rounded-xl font-semibold transition-[background,border-color,box-shadow,transform] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[var(--brand-shadow)] hover:-translate-y-[1px]";
+    "inline-flex items-center gap-1.5 bg-white dark:bg-white/10 border border-[var(--brand-border)] dark:border-white/30 text-[var(--brand-blue)] px-2.5 py-1.5 rounded-xl font-semibold transition-[background,border-color,box-shadow,transform,color] hover:bg-[var(--brand-accent-soft)] dark:hover:bg-white/18 hover:border-[var(--brand-purple)] hover:text-[var(--brand-purple)] hover:shadow-[var(--brand-shadow)] hover:-translate-y-[1px]";
+
   return (
-    <div className="bg-white px-0 py-2 shadow-[0_1px_6px_rgba(16,24,40,0.04)] flex-shrink-0 z-10">
+    <div className="bg-transparent px-0 py-2 flex-shrink-0 z-10">
       <div className="flex justify-between items-center gap-2.5 px-0">
+        {!siderOpen && (
+          <Button
+            className="flex items-center justify-center w-9 h-9 rounded-lg bg-transparent border border-transparent text-[var(--brand-blue)] transition-[background,border-color,color] hover:text-[var(--brand-purple)] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-purple)]"
+            onClick={() => window.dispatchEvent(new Event("toggle-syllabus-sider"))}
+            aria-label="打开侧边栏"
+          >
+            <MenuOutlined />
+          </Button>
+        )}
         <input
-          className="flex-1 border border-transparent bg-[#f0ebf6] rounded-xl px-3 py-2 text-[18px] font-bold text-[#4b2a85] min-h-[40px] transition-[box-shadow,border-color] focus:outline-none focus:border-[#4b2a85] focus:shadow-[0_0_0_3px_rgba(75,42,133,0.18)]"
+          className="flex-1 border-0 border-b-2 border-b-[rgba(75,42,133,0.18)] bg-transparent rounded-none px-1 py-1.5 text-[18px] font-bold text-[var(--brand-blue)] min-h-[40px] transition-[border-color] focus:outline-none focus:border-b-[var(--brand-blue)]"
           type="text"
           value={title}
           onChange={(event) => onTitleChange(event.target.value)}
           placeholder="未命名课程"
         />
 
-        <div className="flex items-center gap-3">
-          <div className="flex flex-col items-start justify-center gap-0.5 mr-2">
-            <div className="text-[12px] text-[#6b6b6b] font-semibold">总分</div>
-            <div className="text-[22px] font-extrabold text-[#4b2a85] leading-none">
-              90
-            </div>
-          </div>
+        <div className="flex items-center gap-2">
           <Button
             className={actionButtonClass}
             onClick={onToggleRaw}
           >
-            {showRaw ? "渲染 Markdown" : "显示 Markdown"}
+            <CodeOutlined />
+            <span>{showRaw ? "渲染 Markdown" : "显示 Markdown"}</span>
           </Button>
           <Button
             className={actionButtonClass}
             onClick={onFullScreen}
           >
-            全屏编辑
-          </Button>
-          <Button
-            className={actionButtonClass}
-            onClick={onBack}
-          >
-            返回大纲目录
+            <ExpandOutlined />
+            <span>全屏编辑</span>
           </Button>
           <Dropdown
-            button="导出"
+            button={
+              <span className="inline-flex items-center gap-1.5">
+                <ExportOutlined />
+                导出
+              </span>
+            }
             buttonClassName={actionButtonClass}
             items={[
               {
-                label: "导出 PDF",
+                label: <span className="inline-flex items-center gap-1.5"><FilePdfOutlined /> PDF</span>,
                 onClick: () => exportPdfViaPrint(title || "未命名课程", md),
               },
               {
-                label: "导出 Docx",
+                label: <span className="inline-flex items-center gap-1.5"><FileWordOutlined /> Docx</span>,
                 onClick: () => downloadDocx(title || "未命名课程", md),
               },
               {
-                label: "导出 Markdown",
+                label: <span className="inline-flex items-center gap-1.5"><FileMarkdownOutlined /> Markdown</span>,
                 onClick: () => downloadMarkdown(title || "未命名课程", md),
               },
             ]}

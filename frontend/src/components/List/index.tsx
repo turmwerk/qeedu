@@ -78,7 +78,7 @@ function List<T = any>({
         return (
           <div
             key={key}
-            className={`teaching-list-item group relative flex justify-between items-center bg-white/70 dark:!bg-white/[0.14] p-4 rounded-[12px] border border-[var(--brand-border)] dark:border-[rgba(255,255,255,0.22)] transition-[box-shadow,border-color,background] hover:shadow-[0_12px_26px_rgba(17,24,39,0.12)] hover:border-[var(--brand-accent)] hover:bg-white dark:hover:!bg-white/20 dark:hover:border-[rgba(255,255,255,0.34)] ${
+            className={`group relative flex justify-between items-center bg-white/70 dark:bg-white/[0.34] p-4 rounded-[12px] border border-transparent dark:border-white/50 transition-[box-shadow,border-color,background] hover:shadow-[0_12px_26px_rgba(17,24,39,0.12)] hover:border-[var(--brand-accent)] dark:hover:border-white/[0.65] hover:bg-white dark:hover:bg-white/[0.48] ${
               onItemClick && !disabled ? "cursor-pointer" : ""
             } ${itemClassName ? itemClassName(item) : ""}`}
             onClick={() => {
@@ -88,6 +88,7 @@ function List<T = any>({
             }}
             data-oid="_99fzva"
           >
+
             {onItemClick && hoverGlow && (
               <div className="pointer-events-none absolute inset-0 rounded-[10px] opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                 <div className="absolute -inset-2 rounded-[14px] bg-[radial-gradient(circle_at_50%_0%,rgba(99,102,241,0.18),transparent_70%)] blur-[10px]" />

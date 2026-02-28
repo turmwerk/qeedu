@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Layout } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
@@ -15,11 +15,13 @@ import {
   HomeOutlined,
   ArrowLeftOutlined,
   UserOutlined,
-  MenuOutlined,
+  IdcardOutlined,
+  SettingOutlined,
 } from "@ant-design/icons";
 import Dropdown from "@/components/Dropdown";
 import Button from "@/components/Button";
 import SearchModal from "@/layouts/MainLayout/components/SearchModal";
+import { getStoredTheme, toggleTheme } from "@/utils/theme";
 
 const { Header } = Layout;
 
@@ -109,11 +111,7 @@ const buildItems = (
     };
   });
 
-const MainHeader: React.FC<{
-  onToggleSider?: () => void;
-  showSiderToggle?: boolean;
-  siderOpen?: boolean;
-}> = ({ onToggleSider, showSiderToggle, siderOpen }) => {
+const MainHeader: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const isHomePage = location.pathname === "/";
@@ -123,6 +121,22 @@ const MainHeader: React.FC<{
   const isResearch = location.pathname.startsWith("/research");
 
   const [searchVisible, setSearchVisible] = useState(false);
+  const [theme, setTheme] = useState(getStoredTheme());
+
+  useEffect(() => {
+    const handler = () => setTheme(getStoredTheme());
+    window.addEventListener('theme-change', handler);
+    window.addEventListener('storage', handler);
+    return () => {
+      window.removeEventListener('theme-change', handler);
+      window.removeEventListener('storage', handler);
+    };
+  }, []);
+
+  const handleToggleTheme = () => {
+    const next = toggleTheme();
+    setTheme(next);
+  };
 
   const backRouteMap: Record<string, string> = {
     "/teaching": "/",
@@ -147,16 +161,6 @@ const MainHeader: React.FC<{
     >
       <SearchModal open={searchVisible} onClose={() => setSearchVisible(false)} />
       <div className="flex items-center gap-3" data-oid="40dtg53">
-        {showSiderToggle && !siderOpen && (
-          <Button
-            className="flex items-center justify-center w-9 h-9 rounded-lg bg-white border border-[var(--brand-border)] text-[var(--brand-blue)] hover:border-[var(--brand-purple)] hover:text-[var(--brand-purple)] transition"
-            onClick={onToggleSider}
-            aria-label="打开侧边栏"
-            data-oid="sider-toggle"
-          >
-            <MenuOutlined />
-          </Button>
-        )}
         {!isHomePage && (
           <Button
             className={`${menuButtonBase} ${menuButtonUnderline} ${menuButtonIdle}`}
@@ -182,7 +186,39 @@ const MainHeader: React.FC<{
           {currentConfig.title}
         </h1>
       </div>
-      <div className="flex items-center gap-3" data-oid="lg2sztd">
+      <div className="flex items-center gap-1.5" data-oid="lg2sztd">
+        <Button
+          className={`${menuButtonBase} ${menuButtonUnderline} ${menuButtonIdle}`}
+          onClick={() => {}}
+          data-oid="settings-button"
+        >
+          <SettingOutlined />
+          <span>设置</span>
+        </Button>
+        <Button
+          className={`${menuButtonBase} ${menuButtonUnderline} ${menuButtonIdle}`}
+          onClick={handleToggleTheme}
+          data-oid="theme-button"
+        >
+              {theme === 'dark' ? (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="leading-none inline-block">
+                  <path d="M12 4V2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M12 22v-2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M4.93 4.93L3.51 3.51" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M20.49 20.49l-1.42-1.42" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M4 12H2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M22 12h-2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M4.93 19.07l-1.42 1.42" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M20.49 3.51l-1.42 1.42" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                  <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.8" />
+                </svg>
+              ) : (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="leading-none inline-block">
+                  <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              )}
+          <span>主题</span>
+        </Button>
         <Button
           className={`${menuButtonBase} ${menuButtonUnderline} ${menuButtonIdle}`}
           onClick={() => setSearchVisible(true)}
@@ -285,14 +321,29 @@ const MainHeader: React.FC<{
           portalToBody={true}
         />
 
-        <Button
-          className={`${menuButtonBase} ${menuButtonUnderline} ${menuButtonIdle}`}
-          onClick={() => navigate("/login")}
-          data-oid=".99sosb"
-        >
-          <UserOutlined />
-          <span>登录 / 注册</span>
-        </Button>
+        <Dropdown
+          button={
+            <span className="inline-flex items-center justify-center gap-1.5 min-w-[3.5em]">
+              <UserOutlined />
+              登录
+            </span>
+          }
+          buttonClassName={`${menuButtonBase} ${menuButtonIdle}`}
+          items={[
+            {
+              label: (
+                <span className="inline-flex items-center justify-center gap-1.5 min-w-[3.5em]">
+                  <IdcardOutlined />
+                  注册
+                </span>
+              ),
+              onClick: () => navigate("/register"),
+            },
+          ]}
+          onButtonClick={() => navigate("/login")}
+          showBorder={false}
+          portalToBody={true}
+        />
       </div>
     </Header>
   );

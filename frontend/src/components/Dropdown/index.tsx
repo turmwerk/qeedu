@@ -49,8 +49,8 @@ const Dropdown: React.FC<DropdownProps> = ({
 
   // 根据direction决定菜单位置和对齐方式
   const menuPositionClass = direction === "up" 
-    ? "bottom-[calc(100%+4px)]" 
-    : "top-[calc(100%+4px)]";
+    ? "bottom-full" 
+    : "top-full";
   
   const menuAlignClass = direction === "up" ? "left-0" : "right-0";
 
@@ -96,10 +96,9 @@ const Dropdown: React.FC<DropdownProps> = ({
     const rect = wrapper.getBoundingClientRect();
     const menuRect = menu.getBoundingClientRect();
 
-    const gap = 6;
     const top = direction === "up"
-      ? rect.top - menuRect.height - gap
-      : rect.bottom + gap;
+      ? rect.top - menuRect.height
+      : rect.bottom;
     
     // 确保菜单不会超出屏幕边界
     let left = direction === "up" ? rect.left : rect.right - menuRect.width;
@@ -114,6 +113,7 @@ const Dropdown: React.FC<DropdownProps> = ({
       top: Math.max(8, top),
       left: left,
       zIndex: TOP_Z,
+      minWidth: rect.width,
       transformOrigin: direction === "up" ? "bottom left" : "top right",
     });
   }, [open, canPortal, direction]);
@@ -126,10 +126,9 @@ const Dropdown: React.FC<DropdownProps> = ({
       if (!wrapper || !menu) return;
       const rect = wrapper.getBoundingClientRect();
       const menuRect = menu.getBoundingClientRect();
-      const gap = 6;
       const top = direction === "up"
-        ? rect.top - menuRect.height - gap
-        : rect.bottom + gap;
+        ? rect.top - menuRect.height
+        : rect.bottom;
       
       // 确保菜单不会超出屏幕边界
       let left = direction === "up" ? rect.left : rect.right - menuRect.width;
@@ -144,6 +143,7 @@ const Dropdown: React.FC<DropdownProps> = ({
         top: Math.max(8, top),
         left: left,
         zIndex: TOP_Z,
+        minWidth: rect.width,
         transformOrigin: direction === "up" ? "bottom left" : "top right",
       });
     };
@@ -169,7 +169,7 @@ const Dropdown: React.FC<DropdownProps> = ({
     >
       <span
         aria-hidden="true"
-        className={`absolute left-0 right-0 ${direction === "up" ? "bottom-[calc(100%-2px)]" : "top-[calc(100%-2px)]"} h-[14px] pointer-events-auto`}
+        className={`absolute left-0 right-0 ${direction === "up" ? "bottom-[calc(100%-2px)]" : "top-[calc(100%-2px)]"} h-[4px] pointer-events-auto`}
         data-oid="hd02w-p"
       />
 

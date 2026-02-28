@@ -41,17 +41,17 @@ const Header: React.FC<Props> = ({
 	onCloseModal,
 }) => {
 	const sortButtonClass =
-		"bg-white border border-transparent text-[var(--brand-blue)] h-9 min-w-9 px-3 rounded-xl text-[15px] font-semibold transition-[background,border-color,color,transform] hover:text-[var(--brand-purple)] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-purple)] active:scale-95 flex items-center justify-center gap-1.5 select-none";
+		"bg-white dark:bg-white/10 border border-transparent dark:border-white/[0.45] text-[var(--brand-blue)] h-9 min-w-9 px-3 rounded-xl text-[15px] font-semibold transition-[background,border-color,color,transform] hover:text-[var(--brand-purple)] hover:bg-[var(--brand-accent-soft)] dark:hover:bg-white/18 hover:border-[var(--brand-purple)] active:scale-95 flex items-center justify-center gap-1.5 select-none";
 	const filterButtonClass =
-		"bg-white border border-transparent text-[var(--brand-blue)] px-5 py-2 text-[15px] rounded-xl font-semibold transition-[background,border-color,color,transform] hover:text-[var(--brand-purple)] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-purple)] active:scale-95 select-none";
+		"bg-white dark:bg-white/10 border border-transparent dark:border-white/[0.45] text-[var(--brand-blue)] px-5 py-2 text-[15px] rounded-xl font-semibold transition-[background,border-color,color,transform] hover:text-[var(--brand-purple)] hover:bg-[var(--brand-accent-soft)] dark:hover:bg-white/18 hover:border-[var(--brand-purple)] active:scale-95 select-none";
 	const createButtonClass =
-		"bg-white border border-transparent text-[#22c55e] h-9 min-w-9 px-3 rounded-xl text-[15px] font-semibold transition-[background,border-color,color,transform] hover:bg-[#f0fdf4] hover:border-[#bbf7d0] hover:text-[#16a34a] active:scale-95 flex items-center justify-center gap-1.5 select-none";
+		"bg-white dark:bg-white/10 border border-transparent dark:border-white/[0.45] text-[#22c55e] h-9 min-w-9 px-3 rounded-xl text-[15px] font-semibold transition-[background,border-color,color,transform] hover:bg-[#f0fdf4] dark:hover:bg-white/18 hover:border-[#bbf7d0] hover:text-[#16a34a] active:scale-95 flex items-center justify-center gap-1.5 select-none";
 	const closeButtonClass =
-		"bg-white border border-transparent text-[#dc2626] h-9 min-w-9 px-3 rounded-xl text-[15px] font-semibold transition-[background,border-color,color,transform] hover:bg-[#ffecec] hover:border-[#f1a1a1] hover:text-[#b91c1c] active:scale-95 flex items-center justify-center gap-1.5 select-none";
+		"bg-white dark:bg-white/10 border border-transparent dark:border-white/[0.45] text-[#dc2626] h-9 min-w-9 px-3 rounded-xl text-[15px] font-semibold transition-[background,border-color,color,transform] hover:bg-[#ffecec] dark:hover:bg-white/18 hover:border-[#f1a1a1] hover:text-[#b91c1c] active:scale-95 flex items-center justify-center gap-1.5 select-none";
 
 	return (
 		<div className="flex justify-between items-center font-bold mb-3">
-			<div className="text-[var(--brand-blue)] font-bold">
+			<div className="text-[var(--brand-blue)] dark:text-white font-bold">
 				已创建的大纲 ({count})
 			</div>
 			<div className="flex items-center gap-2">

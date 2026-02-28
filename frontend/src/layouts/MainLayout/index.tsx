@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Layout } from "antd";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Header from "./components/Header";
@@ -144,11 +144,6 @@ const MainLayout: React.FC = () => {
   // 侧边栏切换按钮逻辑：只在大纲/试卷详情页显示
   const isSyllabusDetail = location.pathname.startsWith("/teaching/syllabus") && location.pathname !== "/teaching/syllabus/ListPage";
   const isExamDetail = location.pathname.startsWith("/teaching/exam/detail");
-  const showSiderToggle = useMemo(
-    () => isSyllabusDetail || isExamDetail,
-    [isExamDetail, isSyllabusDetail]
-  );
-  const activeSiderOpen = isExamDetail ? examSiderOpen : syllabusSiderOpen;
 
   useEffect(() => {
     if (location.pathname === "/teaching/syllabus/ListPage") {
@@ -160,25 +155,13 @@ const MainLayout: React.FC = () => {
   }, [location.pathname]);
 
   return (
-    <div data-theme={theme} className={`app-root flex h-screen relative overflow-hidden${isHomePage ? ' home-theme-bg' : ''}`}>
+    <div data-theme={theme} className={`app-root flex flex-col h-screen relative overflow-hidden${isHomePage ? ' home-theme-bg' : ''}`}>
       {/* 主题梯度背景 + header/footer 透明 */}
       <style>{`
         .app-root {
-          background:
-            radial-gradient(44rem 34rem at 18% 28%, rgba(255, 150, 190, 0.52) 0%, rgba(255, 150, 190, 0) 68%),
-            radial-gradient(38rem 30rem at 82% 72%, rgba(195, 130, 255, 0.45) 0%, rgba(195, 130, 255, 0) 66%),
-            radial-gradient(32rem 26rem at 62% 8%, rgba(255, 210, 230, 0.5) 0%, rgba(255, 210, 230, 0) 64%),
-            radial-gradient(28rem 22rem at 5% 80%, rgba(180, 155, 255, 0.38) 0%, rgba(180, 155, 255, 0) 60%),
-            linear-gradient(135deg, #fce4f0 0%, #f3d6ff 45%, #dce4ff 100%) !important;
-          background-color: #fce4f0 !important;
+          background: var(--app-root-bg) !important;
+          background-color: var(--app-root-bg-color) !important;
           color: var(--brand-text);
-        }
-        [data-theme="dark"] .app-root {
-          background:
-            radial-gradient(70rem 55rem at 10% 20%, rgba(90, 60, 200, 0.30) 0%, rgba(90, 60, 200, 0) 65%),
-            radial-gradient(55rem 45rem at 85% 75%, rgba(30, 80, 180, 0.22) 0%, rgba(30, 80, 180, 0) 62%),
-            linear-gradient(180deg, #152236 0%, #1a2d48 100%) !important;
-          background-color: #152236 !important;
         }
         .main-header, footer {
           background-color: transparent !important;
@@ -192,63 +175,63 @@ const MainLayout: React.FC = () => {
       {/* 深色主题独立星点背景（不连线，不跟鼠标交互） */}
       {theme === 'dark' && <StarsLayer />}
 
-      {/* 左侧栏 */}
-      <Sider
-        open={syllabusSiderOpen && isSyllabusDetail}
-        onClose={() => setSyllabusSiderOpen(false)}
-        storageKey="syllabus_outlines"
-        title="大纲列表"
-        createEventName="syllabus-outline-create"
-        updatedEventName="syllabus-outlines-updated"
-        currentIdEventName="syllabus-current-id"
-        selectEventName="syllabus-outline-select"
-        deleteEventName="syllabus-outline-delete"
-        widthEventName="syllabus-sider-width"
-        getWidthEventName="get-syllabus-sider-width"
-        listModalComponent={SyllabusListModal}
-      />
-      <Sider
-        open={examSiderOpen && isExamDetail}
-        onClose={() => setExamSiderOpen(false)}
-        storageKey="exam_design_exams_v1"
-        title="试卷列表"
-        createEventName="exam-exam-create"
-        updatedEventName="exam-exams-updated"
-        currentIdEventName="exam-current-id"
-        selectEventName="exam-exam-select"
-        deleteEventName="exam-exam-delete"
-        widthEventName="exam-sider-width"
-        getWidthEventName="get-exam-sider-width"
-        listModalComponent={ExamListModal}
-      />
-      
-      {/* 右侧内容区域 */}
-      <Layout className="flex-1 relative z-10 flex flex-col min-h-0 h-full">
+      {/* 全局 Header */}
+      <div className="flex-shrink-0 relative z-[100]">
         <Header
-          onToggleSider={() =>
-            isExamDetail
-              ? setExamSiderOpen((v) => !v)
-              : setSyllabusSiderOpen((v) => !v)
-          }
-          showSiderToggle={showSiderToggle}
-          siderOpen={activeSiderOpen}
           data-oid="d8-wqm."
         />
-        <Content className="m-0 p-0 relative z-10 flex-1 min-h-0" data-oid="gzlcfm-">
-          <div
-            className="h-full min-h-0 flex flex-col overflow-y-auto"
-            data-oid="giq3cbp"
-            ref={scrollContainerRef}
-          >
-            <div className="flex-1">
-              <Outlet />
+      </div>
+
+      {/* Header 下方：侧边栏 + 内容 */}
+      <div className="flex flex-1 min-h-0 relative z-10">
+        {/* 左侧栏 */}
+        <Sider
+          open={syllabusSiderOpen && isSyllabusDetail}
+          onClose={() => setSyllabusSiderOpen(false)}
+          storageKey="syllabus_outlines"
+          title="大纲列表"
+          createEventName="syllabus-outline-create"
+          updatedEventName="syllabus-outlines-updated"
+          currentIdEventName="syllabus-current-id"
+          selectEventName="syllabus-outline-select"
+          deleteEventName="syllabus-outline-delete"
+          widthEventName="syllabus-sider-width"
+          getWidthEventName="get-syllabus-sider-width"
+          listModalComponent={SyllabusListModal}
+        />
+        <Sider
+          open={examSiderOpen && isExamDetail}
+          onClose={() => setExamSiderOpen(false)}
+          storageKey="exam_design_exams_v1"
+          title="试卷列表"
+          createEventName="exam-exam-create"
+          updatedEventName="exam-exams-updated"
+          currentIdEventName="exam-current-id"
+          selectEventName="exam-exam-select"
+          deleteEventName="exam-exam-delete"
+          widthEventName="exam-sider-width"
+          getWidthEventName="get-exam-sider-width"
+          listModalComponent={ExamListModal}
+        />
+        
+        {/* 右侧内容区域 */}
+        <Layout className={`flex-1 relative flex flex-col min-h-0 h-full${isDetailPage ? ' bg-white/[0.45] dark:bg-white/[0.06] backdrop-blur-[18px] backdrop-saturate-[160%]' : ''}`}>
+          <Content className="m-0 p-0 relative z-10 flex-1 min-h-0" data-oid="gzlcfm-">
+            <div
+              className="h-full min-h-0 flex flex-col overflow-y-auto"
+              data-oid="giq3cbp"
+              ref={scrollContainerRef}
+            >
+              <div className="flex-1">
+                <Outlet />
+              </div>
+              {!isDetailPage && <Footer />}
             </div>
-            {!isDetailPage && <Footer />}
-          </div>
-          {/* 除了 detail 页面，所有页面都显示 FloatActions */}
-          {!isDetailPage && <FloatActions />}
-        </Content>
-      </Layout>
+            {/* 除了 detail 页面，所有页面都显示 FloatActions */}
+            {!isDetailPage && <FloatActions />}
+          </Content>
+        </Layout>
+      </div>
     </div>
   );
 };

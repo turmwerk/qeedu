@@ -30,54 +30,33 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
   showBorder = true,
   style,
   menuAlignClass = "right-0",
-  menuPositionClass = "top-[calc(100%+4px)]",
+  menuPositionClass = "top-full",
   isPortal = false,
   menuRef,
   onMouseEnter,
   onMouseLeave,
   onItemClick,
 }) => {
-  // dropdown 面板毛玻璃样式
-  const dropdownStyles = `
-    .dropdown-menu-panel {
-      background-color: rgba(255, 255, 255, 0.55) !important;
-      border: none !important;
-      box-shadow: 0 4px 24px rgba(120, 90, 200, 0.10) !important;
-      -webkit-backdrop-filter: blur(18px) saturate(160%);
-      backdrop-filter: blur(18px) saturate(160%);
-      border-radius: 12px;
-    }
-    [data-theme="dark"] .dropdown-menu-panel {
-      background-color: rgba(255, 255, 255, 0.07) !important;
-      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35) !important;
-    }
-  `;
+  // dropdown 面板 bg-transparent 直接写在 className 中，不再用 <style>
   // 菜单项样式（使用 showBorder 区分有/无边框两种风格）
   // 面板已有毛玻璃背景，菜单项不再额外加背景/边框
   const itemActiveClass = showBorder
-    ? "bg-transparent !text-[var(--brand-purple)] hover:bg-white/20"
+    ? "bg-white dark:bg-white/10 !text-[var(--brand-purple)] hover:bg-[var(--brand-accent-soft)] dark:hover:bg-white/18"
     : "!text-[var(--brand-purple)] border-0 after:!w-full";
   const itemIdleClass = showBorder
-    ? "bg-transparent text-[var(--brand-blue)] border-0 hover:bg-white/20 hover:text-[var(--brand-purple)]"
+    ? "bg-white dark:bg-white/10 text-[var(--brand-blue)] border-0 hover:bg-[var(--brand-accent-soft)] dark:hover:bg-white/18 hover:text-[var(--brand-purple)]"
     : "text-[var(--brand-blue)] border-0 hover:text-[var(--brand-purple)]";
 
-  const portalPanelClass = `dropdown-menu-panel p-1 min-w-[120px] flex flex-col gap-0.5 transition-[opacity,transform] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+  const portalPanelClass = `bg-transparent border-none shadow-none pl-1 pt-1 pb-1 pr-0 min-w-[120px] flex flex-col gap-0.5 transition-[opacity] duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] ${
     open
-      ? "opacity-100 scale-[1.01] translate-y-0 pointer-events-auto"
-      : `opacity-0 scale-[0.98] ${
-          direction === "up" ? "translate-y-2" : "-translate-y-2"
-        } pointer-events-none`
+      ? "opacity-100 pointer-events-auto"
+      : "opacity-0 pointer-events-none"
   }`;
 
-  const relativePanelClass = `dropdown-menu-panel absolute ${menuAlignClass} ${menuPositionClass} p-1 min-w-[120px] flex flex-col gap-0.5 opacity-0 scale-[0.98] pointer-events-none z-[2147483647] transition-[opacity,transform] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-    direction === "up"
-      ? "translate-y-2 origin-bottom-left"
-      : "-translate-y-2 origin-top-right"
-  } group-hover:opacity-100 group-hover:scale-[1.01] group-hover:translate-y-0 group-hover:pointer-events-auto group-hover:duration-150 group-focus-within:opacity-100 group-focus-within:scale-[1.01] group-focus-within:translate-y-0 group-focus-within:pointer-events-auto group-focus-within:duration-150`;
+  const relativePanelClass = `bg-transparent border-none shadow-none absolute ${menuAlignClass} ${menuPositionClass} pl-1 pt-1 pb-1 pr-0 min-w-[120px] flex flex-col gap-0.5 opacity-0 pointer-events-none z-[2147483647] transition-[opacity] duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:opacity-100 group-hover:pointer-events-auto group-focus-within:opacity-100 group-focus-within:pointer-events-auto`;
 
   return (
     <>
-    <style>{dropdownStyles}</style>
     <div
       ref={menuRef}
       style={isPortal ? style : undefined}
@@ -88,12 +67,12 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
       {items.map((item, i) => (
         <Button
           key={i}
-          className={`dropdown-menu-item ${item.active ? "item-active" : ""} group/dropdown-item relative w-full px-3 py-1.5 rounded-lg text-sm font-semibold transition-[background,border-color,color] whitespace-nowrap after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[1.5px] after:w-0 after:bg-current after:transition-all after:duration-200 hover:after:w-full ${
+          className={`dropdown-menu-item ${item.active ? "item-active" : ""} group/dropdown-item relative w-full pl-3 pr-[10px] py-1.5 rounded-lg text-sm font-semibold transition-[background,border-color,color] whitespace-nowrap after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[1.5px] after:w-0 after:bg-current after:transition-all after:duration-200 hover:after:w-full ${
             item.active ? itemActiveClass : itemIdleClass
           }`}
           onClick={() => onItemClick?.(item, i)}
         >
-          <span className="inline-flex items-center justify-center gap-2 text-[14px] leading-[1.2] [&_.anticon]:text-[1em] [&_.anticon>svg]:h-[1em] [&_.anticon>svg]:w-[1em]">
+          <span className="inline-flex items-center justify-end gap-2 text-[14px] leading-[1.2] [&_.anticon]:text-[1em] [&_.anticon>svg]:h-[1em] [&_.anticon>svg]:w-[1em]">
             {item.label}
             {showCheck && item.active && <span>✓</span>}
           </span>

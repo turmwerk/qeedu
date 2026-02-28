@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { EditOutlined, DeleteOutlined, FormOutlined } from "@ant-design/icons";
 import List from "@/components/List";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import CreateModal from "../CreateModal";
@@ -115,28 +116,7 @@ const ListModal: React.FC<Props> = ({
       <div className={modalMode ? "p-2 text-[#444]" : "p-6 text-[#444]"}>
         <div className="grid grid-cols-1 gap-5 items-start">
           <div>
-            <div className="teaching-list-glass rounded-xl p-[18px] min-h-[520px]">
-              <style>{`
-                /* teaching-list 毛玻璃 (light) */
-                .teaching-list-glass {
-                  background: rgba(255, 255, 255, 0.58) !important;
-                  border: 0 none transparent !important;
-                  box-shadow:
-                    0 8px 30px rgba(120, 90, 200, 0.14),
-                    inset 0 1px 0 rgba(255, 255, 255, 0.74),
-                    inset 0 -1px 0 rgba(255, 255, 255, 0.34) !important;
-                  -webkit-backdrop-filter: blur(40px) saturate(210%);
-                  backdrop-filter: blur(40px) saturate(210%);
-                }
-                [data-theme="dark"] .teaching-list-glass {
-                  background: rgba(255, 255, 255, 0.18) !important;
-                  border: 1px solid rgba(255, 255, 255, 0.28) !important;
-                  box-shadow:
-                    0 10px 32px rgba(0, 0, 0, 0.42),
-                    inset 0 1px 0 rgba(255, 255, 255, 0.22),
-                    inset 0 -1px 0 rgba(255, 255, 255, 0.12) !important;
-                }
-              `}</style>
+            <div className={modalMode ? "rounded-xl p-[18px] min-h-[520px]" : "rounded-xl p-[18px] min-h-[520px] bg-white/[0.58] dark:bg-white/[0.18] border-0 dark:border dark:border-white/[0.28] shadow-[0_8px_30px_rgba(120,90,200,0.14),inset_0_1px_0_rgba(255,255,255,0.74),inset_0_-1px_0_rgba(255,255,255,0.34)] dark:shadow-[0_10px_32px_rgba(0,0,0,0.42),inset_0_1px_0_rgba(255,255,255,0.22),inset_0_-1px_0_rgba(255,255,255,0.12)] backdrop-blur-[40px] backdrop-saturate-[210%]"}>
               <Header
                 count={items.length}
                 sortBy={sortBy}
@@ -159,8 +139,8 @@ const ListModal: React.FC<Props> = ({
                   items={searchedItems}
                   keyExtractor={(i) => i.id}
                   hoverGlow={false}
-                  defaultActionClassName="flex items-center gap-1.5 px-5 py-2 text-[15px] font-semibold rounded-xl select-none bg-white border border-transparent text-[#22c55e] cursor-pointer transition-[background,border-color,transform,color] hover:bg-[#f0fdf4] hover:border-[#bbf7d0] hover:text-[#16a34a] hover:-translate-y-[1px]"
-                  editingActionClassName="flex items-center gap-1.5 px-5 py-2 text-[15px] font-semibold rounded-xl select-none bg-white border border-transparent text-[#22c55e] cursor-pointer transition-[background,border-color,transform,color] hover:bg-[#f0fdf4] hover:border-[#bbf7d0] hover:text-[#16a34a] hover:-translate-y-[1px]"
+                  defaultActionClassName="flex items-center gap-1.5 px-5 py-2 text-[15px] font-semibold rounded-xl select-none bg-white dark:bg-white/10 border border-transparent dark:border-white/[0.45] text-[#22c55e] cursor-pointer transition-[background,border-color,transform,color] hover:bg-[#f0fdf4] dark:hover:bg-white/18 hover:border-[#bbf7d0] hover:text-[#16a34a] hover:-translate-y-[1px]"
+                  editingActionClassName="flex items-center gap-1.5 px-5 py-2 text-[15px] font-semibold rounded-xl select-none bg-white dark:bg-white/10 border border-transparent dark:border-white/[0.45] text-[#22c55e] cursor-pointer transition-[background,border-color,transform,color] hover:bg-[#f0fdf4] dark:hover:bg-white/18 hover:border-[#bbf7d0] hover:text-[#16a34a] hover:-translate-y-[1px]"
                   editable={{ getValue: (i) => i.title }}
                   onItemClick={(item) => onEdit(item.id)}
                   isItemDisabled={(item) => !!currentId && item.id === currentId}
@@ -188,27 +168,27 @@ const ListModal: React.FC<Props> = ({
                   )}
                   actions={[
                     {
-                      label: "继续编辑",
+                      label: <><FormOutlined /> 继续编辑</>,
                       onClick: (item) => onEdit(item.id),
                       className:
-                        "flex items-center gap-1.5 px-5 py-2 text-[15px] font-semibold rounded-xl select-none bg-white border border-transparent text-[#22c55e] cursor-pointer transition-[background,border-color,transform,color] hover:bg-[#f0fdf4] hover:border-[#bbf7d0] hover:text-[#16a34a] hover:-translate-y-[1px]",
+                        "flex items-center gap-1.5 px-5 py-2 text-[15px] font-semibold rounded-xl select-none bg-white dark:bg-white/10 border border-transparent dark:border-white/[0.45] text-[#22c55e] cursor-pointer transition-[background,border-color,transform,color] hover:bg-[#f0fdf4] dark:hover:bg-white/18 hover:border-[#bbf7d0] hover:text-[#16a34a] hover:-translate-y-[1px]",
                     },
                     {
-                      label: "重命名",
+                      label: <><EditOutlined /> 重命名</>,
                       isRename: true,
                       onClick: (item, newName?: string) =>
                         newName && onRename(item.id, newName),
                       className:
-                        "flex items-center gap-1.5 px-5 py-2 text-[15px] font-semibold rounded-xl select-none bg-white text-[var(--brand-blue)] border border-transparent cursor-pointer transition-[background,border-color,color,transform] hover:bg-[#e8f3ff] hover:border-[#93c5fd] hover:text-[var(--brand-blue)] hover:-translate-y-[1px]",
+                        "flex items-center gap-1.5 px-5 py-2 text-[15px] font-semibold rounded-xl select-none bg-white dark:bg-white/10 text-[var(--brand-blue)] border border-transparent dark:border-white/[0.45] cursor-pointer transition-[background,border-color,color,transform] hover:bg-[#e8f3ff] dark:hover:bg-white/18 hover:border-[#93c5fd] hover:text-[var(--brand-blue)] hover:-translate-y-[1px]",
                     },
                     {
-                      label: "删除",
+                      label: <><DeleteOutlined /> 删除</>,
                       onClick: (item) => {
                         setConfirmDeleteId(item.id);
                         setConfirmDeleteTitle(item.title || "未命名课程");
                       },
                       className:
-                        "flex items-center gap-1.5 px-5 py-2 text-[15px] font-semibold rounded-xl select-none bg-white border border-transparent text-[#dc2626] cursor-pointer transition-[background,border-color,color,transform] hover:bg-[#fef2f2] hover:border-[#fecaca] hover:text-[#b91c1c] hover:-translate-y-[1px]",
+                        "flex items-center gap-1.5 px-5 py-2 text-[15px] font-semibold rounded-xl select-none bg-white dark:bg-white/10 border border-transparent dark:border-white/[0.45] text-[#dc2626] cursor-pointer transition-[background,border-color,color,transform] hover:bg-[#fef2f2] dark:hover:bg-white/18 hover:border-[#fecaca] hover:text-[#b91c1c] hover:-translate-y-[1px]",
                     },
                   ]}
                   emptyText="暂无课程大纲。"

@@ -36,8 +36,8 @@ const DetailPage: React.FC<{
         />
         <SplitSiderLayout
           className="p-0"
-          leftClassName="flex flex-col h-full min-h-0 bg-white overflow-hidden"
-          rightClassName="bg-white h-full flex flex-col min-h-0 overflow-hidden"
+          leftClassName="flex flex-col h-full min-h-0 overflow-hidden"
+          rightClassName="h-full flex flex-col min-h-0 overflow-hidden"
           left={
             <>
               <div

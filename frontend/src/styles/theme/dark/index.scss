@@ -22,10 +22,34 @@
   --auth-link-hover: #c4b5fd; /* lighter purple on hover */
   --brand-blue: #93c5fd;
   --brand-purple: #c4b5fd;
+  /* Glass button */
+  --glass-btn-bg: rgba(255, 255, 255, 0.12);
+  --glass-btn-border: rgba(255, 255, 255, 0.18);
+  --glass-btn-shadow: 0 8px 32px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  --glass-btn-hover-bg: rgba(255, 255, 255, 0.20);
+  --glass-btn-hover-border: rgba(255, 255, 255, 0.28);
+  --glass-btn-hover-shadow: 0 14px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  /* App root gradient */
+  --app-root-bg:
+    radial-gradient(70rem 55rem at 10% 20%, rgba(90, 60, 200, 0.30) 0%, rgba(90, 60, 200, 0) 65%),
+    radial-gradient(55rem 45rem at 85% 75%, rgba(30, 80, 180, 0.22) 0%, rgba(30, 80, 180, 0) 62%),
+    linear-gradient(180deg, #152236 0%, #1a2d48 100%);
+  --app-root-bg-color: #152236;
+  /* Auth panel */
+  --auth-panel-bg: rgba(255, 255, 255, 0.11);
+  --auth-panel-shadow: 0 12px 38px rgba(0, 0, 0, 0.52), inset 0 1px 0 rgba(255, 255, 255, 0.16), inset 0 -1px 0 rgba(255, 255, 255, 0.08);
+  --auth-submit-bg: var(--auth-btn-bg);
+  --auth-submit-text: var(--auth-btn-text);
+  --auth-submit-hover: var(--auth-btn-hover);
+  --auth-submit-shadow: 0 6px 16px rgba(30, 64, 175, 0.35);
+  --auth-autofill-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.12) inset;
+  --auth-autofill-text: #f8fafc;
 }
 
-/* Global dark mode body background */
-[data-theme="dark"] body {
+/* Global dark mode body/html/root background */
+[data-theme="dark"] html,
+[data-theme="dark"] body,
+[data-theme="dark"] #root {
   background-color: #152236 !important;
   background-image: none !important;
 }
@@ -36,34 +60,9 @@
   background-color: transparent !important;
 }
 
-/* Make white backgrounds transparent in dark mode */
-:root[data-theme="dark"] [class*="bg-white"], [data-theme="dark"] [class*="bg-white"] {
-  background-color: transparent !important;
-}
-:root[data-theme="dark"] [class*="border-white"], [data-theme="dark"] [class*="border-white"] {
-  border-color: rgba(255,255,255,0.06) !important;
-}
-
-/* Force unified background across the app in dark mode */
-[data-theme="dark"] html,
-[data-theme="dark"] body,
-[data-theme="dark"] #root {
-  background-color: #152236 !important;
-  background-image: none !important;
-}
-
-/* Make all element backgrounds transparent in dark mode */
-[data-theme="dark"] * {
-  background-image: none !important;
-  background-color: transparent !important;
-}
-
-/* Exception: elements that opt into a solid background */
-[data-theme="dark"] [data-theme-keep-bg="true"] {
-  background-color: var(--keep-bg, rgba(255,255,255,0.06)) !important;
-}
-
-/* Override Ant Design default Header element */
+/* Make Ant Design layout containers transparent in dark mode */
+[data-theme="dark"] .ant-layout,
+[data-theme="dark"] .ant-layout-content,
 [data-theme="dark"] .ant-layout-header {
   background: transparent !important;
   border-bottom: none !important;
