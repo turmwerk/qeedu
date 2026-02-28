@@ -192,7 +192,7 @@ const Dropdown: React.FC<DropdownProps> = ({
                 items={items}
                 open={open}
                 showCheck={showCheck}
-                direction={direction}
+
                 showBorder={showBorder}
                 style={menuStyle}
                 isPortal
@@ -211,7 +211,6 @@ const Dropdown: React.FC<DropdownProps> = ({
               items={items}
               open={open}
               showCheck={showCheck}
-              direction={direction}
               showBorder={showBorder}
               menuAlignClass={menuAlignClass}
               menuPositionClass={menuPositionClass}

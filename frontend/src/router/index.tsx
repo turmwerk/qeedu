@@ -9,6 +9,12 @@ import ForgetPassword from "@/pages/Auth/ForgetPassword";
 
 // Lazy Load
 const CodeTutor = React.lazy(() => import("@/pages/Study/CodeTutor"));
+const CodeTutorListPage = React.lazy(
+  () => import("@/pages/Study/CodeTutor/ListPage"),
+);
+const CodeTutorProjectPage = React.lazy(
+  () => import("@/pages/Study/CodeTutor/ProjectPage"),
+);
 const StudyHub = React.lazy(() => import("@/pages/Study"));
 const TeachingHub = React.lazy(() => import("@/pages/Teaching"));
 const ResearchHub = React.lazy(() => import("@/pages/Research"));
@@ -80,6 +86,10 @@ const router = createBrowserRouter([
         element: LazyLoad(<CodeTutor />),
       },
       {
+        path: "study/code-tutor/ListPage",
+        element: LazyLoad(<CodeTutorListPage />),
+      },
+      {
         path: "teaching/exam",
         element: <Navigate to="/teaching/exam/ListPage" replace />,
       },
@@ -128,6 +138,11 @@ const router = createBrowserRouter([
         element: <ForgetPassword />,
       },
     ],
+  },
+  {
+    // ProjectPage 全屏 IDE，独立于 MainLayout
+    path: "study/code-tutor/ProjectPage",
+    element: LazyLoad(<CodeTutorProjectPage />),
   },
 ]);
 export default router;

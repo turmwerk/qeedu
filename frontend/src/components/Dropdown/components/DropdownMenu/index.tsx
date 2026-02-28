@@ -6,7 +6,6 @@ interface DropdownMenuProps {
   items: DropdownItem[];
   open?: boolean;
   showCheck?: boolean;
-  direction?: "up" | "down";
   showBorder?: boolean;
   /** portal 模式下：由父组件计算好的 fixed 定位样式 */
   style?: React.CSSProperties;
@@ -26,7 +25,6 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
   items,
   open = false,
   showCheck = false,
-  direction = "down",
   showBorder = true,
   style,
   menuAlignClass = "right-0",
