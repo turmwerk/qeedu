@@ -5,11 +5,15 @@ import ResourceSection from "./components/ResourceSection";
 
 const CodeTutorListPage: React.FC = () => {
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-6 md:px-8">
-      
-
+    <div className="flex flex-col">
+      {/* TutorialSection and ResourceSection are full-width ModuleHub pages */}
       <TutorialSection />
-      <ProjectList />
+
+      {/* ProjectList stays in the original constrained layout */}
+      <div className="mx-auto w-full max-w-6xl px-4 py-6 md:px-8">
+        <ProjectList />
+      </div>
+
       <ResourceSection />
     </div>
   );
