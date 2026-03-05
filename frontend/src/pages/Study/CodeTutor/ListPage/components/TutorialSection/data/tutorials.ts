@@ -1,4 +1,4 @@
-import type { Feature } from "@/pages/shared/ModuleHub";
+import type { Feature } from "@/components/ModuleHub";
 
 export type Level = "入门" | "基础" | "进阶" | "实战";
 

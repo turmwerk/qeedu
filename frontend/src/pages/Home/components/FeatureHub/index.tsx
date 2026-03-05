@@ -1,5 +1,5 @@
 import React from "react";
-import ModuleHub from "@/pages/shared/ModuleHub";
+import ModuleHub from "@/components/ModuleHub";
 import {
   ReadOutlined,
   ExperimentOutlined,

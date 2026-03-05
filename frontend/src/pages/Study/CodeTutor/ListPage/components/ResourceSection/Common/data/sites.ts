@@ -1,4 +1,4 @@
-import type { Feature } from "@/pages/shared/ModuleHub";
+import type { Feature } from "@/components/ModuleHub";
 
 export interface CommonSiteItem extends Feature {
   url: string;

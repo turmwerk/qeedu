@@ -1,6 +1,17 @@
 import React, { useState } from "react";
 import Button from "@/components/Button";
 
+export interface FormHeader {
+  /** 左上角图标，与 actions 同行 */
+  icon?: React.ReactNode;
+  /** 图标同行右侧的操作按钮区 */
+  actions?: React.ReactNode;
+  /** 标题，单独一行 */
+  title?: React.ReactNode;
+  /** 副标题，单独一行 */
+  subtitle?: React.ReactNode;
+}
+
 export interface FormField {
   name: string;
   label: React.ReactNode;
@@ -38,6 +49,8 @@ export interface FormProps {
   submitClassName?: string;
   mode?: "default" | "table";
   animateFieldsKey?: string;
+  /** 可选表单头部：icon + actions 同行，下方可接 title / subtitle */
+  header?: FormHeader;
 }
 
 const Form: React.FC<FormProps> = ({
@@ -52,6 +65,7 @@ const Form: React.FC<FormProps> = ({
   submitClassName,
   mode = "default",
   animateFieldsKey,
+  header,
 }) => {
   const [values, setValues] = useState(() => {
     const v: Record<string, any> = {};
@@ -85,6 +99,35 @@ const Form: React.FC<FormProps> = ({
         @keyframes slideInFromBottom { from { opacity: 0; transform: translateY(8px); } to { opacity:1; transform:translateY(0);} }
         .animate-form-enter { animation: slideInFromBottom 220ms cubic-bezier(.2,.9,.2,1) both; }
       `}</style>
+
+      {/* ── Form 头部区域（可选） ── */}
+      {header && (
+        <div className="col-span-2 mb-1">
+          {/* 图标行：左边 icon，右边 actions */}
+          {(header.icon || header.actions) && (
+            <div className="flex items-center justify-between gap-2 min-h-[32px]">
+              {header.icon
+                ? <div className="text-[var(--brand-blue)]">{header.icon}</div>
+                : <span />}
+              {header.actions && (
+                <div className="flex items-center gap-0.5">{header.actions}</div>
+              )}
+            </div>
+          )}
+          {/* 仅有 actions 但没有 icon 时，让 actions 靠右 */}
+          {!header.icon && !header.actions && null}
+          {header.title && (
+            <div className="text-[32px] font-extrabold text-[var(--brand-text)] text-center py-3 pb-1.5">
+              {header.title}
+            </div>
+          )}
+          {header.subtitle && (
+            <div className="text-sm text-[var(--brand-muted)] text-center mb-1">
+              {header.subtitle}
+            </div>
+          )}
+        </div>
+      )}
 
       {fields.map((f) => {
         const inputId = `form-${f.name}`;

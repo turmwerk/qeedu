@@ -1,6 +1,6 @@
 import React from "react";
 import { BuildOutlined, NotificationOutlined } from "@ant-design/icons";
-import ModuleHub from "@/pages/shared/ModuleHub";
+import ModuleHub from "@/components/ModuleHub";
 
 const ManagementHub: React.FC = () => {
   return (

@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import Footer from "@/layouts/MainLayout/components/Footer";
-import FloatActions from "@/layouts/MainLayout/components/FloatActions";
 import SnowLayer from "@/components/SnowLayer";
 import StarsLayer from "@/components/StarsLayer";
 import { getStoredTheme } from "@/utils/theme";
@@ -15,7 +14,7 @@ const AuthLayout: React.FC = () => {
 
   return (
     <div
-      className="auth-layout min-h-screen bg-[var(--brand-bg)] relative overflow-hidden flex items-center justify-center px-6 py-10"
+      className="auth-layout min-h-screen bg-[var(--brand-bg)] relative overflow-hidden flex items-center justify-center px-0 py-10"
       data-oid="n9saej-"
     >
       {/* Auth 页面主题样式 */}
@@ -104,7 +103,6 @@ const AuthLayout: React.FC = () => {
       <div className="absolute bottom-0 w-full z-20">
         <Footer />
       </div>
-      <FloatActions />
     </div>
   );
 };

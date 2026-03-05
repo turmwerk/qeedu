@@ -1,7 +1,7 @@
 import React from "react";
 import { LinkOutlined } from "@ant-design/icons";
-import ModuleHub from "@/pages/shared/ModuleHub";
-import type { Feature } from "@/pages/shared/ModuleHub";
+import ModuleHub from "@/components/ModuleHub";
+import type { Feature } from "@/components/ModuleHub";
 import Card from "@/components/Card";
 import { COMMON_SITES } from "./data/sites";
 import type { CommonSiteItem } from "./data/sites";

@@ -5,6 +5,7 @@ import { showToast } from "@/components/Toast";
 import type { FormField } from "@/components/Form";
 import buildFields from "../components/FieldsForm";
 import createNavAgreeFields from "../components/NavAgree";
+import AuthPanelActions from "../components/AuthPanelActions";
 
 
 
@@ -81,14 +82,15 @@ export default function ForgetPassword() {
 
   return (
     <div
-      className="auth-panel w-[520px] max-w-[calc(100%-40px)] px-[22px] pt-[22px] pb-[18px] relative animate-[pageEnter_300ms_ease-out] rounded-xl"
+      className="auth-panel w-[520px] max-w-[calc(100%-12px)] px-3 sm:px-[22px] pt-[22px] pb-[18px] relative animate-[pageEnter_300ms_ease-out] rounded-xl"
       data-oid="gusoamy"
     >
-      <div className="py-3 pb-1.5 text-center" data-oid="7zn4se7">
-        <div className="text-[32px] font-extrabold text-[var(--brand-text)]">重置密码</div>
+      <div className="absolute top-1 right-3 z-20">
+        <AuthPanelActions />
       </div>
-
-      <div className="px-[26px] pt-[18px] pb-[10px]" data-oid="phwgzka">
+      <div className="px-4 sm:px-[26px] pt-0 pb-[10px]" data-oid="phwgzka">
+        <div className="text-[32px] font-extrabold text-[var(--brand-text)] leading-none text-center mb-2">重置密码</div>
+        <div className="text-[14px] text-[var(--brand-muted)] leading-none text-center mb-4">快速找回</div>
         <Form
           fields={fields.concat(navAgree)}
           onSubmit={handleSubmit}

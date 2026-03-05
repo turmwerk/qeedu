@@ -70,23 +70,29 @@ const Footer: React.FC = () => {
           .github-wrap:hover .sparkle{animation:sparkle 900ms cubic-bezier(.22,.9,.34,1) var(--delay) infinite}
           @keyframes sparkle{0%{opacity:0;transform:translate(0,0) scale(.6)}20%{opacity:1;transform:translate(calc(var(--dx)/4),calc(var(--dy)/4)) scale(1)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.2)}}
         `}</style>
-        <div className="flex items-center gap-2">
-          <a
-            href="https://github.com/dieWehmut/nju-edu-ai-system"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-gray-700 transition-colors github-wrap"
-            aria-label="Open GitHub repository"
-          >
-            <GithubOutlined style={{ fontSize: 18 }} />
-            <span className="sparkle s1" style={{ ['--dx' as any]: '-14px', ['--dy' as any]: '-18px', ['--delay' as any]: '0s' }} />
-            <span className="sparkle s2" style={{ ['--dx' as any]: '10px', ['--dy' as any]: '-16px', ['--delay' as any]: '0.12s' }} />
-            <span className="sparkle s3" style={{ ['--dx' as any]: '18px', ['--dy' as any]: '2px', ['--delay' as any]: '0.24s' }} />
-            <span className="sparkle s4" style={{ ['--dx' as any]: '8px', ['--dy' as any]: '18px', ['--delay' as any]: '0.36s' }} />
-            <span className="sparkle s5" style={{ ['--dx' as any]: '-10px', ['--dy' as any]: '10px', ['--delay' as any]: '0.48s' }} />
-          </a>
-          <span>Last updated:</span>
-          <span className="font-mono">{lastCommitTime ? formatDate(lastCommitTime) : "加载中..."}</span><span className="text-gray-300">|</span><span className="font-mono">Uptime:{uptime}</span>
+        <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-center sm:text-left">
+          <div className="flex items-center gap-2">
+            <a
+              href="https://github.com/dieWehmut/nju-edu-ai-system"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-gray-700 transition-colors github-wrap"
+              aria-label="Open GitHub repository"
+            >
+              <GithubOutlined style={{ fontSize: 18 }} />
+              <span className="sparkle s1" style={{ ['--dx' as any]: '-14px', ['--dy' as any]: '-18px', ['--delay' as any]: '0s' }} />
+              <span className="sparkle s2" style={{ ['--dx' as any]: '10px', ['--dy' as any]: '-16px', ['--delay' as any]: '0.12s' }} />
+              <span className="sparkle s3" style={{ ['--dx' as any]: '18px', ['--dy' as any]: '2px', ['--delay' as any]: '0.24s' }} />
+              <span className="sparkle s4" style={{ ['--dx' as any]: '8px', ['--dy' as any]: '18px', ['--delay' as any]: '0.36s' }} />
+              <span className="sparkle s5" style={{ ['--dx' as any]: '-10px', ['--dy' as any]: '10px', ['--delay' as any]: '0.48s' }} />
+            </a>
+            <div className="flex items-center gap-1">
+              <span>Last updated:</span>
+              <span className="font-mono">{lastCommitTime ? formatDate(lastCommitTime) : "加载中..."}</span>
+            </div>
+          </div>
+          <span className="text-gray-300 hidden sm:inline-block">|</span>
+          <div className="font-mono">Uptime:{uptime}</div>
         </div>
         <div className="font-medium opacity-80 tracking-wide">
           © 2026 nju-edu-ai-system-All Rights Reserved.

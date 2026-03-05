@@ -2,7 +2,7 @@
 
 export default function Tabs({ mode, setMode }: { mode: "password" | "sms"; setMode: (m: "password" | "sms") => void }) {
   return (
-    <div className="mb-4 flex items-center gap-8">
+    <div className="mb-2 flex items-center gap-8">
       <Button
         type="button"
         onClick={() => setMode("password")}

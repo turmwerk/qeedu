@@ -41,6 +41,7 @@
     "rehype-raw": "^7.0.0",
     "remark-gfm": "^4.0.1",
     "remark-math": "^6.0.0",
+    "style-to-js": "^1.1.21",
     "zustand": "^5.0.9"
   },
   "devDependencies": {
@@ -60,6 +61,7 @@
     "rollup": "^4.54.0",
     "sass": "^1.97.1",
     "tailwindcss": "3.4.17",
+    "ts-node": "^10.9.2",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",
     "vite": "^7.2.4"

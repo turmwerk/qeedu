@@ -1,6 +1,6 @@
 import React from "react";
 import { TeamOutlined } from "@ant-design/icons";
-import ModuleHub from "@/pages/shared/ModuleHub";
+import ModuleHub from "@/components/ModuleHub";
 
 const ResearchHub: React.FC = () => {
   return (
