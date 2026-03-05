@@ -23,7 +23,7 @@ const ProjectPageInner: React.FC = () => {
 
   return (
     <div
-      className="flex h-screen w-screen flex-col overflow-hidden bg-[#1e1e1e] text-[#cccccc]"
+      className="project-page-root flex h-screen w-screen flex-col overflow-hidden bg-[#1e1e1e] text-[#cccccc]"
     >
       {/* ── 顶部菜单栏 ── */}
       <TopBar />

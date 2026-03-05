@@ -36,7 +36,7 @@ const SearchBar: React.FC<Props> = ({
 			<div
 				className={`absolute right-9 top-0 h-9 overflow-hidden transition-[width,opacity,transform] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
 					expanded
-						? "w-[200px] sm:w-[300px] opacity-100 translate-x-0"
+					? "w-[160px] sm:w-[260px] opacity-100 translate-x-0"
 						: "w-0 opacity-0 -translate-x-2"
 				}`}
 			>

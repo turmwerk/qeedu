@@ -130,7 +130,7 @@ const MainHeader: React.FC = () => {
       <div className="flex items-center gap-1 sm:gap-3" data-oid="40dtg53">
         {!isHomePage && (
           <Button
-            className={`${menuButtonBase} ${menuButtonUnderline} ${menuButtonIdle}`}
+            className={`${menuButtonBase} ${menuButtonUnderline} ${menuButtonIdle} !pl-0 sm:!pl-2`}
             onClick={() => navigate(backTarget!)}
             data-oid="36x2h-h"
           >

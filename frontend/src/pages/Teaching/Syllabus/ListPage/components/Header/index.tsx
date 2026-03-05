@@ -28,13 +28,13 @@ interface Props {
 }
 
 const sortButtonClass =
-	"bg-white dark:bg-white/10 border border-transparent dark:border-white/[0.45] text-[var(--brand-blue)] h-9 min-w-9 px-3 rounded-xl text-[15px] font-semibold transition-[background,border-color,color,transform] hover:text-[var(--brand-purple)] hover:bg-[var(--brand-accent-soft)] dark:hover:bg-white/18 hover:border-[var(--brand-purple)] active:scale-95 flex items-center justify-center gap-1.5 select-none";
+	"bg-white dark:bg-white/10 border border-transparent dark:border-white/[0.45] text-[var(--brand-blue)] h-8 min-w-8 px-2 sm:h-9 sm:min-w-9 sm:px-3 rounded-xl text-[15px] font-semibold transition-[background,border-color,color,transform] hover:text-[var(--brand-purple)] hover:bg-[var(--brand-accent-soft)] dark:hover:bg-white/18 hover:border-[var(--brand-purple)] active:scale-95 flex items-center justify-center gap-1.5 select-none";
 const filterButtonClass =
-	"bg-white dark:bg-white/10 border border-transparent dark:border-white/[0.45] text-[var(--brand-blue)] px-3 h-9 text-[15px] rounded-xl font-semibold transition-[background,border-color,color,transform] hover:text-[var(--brand-purple)] hover:bg-[var(--brand-accent-soft)] dark:hover:bg-white/18 hover:border-[var(--brand-purple)] active:scale-95 select-none flex items-center gap-1.5";
+	"bg-white dark:bg-white/10 border border-transparent dark:border-white/[0.45] text-[var(--brand-blue)] px-2 h-8 sm:px-3 sm:h-9 text-[15px] rounded-xl font-semibold transition-[background,border-color,color,transform] hover:text-[var(--brand-purple)] hover:bg-[var(--brand-accent-soft)] dark:hover:bg-white/18 hover:border-[var(--brand-purple)] active:scale-95 select-none flex items-center gap-1.5";
 const createButtonClass =
-	"bg-white dark:bg-white/10 border border-transparent dark:border-white/[0.45] text-[#22c55e] h-9 min-w-9 px-3 rounded-xl text-[15px] font-semibold transition-[background,border-color,color,transform] hover:bg-[#f0fdf4] dark:hover:bg-white/18 hover:border-[#bbf7d0] hover:text-[#16a34a] active:scale-95 flex items-center justify-center gap-1.5 select-none";
+	"bg-white dark:bg-white/10 border border-transparent dark:border-white/[0.45] text-[#22c55e] h-8 min-w-8 px-2 sm:h-9 sm:min-w-9 sm:px-3 rounded-xl text-[15px] font-semibold transition-[background,border-color,color,transform] hover:bg-[#f0fdf4] dark:hover:bg-white/18 hover:border-[#bbf7d0] hover:text-[#16a34a] active:scale-95 flex items-center justify-center gap-1.5 select-none";
 const closeButtonClass =
-	"bg-white dark:bg-white/10 border border-transparent dark:border-white/[0.45] text-[#dc2626] h-9 min-w-9 px-3 rounded-xl text-[15px] font-semibold transition-[background,border-color,color,transform] hover:bg-[#ffecec] dark:hover:bg-white/18 hover:border-[#f1a1a1] hover:text-[#b91c1c] active:scale-95 flex items-center justify-center gap-1.5 select-none";
+	"bg-white dark:bg-white/10 border border-transparent dark:border-white/[0.45] text-[#dc2626] h-8 min-w-8 px-2 sm:h-9 sm:min-w-9 sm:px-3 rounded-xl text-[15px] font-semibold transition-[background,border-color,color,transform] hover:bg-[#ffecec] dark:hover:bg-white/18 hover:border-[#f1a1a1] hover:text-[#b91c1c] active:scale-95 flex items-center justify-center gap-1.5 select-none";
 
 const Header: React.FC<Props> = ({
 	count,
@@ -57,7 +57,7 @@ const Header: React.FC<Props> = ({
 		<PageHeader
 			title={
 				<span className="text-[14px] sm:text-base font-bold text-[var(--brand-blue)] dark:text-white">
-					已创建的大纲 ({count})
+					大纲({count})
 				</span>
 			}
 		>

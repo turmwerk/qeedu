@@ -47,7 +47,7 @@ const Header: React.FC<HeaderProps> = ({
     "inline-flex items-center gap-1.5 bg-white dark:bg-white/10 border border-[var(--brand-border)] dark:border-white/30 text-[var(--brand-blue)] px-2.5 py-1.5 rounded-xl font-semibold transition-[background,border-color,box-shadow,transform,color] hover:bg-[var(--brand-accent-soft)] dark:hover:bg-white/18 hover:border-[var(--brand-purple)] hover:text-[var(--brand-purple)] hover:shadow-[var(--brand-shadow)] hover:-translate-y-[1px]";
 
   return (
-    <div className="bg-transparent dark:bg-transparent px-0 py-2 flex-shrink-0 z-10">
+    <div className="bg-transparent dark:bg-transparent px-0 py-0.5 flex-shrink-0 z-10">
       <div className="flex justify-between items-center gap-2.5 px-0">
         {!siderOpen && (
           <Button
@@ -59,15 +59,15 @@ const Header: React.FC<HeaderProps> = ({
           </Button>
         )}
         <input
-          className="flex-1 border-0 border-b-2 border-b-[rgba(75,42,133,0.18)] dark:border-b-white/20 bg-transparent rounded-none px-1 py-1.5 text-[18px] font-bold text-[var(--brand-blue)] dark:text-white/90 min-h-[40px] transition-[border-color] focus:outline-none focus:border-b-[var(--brand-blue)] dark:focus:border-b-white/60"
+          className="flex-1 min-w-0 border-0 border-b-2 border-b-[rgba(75,42,133,0.18)] dark:border-b-white/20 bg-transparent rounded-none px-1 py-1.5 text-[14px] sm:text-[18px] font-bold text-[var(--brand-blue)] dark:text-white/90 min-h-[40px] transition-[border-color] focus:outline-none focus:border-b-[var(--brand-blue)] dark:focus:border-b-white/60"
           type="text"
           value={title}
           onChange={(event) => onTitleChange(event.target.value)}
           placeholder="未命名试卷"
         />
 
-        <div className="flex items-center gap-2">
-          <div className="flex flex-col items-start justify-center gap-0.5 mr-2">
+        <div className="flex items-center gap-2 shrink-0">
+          <div className="hidden sm:flex flex-col items-start justify-center gap-0.5 mr-2">
             <div className="text-[12px] text-[#6b6b6b] dark:text-white/50 font-semibold">总分</div>
             <div className="text-[22px] font-extrabold text-[#4b2a85] dark:text-white/90 leading-none">
               {totalScore}
@@ -78,13 +78,13 @@ const Header: React.FC<HeaderProps> = ({
             onClick={onPreview}
           >
             <EyeOutlined />
-            <span>试卷预览</span>
+            <span className="hidden sm:inline">试卷预览</span>
           </Button>
           <Dropdown
             button={
               <span className="inline-flex items-center gap-1.5">
                 <ExportOutlined />
-                导出
+                <span className="hidden sm:inline">导出</span>
               </span>
             }
             buttonClassName={actionButtonClass}
