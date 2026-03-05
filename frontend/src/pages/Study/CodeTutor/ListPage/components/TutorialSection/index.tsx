@@ -30,7 +30,7 @@ const TutorialSection: React.FC = () => (
     subtitle="基础语法 · 面向对象 · 数据结构 · 算法入门"
     features={TUTORIALS}
     renderFeature={renderTutorial}
-    gridCols="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+    gridCols="grid-cols-2 lg:grid-cols-3"
   />
 );
 

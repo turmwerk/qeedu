@@ -5,7 +5,7 @@ import ResourceSection from "./components/ResourceSection";
 
 const CodeTutorListPage: React.FC = () => {
   return (
-    <div className="flex flex-col">
+    <div className="flex w-full min-w-0 flex-col overflow-x-hidden">
       {/* TutorialSection and ResourceSection are full-width ModuleHub pages */}
       <TutorialSection />
 

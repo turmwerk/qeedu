@@ -183,7 +183,7 @@ const MainLayout: React.FC = () => {
       </div>
 
       {/* Header 下方：侧边栏 + 内容 */}
-      <div className="flex flex-1 min-h-0 relative z-10">
+      <div className="flex flex-1 min-h-0 min-w-0 relative z-10 overflow-hidden">
         {/* 左侧栏 */}
         <Sider
           open={syllabusSiderOpen && isSyllabusDetail}
@@ -215,14 +215,14 @@ const MainLayout: React.FC = () => {
         />
         
         {/* 右侧内容区域 */}
-        <Layout className={`flex-1 relative flex flex-col min-h-0 h-full${isDetailPage ? ' bg-white/[0.45] dark:bg-white/[0.06] backdrop-blur-[18px] backdrop-saturate-[160%]' : ''}`}>
-          <Content className="m-0 p-0 relative z-10 flex-1 min-h-0" data-oid="gzlcfm-">
+        <Layout style={{ minWidth: 0 }} className={`flex-1 relative flex flex-col min-h-0 min-w-0 h-full${isDetailPage ? ' bg-white/[0.45] dark:bg-white/[0.06] backdrop-blur-[18px] backdrop-saturate-[160%]' : ''}`}>
+          <Content className="m-0 p-0 relative z-10 flex-1 min-h-0 min-w-0" data-oid="gzlcfm-">
             <div
-              className={`h-full min-h-0 flex flex-col ${isDetailPage ? "overflow-hidden" : "overflow-y-auto"}`}
+              className={`h-full min-h-0 flex flex-col ${isDetailPage ? "overflow-hidden" : "overflow-y-auto overflow-x-hidden"}`}
               data-oid="giq3cbp"
               ref={scrollContainerRef}
             >
-              <div className="flex-1">
+              <div className="flex-1 min-w-0 w-full">
                 <Outlet />
               </div>
               {!isDetailPage && !isHomePage && <Footer />}

@@ -45,9 +45,9 @@ export function createNavAgreeFields(
     label: "",
     span: 2,
     render: () => (
-      <div className="text-[13px] text-[var(--brand-muted)] col-span-2 mb-1 text-center whitespace-nowrap">
+      <div className="text-[13px] text-[var(--brand-muted)] col-span-2 mt-1 mb-0 text-center whitespace-nowrap">
         {agreeText}
-        <span className="ml-1 underline text-[var(--brand-muted)] cursor-pointer hover:text-[var(--brand-purple)]">《服务协议》</span>
+        <span className="ml-1 text-[var(--brand-blue)] cursor-pointer hover:underline hover:text-[var(--brand-purple)]">《服务协议》</span>
       </div>
     ),
   };

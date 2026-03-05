@@ -44,9 +44,9 @@ const ThemeToggle: React.FC = () => {
       icon={theme === 'dark' ? Sun : Moon}
       ariaLabel="切换主题"
       title="切换主题"
-      size={40}
+      size={32}
       shape="rounded-lg"
-      className="glass-btn"
+      className="glass-btn sm:!w-[40px] sm:!h-[40px]"
       hoverClassName=""
     />
   );

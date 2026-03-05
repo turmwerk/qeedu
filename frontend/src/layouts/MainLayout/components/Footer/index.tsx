@@ -57,8 +57,8 @@ const Footer: React.FC = () => {
   };
 
   return (
-    <footer className="w-full py-6 mt-auto z-10 relative">
-      <div className="flex flex-col items-center justify-center space-y-1 text-gray-500 text-sm">
+    <footer className="w-full pt-6 pb-2 mt-auto z-10 relative">
+      <div className="flex flex-col items-center justify-center space-y-0 text-gray-500 text-sm">
         <style>{` 
           .github-wrap{position:relative;display:inline-block}
           .github-wrap .sparkle{position:absolute;width:6px;height:6px;border-radius:999px;background:linear-gradient(90deg,#ffd166,#ff6b6b);opacity:0;transform:translate(0,0) scale(0.6)}
@@ -70,8 +70,8 @@ const Footer: React.FC = () => {
           .github-wrap:hover .sparkle{animation:sparkle 900ms cubic-bezier(.22,.9,.34,1) var(--delay) infinite}
           @keyframes sparkle{0%{opacity:0;transform:translate(0,0) scale(.6)}20%{opacity:1;transform:translate(calc(var(--dx)/4),calc(var(--dy)/4)) scale(1)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.2)}}
         `}</style>
-        <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-center sm:text-left">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row items-center gap-0 text-center sm:text-left">
+          <div className="flex items-center gap-1">
             <a
               href="https://github.com/dieWehmut/nju-edu-ai-system"
               target="_blank"

@@ -26,13 +26,15 @@ const renderSite = (item: Feature) => {
 };
 
 const CommonSection: React.FC = () => (
-  <ModuleHub
-    headline="常用网站"
-    subtitle="编程练习 · 开源社区 · AI 前沿"
-    features={COMMON_SITES}
-    renderFeature={renderSite}
-    gridCols="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
-  />
+  <div className="w-full min-w-0 overflow-x-hidden">
+    <ModuleHub
+      headline="常用网站"
+      subtitle="编程练习 · 开源社区 · AI 前沿"
+      features={COMMON_SITES}
+      renderFeature={renderSite}
+      gridCols="grid-cols-2 lg:grid-cols-3"
+    />
+  </div>
 );
 
 export default CommonSection;

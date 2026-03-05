@@ -94,15 +94,14 @@ export default function Login() {
 
   return (
     <div
-      className="auth-panel w-[520px] max-w-[calc(100%-12px)] px-3 sm:px-[22px] pt-[22px] pb-[18px] relative animate-[pageEnter_300ms_ease-out] rounded-xl"
+      className="auth-panel w-[520px] max-w-[calc(100%-12px)] px-3 sm:px-[22px] pt-[30px] pb-[18px] relative animate-[pageEnter_300ms_ease-out] rounded-xl"
       data-oid="si9z1-w"
     >
-      <div className="absolute top-1 right-3 z-20">
+      <div className="absolute top-0 right-0 z-20">
         <AuthPanelActions />
       </div>
       <div className="px-4 sm:px-[26px] pt-0 pb-[10px]">
-        <div className="text-[32px] font-extrabold text-[var(--brand-text)] leading-none text-center mb-2">登录</div>
-        <div className="text-[14px] text-[var(--brand-muted)] leading-none text-center mb-4">欢迎使用</div>
+        <div className="text-[30px] font-extrabold text-[var(--brand-text)] leading-none text-center mb-6">登录</div>
         <Tabs mode={mode} setMode={setMode} />
 
         <style>{`
@@ -121,7 +120,7 @@ export default function Login() {
           }
           submitClassName={primaryButtonClass}
           fieldClassName="relative [&>label]:sr-only col-span-2"
-          className="flex flex-col gap-1"
+          className="flex flex-col gap-0.5"
           animateFieldsKey={mode}
         />
       </div>

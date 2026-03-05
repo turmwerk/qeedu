@@ -10,9 +10,9 @@ const Settings: React.FC = () => {
       icon={<SettingOutlined style={{ fontSize: 20 }} className="animate-[spin_2s_linear_infinite] group-hover:animate-none" />}
       ariaLabel="设置"
       title="设置"
-      size={40}
+      size={32}
       shape="rounded-lg"
-      className="glass-btn"
+      className="glass-btn sm:!w-[40px] sm:!h-[40px]"
     />
   );
 };

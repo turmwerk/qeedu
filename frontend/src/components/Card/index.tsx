@@ -181,7 +181,7 @@ const Card: React.FC<CardProps> = ({
       // eslint-disable-next-line react/forbid-dom-props
       <div
         style={cardBgStyle}
-        className={`group relative flex flex-col gap-3 rounded-2xl p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg overflow-hidden backdrop-blur-[40px] backdrop-saturate-[210%] ${defaultBgClass} ${className}`}
+        className={`group relative flex flex-col gap-3 rounded-2xl p-3 sm:p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg overflow-hidden backdrop-blur-[40px] backdrop-saturate-[210%] min-w-0 ${defaultBgClass} ${className}`}
         onClick={onClick}
         role={onClick ? "button" : undefined}
         tabIndex={onClick ? 0 : undefined}
@@ -201,11 +201,11 @@ const Card: React.FC<CardProps> = ({
           onKeyDown={titleLink ? (e) => { if (e.key === "Enter" || e.key === " ") navigate(titleLink!); } : undefined}
         >
           {icon && (
-            <span className="shrink-0 text-[22px] leading-none transition-colors duration-200">
+            <span className="shrink-0 text-[16px] sm:text-[22px] leading-none transition-colors duration-200">
               {icon}
             </span>
           )}
-          <span className="font-extrabold text-[22px] leading-none transition-colors duration-200">
+          <span className="font-extrabold text-[16px] sm:text-[22px] leading-none break-words transition-colors duration-200">
             {title}
           </span>
         </div>
@@ -253,7 +253,7 @@ const Card: React.FC<CardProps> = ({
     // eslint-disable-next-line react/forbid-dom-props
     <div
       style={cardBgStyle}
-      className={`group relative flex flex-col gap-0 rounded-2xl p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg overflow-hidden backdrop-blur-[40px] backdrop-saturate-[210%] ${defaultBgClass} ${className}`}
+      className={`group relative flex flex-col gap-0 rounded-2xl p-3 sm:p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg overflow-hidden backdrop-blur-[40px] backdrop-saturate-[210%] min-w-0 ${defaultBgClass} ${className}`}
       onClick={onClick}
       role={onClick ? "button" : undefined}
       tabIndex={onClick ? 0 : undefined}
@@ -263,7 +263,7 @@ const Card: React.FC<CardProps> = ({
       {(icon || level) && (
         <div className="mb-4 flex items-start justify-between">
           {icon ? (
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/70 dark:bg-white/20 text-lg font-bold text-gray-700 dark:text-white shadow-sm backdrop-blur-sm">
+            <div className="flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl sm:rounded-2xl bg-white/70 dark:bg-white/20 text-base sm:text-lg font-bold text-gray-700 dark:text-white shadow-sm backdrop-blur-sm">
               {icon}
             </div>
           ) : (
@@ -282,13 +282,13 @@ const Card: React.FC<CardProps> = ({
         {titleLink ? (
           <Button
             type="button"
-            className={`${linkBtnBase} after:h-[2px] after:w-0 hover:after:w-full font-bold text-[15px] leading-snug`}
+            className={`${linkBtnBase} after:h-[2px] after:w-0 hover:after:w-full font-bold text-[13px] sm:text-[15px] leading-snug break-words whitespace-normal text-left`}
             onClick={(e) => { e.stopPropagation(); navigate(titleLink); }}
           >
             {title}
           </Button>
         ) : (
-          <span className="text-[15px] font-bold leading-snug text-gray-800 dark:text-white">
+          <span className="text-[13px] sm:text-[15px] font-bold leading-snug break-words text-gray-800 dark:text-white">
             {title}
           </span>
         )}
@@ -299,7 +299,7 @@ const Card: React.FC<CardProps> = ({
 
       {/* description */}
       {desc && (
-        <div className="mb-4 flex-1 text-[13px] leading-relaxed text-gray-600 dark:text-white/80">
+        <div className="mb-4 flex-1 text-[12px] sm:text-[13px] leading-relaxed break-words text-gray-600 dark:text-white/80">
           {desc}
         </div>
       )}
@@ -327,15 +327,15 @@ const Card: React.FC<CardProps> = ({
 
       {/* meta footer */}
       {(hasMeta || showArrow) && (
-        <div className="flex items-center justify-between text-[12px] text-gray-500 dark:text-white/60 mt-auto">
-          <div className="flex items-center gap-3">
+        <div className="flex min-w-0 items-center justify-between text-[12px] text-gray-500 dark:text-white/60 mt-auto">
+          <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
             {lang && (
-              <span className="flex items-center gap-1">
+              <span className="flex min-w-0 items-center gap-1 break-words">
                 <span className="opacity-60">▶</span> {lang}
               </span>
             )}
             {time && (
-              <span className="flex items-center gap-1">
+              <span className="flex min-w-0 items-center gap-1 break-words">
                 <span className="opacity-60">◷</span> {time}
               </span>
             )}
