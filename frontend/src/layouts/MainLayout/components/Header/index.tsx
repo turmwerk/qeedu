@@ -86,16 +86,38 @@ const MainHeader: React.FC = () => {
     setTheme(next);
   };
 
-  const backRouteMap: Record<string, string> = {
-    "/teaching": "/",
-    "/teaching/exam/ListPage": "/teaching",
-    "/teaching/syllabus/ListPage": "/teaching",
+  // Compute a deterministic "parent" route so the back button never
+  // ping-pongs between two pages via browser history.
+  const getBackTarget = (pathname: string): string => {
+    // Exact matches first
+    const exact: Record<string, string> = {
+      "/study": "/",
+      "/teaching": "/",
+      "/research": "/",
+      "/management": "/",
+      "/study/code-tutor": "/study",
+      "/study/code-tutor/ListPage": "/study/code-tutor",
+      "/teaching/exam/ListPage": "/teaching",
+      "/teaching/syllabus/ListPage": "/teaching",
+      "/management/major": "/management",
+      "/management/policy": "/management",
+      "/research/collaboration": "/research",
+    };
+    if (exact[pathname]) return exact[pathname];
+
+    // Prefix matches (detail pages, etc.)
+    if (pathname.startsWith("/teaching/exam/detail")) return "/teaching/exam/ListPage";
+    if (pathname.startsWith("/teaching/syllabus/detail")) return "/teaching/syllabus/ListPage";
+    if (pathname.startsWith("/study/code-tutor/")) return "/study/code-tutor/ListPage";
+    if (pathname.startsWith("/study/")) return "/study";
+    if (pathname.startsWith("/teaching/")) return "/teaching";
+    if (pathname.startsWith("/management/")) return "/management";
+    if (pathname.startsWith("/research/")) return "/research";
+
+    // Fallback: go home
+    return "/";
   };
-  const backTarget = location.pathname.startsWith("/teaching/exam/detail")
-    ? "/teaching/exam/ListPage"
-    : location.pathname.startsWith("/teaching/syllabus/detail")
-      ? "/teaching/syllabus/ListPage"
-      : backRouteMap[location.pathname];
+  const backTarget = isHomePage ? undefined : getBackTarget(location.pathname);
 
 
 
@@ -109,7 +131,7 @@ const MainHeader: React.FC = () => {
         {!isHomePage && (
           <Button
             className={`${menuButtonBase} ${menuButtonUnderline} ${menuButtonIdle}`}
-            onClick={() => (backTarget ? navigate(backTarget) : navigate(-1))}
+            onClick={() => navigate(backTarget!)}
             data-oid="36x2h-h"
           >
             <ArrowLeftOutlined />

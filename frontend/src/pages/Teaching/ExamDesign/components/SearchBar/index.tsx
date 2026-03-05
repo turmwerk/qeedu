@@ -6,6 +6,7 @@ interface Props {
 	onChange: (value: string) => void;
 	placeholder?: string;
 	defaultExpanded?: boolean;
+	onExpandChange?: (expanded: boolean) => void;
 }
 
 const SearchBar: React.FC<Props> = (props) => {

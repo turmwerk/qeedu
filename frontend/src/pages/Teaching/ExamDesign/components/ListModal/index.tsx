@@ -139,13 +139,13 @@ const ListModal: React.FC<Props> = ({
 								modalMode={modalMode}
 								onCloseModal={onCloseModal}
 							/>
-							<div className="p-3" data-oid="qx3woto">
+							<div className="p-1.5 sm:p-3" data-oid="qx3woto">
 								<List<ExamItem>
 									items={searchedItems}
 									keyExtractor={(i) => i.id}
 									hoverGlow={false}
-									defaultActionClassName="flex items-center gap-1.5 px-5 py-2 text-[15px] font-semibold rounded-xl select-none bg-white dark:bg-white/10 border border-transparent dark:border-white/[0.45] text-[#22c55e] cursor-pointer transition-[background,border-color,transform,color] hover:bg-[#f0fdf4] dark:hover:bg-white/18 hover:border-[#bbf7d0] hover:text-[#16a34a] hover:-translate-y-[1px]"
-									editingActionClassName="flex items-center gap-1.5 px-5 py-2 text-[15px] font-semibold rounded-xl select-none bg-white dark:bg-white/10 border border-transparent dark:border-white/[0.45] text-[#22c55e] cursor-pointer transition-[background,border-color,transform,color] hover:bg-[#f0fdf4] dark:hover:bg-white/18 hover:border-[#bbf7d0] hover:text-[#16a34a] hover:-translate-y-[1px]"
+									defaultActionClassName="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-5 py-1.5 sm:py-2 text-[13px] sm:text-[15px] font-semibold rounded-xl select-none bg-white dark:bg-white/10 border border-transparent dark:border-white/[0.45] text-[#22c55e] cursor-pointer transition-[background,border-color,transform,color] hover:bg-[#f0fdf4] dark:hover:bg-white/18 hover:border-[#bbf7d0] hover:text-[#16a34a] hover:-translate-y-[1px]"
+									editingActionClassName="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-5 py-1.5 sm:py-2 text-[13px] sm:text-[15px] font-semibold rounded-xl select-none bg-white dark:bg-white/10 border border-transparent dark:border-white/[0.45] text-[#22c55e] cursor-pointer transition-[background,border-color,transform,color] hover:bg-[#f0fdf4] dark:hover:bg-white/18 hover:border-[#bbf7d0] hover:text-[#16a34a] hover:-translate-y-[1px]"
 									editable={{ getValue: (i) => i.title }}
 									onItemClick={(item) => onEdit(item.id)}
 									isItemDisabled={(item) => !!currentId && item.id === currentId}
@@ -184,27 +184,27 @@ const ListModal: React.FC<Props> = ({
 									)}
 									actions={[
 										{
-												label: <><FormOutlined /> 继续编辑</>,
+												label: <><FormOutlined /> <span className="hidden sm:inline">继续编辑</span></>,
 											onClick: (item) => onEdit(item.id),
 											className:
-												"flex items-center gap-1.5 px-5 py-2 text-[15px] font-semibold rounded-xl select-none bg-white dark:bg-white/10 border border-transparent dark:border-white/[0.45] text-[#22c55e] cursor-pointer transition-[background,border-color,transform,color] hover:bg-[#f0fdf4] dark:hover:bg-white/18 hover:border-[#bbf7d0] hover:text-[#16a34a] hover:-translate-y-[1px]",
+												"flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-5 py-1.5 sm:py-2 text-[13px] sm:text-[15px] font-semibold rounded-xl select-none bg-white dark:bg-white/10 border border-transparent dark:border-white/[0.45] text-[#22c55e] cursor-pointer transition-[background,border-color,transform,color] hover:bg-[#f0fdf4] dark:hover:bg-white/18 hover:border-[#bbf7d0] hover:text-[#16a34a] hover:-translate-y-[1px]",
 										},
 										{
-												label: <><EditOutlined /> 重命名</>,
+												label: <><EditOutlined /> <span className="hidden sm:inline">重命名</span></>,
 											isRename: true,
 											onClick: (item, newName?: string) =>
 												newName && onRename(item.id, newName),
 											className:
-												"flex items-center gap-1.5 px-5 py-2 text-[15px] font-semibold rounded-xl select-none bg-white dark:bg-white/10 text-[var(--brand-blue)] border border-transparent dark:border-white/[0.45] cursor-pointer transition-[background,border-color,color,transform] hover:bg-[#e8f3ff] dark:hover:bg-white/18 hover:border-[#93c5fd] hover:text-[var(--brand-blue)] hover:-translate-y-[1px]",
+												"flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-5 py-1.5 sm:py-2 text-[13px] sm:text-[15px] font-semibold rounded-xl select-none bg-white dark:bg-white/10 text-[var(--brand-blue)] border border-transparent dark:border-white/[0.45] cursor-pointer transition-[background,border-color,color,transform] hover:bg-[#e8f3ff] dark:hover:bg-white/18 hover:border-[#93c5fd] hover:text-[var(--brand-blue)] hover:-translate-y-[1px]",
 										},
 										{
-												label: <><DeleteOutlined /> 删除</>,
+												label: <><DeleteOutlined /> <span className="hidden sm:inline">删除</span></>,
 											onClick: (item) => {
 												setConfirmDeleteId(item.id);
 												setConfirmDeleteTitle(item.title || "未命名试卷");
 											},
 											className:
-												"flex items-center gap-1.5 px-5 py-2 text-[15px] font-semibold rounded-xl select-none bg-white dark:bg-white/10 border border-transparent dark:border-white/[0.45] text-[#dc2626] cursor-pointer transition-[background,border-color,color,transform] hover:bg-[#fef2f2] dark:hover:bg-white/18 hover:border-[#fecaca] hover:text-[#b91c1c] hover:-translate-y-[1px]",
+												"flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-5 py-1.5 sm:py-2 text-[13px] sm:text-[15px] font-semibold rounded-xl select-none bg-white dark:bg-white/10 border border-transparent dark:border-white/[0.45] text-[#dc2626] cursor-pointer transition-[background,border-color,color,transform] hover:bg-[#fef2f2] dark:hover:bg-white/18 hover:border-[#fecaca] hover:text-[#b91c1c] hover:-translate-y-[1px]",
 										},
 									]}
 									emptyText="暂无试卷。"

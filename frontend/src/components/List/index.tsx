@@ -66,7 +66,7 @@ function List<T = any>({
 
   return (
     <div
-      className="flex flex-col gap-3 max-h-[420px] overflow-y-auto overflow-x-hidden"
+      className="flex flex-col gap-2 sm:gap-3 max-h-[420px] overflow-y-auto overflow-x-hidden"
       data-oid="uhdlmu-"
     >
       {items.map((item, idx) => {
@@ -78,7 +78,7 @@ function List<T = any>({
         return (
           <div
             key={key}
-            className={`group relative flex justify-between items-center bg-white/70 dark:bg-white/[0.34] p-4 rounded-[12px] border border-transparent dark:border-white/50 transition-[box-shadow,border-color,background] hover:shadow-[0_12px_26px_rgba(17,24,39,0.12)] hover:border-[var(--brand-accent)] dark:hover:border-white/[0.65] hover:bg-white dark:hover:bg-white/[0.48] ${
+            className={`group relative flex justify-between items-center bg-white/70 dark:bg-white/[0.34] p-2.5 sm:p-4 rounded-[12px] border border-transparent dark:border-white/50 transition-[box-shadow,border-color,background] hover:shadow-[0_12px_26px_rgba(17,24,39,0.12)] hover:border-[var(--brand-accent)] dark:hover:border-white/[0.65] hover:bg-white dark:hover:bg-white/[0.48] ${
               onItemClick && !disabled ? "cursor-pointer" : ""
             } ${itemClassName ? itemClassName(item) : ""}`}
             onClick={() => {
@@ -95,7 +95,7 @@ function List<T = any>({
               </div>
             )}
             <div
-              className="teaching-list-index w-10 text-center text-[var(--brand-blue)] dark:text-[#dbeafe] font-bold mr-3"
+              className="teaching-list-index w-7 sm:w-10 text-center text-[var(--brand-blue)] dark:text-[#dbeafe] font-bold mr-1.5 sm:mr-3 text-[13px] sm:text-base"
               data-oid="9yfs1_:"
             >
               {idx + 1}
@@ -104,7 +104,7 @@ function List<T = any>({
               {isEditing ? (
                 <div className="flex items-center" data-oid="lil:ql8">
                   <input
-                    className="w-[420px] px-2.5 py-2 rounded-md border border-[rgba(0,0,0,0.12)] mr-2"
+                    className="w-full sm:w-[420px] px-2 sm:px-2.5 py-1.5 sm:py-2 rounded-md border border-[rgba(0,0,0,0.12)] mr-2 text-[13px] sm:text-base"
                     aria-label="重命名"
                     value={editingValue}
                     onChange={(e) => setEditingValue(e.target.value)}

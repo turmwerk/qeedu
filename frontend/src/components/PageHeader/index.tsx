@@ -5,43 +5,39 @@ type Props = {
   subtitle?: React.ReactNode;
   icon?: React.ReactNode;
   children?: React.ReactNode;
+  className?: string;
 };
 
-const PageHeader: React.FC<Props> = ({ title, subtitle, icon, children }) => {
+const PageHeader: React.FC<Props> = ({ title, subtitle, icon, children, className }) => {
   return (
     <div
-      className="relative flex justify-center items-center mb-5 py-1.5"
-      data-oid="ysa6uvg"
+      className={`flex items-center justify-between gap-3 mb-3 py-1.5 min-w-0 ${className ?? ""}`}
     >
-      <div className="text-center" data-oid="5mbd9fq">
-        {title && (
-          <h2
-            className="text-[var(--brand-accent)] font-bold m-0 flex items-center gap-2 justify-center"
-            data-oid="e.06gxh"
-          >
-            {icon && (
-              <span
-                className="flex items-center text-[20px] text-[var(--brand-accent)]"
-                data-oid="a7ra8b1"
-              >
-                {icon}
-              </span>
-            )}
-            {title}
-          </h2>
+      {/* Left: icon + title/subtitle */}
+      <div className="flex items-center gap-2 min-w-0">
+        {icon && (
+          <span className="flex items-center shrink-0 text-[20px] text-[var(--brand-accent)]">
+            {icon}
+          </span>
         )}
-        {subtitle && (
-          <div className="text-[#666] mt-1.5" data-oid="ewjr_1m">
-            {subtitle}
-          </div>
-        )}
+        <div className="min-w-0">
+          {title && (
+            <h2 className="text-[var(--brand-accent)] font-bold m-0 leading-snug">
+              {title}
+            </h2>
+          )}
+          {subtitle && (
+            <div className="text-[#666] mt-0.5 text-sm leading-snug">{subtitle}</div>
+          )}
+        </div>
       </div>
-      <div
-        className="absolute right-0 flex gap-2 items-center z-[2]"
-        data-oid="sxuyqhr"
-      >
-        {children}
-      </div>
+
+      {/* Right: action buttons — always one row, no wrap */}
+      {children && (
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 flex-nowrap">
+          {children}
+        </div>
+      )}
     </div>
   );
 };
