@@ -1,14 +1,15 @@
 import React, { useState } from "react";
 import { RobotOutlined, CloseOutlined, DoubleRightOutlined } from "@ant-design/icons";
 import Dialog from "@/feature/ChatDialog";
+import { buildAssistantDialogId, buildAssistantIntro } from "../data/assistant";
 import { useWorkspace } from "../context";
 
 const AssistantPanel: React.FC = () => {
   const { projectName, activeTabId } = useWorkspace();
   const [collapsed, setCollapsed] = useState(false);
 
-  const dialogId = `code-tutor-ai-${projectName}`;
-  const initMsg = `你好！我是 AI 编程助手。正在帮你学习《${projectName}》。\n\n你可以向我询问代码思路、调试错误或请求代码讲解。`;
+  const dialogId = buildAssistantDialogId(projectName);
+  const initMsg = buildAssistantIntro(projectName);
 
   if (collapsed) {
     return (

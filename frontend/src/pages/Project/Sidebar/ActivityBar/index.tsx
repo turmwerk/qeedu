@@ -8,6 +8,7 @@ import {
   SettingOutlined,
   UserOutlined,
 } from "@ant-design/icons";
+import { ACTIVITY_BAR_ITEMS } from "../../data/activityBar";
 import { SidebarView } from "../constants";
 
 interface ActivityBarProps {
@@ -15,20 +16,20 @@ interface ActivityBarProps {
   onViewChange: (view: SidebarView) => void;
 }
 
-const TOP_ITEMS: { view: SidebarView; icon: React.ReactNode; title: string }[] = [
-  { view: SidebarView.EXPLORER, icon: <FolderOpenOutlined />, title: "资源管理器" },
-  { view: SidebarView.SEARCH, icon: <SearchOutlined />, title: "搜索" },
-  { view: SidebarView.SCM, icon: <BranchesOutlined />, title: "源代码管理" },
-  { view: SidebarView.REMOTE, icon: <CloudServerOutlined />, title: "远程资源管理器" },
-  { view: SidebarView.EXTENSIONS, icon: <AppstoreOutlined />, title: "扩展" },
-];
+const ICON_MAP: Record<SidebarView, React.ReactNode> = {
+  [SidebarView.EXPLORER]: <FolderOpenOutlined />,
+  [SidebarView.SEARCH]: <SearchOutlined />,
+  [SidebarView.SCM]: <BranchesOutlined />,
+  [SidebarView.REMOTE]: <CloudServerOutlined />,
+  [SidebarView.EXTENSIONS]: <AppstoreOutlined />,
+};
 
 const ActivityBar: React.FC<ActivityBarProps> = ({ activeView, onViewChange }) => {
   return (
     <div className="flex w-12 shrink-0 flex-col items-center justify-between border-r border-[#3c3c3c] bg-[#333333] py-1">
       {/* 顶部功能图标 */}
       <div className="flex flex-col items-center gap-0.5">
-        {TOP_ITEMS.map(({ view, icon, title }) => {
+        {ACTIVITY_BAR_ITEMS.map(({ view, title }) => {
           const isActive = activeView === view;
           return (
             <button
@@ -41,7 +42,7 @@ const ActivityBar: React.FC<ActivityBarProps> = ({ activeView, onViewChange }) =
                   : "text-[#858585] hover:text-[#cccccc]"
               }`}
             >
-              {icon}
+              {ICON_MAP[view]}
             </button>
           );
         })}

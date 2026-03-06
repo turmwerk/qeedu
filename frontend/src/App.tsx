@@ -6,10 +6,6 @@ import router from "./router";
 import ToastContainer from "@/ui/Toast";
 
 const App: React.FC = () => {
-  React.useEffect(() => {
-    import("@/utils/theme/controller").then(({ initTheme }) => initTheme());
-  }, []);
-
   return (
     <ConfigProvider
       locale={zhCN}

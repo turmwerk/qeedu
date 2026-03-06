@@ -5,6 +5,15 @@ import List from "./List";
 import ResizeHandle from "./ResizeHandle";
 import DeleteConfirm from "./DeleteConfirm";
 import ListModal, { type ListModalItem, type ListModalProps } from "./ListModal";
+import {
+	SYLLABUS_COUNTER_KEY,
+	SYLLABUS_STORAGE_KEY,
+} from "@/pages/Teaching/Syllabus/constants";
+import { buildSyllabusMarkdown } from "@/pages/Teaching/Syllabus/utils/buildMarkdown";
+import {
+	EXAM_COUNTER_KEY,
+	EXAM_STORAGE_KEY,
+} from "@/pages/Teaching/ExamDesign/constants";
 
 type SiderItem = {
 	id: string;
@@ -214,9 +223,7 @@ const Sider: React.FC<Props> = ({
 	const handleModalCreate = useCallback(
 		(payload: Record<string, unknown>) => {
 			const counterKey =
-				storageKey === "syllabus_outlines"
-					? "syllabus_outlines_counter"
-					: "exam_design_exams_counter";
+				storageKey === SYLLABUS_STORAGE_KEY ? SYLLABUS_COUNTER_KEY : EXAM_COUNTER_KEY;
 			let id = "1";
 			try {
 				const rawCounter = localStorage.getItem(counterKey);
@@ -241,10 +248,8 @@ const Sider: React.FC<Props> = ({
 					? payload.name.trim()
 					: "未命名";
 			const createdAt = Date.now();
-			if (storageKey === "syllabus_outlines") {
-				const intro = typeof payload.intro === "string" ? payload.intro : "";
-				const goals = typeof payload.goals === "string" ? payload.goals : "";
-				const md = `# ${name}\n\n## 课程简介\n${intro || "..."}\n\n## 教学目标\n${goals || "..."}`;
+			if (storageKey === SYLLABUS_STORAGE_KEY) {
+				const md = buildSyllabusMarkdown(payload);
 				const item = { id, title: name, md, createdAt };
 				try {
 					const raw = localStorage.getItem(storageKey);
@@ -260,7 +265,7 @@ const Sider: React.FC<Props> = ({
 				}
 				setListModalOpen(false);
 				navigate(`/teaching/syllabus/detail?outlineId=${encodeURIComponent(id)}`);
-			} else if (storageKey === "exam_design_exams_v1") {
+			} else if (storageKey === EXAM_STORAGE_KEY) {
 				const item = { id, title: name, questions: [], createdAt };
 				try {
 					const raw = localStorage.getItem(storageKey);

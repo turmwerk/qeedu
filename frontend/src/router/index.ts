@@ -5,8 +5,8 @@ import {
   type ComponentType,
   type LazyExoticComponent,
 } from "react";
-import { Spin } from "antd";
 import { createBrowserRouter, type RouteObject } from "react-router-dom";
+import Loader from "@/effects/Loader";
 import MainLayout from "@/layouts/MainLayout";
 import authRoutes from "./auth.routes";
 import studyRoutes from "./study.routes";
@@ -26,8 +26,8 @@ const lazyElement = (Component: LazyExoticComponent<ComponentType<any>>) =>
     {
       fallback: createElement(
         "div",
-        { className: "flex justify-center mt-12" },
-        createElement(Spin, { size: "large" }),
+        { className: "mt-12 flex justify-center" },
+        createElement(Loader, { size: "lg", text: "加载中", subtext: "正在准备页面资源..." }),
       ),
     },
     createElement(Component),

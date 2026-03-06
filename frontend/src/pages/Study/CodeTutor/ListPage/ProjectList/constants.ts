@@ -1,0 +1,1 @@
+export const CODE_TUTOR_PROJECTS_STORAGE_KEY = "code_tutor_projects_v1";

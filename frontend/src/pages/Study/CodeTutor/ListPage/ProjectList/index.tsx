@@ -4,29 +4,22 @@ import Form from "@/ui/Form";
 import type { FormField } from "@/ui/Form";
 import Header from "./Header";
 import ProjectListContent from "./List";
+import { CODE_TUTOR_PROJECTS_STORAGE_KEY } from "./constants";
+import type { ProjectItem } from "./types";
 
-type Project = {
-  id: string;
-  title: string;
-  subtitle?: string;
-  createdAt?: number;
-};
-
-const STORAGE_KEY = "code_tutor_projects_v1";
-
-function loadProjects(): Project[] {
+function loadProjects(): ProjectItem[] {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw) as Project[];
+    const raw = localStorage.getItem(CODE_TUTOR_PROJECTS_STORAGE_KEY);
+    if (raw) return JSON.parse(raw) as ProjectItem[];
   } catch {
     // ignore
   }
   return [];
 }
 
-function saveProjects(items: Project[]) {
+function saveProjects(items: ProjectItem[]) {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    localStorage.setItem(CODE_TUTOR_PROJECTS_STORAGE_KEY, JSON.stringify(items));
   } catch {
     // ignore
   }
@@ -78,7 +71,7 @@ const createFields: FormField[] = [
 ];
 
 const ProjectList: React.FC = () => {
-  const [items, setItems] = useState<Project[]>(() => loadProjects());
+  const [items, setItems] = useState<ProjectItem[]>(() => loadProjects());
   const [open, setOpen] = useState(false);
   const [sortBy, setSortBy] = useState<"time" | "name">("time");
   const [order, setOrder] = useState<"asc" | "desc">("desc");
@@ -131,7 +124,7 @@ const ProjectList: React.FC = () => {
       const lang = payload.language ? String(payload.language) : "";
       const diff = payload.difficulty ? String(payload.difficulty) : "";
       const subtitle = [lang, diff].filter(Boolean).join(" · ");
-      const newItem: Project = {
+      const newItem: ProjectItem = {
         id: `proj_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
         title: String(payload.name || "未命名项目"),
         subtitle: subtitle || undefined,

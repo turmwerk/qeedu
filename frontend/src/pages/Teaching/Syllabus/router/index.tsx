@@ -4,18 +4,14 @@ import Dialog from "@/feature/ChatDialog";
 import ListPage from "../ListPage";
 import DetailPage from "../DetailPage";
 import CreateModal from "../CreateModal";
-
-type Outline = {
-	id: string;
-	title: string;
-	subtitle?: string;
-	md: string;
-	createdAt?: number;
-};
-
-const STORAGE_KEY = "syllabus_outlines";
-const CURRENT_KEY = "syllabus_current_id";
-const COUNTER_KEY = "syllabus_outlines_counter";
+import {
+	SYLLABUS_COUNTER_KEY,
+	SYLLABUS_CURRENT_KEY,
+	SYLLABUS_EVENTS,
+	SYLLABUS_STORAGE_KEY,
+} from "../constants";
+import type { Outline } from "../types";
+import { buildSyllabusMarkdown } from "../utils/buildMarkdown";
 
 export const ListRoute: React.FC = () => {
 	const navigate = useNavigate();
@@ -25,7 +21,7 @@ export const ListRoute: React.FC = () => {
 
 	const loadOutlines = useCallback(() => {
 		try {
-			const raw = localStorage.getItem(STORAGE_KEY);
+			const raw = localStorage.getItem(SYLLABUS_STORAGE_KEY);
 			if (raw) {
 				setOutlines(JSON.parse(raw));
 			} else {
@@ -40,15 +36,9 @@ export const ListRoute: React.FC = () => {
 	useEffect(() => {
 		loadOutlines();
 		const onCustom = () => loadOutlines();
-		window.addEventListener(
-			"syllabus-outlines-updated",
-			onCustom as EventListener
-		);
+		window.addEventListener(SYLLABUS_EVENTS.updated, onCustom as EventListener);
 		return () => {
-			window.removeEventListener(
-				"syllabus-outlines-updated",
-				onCustom as EventListener
-			);
+			window.removeEventListener(SYLLABUS_EVENTS.updated, onCustom as EventListener);
 		};
 	}, [loadOutlines]);
 
@@ -64,8 +54,8 @@ export const ListRoute: React.FC = () => {
 	const persist = useCallback((next: Outline[]) => {
 		setOutlines(next);
 		try {
-			localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-			window.dispatchEvent(new Event("syllabus-outlines-updated"));
+			localStorage.setItem(SYLLABUS_STORAGE_KEY, JSON.stringify(next));
+			window.dispatchEvent(new Event(SYLLABUS_EVENTS.updated));
 		} catch (e) {
 			console.error("save outlines", e);
 		}
@@ -73,22 +63,22 @@ export const ListRoute: React.FC = () => {
 
 	const setCurrentId = useCallback((id: string) => {
 		try {
-			localStorage.setItem(CURRENT_KEY, id);
+			localStorage.setItem(SYLLABUS_CURRENT_KEY, id);
 		} catch {}
 		window.dispatchEvent(
-			new CustomEvent("syllabus-current-id", { detail: { id } })
+			new CustomEvent(SYLLABUS_EVENTS.currentId, { detail: { id } })
 		);
 	}, []);
 
 	const getNextId = useCallback(() => {
 		let next = 1;
 		try {
-			const rawCounter = localStorage.getItem(COUNTER_KEY);
+			const rawCounter = localStorage.getItem(SYLLABUS_COUNTER_KEY);
 			if (rawCounter) {
 				const parsed = Number.parseInt(rawCounter, 10);
 				next = Number.isNaN(parsed) ? 1 : parsed + 1;
 			} else {
-				const rawList = localStorage.getItem(STORAGE_KEY);
+				const rawList = localStorage.getItem(SYLLABUS_STORAGE_KEY);
 				if (rawList) {
 					const parsedList = JSON.parse(rawList) as Array<{ id?: string }>;
 					const maxId = parsedList.reduce((max, item) => {
@@ -98,7 +88,7 @@ export const ListRoute: React.FC = () => {
 					next = maxId + 1;
 				}
 			}
-			localStorage.setItem(COUNTER_KEY, String(next));
+			localStorage.setItem(SYLLABUS_COUNTER_KEY, String(next));
 		} catch {}
 		return String(next);
 	}, []);
@@ -107,159 +97,7 @@ export const ListRoute: React.FC = () => {
 		(payload: Record<string, any>) => {
 			const id = getNextId();
 			const name = payload.name || "未命名课程";
-			const englishName = payload.englishName || "Untitled Course";
-			const courseId = payload.courseId || "00000000";
-			const unit = payload.unit || "计算机学院";
-			const responsible = payload.responsible || "待定";
-
-			const credits = payload.credits || 3;
-			const totalHours = payload.totalHours || 48;
-			const theoryHours = payload.theoryHours || 32;
-			const practiceHours = payload.practiceHours || totalHours - theoryHours;
-			const experimentHours = payload.experimentHours || 0;
-			const intensiveWeeks = payload.intensiveWeeks || 0;
-			const weeklyHours = (totalHours / 16).toFixed(1);
-
-			const goals = payload.goals || "暂无目标";
-			const teachingGoals = payload.teachingGoals || "...";
-			const alignmentGoals = payload.alignmentGoals || "...";
-			const intro = payload.intro || "...";
-			const textbooks = payload.textbooks || "...";
-			const references = payload.references || "...";
-			const grading = payload.grading || "...";
-
-			const publicElectiveCategory = payload.publicElectiveCategory || "--";
-			const generalEducationCategory = payload.generalEducationCategory || "--";
-			const collegeCourseCategory = payload.collegeCourseCategory || "--";
-			const courseLevel = payload.courseLevel || "--";
-			const theoryPracticeType = payload.theoryPracticeType || "理论+实验课程";
-			const examType = payload.examType || "闭卷";
-			const writerName = payload.writerName || "--";
-			const courseCategory = payload.courseCategory || "学科基础课程";
-			const courseStatus = payload.courseStatus || "运行中";
-			const crossSemester = payload.crossSemester || "否";
-			const isEnglish = payload.isEnglish || "否";
-			const isBilingual = payload.isBilingual || "否";
-
-			const mdText = `# ${name}
-
-## 课程基本信息
-
-<table>
-	<tr>
-		<td width="15%">开课单�?/td>
-		<td width="35%">${unit}</td>
-		<td width="15%">通识公选类�?/td>
-		<td width="35%">${publicElectiveCategory}</td>
-	</tr>
-	<tr>
-		<td>通修课程类别</td>
-		<td>${generalEducationCategory}</td>
-		<td>院内课程分类</td>
-		<td>${collegeCourseCategory}</td>
-	</tr>
-	<tr>
-		<td>课程层次</td>
-		<td>${courseLevel}</td>
-		<td>理论/实践</td>
-		<td>${theoryPracticeType}</td>
-	</tr>
-	<tr>
-		<td>考试类型</td>
-		<td>${examType}</td>
-		<td>课程�?/td>
-		<td>${courseId}</td>
-	</tr>
-	<tr>
-		<td>课程�?/td>
-		<td>${name}</td>
-		<td>英文课程�?/td>
-		<td>${englishName}</td>
-	</tr>
-	<tr>
-		<td>大纲填写人姓�?/td>
-		<td>${writerName}</td>
-		<td>课程类别</td>
-		<td>${courseCategory}</td>
-	</tr>
-	<tr>
-		<td>课程状�?/td>
-		<td>${courseStatus}</td>
-		<td>课程负责人姓�?/td>
-		<td>${responsible}</td>
-	</tr>
-	<tr>
-		<td>跨学期课�?/td>
-		<td colspan="3">${crossSemester}</td>
-	</tr>
-</table>
-
-## 课程学时信息
-
-<table>
-	<tr>
-		<td width="15%">学分</td>
-		<td width="35%">${credits}</td>
-		<td width="15%">总学�?/td>
-		<td width="35%">${totalHours}</td>
-	</tr>
-	<tr>
-		<td>周学�?/td>
-		<td>${weeklyHours}</td>
-		<td>实验学时</td>
-		<td>${experimentHours}</td>
-	</tr>
-	<tr>
-		<td>实践学时</td>
-		<td>${practiceHours}</td>
-		<td>理论学时</td>
-		<td>${theoryHours}</td>
-	</tr>
-	<tr>
-		<td>集中实践周数</td>
-		<td colspan="3">${intensiveWeeks}</td>
-	</tr>
-</table>
-
-## 课程详细信息
-
-<table>
-	<tr>
-		<td width="15%">是否全英文授�?/td>
-		<td width="35%">${isEnglish}</td>
-		<td width="15%">是否双语授课</td>
-		<td width="35%">${isBilingual}</td>
-	</tr>
-	<tr>
-		<td>课程育人目标</td>
-		<td colspan="3">${goals}</td>
-	</tr>
-	<tr>
-		<td>课程教学目标</td>
-		<td colspan="3">${teachingGoals}</td>
-	</tr>
-	<tr>
-		<td>与学校本科人才培养目标的契合关系</td>
-		<td colspan="3">${alignmentGoals}</td>
-	</tr>
-	<tr>
-		<td>课程简�?/td>
-		<td colspan="3">${intro}</td>
-	</tr>
-	<tr>
-		<td>教材</td>
-		<td colspan="3">${textbooks}</td>
-	</tr>
-	<tr>
-		<td>参考资�?/td>
-		<td colspan="3">${references}</td>
-	</tr>
-	<tr>
-		<td>成绩构成</td>
-		<td colspan="3">${grading}</td>
-	</tr>
-</table>
-`;
+			const mdText = buildSyllabusMarkdown(payload);
 
 			const item: Outline = {
 				id,
@@ -317,25 +155,13 @@ export const ListRoute: React.FC = () => {
 		const onCreate = () => {
 			navigate("/teaching/syllabus/ListPage", { state: { openCreate: true } });
 		};
-		window.addEventListener(
-			"syllabus-outline-select",
-			onSelect as EventListener
-		);
-		window.addEventListener(
-			"syllabus-outline-delete",
-			onDelete as EventListener
-		);
-		window.addEventListener("syllabus-outline-create", onCreate);
+		window.addEventListener(SYLLABUS_EVENTS.select, onSelect as EventListener);
+		window.addEventListener(SYLLABUS_EVENTS.delete, onDelete as EventListener);
+		window.addEventListener(SYLLABUS_EVENTS.create, onCreate);
 		return () => {
-			window.removeEventListener(
-				"syllabus-outline-select",
-				onSelect as EventListener
-			);
-			window.removeEventListener(
-				"syllabus-outline-delete",
-				onDelete as EventListener
-			);
-			window.removeEventListener("syllabus-outline-create", onCreate);
+			window.removeEventListener(SYLLABUS_EVENTS.select, onSelect as EventListener);
+			window.removeEventListener(SYLLABUS_EVENTS.delete, onDelete as EventListener);
+			window.removeEventListener(SYLLABUS_EVENTS.create, onCreate);
 		};
 	}, [handleDelete, navigate]);
 
@@ -369,7 +195,7 @@ export const DetailRoute: React.FC = () => {
 
 	const loadOutlines = useCallback(() => {
 		try {
-			const raw = localStorage.getItem(STORAGE_KEY);
+			const raw = localStorage.getItem(SYLLABUS_STORAGE_KEY);
 			if (raw) {
 				setOutlines(JSON.parse(raw));
 			} else {
@@ -385,15 +211,9 @@ export const DetailRoute: React.FC = () => {
 		loadOutlines();
 		setLoaded(true);
 		const onCustom = () => loadOutlines();
-		window.addEventListener(
-			"syllabus-outlines-updated",
-			onCustom as EventListener
-		);
+		window.addEventListener(SYLLABUS_EVENTS.updated, onCustom as EventListener);
 		return () => {
-			window.removeEventListener(
-				"syllabus-outlines-updated",
-				onCustom as EventListener
-			);
+			window.removeEventListener(SYLLABUS_EVENTS.updated, onCustom as EventListener);
 		};
 	}, [loadOutlines]);
 
@@ -405,7 +225,7 @@ export const DetailRoute: React.FC = () => {
 			return;
 		}
 		try {
-			const savedId = localStorage.getItem(CURRENT_KEY);
+			const savedId = localStorage.getItem(SYLLABUS_CURRENT_KEY);
 			if (savedId) {
 				setCurrentId(savedId);
 				return;
@@ -432,8 +252,8 @@ export const DetailRoute: React.FC = () => {
 	const persist = useCallback((next: Outline[]) => {
 		setOutlines(next);
 		try {
-			localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-			window.dispatchEvent(new Event("syllabus-outlines-updated"));
+			localStorage.setItem(SYLLABUS_STORAGE_KEY, JSON.stringify(next));
+			window.dispatchEvent(new Event(SYLLABUS_EVENTS.updated));
 		} catch (e) {
 			console.error("save outlines", e);
 		}
@@ -443,12 +263,12 @@ export const DetailRoute: React.FC = () => {
 		if (!currentId) return;
 		const found = outlines.find((o) => o.id === currentId);
 		if (found) {
-			setMd(found.md);
+			setMd(found.md ?? "");
 			try {
-				localStorage.setItem(CURRENT_KEY, currentId);
+				localStorage.setItem(SYLLABUS_CURRENT_KEY, currentId);
 			} catch {}
 			window.dispatchEvent(
-				new CustomEvent("syllabus-current-id", { detail: { id: currentId } })
+				new CustomEvent(SYLLABUS_EVENTS.currentId, { detail: { id: currentId } })
 			);
 		}
 	}, [currentId, outlines]);
@@ -469,7 +289,7 @@ export const DetailRoute: React.FC = () => {
 				} else {
 					setCurrentId(null);
 					try {
-						localStorage.removeItem(CURRENT_KEY);
+						localStorage.removeItem(SYLLABUS_CURRENT_KEY);
 					} catch {}
 					navigate("/teaching/syllabus/ListPage");
 				}
@@ -481,12 +301,12 @@ export const DetailRoute: React.FC = () => {
 	const getNextId = useCallback(() => {
 		let next = 1;
 		try {
-			const rawCounter = localStorage.getItem(COUNTER_KEY);
+			const rawCounter = localStorage.getItem(SYLLABUS_COUNTER_KEY);
 			if (rawCounter) {
 				const parsed = Number.parseInt(rawCounter, 10);
 				next = Number.isNaN(parsed) ? 1 : parsed + 1;
 			} else {
-				const rawList = localStorage.getItem(STORAGE_KEY);
+				const rawList = localStorage.getItem(SYLLABUS_STORAGE_KEY);
 				if (rawList) {
 					const parsedList = JSON.parse(rawList) as Array<{ id?: string }>;
 					const maxId = parsedList.reduce((max, item) => {
@@ -496,7 +316,7 @@ export const DetailRoute: React.FC = () => {
 					next = maxId + 1;
 				}
 			}
-			localStorage.setItem(COUNTER_KEY, String(next));
+			localStorage.setItem(SYLLABUS_COUNTER_KEY, String(next));
 		} catch {}
 		return String(next);
 	}, []);
@@ -629,24 +449,24 @@ export const DetailRoute: React.FC = () => {
 			setCreateModalOpen(true);
 		};
 		window.addEventListener(
-			"syllabus-outline-select",
+			SYLLABUS_EVENTS.select,
 			onSelect as EventListener
 		);
 		window.addEventListener(
-			"syllabus-outline-delete",
+			SYLLABUS_EVENTS.delete,
 			onDelete as EventListener
 		);
-		window.addEventListener("syllabus-outline-create", onCreate);
+		window.addEventListener(SYLLABUS_EVENTS.create, onCreate);
 		return () => {
 			window.removeEventListener(
-				"syllabus-outline-select",
+				SYLLABUS_EVENTS.select,
 				onSelect as EventListener
 			);
 			window.removeEventListener(
-				"syllabus-outline-delete",
+				SYLLABUS_EVENTS.delete,
 				onDelete as EventListener
 			);
-			window.removeEventListener("syllabus-outline-create", onCreate);
+			window.removeEventListener(SYLLABUS_EVENTS.create, onCreate);
 		};
 	}, [currentId, handleDelete]);
 

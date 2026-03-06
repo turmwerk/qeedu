@@ -7,9 +7,11 @@ import Footer from "./Footer";
 import FloatActions from "./FloatActions";
 import SyllabusListModal from "@/pages/Teaching/Syllabus/ListModal";
 import ExamListModal from "@/pages/Teaching/ExamDesign/ListModal";
+import { SYLLABUS_EVENTS, SYLLABUS_STORAGE_KEY, SYLLABUS_TITLE } from "@/pages/Teaching/Syllabus/constants";
+import { EXAM_EVENTS, EXAM_STORAGE_KEY, EXAM_TITLE } from "@/pages/Teaching/ExamDesign/constants";
 import { getStoredTheme, applyTheme } from "@/utils/theme/controller";
-import SnowLayer from "@/ui/SnowLayer";
-import StarsLayer from "@/ui/StarsLayer";
+import SnowLayer from "@/effects/SnowLayer";
+import StarsLayer from "@/effects/StarsLayer";
 
 const { Content } = Layout;
 
@@ -104,27 +106,21 @@ const MainLayout: React.FC = () => {
         })
       );
     };
-    window.addEventListener("toggle-syllabus-sider", handleToggleSyllabusSider);
-    window.addEventListener("get-syllabus-sider-state", handleGetSyllabusState);
-    window.addEventListener("toggle-exam-sider", handleToggleExamSider);
-    window.addEventListener("get-exam-sider-state", handleGetExamState);
+    window.addEventListener(SYLLABUS_EVENTS.toggleSider, handleToggleSyllabusSider);
+    window.addEventListener(SYLLABUS_EVENTS.getSiderState, handleGetSyllabusState);
+    window.addEventListener(EXAM_EVENTS.toggleSider, handleToggleExamSider);
+    window.addEventListener(EXAM_EVENTS.getSiderState, handleGetExamState);
     return () => {
-      window.removeEventListener(
-        "toggle-syllabus-sider",
-        handleToggleSyllabusSider
-      );
-      window.removeEventListener(
-        "get-syllabus-sider-state",
-        handleGetSyllabusState
-      );
-      window.removeEventListener("toggle-exam-sider", handleToggleExamSider);
-      window.removeEventListener("get-exam-sider-state", handleGetExamState);
+      window.removeEventListener(SYLLABUS_EVENTS.toggleSider, handleToggleSyllabusSider);
+      window.removeEventListener(SYLLABUS_EVENTS.getSiderState, handleGetSyllabusState);
+      window.removeEventListener(EXAM_EVENTS.toggleSider, handleToggleExamSider);
+      window.removeEventListener(EXAM_EVENTS.getSiderState, handleGetExamState);
     };
   }, [examSiderOpen, syllabusSiderOpen]);
 
   useEffect(() => {
     window.dispatchEvent(
-      new CustomEvent("syllabus-sider-state", {
+        new CustomEvent(SYLLABUS_EVENTS.siderState, {
         detail: { open: syllabusSiderOpen },
       })
     );
@@ -132,7 +128,7 @@ const MainLayout: React.FC = () => {
 
   useEffect(() => {
     window.dispatchEvent(
-      new CustomEvent("exam-sider-state", {
+        new CustomEvent(EXAM_EVENTS.siderState, {
         detail: { open: examSiderOpen },
       })
     );
@@ -188,29 +184,29 @@ const MainLayout: React.FC = () => {
         <Sider
           open={syllabusSiderOpen && isSyllabusDetail}
           onClose={() => setSyllabusSiderOpen(false)}
-          storageKey="syllabus_outlines"
-          title="大纲列表"
-          createEventName="syllabus-outline-create"
-          updatedEventName="syllabus-outlines-updated"
-          currentIdEventName="syllabus-current-id"
-          selectEventName="syllabus-outline-select"
-          deleteEventName="syllabus-outline-delete"
-          widthEventName="syllabus-sider-width"
-          getWidthEventName="get-syllabus-sider-width"
+          storageKey={SYLLABUS_STORAGE_KEY}
+          title={SYLLABUS_TITLE}
+          createEventName={SYLLABUS_EVENTS.create}
+          updatedEventName={SYLLABUS_EVENTS.updated}
+          currentIdEventName={SYLLABUS_EVENTS.currentId}
+          selectEventName={SYLLABUS_EVENTS.select}
+          deleteEventName={SYLLABUS_EVENTS.delete}
+          widthEventName={SYLLABUS_EVENTS.siderWidth}
+          getWidthEventName={SYLLABUS_EVENTS.getSiderWidth}
           listModalComponent={SyllabusListModal}
         />
         <Sider
           open={examSiderOpen && isExamDetail}
           onClose={() => setExamSiderOpen(false)}
-          storageKey="exam_design_exams_v1"
-          title="试卷列表"
-          createEventName="exam-exam-create"
-          updatedEventName="exam-exams-updated"
-          currentIdEventName="exam-current-id"
-          selectEventName="exam-exam-select"
-          deleteEventName="exam-exam-delete"
-          widthEventName="exam-sider-width"
-          getWidthEventName="get-exam-sider-width"
+          storageKey={EXAM_STORAGE_KEY}
+          title={EXAM_TITLE}
+          createEventName={EXAM_EVENTS.create}
+          updatedEventName={EXAM_EVENTS.updated}
+          currentIdEventName={EXAM_EVENTS.currentId}
+          selectEventName={EXAM_EVENTS.select}
+          deleteEventName={EXAM_EVENTS.delete}
+          widthEventName={EXAM_EVENTS.siderWidth}
+          getWidthEventName={EXAM_EVENTS.getSiderWidth}
           listModalComponent={ExamListModal}
         />
         

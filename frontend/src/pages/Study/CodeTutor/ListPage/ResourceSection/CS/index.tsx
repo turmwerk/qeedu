@@ -1,7 +1,7 @@
 import React from "react";
 import { LinkOutlined } from "@ant-design/icons";
 import ModuleHub from "@/feature/ModuleHub";
-import type { Feature } from "@/feature/ModuleHub";
+import type { Feature } from "@/feature/ModuleHub/types";
 import Card from "@/ui/Card";
 import { CS_COURSES } from "./data/courses";
 import type { CsCourseItem } from "./data/courses";

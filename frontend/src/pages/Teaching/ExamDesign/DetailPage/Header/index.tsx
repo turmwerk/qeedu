@@ -14,6 +14,7 @@ import {
   downloadDocx,
   exportPdfViaPrint,
 } from "@/utils/file/export";
+import { EXAM_EVENTS } from "../../constants";
 
 type HeaderProps = {
   title: string;
@@ -38,9 +39,9 @@ const Header: React.FC<HeaderProps> = ({
       const detail = (e as CustomEvent).detail;
       if (detail) setSiderOpen(!!detail.open);
     };
-    window.addEventListener("exam-sider-state", handler);
-    window.dispatchEvent(new Event("get-exam-sider-state"));
-    return () => window.removeEventListener("exam-sider-state", handler);
+    window.addEventListener(EXAM_EVENTS.siderState, handler);
+    window.dispatchEvent(new Event(EXAM_EVENTS.getSiderState));
+    return () => window.removeEventListener(EXAM_EVENTS.siderState, handler);
   }, []);
 
   const actionButtonClass =
@@ -52,7 +53,7 @@ const Header: React.FC<HeaderProps> = ({
         {!siderOpen && (
           <Button
             className="flex items-center justify-center w-9 h-9 rounded-lg bg-transparent border border-transparent text-[var(--brand-blue)] transition-[background,border-color,color] hover:text-[var(--brand-purple)] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-purple)]"
-            onClick={() => window.dispatchEvent(new Event("toggle-exam-sider"))}
+            onClick={() => window.dispatchEvent(new Event(EXAM_EVENTS.toggleSider))}
             aria-label="打开侧边栏"
           >
             <MenuOutlined />

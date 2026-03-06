@@ -2,14 +2,7 @@ import React, { useState } from "react";
 import { EditOutlined, DeleteOutlined, FormOutlined } from "@ant-design/icons";
 import BaseList from "@/ui/List";
 import ConfirmDialog from "@/ui/ConfirmDialog";
-
-export type Outline = {
-	id: string;
-	title: string;
-	subtitle?: string;
-	md?: string;
-	createdAt?: number;
-};
+import type { Outline } from "../../types";
 
 type Props = {
 	items: Outline[];

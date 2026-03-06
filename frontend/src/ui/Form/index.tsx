@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Loader from "@/effects/Loader";
 import Button from "@/ui/Button";
 
 export interface FormHeader {
@@ -94,8 +95,6 @@ const Form: React.FC<FormProps> = ({
       data-oid="l:34:qo"
     >
       <style>{`
-        @keyframes formDotPulse { 0%,100%{opacity:.35;transform:translateY(0)}50%{opacity:.9;transform:translateY(-2px)} }
-        .form-dot{animation:formDotPulse 1s ease-in-out infinite}.form-dot.delay-1{animation-delay:.15s}.form-dot.delay-2{animation-delay:.3s}
         @keyframes slideInFromBottom { from { opacity: 0; transform: translateY(8px); } to { opacity:1; transform:translateY(0);} }
         .animate-form-enter { animation: slideInFromBottom 220ms cubic-bezier(.2,.9,.2,1) both; }
       `}</style>
@@ -195,11 +194,7 @@ const Form: React.FC<FormProps> = ({
           {submitLoading ? (
             <span className="inline-flex items-center gap-1.5" data-oid="1cfqmxu">
               {submitLoadingText ?? submitText}
-              <span className="inline-flex gap-1" data-oid="_rdnd_p">
-                <span className="form-dot w-[5px] h-[5px] rounded-full bg-white opacity-40" data-oid="_zi..3i" />
-                <span className="form-dot delay-1 w-[5px] h-[5px] rounded-full bg-white opacity-40" data-oid=".1j9-_-" />
-                <span className="form-dot delay-2 w-[5px] h-[5px] rounded-full bg-white opacity-40" data-oid="9jq51lp" />
-              </span>
+              <Loader size="xs" />
             </span>
           ) : (
             submitText

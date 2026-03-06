@@ -5,8 +5,8 @@ import {
   type ComponentType,
   type LazyExoticComponent,
 } from "react";
-import { Spin } from "antd";
 import type { RouteObject } from "react-router-dom";
+import Loader from "@/effects/Loader";
 
 const ProjectPage = lazy(() => import("@/pages/Project"));
 
@@ -16,8 +16,8 @@ const lazyElement = (Component: LazyExoticComponent<ComponentType<any>>) =>
     {
       fallback: createElement(
         "div",
-        { className: "flex justify-center mt-12" },
-        createElement(Spin, { size: "large" }),
+        { className: "mt-12 flex justify-center" },
+        createElement(Loader, { size: "lg", text: "加载中", subtext: "正在打开编程环境..." }),
       ),
     },
     createElement(Component),

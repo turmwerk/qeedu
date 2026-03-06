@@ -1,18 +1,12 @@
 import React, { useState } from "react";
 import { EditOutlined, DeleteOutlined, FormOutlined } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import BaseList from "@/ui/List";
 import ConfirmDialog from "@/ui/ConfirmDialog";
-
-export type Project = {
-  id: string;
-  title: string;
-  subtitle?: string;
-  createdAt?: number;
-};
+import type { ProjectItem } from "../types";
 
 type Props = {
-  items: Project[];
+  items: ProjectItem[];
   onRename: (id: string, newName: string) => void;
   onDelete: (id: string) => void;
 };
@@ -26,17 +20,20 @@ const deleteCls =
 
 const ProjectListContent: React.FC<Props> = ({ items, onRename, onDelete }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [confirmDeleteTitle, setConfirmDeleteTitle] = useState<string>("");
 
-  const handleNavigate = (item: Project) => {
-    navigate(`/study/code-tutor/ProjectPage?proId=${item.id}`);
+  const handleNavigate = (item: ProjectItem) => {
+    navigate(`/study/code-tutor/ProjectPage?proId=${item.id}`, {
+      state: { from: `${location.pathname}${location.search}` },
+    });
   };
 
   return (
     <>
       <div className="p-1.5 sm:p-3">
-        <BaseList<Project>
+        <BaseList<ProjectItem>
           items={items}
           keyExtractor={(i) => i.id}
           hoverGlow={false}

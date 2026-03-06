@@ -4,36 +4,20 @@ import Dialog from "@/feature/ChatDialog";
 import ListPage from "../ListPage";
 import DetailPage from "../DetailPage";
 import CreateModal from "../CreateModal";
-
-type Question = {
-	id: string;
-	stem: string;
-	score?: number;
-	type?: string;
-	options?: string[];
-	knowledge?: string;
-	difficulty?: string;
-	cognition?: string;
-	answerAnalysis?: string;
-};
-
-type Exam = {
-	id: string;
-	title: string;
-	questions: Question[];
-	createdAt?: number;
-};
-
-const STORAGE_KEY = "exam_design_exams_v1";
-const CURRENT_KEY = "exam_design_current_id";
-const COUNTER_KEY = "exam_design_exams_counter";
+import {
+	EXAM_COUNTER_KEY,
+	EXAM_CURRENT_KEY,
+	EXAM_EVENTS,
+	EXAM_STORAGE_KEY,
+} from "../constants";
+import type { Exam } from "../types";
 
 export const ListRoute: React.FC = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const [exams, setExams] = useState<Exam[]>(() => {
 		try {
-			const raw = localStorage.getItem(STORAGE_KEY);
+			const raw = localStorage.getItem(EXAM_STORAGE_KEY);
 			if (raw) return JSON.parse(raw) as Exam[];
 			return [];
 		} catch (e) {
@@ -45,8 +29,8 @@ export const ListRoute: React.FC = () => {
 	const persist = useCallback((next: Exam[]) => {
 		setExams(next);
 		try {
-			localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-			window.dispatchEvent(new Event("exam-exams-updated"));
+			localStorage.setItem(EXAM_STORAGE_KEY, JSON.stringify(next));
+			window.dispatchEvent(new Event(EXAM_EVENTS.updated));
 		} catch (e) {
 			console.error("save exams", e);
 		}
@@ -65,9 +49,9 @@ export const ListRoute: React.FC = () => {
 
 	const setCurrentId = useCallback((id: string) => {
 		try {
-			localStorage.setItem(CURRENT_KEY, id);
+			localStorage.setItem(EXAM_CURRENT_KEY, id);
 			window.dispatchEvent(
-				new CustomEvent("exam-current-id", { detail: { id } })
+				new CustomEvent(EXAM_EVENTS.currentId, { detail: { id } })
 			);
 		} catch (e) {
 			console.warn("set current exam id failed", e);
@@ -77,12 +61,12 @@ export const ListRoute: React.FC = () => {
 	const getNextId = useCallback(() => {
 		let next = 1;
 		try {
-			const rawCounter = localStorage.getItem(COUNTER_KEY);
+			const rawCounter = localStorage.getItem(EXAM_COUNTER_KEY);
 			if (rawCounter) {
 				const parsed = Number.parseInt(rawCounter, 10);
 				next = Number.isNaN(parsed) ? 1 : parsed + 1;
 			} else {
-				const rawList = localStorage.getItem(STORAGE_KEY);
+				const rawList = localStorage.getItem(EXAM_STORAGE_KEY);
 				if (rawList) {
 					const parsedList = JSON.parse(rawList) as Array<{ id?: string }>;
 					const maxId = parsedList.reduce((max, item) => {
@@ -92,7 +76,7 @@ export const ListRoute: React.FC = () => {
 					next = maxId + 1;
 				}
 			}
-			localStorage.setItem(COUNTER_KEY, String(next));
+			localStorage.setItem(EXAM_COUNTER_KEY, String(next));
 		} catch {}
 		return String(next);
 	}, []);
@@ -132,9 +116,9 @@ export const ListRoute: React.FC = () => {
 				console.warn("clear exam dialogs failed", e);
 			}
 			try {
-				const currentId = localStorage.getItem(CURRENT_KEY);
+				const currentId = localStorage.getItem(EXAM_CURRENT_KEY);
 				if (currentId === id) {
-					localStorage.removeItem(CURRENT_KEY);
+					localStorage.removeItem(EXAM_CURRENT_KEY);
 				}
 			} catch (e) {
 				console.warn("clear current exam id failed", e);
@@ -186,7 +170,7 @@ export const DetailRoute: React.FC = () => {
 	const location = useLocation();
 	const [exams, setExams] = useState<Exam[]>(() => {
 		try {
-			const raw = localStorage.getItem(STORAGE_KEY);
+			const raw = localStorage.getItem(EXAM_STORAGE_KEY);
 			if (raw) return JSON.parse(raw) as Exam[];
 			return [];
 		} catch (e) {
@@ -200,7 +184,7 @@ export const DetailRoute: React.FC = () => {
 
 	const loadExams = useCallback(() => {
 		try {
-			const raw = localStorage.getItem(STORAGE_KEY);
+			const raw = localStorage.getItem(EXAM_STORAGE_KEY);
 			if (raw) setExams(JSON.parse(raw));
 			else setExams([]);
 		} catch (e) {
@@ -212,8 +196,8 @@ export const DetailRoute: React.FC = () => {
 	const persist = useCallback((next: Exam[]) => {
 		setExams(next);
 		try {
-			localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-			window.dispatchEvent(new Event("exam-exams-updated"));
+			localStorage.setItem(EXAM_STORAGE_KEY, JSON.stringify(next));
+			window.dispatchEvent(new Event(EXAM_EVENTS.updated));
 		} catch (e) {
 			console.error("save exams", e);
 		}
@@ -221,10 +205,10 @@ export const DetailRoute: React.FC = () => {
 
 	useEffect(() => {
 		const onCustom = () => loadExams();
-		window.addEventListener("exam-exams-updated", onCustom as EventListener);
+		window.addEventListener(EXAM_EVENTS.updated, onCustom as EventListener);
 		return () => {
 			window.removeEventListener(
-				"exam-exams-updated",
+				EXAM_EVENTS.updated,
 				onCustom as EventListener
 			);
 		};
@@ -242,7 +226,7 @@ export const DetailRoute: React.FC = () => {
 	const fallbackId = useMemo(() => {
 		if (queryId) return queryId;
 		try {
-			const savedId = localStorage.getItem(CURRENT_KEY);
+			const savedId = localStorage.getItem(EXAM_CURRENT_KEY);
 			if (savedId) return savedId;
 		} catch (e) {
 			console.warn("read current exam id failed", e);
@@ -268,12 +252,12 @@ export const DetailRoute: React.FC = () => {
 	useEffect(() => {
 		if (!currentId) return;
 		try {
-			localStorage.setItem(CURRENT_KEY, currentId);
+			localStorage.setItem(EXAM_CURRENT_KEY, currentId);
 		} catch (e) {
 			console.warn("save current exam id failed", e);
 		}
 		window.dispatchEvent(
-			new CustomEvent("exam-current-id", { detail: { id: currentId } })
+			new CustomEvent(EXAM_EVENTS.currentId, { detail: { id: currentId } })
 		);
 	}, [currentId]);
 
@@ -321,7 +305,7 @@ export const DetailRoute: React.FC = () => {
 				} else {
 					setManualId(null);
 					try {
-						localStorage.removeItem(CURRENT_KEY);
+						localStorage.removeItem(EXAM_CURRENT_KEY);
 					} catch (e) {
 						console.warn("clear current exam id failed", e);
 					}
@@ -335,12 +319,12 @@ export const DetailRoute: React.FC = () => {
 	const getNextId = useCallback(() => {
 		let next = 1;
 		try {
-			const rawCounter = localStorage.getItem(COUNTER_KEY);
+			const rawCounter = localStorage.getItem(EXAM_COUNTER_KEY);
 			if (rawCounter) {
 				const parsed = Number.parseInt(rawCounter, 10);
 				next = Number.isNaN(parsed) ? 1 : parsed + 1;
 			} else {
-				const rawList = localStorage.getItem(STORAGE_KEY);
+				const rawList = localStorage.getItem(EXAM_STORAGE_KEY);
 				if (rawList) {
 					const parsedList = JSON.parse(rawList) as Array<{ id?: string }>;
 					const maxId = parsedList.reduce((max, item) => {
@@ -350,7 +334,7 @@ export const DetailRoute: React.FC = () => {
 					next = maxId + 1;
 				}
 			}
-			localStorage.setItem(COUNTER_KEY, String(next));
+			localStorage.setItem(EXAM_COUNTER_KEY, String(next));
 		} catch {}
 		return String(next);
 	}, []);
@@ -387,13 +371,13 @@ export const DetailRoute: React.FC = () => {
 		const onCreate = () => {
 			setCreateModalOpen(true);
 		};
-		window.addEventListener("exam-exam-select", onSelect as EventListener);
-		window.addEventListener("exam-exam-delete", onDelete as EventListener);
-		window.addEventListener("exam-exam-create", onCreate);
+		window.addEventListener(EXAM_EVENTS.select, onSelect as EventListener);
+		window.addEventListener(EXAM_EVENTS.delete, onDelete as EventListener);
+		window.addEventListener(EXAM_EVENTS.create, onCreate);
 		return () => {
-			window.removeEventListener("exam-exam-select", onSelect as EventListener);
-			window.removeEventListener("exam-exam-delete", onDelete as EventListener);
-			window.removeEventListener("exam-exam-create", onCreate);
+			window.removeEventListener(EXAM_EVENTS.select, onSelect as EventListener);
+			window.removeEventListener(EXAM_EVENTS.delete, onDelete as EventListener);
+			window.removeEventListener(EXAM_EVENTS.create, onCreate);
 		};
 	}, [handleDelete, manualId]);
 

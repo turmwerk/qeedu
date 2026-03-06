@@ -95,7 +95,7 @@ const Footer: React.FC = () => {
           <div className="font-mono">Uptime:{uptime}</div>
         </div>
         <div className="font-medium opacity-80 tracking-wide">
-          © 2026 nju-edu-ai-system-All Rights Reserved.
+          © 2026 nju-edu-ai-system.All Rights Reserved.
         </div>
       </div>
     </footer>

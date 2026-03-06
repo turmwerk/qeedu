@@ -1,13 +1,6 @@
 import React from "react";
 import ListModal from "../ListModal";
-
-type Outline = {
-  id: string;
-  title: string;
-  subtitle?: string;
-  md: string;
-  createdAt?: number;
-};
+import type { Outline } from "../types";
 
 const ListPage: React.FC<{
   items: Outline[];

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Layout } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
@@ -62,6 +62,7 @@ const buildItems = (
 const MainHeader: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const navStackRef = useRef<string[]>([]);
   const isHomePage = location.pathname === "/";
   const isStudy = location.pathname.startsWith("/study");
   const isTeaching = location.pathname.startsWith("/teaching");
@@ -86,9 +87,25 @@ const MainHeader: React.FC = () => {
     setTheme(next);
   };
 
-  // Compute a deterministic "parent" route so the back button never
-  // ping-pongs between two pages via browser history.
-  const getBackTarget = (pathname: string): string => {
+  const normalizeRoute = (pathname: string, search: string): string => {
+    // Canonicalize redirect source route to avoid back-button ping-pong.
+    const canonicalPath = pathname === "/study/code-tutor" ? "/study/code-tutor/ListPage" : pathname;
+    return `${canonicalPath}${search}`;
+  };
+
+  useEffect(() => {
+    const current = normalizeRoute(location.pathname, location.search);
+    const stack = navStackRef.current;
+    const last = stack[stack.length - 1];
+
+    if (last !== current) {
+      stack.push(current);
+      if (stack.length > 120) stack.shift();
+    }
+  }, [location.pathname, location.search]);
+
+  // Fallback deterministic parent route when stack history is unavailable.
+  const getFallbackBackTarget = (pathname: string): string => {
     // Exact matches first
     const exact: Record<string, string> = {
       "/study": "/",
@@ -97,6 +114,7 @@ const MainHeader: React.FC = () => {
       "/management": "/",
       "/study/code-tutor": "/study",
       "/study/code-tutor/ListPage": "/study/code-tutor",
+      "/study/code-tutor/ProjectPage": "/study/code-tutor/ListPage",
       "/teaching/exam/ListPage": "/teaching",
       "/teaching/syllabus/ListPage": "/teaching",
       "/management/major": "/management",
@@ -117,7 +135,21 @@ const MainHeader: React.FC = () => {
     // Fallback: go home
     return "/";
   };
-  const backTarget = isHomePage ? undefined : getBackTarget(location.pathname);
+  const handleBack = () => {
+    const stack = navStackRef.current;
+
+    // Drop current page and navigate to the previous stack entry.
+    if (stack.length > 1) {
+      stack.pop();
+      const prev = stack[stack.length - 1];
+      if (prev) {
+        navigate(prev);
+        return;
+      }
+    }
+
+    navigate(getFallbackBackTarget(location.pathname));
+  };
 
 
 
@@ -131,7 +163,7 @@ const MainHeader: React.FC = () => {
         {!isHomePage && (
           <Button
             className={`${menuButtonBase} ${menuButtonUnderline} ${menuButtonIdle} !pl-0 sm:!pl-2`}
-            onClick={() => navigate(backTarget!)}
+            onClick={handleBack}
             data-oid="36x2h-h"
           >
             <ArrowLeftOutlined />

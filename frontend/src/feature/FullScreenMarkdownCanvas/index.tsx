@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { SYLLABUS_EVENTS } from "@/pages/Teaching/Syllabus/constants";
 import { getStoredTheme, toggleTheme } from "@/utils/theme/controller";
 import CanvasHeader from "./Header";
 import CanvasContents from "./Contents";
@@ -19,12 +20,12 @@ const FullScreenMarkdownCanvas: React.FC<{
       if (detail) setSiderOpen(detail.open);
     };
     const handleThemeChange = () => setTheme(getStoredTheme());
-    window.addEventListener("syllabus-sider-state", handleSiderState as EventListener);
+    window.addEventListener(SYLLABUS_EVENTS.siderState, handleSiderState as EventListener);
     window.addEventListener("theme-change", handleThemeChange);
     window.addEventListener("storage", handleThemeChange);
-    window.dispatchEvent(new Event("get-syllabus-sider-state"));
+    window.dispatchEvent(new Event(SYLLABUS_EVENTS.getSiderState));
     return () => {
-      window.removeEventListener("syllabus-sider-state", handleSiderState as EventListener);
+      window.removeEventListener(SYLLABUS_EVENTS.siderState, handleSiderState as EventListener);
       window.removeEventListener("theme-change", handleThemeChange);
       window.removeEventListener("storage", handleThemeChange);
     };
@@ -43,7 +44,7 @@ const FullScreenMarkdownCanvas: React.FC<{
   }, []);
 
   const handleToggleSider = () => {
-    window.dispatchEvent(new Event("toggle-syllabus-sider"));
+    window.dispatchEvent(new Event(SYLLABUS_EVENTS.toggleSider));
     setSiderOpen((v) => !v);
   };
 

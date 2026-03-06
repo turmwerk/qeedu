@@ -1,6 +1,6 @@
 import React from "react";
 import ModuleHub from "@/feature/ModuleHub";
-import type { Feature } from "@/feature/ModuleHub";
+import type { Feature } from "@/feature/ModuleHub/types";
 import Card from "@/ui/Card";
 import { TUTORIALS, LEVEL_BADGE } from "./data/tutorials";
 import type { TutorialItem } from "./data/tutorials";

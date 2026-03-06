@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import Footer from "@/layouts/MainLayout/Footer";
-import SnowLayer from "@/ui/SnowLayer";
-import StarsLayer from "@/ui/StarsLayer";
+import SnowLayer from "@/effects/SnowLayer";
+import StarsLayer from "@/effects/StarsLayer";
 import { getStoredTheme } from "@/utils/theme/controller";
 const AuthLayout: React.FC = () => {
   const location = useLocation();

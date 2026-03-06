@@ -3,10 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Card from "@/ui/Card";
 import type { SubLink } from "@/ui/Card";
 
-// Re-export SubLink so existing consumers continue to work.
-export type { SubLink };
-
-export type ModuleCardProps = {
+type ModuleCardProps = {
   title: string;
   desc: string;
   to: string;

@@ -4,14 +4,8 @@ import List from "@/ui/List";
 import ConfirmDialog from "@/ui/ConfirmDialog";
 import CreateModal from "../CreateModal";
 import Header from "../ListPage/Header";
-
-type Outline = {
-  id: string;
-  title: string;
-  subtitle?: string;
-  md?: string;
-  createdAt?: number;
-};
+import { SYLLABUS_EVENTS } from "../constants";
+import type { Outline } from "../types";
 
 interface Props {
   items: Outline[];
@@ -107,8 +101,8 @@ const ListModal: React.FC<Props> = ({
 
   useEffect(() => {
     const onCreateOpen = () => setOpen(true);
-    window.addEventListener("syllabus-outline-create", onCreateOpen);
-    return () => window.removeEventListener("syllabus-outline-create", onCreateOpen);
+    window.addEventListener(SYLLABUS_EVENTS.create, onCreateOpen);
+    return () => window.removeEventListener(SYLLABUS_EVENTS.create, onCreateOpen);
   }, []);
 
   return (

@@ -1,12 +1,6 @@
 import React from "react";
 import ListModal from "../ListModal";
-
-type ExamItem = {
-  id: string;
-  title: string;
-  subtitle?: string;
-  createdAt?: number;
-};
+import type { ExamItem } from "../types";
 
 const ListPage: React.FC<{
   items: ExamItem[];

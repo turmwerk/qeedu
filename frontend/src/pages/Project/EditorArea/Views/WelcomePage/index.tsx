@@ -1,13 +1,6 @@
 import React from "react";
 import { CodeOutlined } from "@ant-design/icons";
-
-const SHORTCUTS = [
-  { key: "Ctrl + P", desc: "快速打开文件" },
-  { key: "Ctrl + Shift + P", desc: "命令面板" },
-  { key: "Ctrl + `", desc: "切换终端" },
-  { key: "Ctrl + B", desc: "切换侧边栏" },
-  { key: "Ctrl + /", desc: "注释/取消注释" },
-];
+import { WELCOME_SHORTCUTS } from "../../../data/welcomeShortcuts";
 
 const WelcomePage: React.FC = () => (
   <div className="flex h-full w-full select-none flex-col items-center justify-center gap-6 bg-[#1e1e1e] text-[#9d9d9d]">
@@ -28,7 +21,7 @@ const WelcomePage: React.FC = () => (
         快捷键
       </p>
       <div className="flex flex-col gap-2">
-        {SHORTCUTS.map(({ key, desc }) => (
+        {WELCOME_SHORTCUTS.map(({ key, desc }) => (
           <div key={key} className="flex items-center justify-between text-xs">
             <span className="rounded border border-[#3c3c3c] bg-[#2d2d2d] px-2 py-0.5 font-mono text-[10px]">
               {key}

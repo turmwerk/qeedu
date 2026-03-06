@@ -1,4 +1,5 @@
 import React from "react";
+import Loader from "@/effects/Loader";
 
 type ButtonVariant =
 	| "primary"
@@ -72,7 +73,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 			>
 				{loading ? (
 					<span className="inline-flex items-center gap-2">
-						<span className="h-3 w-3 rounded-full border-2 border-white/60 border-t-transparent animate-spin" />
+						<Loader size="xs" />
 						{loadingText ?? children}
 					</span>
 				) : (

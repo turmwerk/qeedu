@@ -4,13 +4,8 @@ import List from "@/ui/List";
 import ConfirmDialog from "@/ui/ConfirmDialog";
 import CreateModal from "../CreateModal";
 import Header from "../ListPage/Header";
-
-type ExamItem = {
-	id: string;
-	title: string;
-	subtitle?: string;
-	createdAt?: number;
-};
+import { EXAM_EVENTS } from "../constants";
+import type { ExamItem } from "../types";
 
 interface Props {
 	items: ExamItem[];
@@ -106,8 +101,8 @@ const ListModal: React.FC<Props> = ({
 
 	useEffect(() => {
 		const onCreateOpen = () => setOpen(true);
-		window.addEventListener("exam-exam-create", onCreateOpen);
-		return () => window.removeEventListener("exam-exam-create", onCreateOpen);
+		window.addEventListener(EXAM_EVENTS.create, onCreateOpen);
+		return () => window.removeEventListener(EXAM_EVENTS.create, onCreateOpen);
 	}, []);
 
 	return (

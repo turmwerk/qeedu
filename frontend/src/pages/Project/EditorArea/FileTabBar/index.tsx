@@ -4,18 +4,9 @@ import {
   EllipsisOutlined,
 } from "@ant-design/icons";
 import TabBar, { type TabBarProps } from "@/ui/TabBar";
+import { getFileColorClass } from "../../utils/filePresentation";
 import { useWorkspace } from "../../context";
 import { type TabItem } from "../types";
-
-/** 根据文件名取适当的颜色类 */
-function fileColorClass(name: string): string {
-  const ext = name.split(".").pop()?.toLowerCase() ?? "";
-  if (["py"].includes(ext)) return "text-[#4ec9b0]";
-  if (["ts", "tsx"].includes(ext)) return "text-[#519aba]";
-  if (["js", "jsx"].includes(ext)) return "text-[#f1c40f]";
-  if (["md", "markdown"].includes(ext)) return "text-[#519aba]";
-  return "text-[#cccccc]";
-}
 
 const FileTabBar: React.FC = () => {
   const { tabs, activeTabId, closeTab, setActiveTabId } = useWorkspace();
@@ -26,7 +17,7 @@ const FileTabBar: React.FC = () => {
       label: t.title,
       isDirty: t.isDirty,
       icon: (
-        <span className={`text-xs ${fileColorClass(t.title)}`}>
+        <span className={`text-xs ${getFileColorClass(t.title)}`}>
           ●
         </span>
       ),

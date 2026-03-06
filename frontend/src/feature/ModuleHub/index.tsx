@@ -1,18 +1,8 @@
 import React from "react";
 import ModuleCard from "./ModuleCard";
-import type { SubLink } from "./ModuleCard";
+import type { Feature } from "./types";
 
-export type Feature = {
-  key: string;
-  title: string;
-  desc: string;
-  /** Navigation target. Required when using the default ModuleCard renderer. */
-  to?: string;
-  icon?: React.ReactNode;
-  subLinks?: SubLink[];
-  /** Any extra fields passed through to a custom renderFeature function. */
-  [extra: string]: unknown;
-};
+export type { Feature } from "./types";
 
 type Props = {
   headline?: string;

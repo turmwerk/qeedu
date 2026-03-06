@@ -8,7 +8,9 @@ import InsertQuestionModal from "./InsertQuestionModal";
 import PreviewModal from "./PreviewModal";
 import QuestionList from "./QuestionList";
 import RightPanel from "./RightPanel";
+import { EXAM_EVENTS, EXAM_STORAGE_KEY } from "../constants";
 import type { Question } from "./types";
+import type { Exam } from "../types";
 
 const DetailPage: React.FC<{
   examId?: string;
@@ -22,19 +24,12 @@ const DetailPage: React.FC<{
   onBack,
 }) => {
   const navigate = useNavigate();
-  type Exam = {
-    id: string;
-    title: string;
-    createdAt: number;
-    questions: Question[];
-  };
-  const STORAGE_KEY = "exam_design_exams_v1";
 
   const [localTitle, setLocalTitle] = useState(title);
 
   const loadExams = useCallback((): Exam[] => {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
+      const raw = localStorage.getItem(EXAM_STORAGE_KEY);
       if (!raw) return [];
       return JSON.parse(raw) as Exam[];
     } catch (e) {
@@ -45,7 +40,7 @@ const DetailPage: React.FC<{
 
   const saveExams = useCallback((exs: Exam[]) => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(exs));
+      localStorage.setItem(EXAM_STORAGE_KEY, JSON.stringify(exs));
     } catch (e) {
       console.warn("saveExams failed", e);
     }
@@ -71,7 +66,7 @@ const DetailPage: React.FC<{
         exs.push(entry);
       }
       saveExams(exs);
-      window.dispatchEvent(new Event("exam-exams-updated"));
+      window.dispatchEvent(new Event(EXAM_EVENTS.updated));
     } catch (e) {
       console.warn("persistExam failed", e);
     }

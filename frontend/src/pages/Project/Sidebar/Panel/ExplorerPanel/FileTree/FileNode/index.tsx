@@ -1,26 +1,7 @@
 import React from "react";
-import {
-  FileTextOutlined,
-  FileMarkdownOutlined,
-  CodeOutlined,
-  FileImageOutlined,
-  FileOutlined,
-} from "@ant-design/icons";
+import { getFileIcon } from "../../../../../utils/filePresentation";
 import { type FileTreeNode } from "../../../../../EditorArea/types";
 import { useWorkspace } from "../../../../../context";
-
-function getFileIcon(name: string): React.ReactNode {
-  const ext = name.split(".").pop()?.toLowerCase() ?? "";
-  if (["py", "ts", "tsx", "js", "jsx", "cpp", "c", "java", "go", "rs"].includes(ext))
-    return <CodeOutlined className="text-[#4ec9b0]" />;
-  if (["md", "markdown"].includes(ext))
-    return <FileMarkdownOutlined className="text-[#519aba]" />;
-  if (["txt", "log"].includes(ext))
-    return <FileTextOutlined className="text-[#cccccc]" />;
-  if (["png", "jpg", "jpeg", "gif", "svg", "webp"].includes(ext))
-    return <FileImageOutlined className="text-[#f1c40f]" />;
-  return <FileOutlined className="text-[#cccccc]" />;
-}
 
 interface FileNodeProps {
   node: FileTreeNode;

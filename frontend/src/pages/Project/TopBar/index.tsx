@@ -1,18 +1,36 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   ArrowLeftOutlined,
   SearchOutlined,
   SettingOutlined,
   QuestionCircleOutlined,
 } from "@ant-design/icons";
+import { TOP_BAR_MENU_ITEMS } from "../data/topBar";
 import { useWorkspace } from "../context";
-
-const MENU_ITEMS = ["文件", "编辑", "选择", "查看", "转到", "运行", "终端", "帮助"];
 
 const TopBar: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { projectName } = useWorkspace();
+  const from =
+    typeof (location.state as { from?: unknown } | null)?.from === "string"
+      ? ((location.state as { from: string }).from as string)
+      : undefined;
+
+  const handleBack = () => {
+    if (from && from.startsWith("/")) {
+      navigate(from);
+      return;
+    }
+
+    if (window.history.length > 1) {
+      navigate(-1);
+      return;
+    }
+
+    navigate("/study/code-tutor/ListPage", { replace: true });
+  };
 
   return (
     <div className="flex h-9 w-full shrink-0 select-none items-center bg-[#323233] px-2">
@@ -20,14 +38,14 @@ const TopBar: React.FC = () => {
       <button
         className="mr-2 flex h-7 w-7 items-center justify-center rounded text-[#cccccc] opacity-70 transition hover:bg-white/10 hover:opacity-100"
         title="返回项目列表"
-        onClick={() => navigate("/study/code-tutor/ListPage")}
+        onClick={handleBack}
       >
         <ArrowLeftOutlined className="text-xs" />
       </button>
 
       {/* 菜单栏 */}
       <div className="flex items-center gap-0.5">
-        {MENU_ITEMS.map((item) => (
+        {TOP_BAR_MENU_ITEMS.map((item) => (
           <button
             key={item}
             className="rounded px-2 py-0.5 text-xs text-[#cccccc] opacity-80 transition hover:bg-white/10 hover:opacity-100"
