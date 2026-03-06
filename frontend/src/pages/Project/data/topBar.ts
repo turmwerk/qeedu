@@ -1,0 +1,1 @@
+export const TOP_BAR_MENU_ITEMS = ["文件", "编辑", "选择", "查看", "转到", "运行", "终端", "帮助"];
