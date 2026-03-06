@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
-import Introduction from "./components/Introduction";
-import FeatureHub from "./components/FeatureHub";
-import Footer from "@/layouts/MainLayout/components/Footer";
+import Introduction from "./Introduction";
+import FeatureHub from "./FeatureHub";
+import Footer from "@/layouts/MainLayout/Footer";
 
 const Home: React.FC = () => {
   const featureHubRef = useRef<HTMLDivElement>(null);

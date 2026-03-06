@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import Dialog from "@/components/Dialog";
+import Dialog from "@/feature/ChatDialog";
 import ListPage from "../ListPage";
 import DetailPage from "../DetailPage";
-import CreateModal from "../components/CreateModal";
+import CreateModal from "../CreateModal";
 
 type Outline = {
 	id: string;
@@ -147,9 +147,9 @@ export const ListRoute: React.FC = () => {
 
 <table>
 	<tr>
-		<td width="15%">开课单位</td>
+		<td width="15%">开课单�?/td>
 		<td width="35%">${unit}</td>
-		<td width="15%">通识公选类别</td>
+		<td width="15%">通识公选类�?/td>
 		<td width="35%">${publicElectiveCategory}</td>
 	</tr>
 	<tr>
@@ -167,29 +167,29 @@ export const ListRoute: React.FC = () => {
 	<tr>
 		<td>考试类型</td>
 		<td>${examType}</td>
-		<td>课程号</td>
+		<td>课程�?/td>
 		<td>${courseId}</td>
 	</tr>
 	<tr>
-		<td>课程名</td>
+		<td>课程�?/td>
 		<td>${name}</td>
-		<td>英文课程名</td>
+		<td>英文课程�?/td>
 		<td>${englishName}</td>
 	</tr>
 	<tr>
-		<td>大纲填写人姓名</td>
+		<td>大纲填写人姓�?/td>
 		<td>${writerName}</td>
 		<td>课程类别</td>
 		<td>${courseCategory}</td>
 	</tr>
 	<tr>
-		<td>课程状态</td>
+		<td>课程状�?/td>
 		<td>${courseStatus}</td>
-		<td>课程负责人姓名</td>
+		<td>课程负责人姓�?/td>
 		<td>${responsible}</td>
 	</tr>
 	<tr>
-		<td>跨学期课程</td>
+		<td>跨学期课�?/td>
 		<td colspan="3">${crossSemester}</td>
 	</tr>
 </table>
@@ -200,11 +200,11 @@ export const ListRoute: React.FC = () => {
 	<tr>
 		<td width="15%">学分</td>
 		<td width="35%">${credits}</td>
-		<td width="15%">总学时</td>
+		<td width="15%">总学�?/td>
 		<td width="35%">${totalHours}</td>
 	</tr>
 	<tr>
-		<td>周学时</td>
+		<td>周学�?/td>
 		<td>${weeklyHours}</td>
 		<td>实验学时</td>
 		<td>${experimentHours}</td>
@@ -225,7 +225,7 @@ export const ListRoute: React.FC = () => {
 
 <table>
 	<tr>
-		<td width="15%">是否全英文授课</td>
+		<td width="15%">是否全英文授�?/td>
 		<td width="35%">${isEnglish}</td>
 		<td width="15%">是否双语授课</td>
 		<td width="35%">${isBilingual}</td>
@@ -243,7 +243,7 @@ export const ListRoute: React.FC = () => {
 		<td colspan="3">${alignmentGoals}</td>
 	</tr>
 	<tr>
-		<td>课程简介</td>
+		<td>课程简�?/td>
 		<td colspan="3">${intro}</td>
 	</tr>
 	<tr>
@@ -251,7 +251,7 @@ export const ListRoute: React.FC = () => {
 		<td colspan="3">${textbooks}</td>
 	</tr>
 	<tr>
-		<td>参考资料</td>
+		<td>参考资�?/td>
 		<td colspan="3">${references}</td>
 	</tr>
 	<tr>
@@ -545,21 +545,21 @@ export const DetailRoute: React.FC = () => {
 
 | 项目 | 内容 | 项目 | 内容 |
 | :--- | :--- | :--- | :--- |
-| **开课单位** | ${unit} | **通识公选类别** | ${publicElectiveCategory} |
+| **开课单�?* | ${unit} | **通识公选类�?* | ${publicElectiveCategory} |
 | **通修课程类别** | ${generalEducationCategory} | **院内课程分类** | ${collegeCourseCategory} |
 | **课程层次** | ${courseLevel} | **理论/实践** | ${theoryPracticeType} |
-| **考试类型** | ${examType} | **课程号** | ${courseId} |
-| **课程名** | ${name} | **英文课程名** | ${englishName} |
-| **大纲填写人姓名** | ${writerName} | **课程类别** | ${courseCategory} |
-| **课程状态** | ${courseStatus} | **课程负责人姓名** | ${responsible} |
-| **跨学期课程** | ${crossSemester} | | |
+| **考试类型** | ${examType} | **课程�?* | ${courseId} |
+| **课程�?* | ${name} | **英文课程�?* | ${englishName} |
+| **大纲填写人姓�?* | ${writerName} | **课程类别** | ${courseCategory} |
+| **课程状�?* | ${courseStatus} | **课程负责人姓�?* | ${responsible} |
+| **跨学期课�?* | ${crossSemester} | | |
 
 ## 课程学时信息
 
 | 项目 | 内容 | 项目 | 内容 |
 | :--- | :--- | :--- | :--- |
-| **学分** | ${credits} | **总学时** | ${totalHours} |
-| **周学时** | ${weeklyHours} | **实验学时** | ${experimentHours} |
+| **学分** | ${credits} | **总学�?* | ${totalHours} |
+| **周学�?* | ${weeklyHours} | **实验学时** | ${experimentHours} |
 | **实践学时** | ${practiceHours} | **理论学时** | ${theoryHours} |
 | **集中实践周数** | ${intensiveWeeks} | | |
 
@@ -567,7 +567,7 @@ export const DetailRoute: React.FC = () => {
 
 <table>
 	<tr>
-		<td width="15%"><strong>是否全英文授课</strong></td>
+		<td width="15%"><strong>是否全英文授�?/strong></td>
 		<td width="35%">${isEnglish}</td>
 		<td width="15%"><strong>是否双语授课</strong></td>
 		<td width="35%">${isBilingual}</td>
@@ -585,7 +585,7 @@ export const DetailRoute: React.FC = () => {
 		<td colspan="3">${alignmentGoals}</td>
 	</tr>
 	<tr>
-		<td><strong>课程简介</strong></td>
+		<td><strong>课程简�?/strong></td>
 		<td colspan="3">${intro}</td>
 	</tr>
 	<tr>
@@ -593,7 +593,7 @@ export const DetailRoute: React.FC = () => {
 		<td colspan="3">${textbooks}</td>
 	</tr>
 	<tr>
-		<td><strong>参考资料</strong></td>
+		<td><strong>参考资�?/strong></td>
 		<td colspan="3">${references}</td>
 	</tr>
 	<tr>

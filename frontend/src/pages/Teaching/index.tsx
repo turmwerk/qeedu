@@ -1,13 +1,13 @@
 import React from "react";
 import { FormOutlined, BookOutlined } from "@ant-design/icons";
-import ModuleHub from "@/components/ModuleHub";
+import ModuleHub from "@/feature/ModuleHub";
 
 const TeachingHub: React.FC = () => {
   return (
     <ModuleHub
       headline="助教模块可以帮你更高效备课与出题"
       subtitle="试卷设计 · 大纲生成 · 作业批改"
-      features={[ 
+      features={[
         {
           key: "exam-design",
           title: "试卷设计",

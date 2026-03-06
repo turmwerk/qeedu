@@ -1,5 +1,5 @@
 import React from "react";
-import type { FormField } from "@/components/Form";
+import type { FormField } from "@/ui/Form";
 
 export type DifficultyValue = {
   easy: number;

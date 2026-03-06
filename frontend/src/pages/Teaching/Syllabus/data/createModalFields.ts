@@ -1,4 +1,4 @@
-import type { FormField } from "@/components/Form";
+import type { FormField } from "@/ui/Form";
 
 export const syllabusCreateFields: FormField[] = [
   {

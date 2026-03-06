@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Form from "@/components/Form";
-import { showToast } from "@/components/Toast";
-import type { FormField } from "@/components/Form";
-import Tabs from "../components/Tabs";
-import buildFields from "../components/FieldsForm";
-import createNavAgreeFields from "../components/NavAgree";
-import AuthPanelActions from "../components/AuthPanelActions";
+import Form from "@/ui/Form";
+import { showToast } from "@/ui/Toast";
+import type { FormField } from "@/ui/Form";
+import Tabs from "../Tabs";
+import buildFields from "../FieldsForm";
+import createNavAgreeFields from "../NavAgree";
+import AuthPanelActions from "../AuthPanelActions";
 
 
 
@@ -60,7 +60,7 @@ export default function Login() {
     navigate("/");
   };
 
-  // 两种表单会通过共享 builder 生成（下方 buildFields）
+  // 两种表单通过共享 builder 生成
   const primaryButtonClass =
     "w-full h-[56px] flex items-center justify-center gap-1.5 text-[18px] font-extrabold rounded-xl bg-[var(--brand-blue)] text-white border-0 shadow-[var(--brand-shadow)] transition-[background,border-color,box-shadow,transform] hover:bg-[var(--brand-purple)] hover:shadow-[var(--brand-shadow)] active:scale-95";
   

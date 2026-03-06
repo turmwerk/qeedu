@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
-import Footer from "@/layouts/MainLayout/components/Footer";
-import SnowLayer from "@/components/SnowLayer";
-import StarsLayer from "@/components/StarsLayer";
-import { getStoredTheme } from "@/utils/theme";
+import Footer from "@/layouts/MainLayout/Footer";
+import SnowLayer from "@/ui/SnowLayer";
+import StarsLayer from "@/ui/StarsLayer";
+import { getStoredTheme } from "@/utils/theme/controller";
 const AuthLayout: React.FC = () => {
   const location = useLocation();
   const isDark = getStoredTheme() === 'dark';
@@ -19,12 +19,12 @@ const AuthLayout: React.FC = () => {
     >
       {/* Auth 页面主题样式 */}
       <style>{`
-        /* Auth layout 背景 – reuses app-root gradient variable */
+        /* Auth layout 背景 �?reuses app-root gradient variable */
         .auth-layout {
           background: var(--app-root-bg) !important;
           background-color: var(--app-root-bg-color) !important;
         }
-        /* Auth 面板 – 毛玻璃 */
+        /* Auth 面板 �?毛玻�?*/
         .auth-panel {
           background: var(--auth-panel-bg) !important;
           border: 0 none transparent !important;
@@ -44,11 +44,11 @@ const AuthLayout: React.FC = () => {
         .auth-panel button[type="submit"]:disabled {
           opacity: 0.7;
         }
-        /* Tab 下划线 */
+        /* Tab 下划�?*/
         .auth-panel .tab-underline {
           background-color: var(--brand-accent) !important;
         }
-        /* Auth 输入框：autofill 保持圆角与背景一致 */
+        /* Auth 输入框：autofill 保持圆角与背景一�?*/
         .auth-panel .auth-field-input {
           border-radius: inherit;
         }

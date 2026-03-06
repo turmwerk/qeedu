@@ -1,5 +1,5 @@
 import React from "react";
-import ListModal from "../components/ListModal";
+import ListModal from "../ListModal";
 
 type Outline = {
   id: string;

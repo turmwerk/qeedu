@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Form from "@/components/Form";
-import { showToast } from "@/components/Toast";
-import type { FormField } from "@/components/Form";
-import buildFields from "../components/FieldsForm";
-import createNavAgreeFields from "../components/NavAgree";
-import AuthPanelActions from "../components/AuthPanelActions";
+import Form from "@/ui/Form";
+import { showToast } from "@/ui/Toast";
+import type { FormField } from "@/ui/Form";
+import buildFields from "../FieldsForm";
+import createNavAgreeFields from "../NavAgree";
+import AuthPanelActions from "../AuthPanelActions";
 
 
 

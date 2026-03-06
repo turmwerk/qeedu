@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ListPage from "./ListPage";
 import DetailPage from "./DetailPage";
-import Dialog from "@/components/Dialog";
+import Dialog from "@/feature/ChatDialog";
 
 type Question = {
   id: string;

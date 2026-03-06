@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import SplitSiderLayout from "@/layouts/SplitSiderLayout";
-import FullScreenMarkdownCanvas from "@/components/FullScreenMarkdownCanvas";
-import { AssistantPanel, Header, MarkdownPanel } from "./components";
+import FullScreenMarkdownCanvas from "@/feature/FullScreenMarkdownCanvas";
+import AssistantPanel from "./AssistantPanel";
+import Header from "./Header";
+import MarkdownPanel from "./MarkdownPanel";
 
 const DetailPage: React.FC<{
   md: string;

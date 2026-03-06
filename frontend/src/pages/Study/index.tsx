@@ -1,13 +1,13 @@
 import React from "react";
 import { CodeOutlined } from "@ant-design/icons";
-import ModuleHub from "@/components/ModuleHub";
+import ModuleHub from "@/feature/ModuleHub";
 
 const StudyHub: React.FC = () => {
   return (
     <ModuleHub
       headline="助学模块可以帮你更高效学习与答疑"
       subtitle="自学导航 · 练习计划 · 随问随答"
-      features={[ 
+      features={[
         {
           key: "code-tutor",
           title: "编程辅导",

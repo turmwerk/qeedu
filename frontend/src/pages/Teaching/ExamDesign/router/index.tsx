@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import Dialog from "@/components/Dialog";
+import Dialog from "@/feature/ChatDialog";
 import ListPage from "../ListPage";
 import DetailPage from "../DetailPage";
-import CreateModal from "../components/CreateModal";
+import CreateModal from "../CreateModal";
 
 type Question = {
 	id: string;

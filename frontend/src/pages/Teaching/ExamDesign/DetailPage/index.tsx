@@ -1,15 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useState, type DragEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import ConfirmDialog from "@/components/ConfirmDialog";
+import ConfirmDialog from "@/ui/ConfirmDialog";
 import SplitSiderLayout from "@/layouts/SplitSiderLayout";
-import ToastContainer from "@/components/Toast";
-import {
-  Header,
-  InsertQuestionModal,
-  PreviewModal,
-  QuestionList,
-  RightPanel,
-} from "./components";
+import ToastContainer from "@/ui/Toast";
+import Header from "./Header";
+import InsertQuestionModal from "./InsertQuestionModal";
+import PreviewModal from "./PreviewModal";
+import QuestionList from "./QuestionList";
+import RightPanel from "./RightPanel";
 import type { Question } from "./types";
 
 const DetailPage: React.FC<{

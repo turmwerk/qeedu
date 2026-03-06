@@ -1,15 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Layout } from "antd";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import Header from "./components/Header";
-import Sider from "./components/Sider";
-import Footer from "./components/Footer";
-import FloatActions from "./components/FloatActions";
-import SyllabusListModal from "@/pages/Teaching/Syllabus/components/ListModal";
-import ExamListModal from "@/pages/Teaching/ExamDesign/components/ListModal";
-import { getStoredTheme, applyTheme } from "@/utils/theme";
-import SnowLayer from "@/components/SnowLayer";
-import StarsLayer from "@/components/StarsLayer";
+import Header from "./Header";
+import Sider from "./Sider";
+import Footer from "./Footer";
+import FloatActions from "./FloatActions";
+import SyllabusListModal from "@/pages/Teaching/Syllabus/ListModal";
+import ExamListModal from "@/pages/Teaching/ExamDesign/ListModal";
+import { getStoredTheme, applyTheme } from "@/utils/theme/controller";
+import SnowLayer from "@/ui/SnowLayer";
+import StarsLayer from "@/ui/StarsLayer";
 
 const { Content } = Layout;
 
@@ -43,7 +43,7 @@ const MainLayout: React.FC = () => {
   }, [theme]);
 
   useEffect(() => {
-    // 首次访问站点时引导至登录（仅一次，保存在 localStorage）
+    // 首次访问站点时引导至登录（仅一次，保存�?localStorage�?
     try {
       const visited = localStorage.getItem("site-has-visited");
       if (!visited) {
@@ -141,7 +141,7 @@ const MainLayout: React.FC = () => {
   // 只要路径包含 detail 视为 detail 页面
   const isDetailPage = /\/detail(\/|$)/.test(location.pathname);
   const isHomePage = location.pathname === "/";
-  // 侧边栏切换按钮逻辑：只在大纲/试卷详情页显示
+  // 侧边栏切换按钮逻辑：只在大�?试卷详情页显�?
   const isSyllabusDetail = location.pathname.startsWith("/teaching/syllabus") && location.pathname !== "/teaching/syllabus/ListPage";
   const isExamDetail = location.pathname.startsWith("/teaching/exam/detail");
 
@@ -170,7 +170,7 @@ const MainLayout: React.FC = () => {
           box-shadow: none !important;
         }
       `}</style>
-      {/* 全屏雪花特效：固定定位在最底层，pointer-events:none 不影响交互 */}
+      {/* 全屏雪花特效：固定定位在最底层，pointer-events:none 不影响交�?*/}
       <SnowLayer />
       {/* 深色主题独立星点背景（不连线，不跟鼠标交互） */}
       {theme === 'dark' && <StarsLayer />}
@@ -184,7 +184,7 @@ const MainLayout: React.FC = () => {
 
       {/* Header 下方：侧边栏 + 内容 */}
       <div className="flex flex-1 min-h-0 min-w-0 relative z-10 overflow-hidden">
-        {/* 左侧栏 */}
+        {/* 左侧�?*/}
         <Sider
           open={syllabusSiderOpen && isSyllabusDetail}
           onClose={() => setSyllabusSiderOpen(false)}

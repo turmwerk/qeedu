@@ -3,12 +3,11 @@ import { RouterProvider } from "react-router-dom";
 import { ConfigProvider } from "antd";
 import zhCN from "antd/locale/zh_CN";
 import router from "./router";
-import ToastContainer from "@/components/Toast";
+import ToastContainer from "@/ui/Toast";
 
 const App: React.FC = () => {
   React.useEffect(() => {
-    // 初始化主题（light/dark）
-    import("@/utils/theme").then(({ initTheme }) => initTheme());
+    import("@/utils/theme/controller").then(({ initTheme }) => initTheme());
   }, []);
 
   return (
@@ -16,7 +15,7 @@ const App: React.FC = () => {
       locale={zhCN}
       theme={{
         token: {
-          colorPrimary: "#6236FF", // 南大紫
+          colorPrimary: "#6236FF",
           borderRadius: 6,
           fontFamily: "var(--font-family-base)",
         },
@@ -45,7 +44,7 @@ const App: React.FC = () => {
         .app-root > div {
           animation: pageEnter 0.3s ease-out;
         }
-        /* Glass-morphism button – uses CSS variables from theme */
+        /* Glass-morphism button */
         .glass-btn {
           background: var(--glass-btn-bg) !important;
           border: 1px solid var(--glass-btn-border) !important;

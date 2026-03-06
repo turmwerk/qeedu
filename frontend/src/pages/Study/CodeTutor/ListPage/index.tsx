@@ -1,7 +1,7 @@
 import React from "react";
-import TutorialSection from "./components/TutorialSection";
-import ProjectList from "./components/ProjectList";
-import ResourceSection from "./components/ResourceSection";
+import TutorialSection from "./TutorialSection";
+import ProjectList from "./ProjectList";
+import ResourceSection from "./ResourceSection";
 
 const CodeTutorListPage: React.FC = () => {
   return (
