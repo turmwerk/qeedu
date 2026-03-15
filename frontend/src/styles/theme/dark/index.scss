@@ -38,10 +38,11 @@
   /* Auth panel */
   --auth-panel-bg: rgba(255, 255, 255, 0.11);
   --auth-panel-shadow: 0 12px 38px rgba(0, 0, 0, 0.52), inset 0 1px 0 rgba(255, 255, 255, 0.16), inset 0 -1px 0 rgba(255, 255, 255, 0.08);
-  --auth-submit-bg: var(--auth-btn-bg);
-  --auth-submit-text: var(--auth-btn-text);
-  --auth-submit-hover: var(--auth-btn-hover);
-  --auth-submit-shadow: 0 6px 16px rgba(30, 64, 175, 0.35);
+  --auth-submit-bg: var(--brand-blue);
+  --auth-submit-text: #ffffff;
+  --auth-submit-hover: var(--brand-purple);
+  --auth-submit-shadow: none;
+  --github-icon-fill: #000000;
   --auth-autofill-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.12) inset;
   --auth-autofill-text: #f8fafc;
 }

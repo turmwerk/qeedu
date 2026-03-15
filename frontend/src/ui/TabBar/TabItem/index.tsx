@@ -9,6 +9,7 @@ export interface TabItemProps {
   isActive?: boolean;
   onClick?: (id: string) => void;
   onClose?: (id: string) => void;
+  onContextMenu?: (id: string, event: React.MouseEvent) => void;
 }
 
 const TabItem: React.FC<TabItemProps> = ({
@@ -19,6 +20,7 @@ const TabItem: React.FC<TabItemProps> = ({
   isActive = false,
   onClick,
   onClose,
+  onContextMenu,
 }) => {
   return (
     <div
@@ -28,6 +30,10 @@ const TabItem: React.FC<TabItemProps> = ({
           : "bg-[#2d2d2d] text-[#9d9d9d] hover:bg-[#333333] hover:text-[#cccccc]"
       }`}
       onClick={() => onClick?.(id)}
+      onContextMenu={(event) => {
+        event.preventDefault();
+        onContextMenu?.(id, event);
+      }}
     >
       {icon && <span className="shrink-0 text-sm">{icon}</span>}
       <span className="max-w-[120px] truncate">{label}</span>

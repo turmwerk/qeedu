@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package user.v1;
+
+option go_package = "github.com/dieWehmut/nju-edu-ai-system/backend/proto/user/v1;userv1";
+
+service UserService {
+  rpc FindOrCreateOAuthUser(FindOrCreateOAuthUserRequest) returns (FindOrCreateOAuthUserResponse);
+  rpc GetUserByID(GetUserByIDRequest) returns (GetUserByIDResponse);
+  rpc GetUserByEmail(GetUserByEmailRequest) returns (GetUserByEmailResponse);
+}
+
+message OAuthProfile {
+  string provider    = 1;
+  string provider_id = 2;
+  string name        = 3;
+  string email       = 4;
+  string avatar_url  = 5;
+}
+
+message User {
+  uint64 id          = 1;
+  string provider    = 2;
+  string provider_id = 3;
+  string name        = 4;
+  string email       = 5;
+  string avatar_url  = 6;
+  int64  created_at  = 7;
+  int64  updated_at  = 8;
+}
+
+message FindOrCreateOAuthUserRequest {
+  OAuthProfile profile = 1;
+}
+
+message FindOrCreateOAuthUserResponse {
+  User user = 1;
+}
+
+message GetUserByIDRequest {
+  uint64 id = 1;
+}
+
+message GetUserByIDResponse {
+  User user = 1;
+}
+
+message GetUserByEmailRequest {
+  string email = 1;
+}
+
+message GetUserByEmailResponse {
+  User user = 1;
+}

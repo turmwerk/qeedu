@@ -21,6 +21,7 @@ import Dropdown from "@/ui/Dropdown";
 import Button from "@/ui/Button";
 import SearchModal from "@/layouts/MainLayout/SearchModal";
 import { getStoredTheme, toggleTheme } from "@/utils/theme/controller";
+import { useAuth } from "@/hooks/useAuth";
 
 const { Header } = Layout;
 
@@ -63,6 +64,7 @@ const MainHeader: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const navStackRef = useRef<string[]>([]);
+  const { isAuthenticated, user, logout } = useAuth();
   const isHomePage = location.pathname === "/";
   const isStudy = location.pathname.startsWith("/study");
   const isTeaching = location.pathname.startsWith("/teaching");
@@ -320,13 +322,35 @@ const MainHeader: React.FC = () => {
           />
         </div>
 
+        {isAuthenticated ? (
+          <Dropdown
+            active={false}
+            button={
+              <span className="inline-flex items-center gap-1.5">
+                <UserOutlined />
+                <span>{user?.name || "用户"}</span>
+              </span>
+            }
+            buttonClassName={`${menuButtonBase} ${menuButtonIdle} hidden sm:inline-flex`}
+            items={[
+              {
+                label: "退出登录",
+                active: false,
+                onClick: logout,
+              },
+            ]}
+            showBorder={false}
+            portalToBody={true}
+          />
+        ) : null}
+
         <Button
-          className={`${menuButtonBase} ${menuButtonUnderline} ${menuButtonIdle}`}
-          onClick={() => navigate("/login")}
+          className={`${menuButtonBase} ${menuButtonUnderline} ${menuButtonIdle} ${isAuthenticated ? "sm:!hidden" : ""}`}
+          onClick={() => (isAuthenticated ? logout() : navigate("/login"))}
           data-oid="login-button"
         >
           <UserOutlined />
-          <span className="hidden sm:inline">登录</span>
+          <span className="hidden sm:inline">{isAuthenticated ? "退出" : "登录"}</span>
         </Button>
       </div>
     </Header>

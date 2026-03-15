@@ -39,15 +39,15 @@ export function buildFields(kind: "login-password" | "login-sms" | "register" | 
     const fields: FormField[] = [
       {
         name: "account",
-        label: "用户名/邮箱/手机号",
-        placeholder: "用户名、邮箱或手机号",
+        label: "用户名/邮箱",
+        placeholder: "用户名、邮箱",
         render: (value, onChange) => (
           <div className="group w-full flex items-stretch box-border border border-[var(--brand-blue)] hover:border-[var(--brand-purple)] focus-within:border-[var(--brand-purple)] transition-colors bg-white overflow-hidden relative rounded-2xl">
             <div className="absolute left-0 top-0 w-[56px] h-[56px] flex items-center justify-center text-[var(--brand-muted)] pointer-events-none">
               <IdIcon />
             </div>
-            {renderFloatingLabel("用户名/邮箱/手机号", value)}
-            <input className="auth-field-input w-full h-[56px] pl-[56px] pr-4 box-border border-0 bg-transparent text-[16px] outline-none rounded-2xl appearance-none placeholder:text-black focus:placeholder-transparent" id="login-account" name="account" value={value} onChange={(e) => onChange(e.target.value)} placeholder="用户名、邮箱或手机号" />
+            {renderFloatingLabel("用户名/邮箱", value)}
+            <input className="auth-field-input w-full h-[56px] pl-[56px] pr-4 box-border border-0 bg-transparent text-[16px] outline-none rounded-2xl appearance-none placeholder:text-black focus:placeholder-transparent" id="login-account" name="account" value={value} onChange={(e) => onChange(e.target.value)} placeholder="用户名、邮箱" />
           </div>
         ),
       },
@@ -78,15 +78,15 @@ export function buildFields(kind: "login-password" | "login-sms" | "register" | 
     const fields: FormField[] = [
       {
         name: "phone",
-        label: "手机号/邮箱",
-        placeholder: "手机号或邮箱",
+        label: "邮箱",
+        placeholder: "邮箱",
         render: (value, onChange) => (
           <div className="group w-full flex items-stretch box-border border border-[var(--brand-blue)] hover:border-[var(--brand-purple)] focus-within:border-[var(--brand-purple)] transition-colors bg-white overflow-hidden relative rounded-2xl">
             <div className="absolute left-0 top-0 w-[56px] h-[56px] flex items-center justify-center text-[var(--brand-muted)] pointer-events-none">
               <IdIcon />
             </div>
-            {renderFloatingLabel("手机号/邮箱", value)}
-            <input className="auth-field-input w-full h-[56px] pl-[56px] pr-4 box-border border-0 bg-transparent text-[16px] outline-none rounded-2xl appearance-none placeholder:text-black focus:placeholder-transparent" id="login-phone" name="phone" value={value} onChange={(e) => onChange(e.target.value)} placeholder="手机号或邮箱" inputMode="tel" />
+            {renderFloatingLabel("  邮箱", value)}
+            <input className="auth-field-input w-full h-[56px] pl-[56px] pr-4 box-border border-0 bg-transparent text-[16px] outline-none rounded-2xl appearance-none placeholder:text-black focus:placeholder-transparent" id="login-phone" name="phone" value={value} onChange={(e) => onChange(e.target.value)} placeholder="邮箱" inputMode="tel" />
           </div>
         ),
       },
@@ -120,15 +120,15 @@ export function buildFields(kind: "login-password" | "login-sms" | "register" | 
     const fields: FormField[] = [
       {
         name: idName,
-        label: "邮箱/手机号",
-        placeholder: "邮箱或手机号",
+        label: "邮箱",
+        placeholder: "邮箱",
         render: (value, onChange) => (
           <div className="group w-full flex items-stretch box-border border border-[var(--brand-blue)] bg-white overflow-hidden relative rounded-2xl">
             <div className="absolute left-0 top-0 w-[56px] h-[56px] flex items-center justify-center text-[var(--brand-muted)] pointer-events-none">
               <IdIcon />
             </div>
-            {renderFloatingLabel("邮箱/手机号", value)}
-            <input className="auth-field-input w-full h-[56px] pl-[56px] pr-4 box-border border-0 bg-transparent text-[16px] outline-none rounded-2xl appearance-none placeholder:text-black focus:placeholder-transparent" id={`${kind}-${idName}`} name={idName} value={value} onChange={(e) => onChange(e.target.value)} placeholder="邮箱或手机号" />
+            {renderFloatingLabel("邮箱", value)}
+            <input className="auth-field-input w-full h-[56px] pl-[56px] pr-4 box-border border-0 bg-transparent text-[16px] outline-none rounded-2xl appearance-none placeholder:text-black focus:placeholder-transparent" id={`${kind}-${idName}`} name={idName} value={value} onChange={(e) => onChange(e.target.value)} placeholder="邮箱" />
           </div>
         ),
       },

@@ -10,6 +10,7 @@ export interface TabBarProps {
   activeId?: string;
   onTabClick?: (id: string) => void;
   onTabClose?: (id: string) => void;
+  onTabContextMenu?: (id: string, event: React.MouseEvent) => void;
   /** 右侧工具按钮列表 */
   tools?: ToolItemProps[];
   className?: string;
@@ -21,6 +22,7 @@ const TabBar: React.FC<TabBarProps> = ({
   activeId,
   onTabClick,
   onTabClose,
+  onTabContextMenu,
   tools = [],
   className = "",
   height = "h-9",
@@ -46,6 +48,7 @@ const TabBar: React.FC<TabBarProps> = ({
             isActive={tab.id === activeId}
             onClick={onTabClick}
             onClose={onTabClose}
+            onContextMenu={onTabContextMenu}
           />
         ))}
       </div>

@@ -8,6 +8,7 @@ import EditorArea from "./EditorArea";
 import AssistantPanel from "./AssistantPanel";
 import TerminalPanel from "./TerminalPanel";
 import BottomBar from "./BottomBar";
+import { ContextMenuProvider } from "@/ui/ContextMenu";
 
 const ProjectPageInner: React.FC = () => {
   const [terminalHeight, setTerminalHeight] = useState(180);
@@ -66,7 +67,9 @@ const ProjectPage: React.FC = () => {
 
   return (
     <WorkspaceProvider projectName={projectName}>
-      <ProjectPageInner />
+      <ContextMenuProvider>
+        <ProjectPageInner />
+      </ContextMenuProvider>
     </WorkspaceProvider>
   );
 };

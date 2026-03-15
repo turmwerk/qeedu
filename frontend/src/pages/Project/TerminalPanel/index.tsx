@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import {
-  CloseOutlined,
-  MinusOutlined,
-  PlusOutlined,
-} from "@ant-design/icons";
+import { CloseOutlined, MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import TabBar from "@/ui/TabBar";
+import { useContextMenu, type ContextMenuItem } from "@/ui/ContextMenu";
+import TerminalView from "./Views/TerminalView";
+import OutputView from "./Views/OutputView";
+import ProblemsView from "./Views/ProblemsView";
+import ConsoleView from "./Views/ConsoleView";
 
 interface TerminalPanelProps {
   height: number;
@@ -15,6 +16,13 @@ interface TerminalPanelProps {
 const MIN_HEIGHT = 80;
 const MAX_HEIGHT = 600;
 
+const panelTabs = [
+  { id: "terminal", label: "TERMINAL" },
+  { id: "output", label: "OUTPUT" },
+  { id: "problems", label: "PROBLEMS" },
+  { id: "console", label: "DEBUG CONSOLE" },
+];
+
 const TerminalPanel: React.FC<TerminalPanelProps> = ({
   height,
   onHeightChange,
@@ -23,11 +31,9 @@ const TerminalPanel: React.FC<TerminalPanelProps> = ({
   const isDragging = useRef(false);
   const startY = useRef(0);
   const startH = useRef(0);
-  const [lines] = useState([
-    "$ python3 src/main.py",
-    "Hello, Code Tutor!",
-    "$ ",
-  ]);
+  const [activePanelId, setActivePanelId] = useState("terminal");
+  const [createSignal, setCreateSignal] = useState(0);
+  const { openAtEvent } = useContextMenu();
 
   const onMouseDown = useCallback(
     (e: React.MouseEvent) => {
@@ -57,39 +63,53 @@ const TerminalPanel: React.FC<TerminalPanelProps> = ({
     };
   }, [onHeightChange]);
 
+  const handlePanelContextMenu = (id: string, event: React.MouseEvent) => {
+    void id;
+    const items: ContextMenuItem[] = [
+      { label: "Hide Panel", onClick: onClose },
+      { type: "separator" },
+      ...panelTabs.map((tab) => ({
+        label: tab.label,
+        checked: tab.id === activePanelId,
+        onClick: () => setActivePanelId(tab.id),
+      })),
+    ];
+    openAtEvent(event, items);
+  };
+
+  const handleCreateTerminal = () => {
+    setActivePanelId("terminal");
+    setCreateSignal((prev) => prev + 1);
+  };
+
   return (
     <div
       className="flex flex-col border-t border-[#3c3c3c] bg-[#1e1e1e]"
       style={{ height }}
     >
-      {/* 可拖拽把手 */}
       <div
         className="h-1 w-full cursor-row-resize bg-transparent hover:bg-[#007acc]/40"
         onMouseDown={onMouseDown}
       />
       <TabBar
         height="h-8"
-        tabs={[{ id: "terminal", label: "TERMINAL" }, { id: "output", label: "OUTPUT" }]}
-        activeId="terminal"
+        tabs={panelTabs}
+        activeId={activePanelId}
+        onTabClick={setActivePanelId}
+        onTabContextMenu={handlePanelContextMenu}
         tools={[
-          { icon: <PlusOutlined />, title: "新建终端" },
-          { icon: <MinusOutlined />, title: "最小化" },
-          { icon: <CloseOutlined />, title: "关闭终端", onClick: onClose },
+          { icon: <PlusOutlined />, title: "New Terminal", onClick: handleCreateTerminal },
+          { icon: <MinusOutlined />, title: "Minimize", onClick: () => onHeightChange(MIN_HEIGHT) },
+          { icon: <CloseOutlined />, title: "Close Panel", onClick: onClose },
         ]}
       />
-      <div className="flex-1 overflow-y-auto px-3 py-2 font-mono text-xs text-[#cccccc]">
-        {lines.map((line, i) => (
-          <div key={i} className="leading-5">
-            {line.startsWith("$") ? (
-              <span>
-                <span className="text-[#4ec9b0]">$</span>
-                <span>{line.slice(1)}</span>
-              </span>
-            ) : (
-              <span className="text-[#9cdcfe]">{line}</span>
-            )}
-          </div>
-        ))}
+      <div className="min-h-0 flex-1 overflow-hidden">
+        {activePanelId === "terminal" && (
+          <TerminalView createSignal={createSignal} />
+        )}
+        {activePanelId === "output" && <OutputView />}
+        {activePanelId === "problems" && <ProblemsView />}
+        {activePanelId === "console" && <ConsoleView />}
       </div>
     </div>
   );
