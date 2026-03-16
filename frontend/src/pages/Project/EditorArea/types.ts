@@ -26,6 +26,8 @@ export interface TabItem {
 
 /** 文件树节点 */
 export interface FileTreeNode {
+  /** 树节点唯一 id（默认与 path 一致） */
+  id: string;
   name: string;
   path: string;
   type: "file" | "directory";

@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import MonacoEditor from "@/feature/CodeEditor/MonacoEditor";
-import CodeSnippet from "@/feature/CodeEditor/CodeSnippet";
+import CodeSnippet from "@/feature/CodeEditor/CodeHighlight";
 
 export type CodeEditorVariant = "editor" | "snippet";
 

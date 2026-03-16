@@ -24,3 +24,4 @@ requirements.txt
 *.njsproj
 *.sln
 *.sw?
+*.exe

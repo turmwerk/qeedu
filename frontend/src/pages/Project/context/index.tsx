@@ -1,13 +1,27 @@
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import React, { useEffect } from "react";
+import { create } from "zustand";
 import { type FileTreeNode, type TabItem } from "../EditorArea/types";
 import { buildMockFileTree } from "../data/mockFileTree";
 import { inferViewType } from "../utils/workspace";
 
-interface WorkspaceContextValue {
+interface RunOutput {
+  stdout: string;
+  stderr: string;
+  exitCode: number;
+  executionMs: number;
+  error: string;
+  timestamp: number;
+}
+
+interface WorkspaceState {
   projectName: string;
   fileTree: FileTreeNode;
   tabs: TabItem[];
   activeTabId: string | null;
+  runOutput: RunOutput | null;
+  quickOpenOpen: boolean;
+  setQuickOpenOpen: (open: boolean) => void;
+  setRunOutput: (output: RunOutput | null) => void;
   openFileTab: (node: FileTreeNode) => void;
   closeTab: (id: string) => void;
   closeOtherTabs: (id: string) => void;
@@ -16,14 +30,15 @@ interface WorkspaceContextValue {
   closeAllTabs: () => void;
   setActiveTabId: (id: string | null) => void;
   updateTabContent: (id: string, content: string) => void;
+  saveActiveTab: () => void;
   addFile: (parentPath: string, name: string, open?: boolean) => FileTreeNode | null;
   addFolder: (parentPath: string, name: string) => FileTreeNode | null;
   renameNode: (targetPath: string, newName: string) => void;
   deleteNode: (targetPath: string) => void;
+  moveNode: (sourcePath: string, targetPath: string) => void;
   refreshFileTree: () => void;
+  loadFileTree: (nextTree: FileTreeNode) => void;
 }
-
-const WorkspaceContext = createContext<WorkspaceContextValue | null>(null);
 
 const getParentPath = (path: string): string => {
   if (path === "/") return "/";
@@ -112,6 +127,7 @@ const updatePaths = (
   const children = node.children?.map((child) => updatePaths(child, nextPath));
   return {
     ...node,
+    id: nextPath,
     name: nextName,
     path: nextPath,
     children,
@@ -119,259 +135,252 @@ const updatePaths = (
   };
 };
 
-export const WorkspaceProvider: React.FC<{
-  projectName: string;
-  children: React.ReactNode;
-}> = ({ projectName, children }) => {
-  const [fileTree, setFileTree] = useState<FileTreeNode>(() =>
-    buildMockFileTree(projectName),
-  );
-  const [tabs, setTabs] = useState<TabItem[]>([]);
-  const [activeTabId, setActiveTabId] = useState<string | null>(null);
-
-  useEffect(() => {
-    setFileTree(buildMockFileTree(projectName));
-  }, [projectName]);
-
-  const openFileTab = useCallback((node: FileTreeNode) => {
+export const useWorkspace = create<WorkspaceState>((set, get) => ({
+  projectName: "",
+  fileTree: buildMockFileTree(""),
+  tabs: [],
+  activeTabId: null,
+  runOutput: null,
+  quickOpenOpen: false,
+  setQuickOpenOpen: (open) => set({ quickOpenOpen: open }),
+  setRunOutput: (output) => set({ runOutput: output }),
+  openFileTab: (node) => {
     if (node.type === "directory") return;
-    setTabs((prev) => {
-      if (prev.find((t) => t.id === node.path)) return prev;
-      return [
-        ...prev,
-        {
-          id: node.path,
-          title: node.name,
-          type: inferViewType(node),
-          isDirty: false,
-          content: node.content ?? "",
-          language: node.language ?? "plaintext",
-        },
-      ];
-    });
-    setActiveTabId(node.path);
-  }, []);
-
-  const closeTab = useCallback(
-    (id: string) => {
-      setTabs((prev) => {
-        const idx = prev.findIndex((t) => t.id === id);
-        const next = prev.filter((t) => t.id !== id);
-        if (activeTabId === id) {
-          const newActive = next[Math.min(idx, next.length - 1)]?.id ?? null;
-          setActiveTabId(newActive);
-        }
-        return next;
-      });
-    },
-    [activeTabId],
-  );
-
-  const closeOtherTabs = useCallback((id: string) => {
-    setTabs((prev) => prev.filter((t) => t.id === id));
-    setActiveTabId(id);
-  }, []);
-
-  const closeTabsToRight = useCallback(
-    (id: string) => {
-      setTabs((prev) => {
-        const idx = prev.findIndex((t) => t.id === id);
-        if (idx === -1) return prev;
-        const next = prev.slice(0, idx + 1);
-        if (!next.find((t) => t.id === activeTabId)) {
-          setActiveTabId(next[next.length - 1]?.id ?? null);
-        }
-        return next;
-      });
-    },
-    [activeTabId],
-  );
-
-  const closeSavedTabs = useCallback(() => {
-    setTabs((prev) => {
-      const next = prev.filter((t) => t.isDirty);
-      if (!next.find((t) => t.id === activeTabId)) {
-        setActiveTabId(next[next.length - 1]?.id ?? null);
+    set((state) => {
+      if (state.tabs.find((t) => t.id === node.path)) {
+        return { activeTabId: node.path };
       }
-      return next;
+      return {
+        tabs: [
+          ...state.tabs,
+          {
+            id: node.path,
+            title: node.name,
+            type: inferViewType(node),
+            isDirty: false,
+            content: node.content ?? "",
+            language: node.language ?? "plaintext",
+          },
+        ],
+        activeTabId: node.path,
+      };
     });
-  }, [activeTabId]);
-
-  const closeAllTabs = useCallback(() => {
-    setTabs([]);
-    setActiveTabId(null);
-  }, []);
-
-  const updateTabContent = useCallback((id: string, content: string) => {
-    setTabs((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, content, isDirty: true } : t)),
+  },
+  closeTab: (id) => {
+    set((state) => {
+      const idx = state.tabs.findIndex((t) => t.id === id);
+      const nextTabs = state.tabs.filter((t) => t.id !== id);
+      let nextActive = state.activeTabId;
+      if (state.activeTabId === id) {
+        nextActive = nextTabs[Math.min(idx, nextTabs.length - 1)]?.id ?? null;
+      }
+      return { tabs: nextTabs, activeTabId: nextActive };
+    });
+  },
+  closeOtherTabs: (id) => set({ tabs: get().tabs.filter((t) => t.id === id), activeTabId: id }),
+  closeTabsToRight: (id) => {
+    set((state) => {
+      const idx = state.tabs.findIndex((t) => t.id === id);
+      if (idx === -1) return {};
+      const nextTabs = state.tabs.slice(0, idx + 1);
+      let nextActive = state.activeTabId;
+      if (!nextTabs.find((t) => t.id === state.activeTabId)) {
+        nextActive = nextTabs[nextTabs.length - 1]?.id ?? null;
+      }
+      return { tabs: nextTabs, activeTabId: nextActive };
+    });
+  },
+  closeSavedTabs: () => {
+    set((state) => {
+      const nextTabs = state.tabs.filter((t) => t.isDirty);
+      let nextActive = state.activeTabId;
+      if (!nextTabs.find((t) => t.id === state.activeTabId)) {
+        nextActive = nextTabs[nextTabs.length - 1]?.id ?? null;
+      }
+      return { tabs: nextTabs, activeTabId: nextActive };
+    });
+  },
+  closeAllTabs: () => set({ tabs: [], activeTabId: null }),
+  setActiveTabId: (id) => set({ activeTabId: id }),
+  updateTabContent: (id, content) => {
+    set((state) => ({
+      tabs: state.tabs.map((t) => (t.id === id ? { ...t, content, isDirty: true } : t)),
+    }));
+  },
+  saveActiveTab: () => {
+    const { activeTabId } = get();
+    if (!activeTabId) return;
+    set((state) => ({
+      tabs: state.tabs.map((t) => (t.id === activeTabId ? { ...t, isDirty: false } : t)),
+    }));
+  },
+  addFile: (parentPath, name, open = false) => {
+    if (!name.trim()) return null;
+    const { fileTree, openFileTab } = get();
+    const parent = findNodeByPath(fileTree, parentPath);
+    if (!parent || parent.type !== "directory") return null;
+    const uniqueName = ensureUniqueName(
+      name.trim(),
+      parent.children?.map((child) => child.name) ?? [],
     );
-  }, []);
+    const node: FileTreeNode = {
+      id: buildPath(parentPath, uniqueName),
+      name: uniqueName,
+      path: buildPath(parentPath, uniqueName),
+      type: "file",
+      language: inferLanguage(uniqueName),
+      content: "",
+    };
+    set((state) => ({ fileTree: insertNodeAtPath(state.fileTree, parentPath, node) }));
+    if (open) openFileTab(node);
+    return node;
+  },
+  addFolder: (parentPath, name) => {
+    if (!name.trim()) return null;
+    const { fileTree } = get();
+    const parent = findNodeByPath(fileTree, parentPath);
+    if (!parent || parent.type !== "directory") return null;
+    const uniqueName = ensureUniqueName(
+      name.trim(),
+      parent.children?.map((child) => child.name) ?? [],
+    );
+    const node: FileTreeNode = {
+      id: buildPath(parentPath, uniqueName),
+      name: uniqueName,
+      path: buildPath(parentPath, uniqueName),
+      type: "directory",
+      children: [],
+    };
+    set((state) => ({ fileTree: insertNodeAtPath(state.fileTree, parentPath, node) }));
+    return node;
+  },
+  renameNode: (targetPath, newName) => {
+    if (!newName.trim() || targetPath === "/") return;
+    const parentPath = getParentPath(targetPath);
+    const nextPath = buildPath(parentPath, newName.trim());
 
-  const addFile = useCallback(
-    (parentPath: string, name: string, open = false): FileTreeNode | null => {
-      if (!name.trim()) return null;
-      const parent = findNodeByPath(fileTree, parentPath);
-      if (!parent || parent.type !== "directory") return null;
-      const uniqueName = ensureUniqueName(
-        name.trim(),
-        parent.children?.map((child) => child.name) ?? [],
-      );
-      const node: FileTreeNode = {
-        name: uniqueName,
-        path: buildPath(parentPath, uniqueName),
-        type: "file",
-        language: inferLanguage(uniqueName),
-        content: "",
+    set((state) => {
+      const renameRec = (node: FileTreeNode, parent: string): FileTreeNode => {
+        if (node.path === targetPath) {
+          return updatePaths(node, parent, newName.trim());
+        }
+        if (!node.children) return node;
+        const nextChildren = node.children.map((child) => renameRec(child, node.path));
+        const changed = nextChildren.some((child, idx) => child !== node.children?.[idx]);
+        return changed ? { ...node, children: nextChildren } : node;
       };
-      setFileTree((prev) => insertNodeAtPath(prev, parentPath, node));
-      if (open) openFileTab(node);
-      return node;
-    },
-    [fileTree, openFileTab],
-  );
+      return { fileTree: renameRec(state.fileTree, "/") };
+    });
 
-  const addFolder = useCallback(
-    (parentPath: string, name: string): FileTreeNode | null => {
-      if (!name.trim()) return null;
-      const parent = findNodeByPath(fileTree, parentPath);
-      if (!parent || parent.type !== "directory") return null;
-      const uniqueName = ensureUniqueName(
-        name.trim(),
-        parent.children?.map((child) => child.name) ?? [],
-      );
-      const node: FileTreeNode = {
-        name: uniqueName,
-        path: buildPath(parentPath, uniqueName),
-        type: "directory",
-        children: [],
-      };
-      setFileTree((prev) => insertNodeAtPath(prev, parentPath, node));
-      return node;
-    },
-    [fileTree],
-  );
-
-  const renameNode = useCallback(
-    (targetPath: string, newName: string) => {
-      if (!newName.trim() || targetPath === "/") return;
-      const parentPath = getParentPath(targetPath);
-      const nextPath = buildPath(parentPath, newName.trim());
-
-      setFileTree((prev) => {
-        const renameRec = (node: FileTreeNode, parent: string): FileTreeNode => {
-          if (node.path === targetPath) {
-            return updatePaths(node, parent, newName.trim());
-          }
-          if (!node.children) return node;
-          const nextChildren = node.children.map((child) =>
-            renameRec(child, node.path),
-          );
-          const changed = nextChildren.some(
-            (child, idx) => child !== node.children?.[idx],
-          );
-          return changed ? { ...node, children: nextChildren } : node;
-        };
-        return renameRec(prev, "/");
-      });
-
-      setTabs((prev) =>
-        prev.map((tab) => {
-          if (tab.id === targetPath) {
-            return { ...tab, id: nextPath, title: newName.trim() };
-          }
-          if (tab.id.startsWith(`${targetPath}/`)) {
-            return { ...tab, id: `${nextPath}${tab.id.slice(targetPath.length)}` };
-          }
-          return tab;
-        }),
-      );
-
-      setActiveTabId((prev) => {
+    set((state) => ({
+      tabs: state.tabs.map((tab) => {
+        if (tab.id === targetPath) {
+          return { ...tab, id: nextPath, title: newName.trim() };
+        }
+        if (tab.id.startsWith(`${targetPath}/`)) {
+          return { ...tab, id: `${nextPath}${tab.id.slice(targetPath.length)}` };
+        }
+        return tab;
+      }),
+      activeTabId: (() => {
+        const prev = state.activeTabId;
         if (!prev) return prev;
         if (prev === targetPath) return nextPath;
         if (prev.startsWith(`${targetPath}/`)) {
           return `${nextPath}${prev.slice(targetPath.length)}`;
         }
         return prev;
-      });
-    },
-    [],
-  );
+      })(),
+    }));
+  },
+  deleteNode: (targetPath) => {
+    if (targetPath === "/") return;
+    set((state) => {
+      const nextTabs = state.tabs.filter(
+        (tab) => tab.id !== targetPath && !tab.id.startsWith(`${targetPath}/`),
+      );
+      let nextActive = state.activeTabId;
+      if (!nextTabs.find((tab) => tab.id === state.activeTabId)) {
+        nextActive = nextTabs[nextTabs.length - 1]?.id ?? null;
+      }
+      return {
+        fileTree: removeNodeAtPath(state.fileTree, targetPath),
+        tabs: nextTabs,
+        activeTabId: nextActive,
+      };
+    });
+  },
+  moveNode: (sourcePath, targetPath) => {
+    if (!sourcePath || sourcePath === "/" || sourcePath === targetPath) return;
+    const { fileTree } = get();
+    const source = findNodeByPath(fileTree, sourcePath);
+    const target = findNodeByPath(fileTree, targetPath);
+    if (!source || !target || target.type !== "directory") return;
+    if (source.type === "directory" && targetPath.startsWith(`${sourcePath}/`)) return;
+    const sourceParentPath = getParentPath(sourcePath);
+    if (sourceParentPath === targetPath) return;
 
-  const deleteNode = useCallback(
-    (targetPath: string) => {
-      if (targetPath === "/") return;
-      setFileTree((prev) => removeNodeAtPath(prev, targetPath));
-      setTabs((prev) => {
-        const next = prev.filter(
-          (tab) =>
-            tab.id !== targetPath && !tab.id.startsWith(`${targetPath}/`),
-        );
-        if (!next.find((tab) => tab.id === activeTabId)) {
-          setActiveTabId(next[next.length - 1]?.id ?? null);
+    const targetChildren = target.children ?? [];
+    const nextName = ensureUniqueName(
+      source.name,
+      targetChildren.map((child) => child.name),
+    );
+    const nextPath = buildPath(targetPath, nextName);
+    const movedNode = updatePaths(source, targetPath, nextName);
+
+    set((state) => {
+      const withoutSource = removeNodeAtPath(state.fileTree, sourcePath);
+      return { fileTree: insertNodeAtPath(withoutSource, targetPath, movedNode) };
+    });
+
+    set((state) => ({
+      tabs: state.tabs.map((tab) => {
+        if (tab.id === sourcePath) {
+          return {
+            ...tab,
+            id: nextPath,
+            title: source.type === "file" ? nextName : tab.title,
+          };
         }
-        return next;
-      });
-    },
-    [activeTabId],
-  );
+        if (tab.id.startsWith(`${sourcePath}/`)) {
+          return { ...tab, id: `${nextPath}${tab.id.slice(sourcePath.length)}` };
+        }
+        return tab;
+      }),
+      activeTabId: (() => {
+        const prev = state.activeTabId;
+        if (!prev) return prev;
+        if (prev === sourcePath) return nextPath;
+        if (prev.startsWith(`${sourcePath}/`)) {
+          return `${nextPath}${prev.slice(sourcePath.length)}`;
+        }
+        return prev;
+      })(),
+    }));
+  },
+  refreshFileTree: () => {
+    const { projectName } = get();
+    set({ fileTree: buildMockFileTree(projectName) });
+  },
+  loadFileTree: (nextTree) => {
+    set({ fileTree: nextTree, tabs: [], activeTabId: null, runOutput: null });
+  },
+}));
 
-  const refreshFileTree = useCallback(() => {
-    setFileTree(buildMockFileTree(projectName));
+export const WorkspaceProvider: React.FC<{
+  projectName: string;
+  children: React.ReactNode;
+}> = ({ projectName, children }) => {
+  useEffect(() => {
+    useWorkspace.setState({
+      projectName,
+      fileTree: buildMockFileTree(projectName),
+      tabs: [],
+      activeTabId: null,
+      runOutput: null,
+      quickOpenOpen: false,
+    });
   }, [projectName]);
 
-  const value = useMemo(
-    () => ({
-      projectName,
-      fileTree,
-      tabs,
-      activeTabId,
-      openFileTab,
-      closeTab,
-      closeOtherTabs,
-      closeTabsToRight,
-      closeSavedTabs,
-      closeAllTabs,
-      setActiveTabId,
-      updateTabContent,
-      addFile,
-      addFolder,
-      renameNode,
-      deleteNode,
-      refreshFileTree,
-    }),
-    [
-      projectName,
-      fileTree,
-      tabs,
-      activeTabId,
-      openFileTab,
-      closeTab,
-      closeOtherTabs,
-      closeTabsToRight,
-      closeSavedTabs,
-      closeAllTabs,
-      updateTabContent,
-      addFile,
-      addFolder,
-      renameNode,
-      deleteNode,
-      refreshFileTree,
-    ],
-  );
-
-  return (
-    <WorkspaceContext.Provider value={value}>
-      {children}
-    </WorkspaceContext.Provider>
-  );
+  return <>{children}</>;
 };
-
-export const useWorkspace = (): WorkspaceContextValue => {
-  const ctx = useContext(WorkspaceContext);
-  if (!ctx) throw new Error("useWorkspace must be used within WorkspaceProvider");
-  return ctx;
-};
-
-export default WorkspaceContext;

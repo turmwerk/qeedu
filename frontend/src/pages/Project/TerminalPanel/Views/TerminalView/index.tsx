@@ -1,28 +1,26 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { CloseOutlined, PlusOutlined } from "@ant-design/icons";
+import { DownOutlined, PlusOutlined } from "@ant-design/icons";
+import { Terminal } from "xterm";
+import { FitAddon } from "xterm-addon-fit";
+import { WebLinksAddon } from "xterm-addon-web-links";
+import "xterm/css/xterm.css";
 import { useContextMenu, type ContextMenuItem } from "@/ui/ContextMenu";
+import { buildTerminalWsUrl } from "@/api/sandbox";
 import cmdProfile from "./Cmd";
 import powershellProfile from "./Powershell";
 import bashProfile from "./Bash";
 
 type TerminalProfile = typeof cmdProfile;
 
-type TerminalLine = {
-  type: "input" | "output" | "system";
-  text: string;
-};
-
 type TerminalSession = {
   id: string;
   title: string;
   profileId: TerminalProfile["id"];
-  lines: TerminalLine[];
-  draft: string;
 };
 
-const profiles: TerminalProfile[] = [powershellProfile, cmdProfile, bashProfile];
+const profiles: TerminalProfile[] = [bashProfile, powershellProfile, cmdProfile];
 
-const createSession = (
+const createSessionMeta = (
   profile: TerminalProfile,
   index: number,
 ): TerminalSession => {
@@ -31,102 +29,301 @@ const createSession = (
     id: `${profile.id}-${Date.now()}-${seed}`,
     title: `${profile.title} ${index}`,
     profileId: profile.id,
-    lines: profile.initialLines.map((text) => ({ type: "system", text })),
-    draft: "",
   };
 };
 
-const getOutputForCommand = (
-  profileId: string,
-  command: string,
-): TerminalLine[] => {
-  const trimmed = command.trim();
-  if (!trimmed) return [];
-  const lower = trimmed.toLowerCase();
-
-  if (lower === "help") {
-    return [
-      { type: "output", text: "Available commands:" },
-      { type: "output", text: "help, clear/cls, ls/dir, pwd" },
-    ];
-  }
-
-  if (lower === "pwd") {
-    return [{ type: "output", text: "/workspace" }];
-  }
-
-  if (profileId === "bash" && lower === "ls") {
-    return [
-      { type: "output", text: "src  tests  README.md  requirements.txt" },
-    ];
-  }
-
-  if (profileId !== "bash" && lower === "dir") {
-    return [
-      { type: "output", text: "src    tests    README.md    requirements.txt" },
-    ];
-  }
-
-  return [{ type: "output", text: `Executed: ${trimmed}` }];
-};
-
-interface TerminalViewProps {
-  createSignal?: number;
+/* ---------- xterm + WebSocket session handle ---------- */
+interface XtermHandle {
+  term: Terminal;
+  fit: FitAddon;
+  ws: WebSocket | null;
+  disposed: boolean;
 }
 
-const TerminalView: React.FC<TerminalViewProps> = ({ createSignal = 0 }) => {
+const TerminalView: React.FC = () => {
   const [sessions, setSessions] = useState<TerminalSession[]>(() => [
-    createSession(powershellProfile, 1),
+    createSessionMeta(bashProfile, 1),
   ]);
   const [activeId, setActiveId] = useState<string | null>(null);
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [selectedProfileId, setSelectedProfileId] = useState<TerminalProfile["id"]>(
+    profiles[0]?.id ?? "bash",
+  );
   const { openAtEvent } = useContextMenu();
-  const createSignalRef = useRef(createSignal);
+  const sessionsRef = useRef(sessions);
+  const activeIdRef = useRef<string | null>(null);
 
-  useEffect(() => {
-    if (!activeId && sessions.length > 0) {
-      setActiveId(sessions[0].id);
-    }
-  }, [activeId, sessions]);
+  const handleMapRef = useRef(new Map<string, XtermHandle>());
+  const containerMapRef = useRef(new Map<string, HTMLDivElement | null>());
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
   const profileMap = useMemo(
-    () => new Map(profiles.map((profile) => [profile.id, profile])),
+    () => new Map(profiles.map((p) => [p.id, p])),
     [],
   );
 
-  const activeSession = sessions.find((s) => s.id === activeId) ?? sessions[0];
+  const selectedProfile = profileMap.get(selectedProfileId) ?? profiles[0];
+
+  /* keep refs in sync */
+  useEffect(() => {
+    sessionsRef.current = sessions;
+  }, [sessions]);
+  useEffect(() => {
+    activeIdRef.current = activeId;
+  }, [activeId]);
+  useEffect(() => {
+    if (!activeId && sessions.length > 0) setActiveId(sessions[0].id);
+  }, [activeId, sessions]);
+
+  const activeSession =
+    sessions.find((s) => s.id === activeId) ?? sessions[0];
   const activeProfile = activeSession
     ? profileMap.get(activeSession.profileId)
     : undefined;
 
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+  /* ---------- xterm + WebSocket lifecycle ---------- */
+
+  const createXtermHandle = (
+    sessionId: string,
+    shell: string,
+  ): XtermHandle => {
+    const term = new Terminal({
+      cursorBlink: true,
+      fontFamily:
+        "'JetBrains Mono', 'Cascadia Code', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+      fontSize: 13,
+      lineHeight: 1.25,
+      scrollback: 5000,
+      convertEol: true,
+      theme: {
+        background: "#1e1e1e",
+        foreground: "#cccccc",
+        cursor: "#aeafad",
+        selectionBackground: "#264f78",
+        black: "#000000",
+        red: "#f48771",
+        green: "#89d185",
+        yellow: "#dcdcaa",
+        blue: "#569cd6",
+        magenta: "#c586c0",
+        cyan: "#4fc1ff",
+        white: "#d4d4d4",
+        brightBlack: "#808080",
+        brightRed: "#f48771",
+        brightGreen: "#89d185",
+        brightYellow: "#dcdcaa",
+        brightBlue: "#569cd6",
+        brightMagenta: "#c586c0",
+        brightCyan: "#4fc1ff",
+        brightWhite: "#ffffff",
+      },
+    });
+
+    const fit = new FitAddon();
+    term.loadAddon(fit);
+    term.loadAddon(new WebLinksAddon());
+
+    const handle: XtermHandle = { term, fit, ws: null, disposed: false };
+
+    /* --- WebSocket connection --- */
+    const wsUrl = buildTerminalWsUrl(shell);
+    const ws = new WebSocket(wsUrl);
+    ws.binaryType = "arraybuffer";
+    handle.ws = ws;
+
+    ws.onopen = () => {
+      const dims = fit.proposeDimensions();
+      if (dims) {
+        ws.send(
+          JSON.stringify({ type: "resize", cols: dims.cols, rows: dims.rows }),
+        );
+      }
+    };
+
+    ws.onmessage = (ev) => {
+      if (handle.disposed) return;
+      if (ev.data instanceof ArrayBuffer) {
+        term.write(new Uint8Array(ev.data));
+      } else {
+        term.write(ev.data as string);
+      }
+    };
+
+    ws.onclose = () => {
+      if (!handle.disposed) {
+        term.write("\r\n\x1b[90m[会话已断开 — 按任意键重连]\x1b[0m\r\n");
+        // one-shot reconnect on any keypress
+        const disposable = term.onData(() => {
+          disposable.dispose();
+          reconnect(sessionId, shell);
+        });
+      }
+    };
+
+    ws.onerror = () => {
+      if (!handle.disposed) {
+        term.write("\r\n\x1b[31m[连接错误]\x1b[0m\r\n");
+      }
+    };
+
+    /* xterm → WS (every keystroke goes straight to PTY) */
+    term.onData((data) => {
+      if (handle.ws?.readyState === WebSocket.OPEN) {
+        handle.ws.send(new TextEncoder().encode(data));
+      }
+    });
+
+    term.onBinary((data) => {
+      if (handle.ws?.readyState === WebSocket.OPEN) {
+        const bytes = new Uint8Array(data.length);
+        for (let i = 0; i < data.length; i++) {
+          bytes[i] = data.charCodeAt(i) & 0xff;
+        }
+        handle.ws.send(bytes);
+      }
+    });
+
+    /* resize → WS */
+    term.onResize(({ cols, rows }) => {
+      if (handle.ws?.readyState === WebSocket.OPEN) {
+        handle.ws.send(JSON.stringify({ type: "resize", cols, rows }));
+      }
+    });
+
+    return handle;
+  };
+
+  const reconnect = (sessionId: string, shell: string) => {
+    const old = handleMapRef.current.get(sessionId);
+    if (!old) return;
+
+    // close old WS only (keep terminal)
+    if (old.ws && old.ws.readyState <= WebSocket.OPEN) {
+      old.ws.onclose = null; // suppress onclose handler
+      old.ws.close();
     }
-  }, [activeSession?.lines.length, activeId]);
+
+    const wsUrl = buildTerminalWsUrl(shell);
+    const ws = new WebSocket(wsUrl);
+    ws.binaryType = "arraybuffer";
+    old.ws = ws;
+
+    ws.onopen = () => {
+      old.term.write("\x1b[90m[已重连]\x1b[0m\r\n");
+      const dims = old.fit.proposeDimensions();
+      if (dims) {
+        ws.send(
+          JSON.stringify({ type: "resize", cols: dims.cols, rows: dims.rows }),
+        );
+      }
+    };
+
+    ws.onmessage = (ev) => {
+      if (old.disposed) return;
+      if (ev.data instanceof ArrayBuffer) {
+        old.term.write(new Uint8Array(ev.data));
+      } else {
+        old.term.write(ev.data as string);
+      }
+    };
+
+    ws.onclose = () => {
+      if (!old.disposed) {
+        old.term.write("\r\n\x1b[90m[会话已断开 — 按任意键重连]\x1b[0m\r\n");
+        const disposable = old.term.onData(() => {
+          disposable.dispose();
+          reconnect(sessionId, shell);
+        });
+      }
+    };
+
+    ws.onerror = () => {
+      if (!old.disposed) {
+        old.term.write("\r\n\x1b[31m[连接错误]\x1b[0m\r\n");
+      }
+    };
+  };
+
+  const disposeHandle = (id: string) => {
+    const h = handleMapRef.current.get(id);
+    if (!h) return;
+    h.disposed = true;
+    if (h.ws && h.ws.readyState <= WebSocket.OPEN) h.ws.close();
+    h.term.dispose();
+    handleMapRef.current.delete(id);
+    containerMapRef.current.delete(id);
+  };
+
+  /* ---------- mount terminal into DOM ---------- */
+
+  const ensureTerminal = (session: TerminalSession, el: HTMLDivElement | null) => {
+    if (!el) return;
+    if (handleMapRef.current.has(session.id)) return;
+
+    const handle = createXtermHandle(session.id, session.profileId);
+    handleMapRef.current.set(session.id, handle);
+
+    handle.term.open(el);
+    requestAnimationFrame(() => {
+      try {
+        handle.fit.fit();
+      } catch {
+        /* not visible */
+      }
+    });
+  };
+
+  /* ---------- resize observer ---------- */
 
   useEffect(() => {
-    if (createSignalRef.current === createSignal) return;
-    createSignalRef.current = createSignal;
-    handleAddSession();
-  }, [createSignal]);
+    if (!wrapperRef.current) return;
+    const observer = new ResizeObserver(() => {
+      const rect = wrapperRef.current?.getBoundingClientRect();
+      if (!rect || rect.width <= 0 || rect.height <= 0) return;
+      const currentId = activeIdRef.current;
+      if (!currentId) return;
+      const h = handleMapRef.current.get(currentId);
+      if (h) requestAnimationFrame(() => h.fit.fit());
+    });
+    observer.observe(wrapperRef.current);
+    return () => observer.disconnect();
+  }, []);
 
-  const handleAddSession = () => {
+  useEffect(() => {
+    if (!activeId) return;
+    const rect = wrapperRef.current?.getBoundingClientRect();
+    if (!rect || rect.width <= 0 || rect.height <= 0) return;
+    const h = handleMapRef.current.get(activeId);
+    if (h) requestAnimationFrame(() => h.fit.fit());
+  }, [activeId]);
+
+  /* ---------- cleanup on unmount ---------- */
+
+  useEffect(() => {
+    return () => {
+      handleMapRef.current.forEach((_, id) => disposeHandle(id));
+    };
+  }, []);
+
+  /* ---------- session CRUD ---------- */
+
+  const handleAddSession = (profileId?: TerminalProfile["id"]) => {
     setSessions((prev) => {
-      const nextProfile = profiles[prev.length % profiles.length];
-      const count = prev.filter((s) => s.profileId === nextProfile.id).length + 1;
-      const nextSession = createSession(nextProfile, count);
-      setActiveId(nextSession.id);
-      return [...prev, nextSession];
+      const targetProfile =
+        profileMap.get(profileId ?? selectedProfileId) ?? profiles[0];
+      const count =
+        prev.filter((s) => s.profileId === targetProfile.id).length + 1;
+      const next = createSessionMeta(targetProfile, count);
+      setActiveId(next.id);
+      return [...prev, next];
     });
   };
 
   const handleCloseSession = (id: string) => {
+    disposeHandle(id);
     setSessions((prev) => {
       const next = prev.filter((s) => s.id !== id);
       if (next.length === 0) {
-        const fallback = createSession(powershellProfile, 1);
+        const fallback = createSessionMeta(bashProfile, 1);
         setActiveId(fallback.id);
         return [fallback];
       }
@@ -137,84 +334,63 @@ const TerminalView: React.FC<TerminalViewProps> = ({ createSignal = 0 }) => {
     });
   };
 
-  const updateSession = (id: string, updater: (s: TerminalSession) => TerminalSession) => {
-    setSessions((prev) => prev.map((s) => (s.id === id ? updater(s) : s)));
-  };
-
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-    if (!activeSession || !activeProfile) return;
-    const command = activeSession.draft;
-    const trimmed = command.trim();
-    if (!trimmed) return;
-    const lower = trimmed.toLowerCase();
-
-    if (lower === "clear" || lower === "cls") {
-      updateSession(activeSession.id, (s) => ({
-        ...s,
-        lines: [],
-        draft: "",
-      }));
-      return;
-    }
-
-    const outputs = getOutputForCommand(activeProfile.id, command);
-    updateSession(activeSession.id, (s) => ({
-      ...s,
-      lines: [...s.lines, { type: "input", text: command }, ...outputs],
-      draft: "",
-    }));
-  };
-
-  const handlePaste = async () => {
-    try {
-      const text = await navigator.clipboard.readText();
-      if (!activeSession) return;
-      updateSession(activeSession.id, (s) => ({ ...s, draft: s.draft + text }));
-      inputRef.current?.focus();
-    } catch {
-      // ignore clipboard errors
-    }
-  };
+  /* ---------- context menus ---------- */
 
   const handleCopyAll = async () => {
-    if (!activeSession || !activeProfile) return;
-    const lines = activeSession.lines
-      .map((line) => {
-        if (line.type === "input") return `${activeProfile.prompt} ${line.text}`;
-        return line.text;
-      })
-      .join("\n");
+    if (!activeSession) return;
+    const h = handleMapRef.current.get(activeSession.id);
+    if (!h) return;
+    const buffer = h.term.buffer.active;
+    const lines: string[] = [];
+    for (let i = 0; i < buffer.length; i++) {
+      const line = buffer.getLine(i);
+      if (line) lines.push(line.translateToString(true));
+    }
     try {
-      await navigator.clipboard.writeText(lines);
+      await navigator.clipboard.writeText(lines.join("\n"));
     } catch {
-      // ignore clipboard errors
+      /* ignore */
     }
   };
 
   const handleClear = () => {
     if (!activeSession) return;
-    updateSession(activeSession.id, (s) => ({ ...s, lines: [] }));
+    const h = handleMapRef.current.get(activeSession.id);
+    if (!h) return;
+    h.term.clear();
   };
 
   const handleTerminalContextMenu = (event: React.MouseEvent) => {
     const items: ContextMenuItem[] = [
-      { label: "Paste", onClick: handlePaste },
-      { label: "Copy All", onClick: handleCopyAll },
-      { label: "Clear", onClick: handleClear },
+      { label: "复制全部", onClick: handleCopyAll },
+      { label: "清空", onClick: handleClear },
       { type: "separator" },
-      { label: "New Terminal", onClick: handleAddSession },
+      { label: "新建终端", onClick: () => handleAddSession(selectedProfileId) },
     ];
     openAtEvent(event, items);
   };
 
-  const handleTabContextMenu = (sessionId: string, event: React.MouseEvent) => {
+  const handleTabContextMenu = (
+    sessionId: string,
+    event: React.MouseEvent,
+  ) => {
     const items: ContextMenuItem[] = [
-      { label: "Close Terminal", onClick: () => handleCloseSession(sessionId) },
-      { label: "New Terminal", onClick: handleAddSession },
+      { label: "关闭终端", onClick: () => handleCloseSession(sessionId) },
+      { label: "新建终端", onClick: () => handleAddSession(selectedProfileId) },
     ];
     openAtEvent(event, items);
   };
+
+  const handleProfileMenu = (event: React.MouseEvent) => {
+    const items: ContextMenuItem[] = profiles.map((profile) => ({
+      label: profile.title,
+      checked: profile.id === selectedProfileId,
+      onClick: () => setSelectedProfileId(profile.id),
+    }));
+    openAtEvent(event, items);
+  };
+
+  /* ---------- render ---------- */
 
   if (!activeSession || !activeProfile) {
     return <div className="h-full" />;
@@ -222,73 +398,77 @@ const TerminalView: React.FC<TerminalViewProps> = ({ createSignal = 0 }) => {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex items-center gap-1 border-b border-[#2d2d2d] bg-[#1f1f1f] px-2 py-1 text-[11px]">
-        <div className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto">
-          {sessions.map((session) => (
-            <button
-              key={session.id}
-              className={`group flex items-center gap-1 rounded px-2 py-0.5 text-[11px] transition-colors ${
-                session.id === activeSession.id
-                  ? "bg-[#094771] text-white"
-                  : "text-[#9d9d9d] hover:bg-white/10 hover:text-[#dddddd]"
-              }`}
-              onClick={() => setActiveId(session.id)}
-              onContextMenu={(event) => handleTabContextMenu(session.id, event)}
-            >
-              <span className="truncate">{session.title}</span>
-              <CloseOutlined
-                className="text-[10px] opacity-0 group-hover:opacity-60"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  handleCloseSession(session.id);
-                }}
-              />
-            </button>
-          ))}
+      {/* action bar */}
+      <div className="flex items-center justify-between border-b border-[#2d2d2d] bg-[#1f1f1f] px-2 py-1 text-[11px]">
+        <div className="flex items-center gap-1">
+          <button
+            className="flex h-6 w-6 items-center justify-center rounded text-[#9d9d9d] hover:bg-white/10 hover:text-[#dddddd]"
+            title={`新建终端（${selectedProfile?.title ?? "bash"}）`}
+            onClick={() => handleAddSession(selectedProfileId)}
+          >
+            <PlusOutlined className="text-[10px]" />
+          </button>
+          <button
+            className="flex h-6 items-center gap-1 rounded px-1 text-[10px] text-[#9d9d9d] hover:bg-white/10 hover:text-[#dddddd]"
+            onClick={handleProfileMenu}
+            title="选择终端类型"
+          >
+            <span className="max-w-[60px] truncate">
+              {selectedProfile?.title ?? "bash"}
+            </span>
+            <DownOutlined className="text-[9px]" />
+          </button>
         </div>
-        <button
-          className="flex h-6 w-6 items-center justify-center rounded text-[#9d9d9d] hover:bg-white/10 hover:text-[#dddddd]"
-          title="New Terminal"
-          onClick={handleAddSession}
-        >
-          <PlusOutlined className="text-[10px]" />
-        </button>
+        <div className="truncate text-[10px] text-[#8a8a8a]">
+          {activeSession.title}
+        </div>
       </div>
 
-      <div
-        ref={scrollRef}
-        className="flex-1 overflow-y-auto px-3 py-2 font-mono text-xs text-[#cccccc]"
-        onContextMenu={handleTerminalContextMenu}
-        onClick={() => inputRef.current?.focus()}
-      >
-        {activeSession.lines.map((line, index) => (
-          <div key={index} className="leading-5">
-            {line.type === "input" ? (
-              <span>
-                <span className={`${activeProfile.accent} mr-2`}>{activeProfile.prompt}</span>
-                <span>{line.text}</span>
-              </span>
-            ) : line.type === "system" ? (
-              <span className="text-[#9d9d9d]">{line.text}</span>
-            ) : (
-              <span className="text-[#9cdcfe]">{line.text}</span>
-            )}
-          </div>
-        ))}
-        <form onSubmit={handleSubmit} className="mt-1 flex items-center gap-2">
-          <span className={`${activeProfile.accent} shrink-0`}>{activeProfile.prompt}</span>
-          <input
-            ref={inputRef}
-            className="w-full bg-transparent text-[#cccccc] outline-none"
-            value={activeSession.draft}
-            onChange={(event) =>
-              updateSession(activeSession.id, (s) => ({
-                ...s,
-                draft: event.target.value,
-              }))
-            }
-          />
-        </form>
+      <div className="flex min-h-0 flex-1 overflow-hidden">
+        {/* left tabs */}
+        <div className="flex w-14 shrink-0 flex-col gap-1 border-r border-[#2d2d2d] bg-[#1f1f1f] py-2">
+          {sessions.map((session) => {
+            const parts = session.title.split(" ");
+            const name = parts[0] ?? session.title;
+            const index = parts.slice(1).join(" ");
+            return (
+              <button
+                key={session.id}
+                title={session.title}
+                className={`mx-auto flex h-10 w-10 flex-col items-center justify-center rounded text-[10px] leading-tight transition-colors ${
+                  session.id === activeSession.id
+                    ? "bg-[#094771] text-white"
+                    : "text-[#9d9d9d] hover:bg-white/10 hover:text-[#dddddd]"
+                }`}
+                onClick={() => setActiveId(session.id)}
+                onContextMenu={(event) => handleTabContextMenu(session.id, event)}
+              >
+                <span className="max-w-[36px] truncate">{name}</span>
+                {index && <span className="text-[9px] opacity-80">{index}</span>}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* terminal panels */}
+        <div
+          ref={wrapperRef}
+          className="relative min-h-0 flex-1 bg-[#1e1e1e]"
+          onContextMenu={handleTerminalContextMenu}
+        >
+          {sessions.map((session) => (
+            <div
+              key={session.id}
+              ref={(el) => {
+                containerMapRef.current.set(session.id, el);
+                ensureTerminal(session, el);
+              }}
+              className={
+                session.id === activeSession.id ? "absolute inset-0" : "hidden"
+              }
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

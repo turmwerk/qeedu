@@ -3,6 +3,7 @@ package api
 import (
 	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/api/v1/auth"
 	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/api/v1/auth/oauth"
+	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/api/v1/sandbox"
 	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/middleware"
 	"github.com/gin-gonic/gin"
 )
@@ -32,6 +33,11 @@ func RegisterRoutes(r *gin.Engine) {
 		protected.Use(middleware.AuthRequired())
 		{
 			protected.GET("/me", auth.Me)
+
+			// Sandbox
+			protected.POST("/sandbox/run", sandbox.RunCode)
+			protected.POST("/sandbox/exec", sandbox.ExecCommand)
+			protected.GET("/sandbox/terminal/ws", sandbox.TerminalWS)
 		}
 	}
 }

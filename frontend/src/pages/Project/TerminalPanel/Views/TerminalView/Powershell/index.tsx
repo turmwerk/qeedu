@@ -5,7 +5,7 @@ const powershellProfile = {
   accent: "text-[#4fc1ff]",
   initialLines: [
     "PowerShell 7.4.0",
-    "Copyright (c) Microsoft Corporation.",
+    "版权所有 © 微软公司。",
   ],
 };
 

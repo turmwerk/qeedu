@@ -16,7 +16,8 @@ var (
 	FrontendURL    string
 	DatabaseDSN    string
 	JWTSecret      string
-	UserServiceAddr string
+	UserServiceAddr    string
+	SandboxServiceAddr string
 )
 
 // Load reads .env (if present) and populates config variables.
@@ -55,5 +56,10 @@ func Load() {
 	UserServiceAddr = os.Getenv("USER_SERVICE_ADDR")
 	if UserServiceAddr == "" {
 		UserServiceAddr = "localhost:50051"
+	}
+
+	SandboxServiceAddr = os.Getenv("SANDBOX_SERVICE_ADDR")
+	if SandboxServiceAddr == "" {
+		SandboxServiceAddr = "localhost:50052"
 	}
 }

@@ -1,0 +1,6 @@
+syntax = "proto3";
+package sandbox.v1;
+option go_package = "github.com/dieWehmut/nju-edu-ai-system/backend/proto/sandbox/v1;sandboxv1";
+
+// Container management is internal to the sandbox service.
+// No gRPC service is exposed. See internal/services/container/docker.go.

@@ -17,9 +17,9 @@ const TreeActions: React.FC<TreeActionsProps> = ({
   onRefresh,
 }) => {
   const actions = [
-    { icon: <FileAddOutlined />, title: "New File", onClick: onAddFile },
-    { icon: <FolderAddOutlined />, title: "New Folder", onClick: onAddFolder },
-    { icon: <ReloadOutlined />, title: "Refresh", onClick: onRefresh },
+    { icon: <FileAddOutlined />, title: "新建文件", onClick: onAddFile },
+    { icon: <FolderAddOutlined />, title: "新建文件夹", onClick: onAddFolder },
+    { icon: <ReloadOutlined />, title: "刷新", onClick: onRefresh },
   ];
 
   return (

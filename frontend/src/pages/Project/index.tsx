@@ -1,6 +1,7 @@
-import React, { useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import { WorkspaceProvider } from "./context";
+import React, { useRef } from "react";
+import { useSearchParams, Navigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { WorkspaceProvider, useWorkspace } from "./context";
 import { PROJECT_NAMES } from "./data/projectNames";
 import TopBar from "./TopBar";
 import Sidebar from "./Sidebar";
@@ -9,61 +10,120 @@ import AssistantPanel from "./AssistantPanel";
 import TerminalPanel from "./TerminalPanel";
 import BottomBar from "./BottomBar";
 import { ContextMenuProvider } from "@/ui/ContextMenu";
+import { useHotkeys } from "react-hotkeys-hook";
+import QuickOpen from "./QuickOpen";
+import {
+  Group as PanelGroup,
+  Panel,
+  Separator as PanelResizeHandle,
+  type PanelImperativeHandle,
+} from "react-resizable-panels";
 
 const ProjectPageInner: React.FC = () => {
-  const [terminalHeight, setTerminalHeight] = useState(180);
-  const [terminalOpen, setTerminalOpen] = useState(true);
+  const { saveActiveTab, setQuickOpenOpen } = useWorkspace();
+  const terminalPanelRef = useRef<PanelImperativeHandle | null>(null);
+
+  useHotkeys(
+    "ctrl+s, meta+s",
+    (event) => {
+      event.preventDefault();
+      saveActiveTab();
+    },
+    [saveActiveTab],
+  );
+
+  useHotkeys(
+    "ctrl+p, meta+p",
+    (event) => {
+      event.preventDefault();
+      setQuickOpenOpen(true);
+    },
+    [setQuickOpenOpen],
+  );
+
+  const handleTerminalClose = () => {
+    terminalPanelRef.current?.collapse();
+  };
+
+  const handleTerminalMinimize = () => {
+    terminalPanelRef.current?.resize("140px");
+  };
 
   return (
-    <div
-      className="project-page-root flex h-screen w-screen flex-col overflow-hidden bg-[#1e1e1e] text-[#cccccc]"
-    >
+    <div className="project-page-root relative flex h-screen w-screen flex-col overflow-hidden bg-[#1e1e1e] text-[#cccccc]">
       {/* 顶部菜单栏 */}
       <TopBar />
 
-      {/* 中间主区域 */}
-      <div className="flex min-h-0 flex-1 overflow-hidden">
-        {/* 左侧 Sidebar（ActivityBar + Panel） */}
-        <Sidebar />
-
-        {/* 主编辑区 + 终端 */}
-        <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
-          {/* 编辑器区域 */}
-          <div
-            className="min-h-0 flex-1 overflow-hidden"
-            style={{
-              height: terminalOpen
-                ? `calc(100% - ${terminalHeight}px)`
-                : "100%",
-            }}
-          >
-            <EditorArea />
+      {/* 主工作区（左侧栏 + 编辑器/终端 + 右侧助手） */}
+      <PanelGroup
+        orientation="horizontal"
+        className="flex min-h-0 flex-1 overflow-hidden"
+      >
+        <Panel defaultSize="18%" minSize="200px" collapsible className="min-w-0">
+          <div className="h-full min-w-0">
+            <Sidebar />
           </div>
+        </Panel>
 
-          {/* 可拖拽终端 */}
-          {terminalOpen && (
-            <TerminalPanel
-              height={terminalHeight}
-              onHeightChange={setTerminalHeight}
-              onClose={() => setTerminalOpen(false)}
-            />
-          )}
-        </div>
+        <PanelResizeHandle className="w-1 cursor-col-resize bg-[#2a2d2e] hover:bg-[#007acc]/40" />
 
-        {/* 右侧 AI 助手 */}
-        <AssistantPanel />
-      </div>
+        <Panel defaultSize="64%" minSize="320px" className="min-w-0">
+          <PanelGroup
+            orientation="vertical"
+            className="flex h-full min-h-0 overflow-hidden"
+          >
+            <Panel defaultSize="70%" minSize="200px" className="min-h-0">
+              <div className="h-full min-h-0">
+                <EditorArea />
+              </div>
+            </Panel>
 
-      {/* ── 底部状态栏 ── */}
+            <PanelResizeHandle className="h-1 cursor-row-resize bg-[#2a2d2e] hover:bg-[#007acc]/40" />
+
+            <Panel
+              panelRef={terminalPanelRef}
+              collapsible
+              collapsedSize="0px"
+              defaultSize="30%"
+              minSize="120px"
+              className="min-h-0"
+            >
+              <div className="h-full min-h-0">
+                <TerminalPanel
+                  onClose={handleTerminalClose}
+                  onMinimize={handleTerminalMinimize}
+                />
+              </div>
+            </Panel>
+          </PanelGroup>
+        </Panel>
+
+        <PanelResizeHandle className="w-1 cursor-col-resize bg-[#2a2d2e] hover:bg-[#007acc]/40" />
+
+        <Panel defaultSize="18%" minSize="240px" collapsible className="min-w-0">
+          <div className="h-full min-w-0">
+            <AssistantPanel />
+          </div>
+        </Panel>
+      </PanelGroup>
+
+      {/* 底部状态栏 */}
       <BottomBar />
+
+      <QuickOpen />
     </div>
   );
 };
 
 const ProjectPage: React.FC = () => {
+  const { isAuthenticated } = useAuth();
   const [searchParams] = useSearchParams();
   const proId = Number(searchParams.get("proId") ?? "1");
   const projectName = PROJECT_NAMES[proId] ?? `项目 ${proId}`;
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
 
   return (
     <WorkspaceProvider projectName={projectName}>

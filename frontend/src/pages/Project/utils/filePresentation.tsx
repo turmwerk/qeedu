@@ -1,34 +1,36 @@
 import React from "react";
+import { Icon } from "@iconify/react";
 import {
-  FileTextOutlined,
-  FileMarkdownOutlined,
-  CodeOutlined,
-  FileImageOutlined,
-  FileOutlined,
-} from "@ant-design/icons";
+  DEFAULT_FILE,
+  DEFAULT_FOLDER,
+  DEFAULT_FOLDER_OPENED,
+  DEFAULT_ROOT,
+  DEFAULT_ROOT_OPENED,
+  getIconForFile,
+  getIconForFolder,
+  getIconForOpenFolder,
+} from "vscode-icons-js";
 
-export const getFileColorClass = (name: string): string => {
-  const ext = name.split(".").pop()?.toLowerCase() ?? "";
-  if (["py"].includes(ext)) return "text-[#4ec9b0]";
-  if (["ts", "tsx"].includes(ext)) return "text-[#519aba]";
-  if (["js", "jsx"].includes(ext)) return "text-[#f1c40f]";
-  if (["md", "markdown"].includes(ext)) return "text-[#519aba]";
-  return "text-[#cccccc]";
+const toIconifyName = (iconFile: string): string =>
+  `vscode-icons:${iconFile.replace(/\.svg$/, "").replace(/_/g, "-")}`;
+
+const renderIcon = (iconFile: string, className = "h-4 w-4") => (
+  <Icon icon={toIconifyName(iconFile)} className={className} />
+);
+
+export const getFileIcon = (name: string, className?: string): React.ReactNode => {
+  const iconFile = getIconForFile(name) ?? DEFAULT_FILE;
+  return renderIcon(iconFile, className);
 };
 
-export const getFileIcon = (name: string): React.ReactNode => {
-  const ext = name.split(".").pop()?.toLowerCase() ?? "";
-  if (["py", "ts", "tsx", "js", "jsx", "cpp", "c", "java", "go", "rs"].includes(ext)) {
-    return <CodeOutlined className="text-[#4ec9b0]" />;
+export const getFolderIcon = (
+  name: string,
+  options?: { expanded?: boolean; isRoot?: boolean; className?: string },
+): React.ReactNode => {
+  const { expanded = false, isRoot = false, className } = options ?? {};
+  if (isRoot) {
+    return renderIcon(expanded ? DEFAULT_ROOT_OPENED : DEFAULT_ROOT, className);
   }
-  if (["md", "markdown"].includes(ext)) {
-    return <FileMarkdownOutlined className="text-[#519aba]" />;
-  }
-  if (["txt", "log"].includes(ext)) {
-    return <FileTextOutlined className="text-[#cccccc]" />;
-  }
-  if (["png", "jpg", "jpeg", "gif", "svg", "webp"].includes(ext)) {
-    return <FileImageOutlined className="text-[#f1c40f]" />;
-  }
-  return <FileOutlined className="text-[#cccccc]" />;
+  const iconFile = expanded ? getIconForOpenFolder(name) : getIconForFolder(name);
+  return renderIcon(iconFile || (expanded ? DEFAULT_FOLDER_OPENED : DEFAULT_FOLDER), className);
 };

@@ -1,0 +1,56 @@
+syntax = "proto3";
+package sandbox.v1;
+option go_package = "github.com/dieWehmut/nju-edu-ai-system/backend/proto/sandbox/v1;sandboxv1";
+
+service TerminalService {
+  rpc ExecuteCommand(ExecuteCommandRequest) returns (ExecuteCommandResponse);
+  rpc CreateSession(CreateSessionRequest) returns (CreateSessionResponse);
+  rpc DestroySession(DestroySessionRequest) returns (DestroySessionResponse);
+  rpc InteractiveSession(stream TerminalInput) returns (stream TerminalOutput);
+}
+
+message ExecuteCommandRequest {
+  string command         = 1;
+  string shell           = 2;
+  int32  timeout_seconds = 3;
+  string working_dir     = 4;
+}
+
+message ExecuteCommandResponse {
+  string stdout    = 1;
+  string stderr    = 2;
+  int32  exit_code = 3;
+}
+
+message CreateSessionRequest {
+  string shell = 1;
+  int32  cols  = 2;
+  int32  rows  = 3;
+}
+
+message CreateSessionResponse {
+  string session_id = 1;
+}
+
+message DestroySessionRequest {
+  string session_id = 1;
+}
+
+message DestroySessionResponse {}
+
+message TerminalInput {
+  string      session_id = 1;
+  bytes       data       = 2;
+  ResizeEvent resize     = 3;
+}
+
+message TerminalOutput {
+  string session_id = 1;
+  bytes  data       = 2;
+  bool   closed     = 3;
+}
+
+message ResizeEvent {
+  int32 cols = 1;
+  int32 rows = 2;
+}

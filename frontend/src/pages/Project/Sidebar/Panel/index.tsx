@@ -14,7 +14,7 @@ const Panel: React.FC<PanelProps> = ({ activeView }) => {
   if (!activeView) return null;
 
   return (
-    <div className="flex h-full w-56 shrink-0 flex-col overflow-hidden border-r border-[#3c3c3c] bg-[#252526]">
+    <div className="flex h-full min-w-0 flex-1 flex-col overflow-hidden border-r border-[#3c3c3c] bg-[#252526]">
       {(() => {
         switch (activeView) {
           case SidebarView.EXPLORER:

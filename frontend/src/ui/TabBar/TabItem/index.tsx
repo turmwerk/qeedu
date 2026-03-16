@@ -10,6 +10,7 @@ export interface TabItemProps {
   onClick?: (id: string) => void;
   onClose?: (id: string) => void;
   onContextMenu?: (id: string, event: React.MouseEvent) => void;
+  showCloseButton?: boolean;
 }
 
 const TabItem: React.FC<TabItemProps> = ({
@@ -21,6 +22,7 @@ const TabItem: React.FC<TabItemProps> = ({
   onClick,
   onClose,
   onContextMenu,
+  showCloseButton = true,
 }) => {
   return (
     <div
@@ -39,22 +41,24 @@ const TabItem: React.FC<TabItemProps> = ({
       <span className="max-w-[120px] truncate">{label}</span>
 
       {/* 关闭 / dirty 点 */}
-      <span
-        className="ml-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded hover:bg-white/10"
-        onClick={(e) => {
-          e.stopPropagation();
-          if (!isDirty) onClose?.(id);
-        }}
-      >
-        {isDirty ? (
-          <span className="block h-2 w-2 rounded-full bg-[#cccccc] group-hover:hidden" />
-        ) : null}
-        <CloseOutlined
-          className={`text-[10px] ${
-            isDirty ? "hidden group-hover:block" : ""
-          } ${isActive ? "opacity-70" : "opacity-0 group-hover:opacity-70"}`}
-        />
-      </span>
+      {showCloseButton && (
+        <span
+          className="ml-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded hover:bg-white/10"
+          onClick={(e) => {
+            e.stopPropagation();
+            if (!isDirty) onClose?.(id);
+          }}
+        >
+          {isDirty ? (
+            <span className="block h-2 w-2 rounded-full bg-[#cccccc] group-hover:hidden" />
+          ) : null}
+          <CloseOutlined
+            className={`text-[10px] ${
+              isDirty ? "hidden group-hover:block" : ""
+            } ${isActive ? "opacity-70" : "opacity-0 group-hover:opacity-70"}`}
+          />
+        </span>
+      )}
     </div>
   );
 };

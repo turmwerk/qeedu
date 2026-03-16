@@ -1,115 +1,137 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { CloseOutlined, MinusOutlined, PlusOutlined } from "@ant-design/icons";
-import TabBar from "@/ui/TabBar";
+import React, { useEffect, useMemo, useState } from "react";
+import { CloseOutlined, MinusOutlined } from "@ant-design/icons";
 import { useContextMenu, type ContextMenuItem } from "@/ui/ContextMenu";
+import type { ToolItemProps } from "@/ui/TabBar";
+import PanelTabBar from "./PanelTabBar";
 import TerminalView from "./Views/TerminalView";
 import OutputView from "./Views/OutputView";
 import ProblemsView from "./Views/ProblemsView";
 import ConsoleView from "./Views/ConsoleView";
+import PortsView from "./Views/PortsView";
 
 interface TerminalPanelProps {
-  height: number;
-  onHeightChange: (h: number) => void;
   onClose: () => void;
+  onMinimize?: () => void;
 }
 
-const MIN_HEIGHT = 80;
-const MAX_HEIGHT = 600;
+type ViewId = "terminal" | "output" | "problems" | "console" | "ports";
 
-const panelTabs = [
-  { id: "terminal", label: "TERMINAL" },
-  { id: "output", label: "OUTPUT" },
-  { id: "problems", label: "PROBLEMS" },
-  { id: "console", label: "DEBUG CONSOLE" },
+type ViewConfig = {
+  id: ViewId;
+  label: string;
+  render: () => React.ReactNode;
+};
+
+const viewConfigs: ViewConfig[] = [
+  {
+    id: "terminal",
+    label: "终端",
+    render: () => <TerminalView />,
+  },
+  {
+    id: "output",
+    label: "输出",
+    render: () => <OutputView />,
+  },
+  {
+    id: "problems",
+    label: "问题",
+    render: () => <ProblemsView />,
+  },
+  {
+    id: "console",
+    label: "调试控制台",
+    render: () => <ConsoleView />,
+  },
+  {
+    id: "ports",
+    label: "端口",
+    render: () => <PortsView />,
+  },
 ];
 
-const TerminalPanel: React.FC<TerminalPanelProps> = ({
-  height,
-  onHeightChange,
-  onClose,
-}) => {
-  const isDragging = useRef(false);
-  const startY = useRef(0);
-  const startH = useRef(0);
-  const [activePanelId, setActivePanelId] = useState("terminal");
-  const [createSignal, setCreateSignal] = useState(0);
+const TerminalPanel: React.FC<TerminalPanelProps> = ({ onClose, onMinimize }) => {
   const { openAtEvent } = useContextMenu();
-
-  const onMouseDown = useCallback(
-    (e: React.MouseEvent) => {
-      e.preventDefault();
-      isDragging.current = true;
-      startY.current = e.clientY;
-      startH.current = height;
-    },
-    [height],
+  const [activeViewId, setActiveViewId] = useState<ViewId>("terminal");
+  const [visibleViews, setVisibleViews] = useState<ViewId[]>(() =>
+    viewConfigs.map((view) => view.id),
   );
 
-  useEffect(() => {
-    const onMove = (e: MouseEvent) => {
-      if (!isDragging.current) return;
-      const delta = startY.current - e.clientY;
-      const next = Math.min(MAX_HEIGHT, Math.max(MIN_HEIGHT, startH.current + delta));
-      onHeightChange(next);
-    };
-    const onUp = () => {
-      isDragging.current = false;
-    };
-    document.addEventListener("mousemove", onMove);
-    document.addEventListener("mouseup", onUp);
-    return () => {
-      document.removeEventListener("mousemove", onMove);
-      document.removeEventListener("mouseup", onUp);
-    };
-  }, [onHeightChange]);
+  const visibleConfigs = useMemo(
+    () => viewConfigs.filter((view) => visibleViews.includes(view.id)),
+    [visibleViews],
+  );
+  const tabs = useMemo(
+    () => visibleConfigs.map((view) => ({ id: view.id, label: view.label })),
+    [visibleConfigs],
+  );
+  const tools = useMemo<ToolItemProps[]>(() => {
+    const items: ToolItemProps[] = [];
+    if (onMinimize) {
+      items.push({
+        icon: <MinusOutlined className="text-[12px]" />,
+        title: "最小化",
+        onClick: onMinimize,
+      });
+    }
+    items.push({
+      icon: <CloseOutlined className="text-[12px]" />,
+      title: "隐藏面板",
+      onClick: onClose,
+    });
+    return items;
+  }, [onClose, onMinimize]);
 
-  const handlePanelContextMenu = (id: string, event: React.MouseEvent) => {
-    void id;
+  useEffect(() => {
+    if (!visibleViews.includes(activeViewId)) {
+      setActiveViewId(visibleViews[0] ?? "terminal");
+    }
+  }, [activeViewId, visibleViews]);
+
+  const toggleViewVisibility = (id: ViewId) => {
+    setVisibleViews((prev) => {
+      const isVisible = prev.includes(id);
+      if (isVisible) {
+        if (prev.length === 1) return prev;
+        return prev.filter((viewId) => viewId !== id);
+      }
+      const next = [...prev, id];
+      return viewConfigs.map((view) => view.id).filter((viewId) => next.includes(viewId));
+    });
+  };
+
+  const handleViewBarContextMenu = (
+    _id: string,
+    event: React.MouseEvent,
+  ) => {
     const items: ContextMenuItem[] = [
-      { label: "Hide Panel", onClick: onClose },
+      { label: "隐藏面板", onClick: onClose },
       { type: "separator" },
-      ...panelTabs.map((tab) => ({
-        label: tab.label,
-        checked: tab.id === activePanelId,
-        onClick: () => setActivePanelId(tab.id),
+      ...viewConfigs.map((view) => ({
+        label: view.label,
+        checked: visibleViews.includes(view.id),
+        onClick: () => toggleViewVisibility(view.id),
       })),
     ];
     openAtEvent(event, items);
   };
 
-  const handleCreateTerminal = () => {
-    setActivePanelId("terminal");
-    setCreateSignal((prev) => prev + 1);
-  };
+  const activeConfig =
+    visibleConfigs.find((view) => view.id === activeViewId) ??
+    visibleConfigs[0] ??
+    viewConfigs[0];
 
   return (
-    <div
-      className="flex flex-col border-t border-[#3c3c3c] bg-[#1e1e1e]"
-      style={{ height }}
-    >
-      <div
-        className="h-1 w-full cursor-row-resize bg-transparent hover:bg-[#007acc]/40"
-        onMouseDown={onMouseDown}
-      />
-      <TabBar
-        height="h-8"
-        tabs={panelTabs}
-        activeId={activePanelId}
-        onTabClick={setActivePanelId}
-        onTabContextMenu={handlePanelContextMenu}
-        tools={[
-          { icon: <PlusOutlined />, title: "New Terminal", onClick: handleCreateTerminal },
-          { icon: <MinusOutlined />, title: "Minimize", onClick: () => onHeightChange(MIN_HEIGHT) },
-          { icon: <CloseOutlined />, title: "Close Panel", onClick: onClose },
-        ]}
+    <div className="flex h-full min-w-0 flex-col bg-[#1e1e1e]">
+      <PanelTabBar
+        tabs={tabs}
+        activeId={activeViewId}
+        onTabClick={(id) => setActiveViewId(id as ViewId)}
+        onTabContextMenu={handleViewBarContextMenu}
+        tools={tools}
       />
       <div className="min-h-0 flex-1 overflow-hidden">
-        {activePanelId === "terminal" && (
-          <TerminalView createSignal={createSignal} />
-        )}
-        {activePanelId === "output" && <OutputView />}
-        {activePanelId === "problems" && <ProblemsView />}
-        {activePanelId === "console" && <ConsoleView />}
+        {activeConfig ? activeConfig.render() : null}
       </div>
     </div>
   );

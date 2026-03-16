@@ -32,6 +32,20 @@ services:
       DATABASE_DSN: "root:123456@tcp(mysql:3306)/nju_edu_ai?charset=utf8mb4&parseTime=True&loc=Local"
       GRPC_ADDR: ":50051"
 
+  sandbox:
+    build:
+      context: ../
+      dockerfile: sandbox/Dockerfile
+    container_name: nju-sandbox
+    restart: unless-stopped
+    ports:
+      - "50052:50052"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      GRPC_ADDR: ":50052"
+      DOCKER_HOST: "unix:///var/run/docker.sock"
+
   gateway:
     build:
       context: ../
@@ -43,10 +57,13 @@ services:
     depends_on:
       user-services:
         condition: service_started
+      sandbox:
+        condition: service_started
     env_file:
       - ../.env
     environment:
       USER_SERVICE_ADDR: "user-services:50051"
+      SANDBOX_SERVICE_ADDR: "sandbox:50052"
 
 volumes:
   mysql-data:

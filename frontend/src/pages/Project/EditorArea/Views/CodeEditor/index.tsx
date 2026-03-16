@@ -18,16 +18,18 @@ const CodeEditorView: React.FC<CodeEditorViewProps> = ({ tab }) => {
   );
 
   return (
-    <div className="h-full w-full overflow-hidden">
-      <MonacoCodeEditor
-        value={tab.content ?? ""}
-        onChange={handleChange}
-        language={tab.language ?? "plaintext"}
-        height="100%"
-        showHeader={false}
-        minimap={false}
-        className="!rounded-none !border-none !shadow-none"
-      />
+    <div className="flex h-full w-full flex-col overflow-hidden">
+      <div className="min-h-0 flex-1">
+        <MonacoCodeEditor
+          value={tab.content ?? ""}
+          onChange={handleChange}
+          language={tab.language ?? "plaintext"}
+          height="100%"
+          showHeader={false}
+          minimap={false}
+          className="!rounded-none !border-none !shadow-none"
+        />
+      </div>
     </div>
   );
 };

@@ -2,12 +2,27 @@ import React, { useMemo, useState } from "react";
 import Modal from "@/ui/Modal";
 import Form from "@/ui/Form";
 import type { FormField } from "@/ui/Form";
+import { useAuth } from "@/hooks/useAuth";
 import Header from "./Header";
 import ProjectListContent from "./List";
 import { CODE_TUTOR_PROJECTS_STORAGE_KEY } from "./constants";
 import type { ProjectItem } from "./types";
 
-function loadProjects(): ProjectItem[] {
+function loadProjects(userId?: number): ProjectItem[] {
+  try {
+    const raw = localStorage.getItem(CODE_TUTOR_PROJECTS_STORAGE_KEY);
+    if (raw) {
+      const all = JSON.parse(raw) as ProjectItem[];
+      if (userId != null) return all.filter((p) => p.userId === userId);
+      return all;
+    }
+  } catch {
+    // ignore
+  }
+  return [];
+}
+
+function loadAllProjects(): ProjectItem[] {
   try {
     const raw = localStorage.getItem(CODE_TUTOR_PROJECTS_STORAGE_KEY);
     if (raw) return JSON.parse(raw) as ProjectItem[];
@@ -71,7 +86,8 @@ const createFields: FormField[] = [
 ];
 
 const ProjectList: React.FC = () => {
-  const [items, setItems] = useState<ProjectItem[]>(() => loadProjects());
+  const { user } = useAuth();
+  const [items, setItems] = useState<ProjectItem[]>(() => loadProjects(user?.id));
   const [open, setOpen] = useState(false);
   const [sortBy, setSortBy] = useState<"time" | "name">("time");
   const [order, setOrder] = useState<"asc" | "desc">("desc");
@@ -129,10 +145,13 @@ const ProjectList: React.FC = () => {
         title: String(payload.name || "未命名项目"),
         subtitle: subtitle || undefined,
         createdAt: Date.now(),
+        userId: user?.id,
       };
       const updated = [newItem, ...items];
       setItems(updated);
-      saveProjects(updated);
+      // Save: merge into global list (keep other users' projects intact)
+      const all = loadAllProjects();
+      saveProjects([newItem, ...all.filter((p) => p.id !== newItem.id)]);
       setOpen(false);
       setIsCreating(false);
     }, 600);
@@ -143,13 +162,16 @@ const ProjectList: React.FC = () => {
       item.id === id ? { ...item, title: newName } : item,
     );
     setItems(updated);
-    saveProjects(updated);
+    const all = loadAllProjects().map((item) =>
+      item.id === id ? { ...item, title: newName } : item,
+    );
+    saveProjects(all);
   };
 
   const handleDelete = (id: string) => {
     const updated = items.filter((item) => item.id !== id);
     setItems(updated);
-    saveProjects(updated);
+    saveProjects(loadAllProjects().filter((item) => item.id !== id));
   };
 
   return (

@@ -13,7 +13,7 @@ const AssistantPanel: React.FC = () => {
 
   if (collapsed) {
     return (
-      <div className="flex shrink-0 flex-col items-center border-l border-[#3c3c3c] bg-[#252526] py-2">
+      <div className="flex h-full w-full flex-col items-center border-l border-[#3c3c3c] bg-[#252526] py-2">
         <button
           className="flex h-8 w-8 items-center justify-center rounded text-[#858585] transition hover:bg-white/10 hover:text-[#cccccc]"
           title="展开 AI 助手"
@@ -26,9 +26,7 @@ const AssistantPanel: React.FC = () => {
   }
 
   return (
-    <div
-      className="flex w-[340px] min-w-[280px] shrink-0 flex-col overflow-hidden border-l border-[#3c3c3c] bg-[#252526]"
-    >
+    <div className="flex h-full w-full min-w-0 flex-col overflow-hidden border-l border-[#3c3c3c] bg-[#252526]">
       {/* 标题栏 */}
       <div className="flex h-9 shrink-0 select-none items-center justify-between border-b border-[#3c3c3c] px-3">
         <div className="flex items-center gap-2 text-xs text-[#cccccc]">

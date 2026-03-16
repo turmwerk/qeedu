@@ -4,8 +4,8 @@ const cmdProfile = {
   prompt: "C:\\>",
   accent: "text-[#9cdcfe]",
   initialLines: [
-    "Microsoft Windows [Version 10.0.19045.0]",
-    "(c) Microsoft Corporation. All rights reserved.",
+    "微软 Windows [版本 10.0.19045.0]",
+    "© 微软公司。保留所有权利。",
   ],
 };
 

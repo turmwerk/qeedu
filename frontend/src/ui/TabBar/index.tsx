@@ -15,6 +15,7 @@ export interface TabBarProps {
   tools?: ToolItemProps[];
   className?: string;
   height?: string;
+  showCloseButton?: boolean;
 }
 
 const TabBar: React.FC<TabBarProps> = ({
@@ -26,6 +27,7 @@ const TabBar: React.FC<TabBarProps> = ({
   tools = [],
   className = "",
   height = "h-9",
+  showCloseButton = true,
 }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -49,6 +51,7 @@ const TabBar: React.FC<TabBarProps> = ({
             onClick={onTabClick}
             onClose={onTabClose}
             onContextMenu={onTabContextMenu}
+            showCloseButton={tab.showCloseButton ?? showCloseButton}
           />
         ))}
       </div>

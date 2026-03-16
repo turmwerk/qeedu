@@ -3,4 +3,5 @@ export type ProjectItem = {
   title: string;
   subtitle?: string;
   createdAt?: number;
+  userId?: number;
 };
