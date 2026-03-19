@@ -9,6 +9,8 @@ import (
 	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/middleware"
 	sandboxRPC "github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/rpc/sandbox"
 	userRPC "github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/rpc/user"
+	aiChatRPC "github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/rpc/ai-chat"
+	aiCopilotRPC "github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/rpc/ai-copilot"
 	"github.com/gin-gonic/gin"
 )
 
@@ -23,6 +25,10 @@ func main() {
 
 	// Sandbox gRPC client
 	sandboxRPC.Init(configs.SandboxServiceAddr)
+
+	// AI services gRPC clients
+	aiCopilotRPC.Init(configs.AICopilotServiceAddr)
+	aiChatRPC.Init(configs.AIChatServiceAddr)
 
 	r := gin.Default()
 

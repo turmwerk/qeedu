@@ -1,6 +1,7 @@
 package api
 
 import (
+	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/api/v1/ai"
 	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/api/v1/auth"
 	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/api/v1/auth/oauth"
 	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/api/v1/sandbox"
@@ -38,6 +39,11 @@ func RegisterRoutes(r *gin.Engine) {
 			protected.POST("/sandbox/run", sandbox.RunCode)
 			protected.POST("/sandbox/exec", sandbox.ExecCommand)
 			protected.GET("/sandbox/terminal/ws", sandbox.TerminalWS)
+
+			// AI
+			protected.POST("/ai/chat", ai.Chat)
+			protected.POST("/ai/complete", ai.Complete)
+			protected.POST("/ai/fix", ai.FixBug)
 		}
 	}
 }

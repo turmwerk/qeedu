@@ -1,6 +1,7 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useDeferredValue, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import BotMessageActions from "../BotMessageActions";
+import MarkdownMessage from "./MarkdownMessage";
 
 interface BotBubbleProps {
   text: string;
@@ -10,14 +11,22 @@ interface BotBubbleProps {
   onEditMessage?: (index: number, newText: string) => void;
 }
 
-const BotBubble: React.FC<BotBubbleProps> = ({ text, bodyRef, actionsPortalRef, messageIndex, onEditMessage }) => {
+const BotBubble: React.FC<BotBubbleProps> = ({
+  text,
+  bodyRef,
+  actionsPortalRef,
+  messageIndex,
+  onEditMessage,
+}) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isPinned, setIsPinned] = useState(false);
   const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(text);
-  const bubbleRef = useRef<HTMLDivElement | null>(null);
+  const [renderText, setRenderText] = useState(text);
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const deferredText = useDeferredValue(renderText);
 
   const resizeTextarea = () => {
     if (!textareaRef.current) return;
@@ -59,6 +68,12 @@ const BotBubble: React.FC<BotBubbleProps> = ({ text, bodyRef, actionsPortalRef, 
     setPortalElement(actionsPortalRef.current);
   }, [actionsPortalRef]);
 
+  useEffect(() => {
+    if (text === renderText) return;
+    const timer = window.setTimeout(() => setRenderText(text), 80);
+    return () => window.clearTimeout(timer);
+  }, [renderText, text]);
+
   useLayoutEffect(() => {
     if (isEditing) {
       resizeTextarea();
@@ -73,7 +88,7 @@ const BotBubble: React.FC<BotBubbleProps> = ({ text, bodyRef, actionsPortalRef, 
     }
 
     const updatePinned = () => {
-      const bubble = bubbleRef.current;
+      const bubble = containerRef.current;
       const container = bodyRef.current;
       if (!bubble || !container) return;
       const bubbleRect = bubble.getBoundingClientRect();
@@ -103,18 +118,17 @@ const BotBubble: React.FC<BotBubbleProps> = ({ text, bodyRef, actionsPortalRef, 
   );
 
   return (
-    <div 
-      ref={bubbleRef}
-      className="relative w-full pr-10"
+    <div
+      ref={containerRef}
+      className="relative w-full"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       <div
-        ref={bubbleRef}
-        className="w-full bg-[#f1f0fb] text-[#2d1b4f] px-3 py-2 rounded-xl border border-transparent hover:border-[var(--brand-accent)] transition-[border-color]"
+        className="w-full rounded-md bg-[#f7f7f8] px-4 py-3 text-[#111827] shadow-sm"
         style={{
-          wordBreak: 'break-word',
-          overflowWrap: 'anywhere',
+          wordBreak: "break-word",
+          overflowWrap: "anywhere",
         }}
       >
         {isEditing ? (
@@ -125,31 +139,35 @@ const BotBubble: React.FC<BotBubbleProps> = ({ text, bodyRef, actionsPortalRef, 
               setEditText(e.target.value);
               resizeTextarea();
             }}
-            className="w-full bg-transparent text-[#2d1b4f] leading-relaxed outline-none resize-none"
-            style={{ wordBreak: 'break-word', overflowWrap: 'anywhere', overflow: 'hidden' }}
+            className="w-full resize-none bg-transparent text-[#111827] leading-relaxed outline-none"
+            style={{ wordBreak: "break-word", overflowWrap: "anywhere", overflow: "hidden" }}
           />
         ) : (
-          text
+          <MarkdownMessage text={deferredText} />
         )}
       </div>
 
       {!isPinned && (
-        <div 
-          className={`absolute -top-6 right-0 z-10 transition-[opacity,transform] duration-200 ease-out ${isHovered || isEditing ? 'opacity-100 translate-x-0 pointer-events-auto' : 'opacity-0 translate-x-2 pointer-events-none'}`}
+        <div
+          className={`absolute -top-6 right-0 z-10 transition-[opacity,transform] duration-200 ease-out ${
+            isHovered || isEditing
+              ? "opacity-100 translate-x-0 pointer-events-auto"
+              : "opacity-0 translate-x-2 pointer-events-none"
+          }`}
         >
           {actionsContent}
         </div>
       )}
       {isPinned && portalElement
         ? createPortal(
-            <div 
+            <div
               className="transition-[opacity,transform] duration-200 ease-out pointer-events-auto"
               onMouseEnter={() => setIsHovered(true)}
               onMouseLeave={() => setIsHovered(false)}
             >
               {actionsContent}
             </div>,
-            portalElement
+            portalElement,
           )
         : null}
     </div>

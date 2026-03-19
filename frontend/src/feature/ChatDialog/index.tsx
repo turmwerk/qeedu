@@ -3,6 +3,7 @@ import MessageList, {
   type DialogMessage,
 } from "./MessageList";
 import InputArea from "./InputArea";
+import { chatStream, type ChatMessage } from "@/api/ai";
 
 interface DialogProps {
   dialogId: string;
@@ -31,7 +32,7 @@ const Dialog: React.FC<DialogProps> & {
   const [files, setFiles] = useState<File[]>([]);
   const [pending, setPending] = useState(false);
   const bodyRef = useRef<HTMLDivElement | null>(null);
-  const replyTimeoutRef = useRef<number | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
   const isAtBottomRef = useRef(true);
 
   // 持久化消息
@@ -43,10 +44,8 @@ const Dialog: React.FC<DialogProps> & {
 
   useEffect(() => {
     return () => {
-      if (replyTimeoutRef.current !== null) {
-        window.clearTimeout(replyTimeoutRef.current);
-        replyTimeoutRef.current = null;
-      }
+      abortRef.current?.abort();
+      abortRef.current = null;
     };
   }, []);
 
@@ -55,20 +54,16 @@ const Dialog: React.FC<DialogProps> & {
       const raw = localStorage.getItem(storageKey);
       if (raw) {
         setMessages(JSON.parse(raw));
-        if (replyTimeoutRef.current !== null) {
-          window.clearTimeout(replyTimeoutRef.current);
-          replyTimeoutRef.current = null;
-        }
+        abortRef.current?.abort();
+        abortRef.current = null;
         return;
       }
     } catch {}
     setMessages([{ from: "bot", text: initMessage }]);
     setInput("");
     setPending(false);
-    if (replyTimeoutRef.current !== null) {
-      window.clearTimeout(replyTimeoutRef.current);
-      replyTimeoutRef.current = null;
-    }
+    abortRef.current?.abort();
+    abortRef.current = null;
   }, [storageKey, initMessage]);
 
   const scrollToBottom = useCallback((behavior: ScrollBehavior = "auto") => {
@@ -87,25 +82,60 @@ const Dialog: React.FC<DialogProps> & {
     if (!input.trim() || pending) return;
     const text = input;
     const sentFiles = [...files];
-    setMessages((m) => [...m, { from: "user", text, files: sentFiles }]);
+    const userMsg: DialogMessage = { from: "user", text, files: sentFiles };
+    setMessages((m) => [...m, userMsg]);
     setInput("");
     setFiles([]);
     setPending(true);
-    const reply = `已收到：${text}${sentFiles.length > 0 ? ` 和 ${sentFiles.length} 个文件` : ""}`;
     scrollToBottom("smooth");
-    replyTimeoutRef.current = window.setTimeout(() => {
-      setMessages((m) => [...m, { from: "bot", text: reply }]);
-      setPending(false);
-      replyTimeoutRef.current = null;
-    }, 600);
+
+    // Build chat history for the API
+    const chatHistory: ChatMessage[] = messages
+      .filter((m) => m.text)
+      .map((m) => ({
+        role: m.from === "user" ? "user" as const : "assistant" as const,
+        content: m.text,
+      }));
+    chatHistory.push({ role: "user", content: text });
+
+    // Add empty bot message that will be filled by streaming
+    setMessages((m) => [...m, { from: "bot", text: "" }]);
+
+    abortRef.current = chatStream({
+      messages: chatHistory,
+      onDelta: (delta) => {
+        setMessages((m) => {
+          const updated = [...m];
+          const last = updated[updated.length - 1];
+          if (last && last.from === "bot") {
+            updated[updated.length - 1] = { ...last, text: last.text + delta };
+          }
+          return updated;
+        });
+      },
+      onDone: () => {
+        setPending(false);
+        abortRef.current = null;
+      },
+      onError: (err) => {
+        setMessages((m) => {
+          const updated = [...m];
+          const last = updated[updated.length - 1];
+          if (last && last.from === "bot") {
+            updated[updated.length - 1] = { ...last, text: last.text || `Error: ${err}` };
+          }
+          return updated;
+        });
+        setPending(false);
+        abortRef.current = null;
+      },
+    });
   };
 
   const stop = () => {
     if (!pending) return;
-    if (replyTimeoutRef.current !== null) {
-      window.clearTimeout(replyTimeoutRef.current);
-      replyTimeoutRef.current = null;
-    }
+    abortRef.current?.abort();
+    abortRef.current = null;
     setPending(false);
   };
 

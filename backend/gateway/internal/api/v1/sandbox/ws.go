@@ -9,7 +9,7 @@ import (
 	"time"
 
 	sandboxRPC "github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/rpc/sandbox"
-	sandboxv1 "github.com/dieWehmut/nju-edu-ai-system/backend/proto/sandbox/v1"
+	sandboxv1 "github.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/sandbox/v1"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 )

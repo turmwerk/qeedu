@@ -13,7 +13,6 @@ dist
 dist-ssr
 *.local
 *.env
-requirements.txt
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -25,3 +24,11 @@ requirements.txt
 *.sln
 *.sw?
 *.exe
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+.mypy_cache/
+.pytest_cache/

@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package ai_copilot.v1;
+
+option go_package = "github.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/ai-copilot/v1;aicopilotv1";
+
+service AICopilotService {
+  rpc Complete(CompleteRequest) returns (CompleteResponse);
+}
+
+message CompleteRequest {
+  string language      = 1;
+  string file_content  = 2;
+  int32  cursor_offset = 3;
+  string file_path     = 4;
+}
+
+message CompleteResponse {
+  string suggestion = 1;
+}

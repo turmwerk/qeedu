@@ -1,0 +1,26 @@
+.git
+.gitignore
+.env
+*.md
+bin
+tmp
+data
+
+# Frontend (not needed in backend builds)
+../frontend
+
+# Python artifacts
+__pycache__
+*.pyc
+*.pyo
+.venv
+.mypy_cache
+.pytest_cache
+
+# Go artifacts
+*.exe
+*.test
+
+# IDE
+.vscode
+.idea

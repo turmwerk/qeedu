@@ -7,7 +7,7 @@ RUN go mod download
 COPY . .
 RUN CGO_ENABLED=0 go build -o /sandbox ./sandbox/cmd/server
 
-FROM alpine:3.21
+FROM alpine:3.20
 RUN apk add --no-cache ca-certificates tzdata docker-cli
 COPY --from=builder /sandbox /sandbox
 EXPOSE 50052

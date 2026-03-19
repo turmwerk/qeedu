@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"net/http"
 
-	userv1 "github.com/dieWehmut/nju-edu-ai-system/backend/proto/user/v1"
 	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/configs"
+	userv1 "github.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/user/v1"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/oauth2"
 )
@@ -24,6 +24,9 @@ type gitHubUser struct {
 //
 //	GET /api/v1/auth/github
 func GitHubLogin(c *gin.Context) {
+	if !ensureOAuthConfig(c, "GitHub", configs.GitHubOAuth, "GITHUB") {
+		return
+	}
 	state := randomState()
 	u := configs.GitHubOAuth.AuthCodeURL(state, oauth2.AccessTypeOnline)
 	c.Redirect(http.StatusTemporaryRedirect, u)
@@ -33,6 +36,9 @@ func GitHubLogin(c *gin.Context) {
 //
 //	GET /api/v1/auth/github/callback?code=xxx&state=xxx
 func GitHubCallback(c *gin.Context) {
+	if !ensureOAuthConfig(c, "GitHub", configs.GitHubOAuth, "GITHUB") {
+		return
+	}
 	code := c.Query("code")
 	if code == "" {
 		oauthError(c, "missing code")

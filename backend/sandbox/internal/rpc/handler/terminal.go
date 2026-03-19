@@ -5,7 +5,7 @@ import (
 	"io"
 	"time"
 
-	sandboxv1 "github.com/dieWehmut/nju-edu-ai-system/backend/proto/sandbox/v1"
+	sandboxv1 "github.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/sandbox/v1"
 	"github.com/dieWehmut/nju-edu-ai-system/backend/sandbox/internal/services/terminal"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

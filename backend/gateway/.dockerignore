@@ -1,0 +1,19 @@
+.git
+.gitignore
+.env
+*.md
+bin
+tmp
+data
+
+# Python services (not needed for Go builds)
+ai-chat
+ai-copilot
+
+# Python artifacts
+__pycache__
+*.pyc
+
+# IDE
+.vscode
+.idea

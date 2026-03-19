@@ -1,16 +1,15 @@
-import React, { useState } from "react";
+import React from "react";
 import { SidebarView } from "./constants";
 import ActivityBar from "./ActivityBar";
 import Panel from "./Panel";
+import { useSidebarView } from "./SidebarViewContext";
 
 const Sidebar: React.FC = () => {
-  const [activeView, setActiveView] = useState<SidebarView | null>(
-    SidebarView.EXPLORER,
-  );
+  const { activeView, toggleView } = useSidebarView();
 
   const handleViewChange = (view: SidebarView) => {
     // 再次点击关闭面板
-    setActiveView((prev) => (prev === view ? null : view));
+    toggleView(view);
   };
 
   return (

@@ -1,10 +1,11 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import Editor from "@monaco-editor/react";
-import type { editor } from "monaco-editor";
+import type { editor, IDisposable } from "monaco-editor";
 // @ts-ignore
 import "monaco-editor/esm/vs/editor/editor.all";
 // @ts-ignore
 import "monaco-editor/esm/vs/basic-languages/markdown/markdown.contribution";
+import { setupCompletion } from "@/feature/CodeEditor/CodeCompletion/CompletionController";
 
 interface Props {
 	value: string;
@@ -30,6 +31,14 @@ const MonacoEditor: React.FC<Props> = ({
 	minimap = false,
 	path,
 }) => {
+	const completionRef = useRef<IDisposable | null>(null);
+
+	useEffect(() => {
+		return () => {
+			completionRef.current?.dispose();
+			completionRef.current = null;
+		};
+	}, []);
 
 	const options: editor.IStandaloneEditorConstructionOptions = useMemo(
 		() => ({
@@ -75,7 +84,7 @@ const MonacoEditor: React.FC<Props> = ({
 		[readOnly, minimap]
 	);
 
-	const handleMount = (_editor: editor.IStandaloneCodeEditor, monaco: typeof import("monaco-editor")) => {
+	const handleMount = (editorInstance: editor.IStandaloneCodeEditor, monaco: typeof import("monaco-editor")) => {
 		if (!themeDefined) {
 			themeDefined = true;
 			monaco.editor.defineTheme("vscode-dark-markdown", {
@@ -215,6 +224,10 @@ const MonacoEditor: React.FC<Props> = ({
 				},
 			});
 		}
+
+		// Set up code completion
+		completionRef.current?.dispose();
+		completionRef.current = setupCompletion(editorInstance, monaco, language);
 	};
 
 	return (

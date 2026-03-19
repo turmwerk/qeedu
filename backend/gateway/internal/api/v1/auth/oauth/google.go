@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	userv1 "github.com/dieWehmut/nju-edu-ai-system/backend/proto/user/v1"
 	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/configs"
+	userv1 "github.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/user/v1"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/oauth2"
 )
@@ -23,6 +23,9 @@ type googleUser struct {
 //
 //	GET /api/v1/auth/google
 func GoogleLogin(c *gin.Context) {
+	if !ensureOAuthConfig(c, "Google", configs.GoogleOAuth, "GOOGLE") {
+		return
+	}
 	state := randomState()
 	u := configs.GoogleOAuth.AuthCodeURL(state, oauth2.AccessTypeOffline, oauth2.ApprovalForce)
 	c.Redirect(http.StatusTemporaryRedirect, u)
@@ -32,6 +35,9 @@ func GoogleLogin(c *gin.Context) {
 //
 //	GET /api/v1/auth/google/callback?code=xxx&state=xxx
 func GoogleCallback(c *gin.Context) {
+	if !ensureOAuthConfig(c, "Google", configs.GoogleOAuth, "GOOGLE") {
+		return
+	}
 	code := c.Query("code")
 	if code == "" {
 		oauthError(c, "missing code")

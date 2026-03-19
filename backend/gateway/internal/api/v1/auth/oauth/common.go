@@ -3,14 +3,17 @@ package oauth
 import (
 	"crypto/rand"
 	"encoding/base64"
+	"log"
 	"net/http"
 	"net/url"
+	"strings"
 
-	userv1 "github.com/dieWehmut/nju-edu-ai-system/backend/proto/user/v1"
 	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/configs"
 	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/middleware"
 	userRPC "github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/rpc/user"
+	userv1 "github.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/user/v1"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/oauth2"
 )
 
 func randomState() string {
@@ -25,6 +28,33 @@ func redirectToFrontend(c *gin.Context, params url.Values) {
 
 func oauthError(c *gin.Context, msg string) {
 	redirectToFrontend(c, url.Values{"oauth_error": {msg}})
+}
+
+func ensureOAuthConfig(c *gin.Context, providerLabel string, cfg *oauth2.Config, envPrefix string) bool {
+	if cfg == nil {
+		log.Printf("[oauth] %s config is nil", providerLabel)
+		oauthError(c, providerLabel+" OAuth 未配置")
+		return false
+	}
+
+	var missing []string
+	if strings.TrimSpace(cfg.ClientID) == "" {
+		missing = append(missing, envPrefix+"_CLIENT_ID")
+	}
+	if strings.TrimSpace(cfg.ClientSecret) == "" {
+		missing = append(missing, envPrefix+"_CLIENT_SECRET")
+	}
+	if strings.TrimSpace(cfg.RedirectURL) == "" {
+		missing = append(missing, envPrefix+"_CALLBACK_URL")
+	}
+
+	if len(missing) > 0 {
+		log.Printf("[oauth] %s config missing: %s", providerLabel, strings.Join(missing, ", "))
+		oauthError(c, providerLabel+" OAuth 未配置")
+		return false
+	}
+
+	return true
 }
 
 // FinishOAuth upserts the user via gRPC, generates a JWT, and redirects to the frontend.

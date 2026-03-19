@@ -66,6 +66,7 @@ const ExplorerPanel: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [treeSize, setTreeSize] = useState({ width: 1, height: 1 });
   const lastSizeRef = useRef({ width: 1, height: 1 });
+  const resizeTimeoutRef = useRef<number | null>(null);
 
   useLayoutEffect(() => {
     if (!containerRef.current) return;
@@ -79,10 +80,20 @@ const ExplorerPanel: React.FC = () => {
       const prev = lastSizeRef.current;
       if (nextWidth === prev.width && nextHeight === prev.height) return;
       lastSizeRef.current = { width: nextWidth, height: nextHeight };
-      setTreeSize(lastSizeRef.current);
+      if (resizeTimeoutRef.current) {
+        window.clearTimeout(resizeTimeoutRef.current);
+      }
+      resizeTimeoutRef.current = window.setTimeout(() => {
+        setTreeSize(lastSizeRef.current);
+      }, 80);
     });
     observer.observe(containerRef.current);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      if (resizeTimeoutRef.current) {
+        window.clearTimeout(resizeTimeoutRef.current);
+      }
+    };
   }, []);
 
   const resolveCreateParentPath = (parentPath?: string) => {

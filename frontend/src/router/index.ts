@@ -18,7 +18,7 @@ const ResearchHub = lazy(() => import("@/pages/Research"));
 const ManagementHub = lazy(() => import("@/pages/Management"));
 const MajorConstruct = lazy(() => import("@/pages/Management/MajorConstruct"));
 const PolicyResponse = lazy(() => import("@/pages/Management/PolicyResponse"));
-const Collaboration = lazy(() => import("@/pages/Research/Collaboration"));
+const Collaboration = lazy(() => import("@/pages/Research/PaperWriting"));
 
 const lazyElement = (Component: LazyExoticComponent<ComponentType<any>>) =>
   createElement(

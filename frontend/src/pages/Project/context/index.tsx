@@ -32,12 +32,19 @@ interface WorkspaceState {
   updateTabContent: (id: string, content: string) => void;
   saveActiveTab: () => void;
   addFile: (parentPath: string, name: string, open?: boolean) => FileTreeNode | null;
+  addFileWithContent: (
+    parentPath: string,
+    name: string,
+    content: string,
+    open?: boolean,
+  ) => FileTreeNode | null;
   addFolder: (parentPath: string, name: string) => FileTreeNode | null;
   renameNode: (targetPath: string, newName: string) => void;
   deleteNode: (targetPath: string) => void;
   moveNode: (sourcePath: string, targetPath: string) => void;
   refreshFileTree: () => void;
   loadFileTree: (nextTree: FileTreeNode) => void;
+  updateFileContents: (updates: { path: string; content: string }[]) => void;
 }
 
 const getParentPath = (path: string): string => {
@@ -135,6 +142,22 @@ const updatePaths = (
   };
 };
 
+const updateFileTreeContent = (
+  node: FileTreeNode,
+  updates: Map<string, string>,
+): FileTreeNode => {
+  if (node.type === "file") {
+    if (!updates.has(node.path)) return node;
+    const nextContent = updates.get(node.path) ?? "";
+    if (node.content === nextContent) return node;
+    return { ...node, content: nextContent };
+  }
+  if (!node.children) return node;
+  const nextChildren = node.children.map((child) => updateFileTreeContent(child, updates));
+  const changed = nextChildren.some((child, idx) => child !== node.children?.[idx]);
+  return changed ? { ...node, children: nextChildren } : node;
+};
+
 export const useWorkspace = create<WorkspaceState>((set, get) => ({
   projectName: "",
   fileTree: buildMockFileTree(""),
@@ -230,6 +253,27 @@ export const useWorkspace = create<WorkspaceState>((set, get) => ({
       type: "file",
       language: inferLanguage(uniqueName),
       content: "",
+    };
+    set((state) => ({ fileTree: insertNodeAtPath(state.fileTree, parentPath, node) }));
+    if (open) openFileTab(node);
+    return node;
+  },
+  addFileWithContent: (parentPath, name, content, open = false) => {
+    if (!name.trim()) return null;
+    const { fileTree, openFileTab } = get();
+    const parent = findNodeByPath(fileTree, parentPath);
+    if (!parent || parent.type !== "directory") return null;
+    const uniqueName = ensureUniqueName(
+      name.trim(),
+      parent.children?.map((child) => child.name) ?? [],
+    );
+    const node: FileTreeNode = {
+      id: buildPath(parentPath, uniqueName),
+      name: uniqueName,
+      path: buildPath(parentPath, uniqueName),
+      type: "file",
+      language: inferLanguage(uniqueName),
+      content,
     };
     set((state) => ({ fileTree: insertNodeAtPath(state.fileTree, parentPath, node) }));
     if (open) openFileTab(node);
@@ -364,6 +408,24 @@ export const useWorkspace = create<WorkspaceState>((set, get) => ({
   },
   loadFileTree: (nextTree) => {
     set({ fileTree: nextTree, tabs: [], activeTabId: null, runOutput: null });
+  },
+  updateFileContents: (updates) => {
+    if (updates.length === 0) return;
+    const updateMap = new Map<string, string>();
+    updates.forEach((item) => {
+      updateMap.set(item.path, item.content);
+    });
+    set((state) => ({
+      fileTree: updateFileTreeContent(state.fileTree, updateMap),
+      tabs: state.tabs.map((tab) => {
+        if (!updateMap.has(tab.id)) return tab;
+        return {
+          ...tab,
+          content: updateMap.get(tab.id) ?? "",
+          isDirty: true,
+        };
+      }),
+    }));
   },
 }));
 

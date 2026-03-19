@@ -4,7 +4,7 @@ import (
 	"log"
 	"net"
 
-	sandboxv1 "github.com/dieWehmut/nju-edu-ai-system/backend/proto/sandbox/v1"
+	sandboxv1 "github.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/sandbox/v1"
 	"github.com/dieWehmut/nju-edu-ai-system/backend/sandbox/internal/rpc/handler"
 	"github.com/dieWehmut/nju-edu-ai-system/backend/sandbox/internal/services/runner"
 	"github.com/dieWehmut/nju-edu-ai-system/backend/sandbox/internal/services/terminal"

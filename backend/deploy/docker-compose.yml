@@ -46,6 +46,32 @@ services:
       GRPC_ADDR: ":50052"
       DOCKER_HOST: "unix:///var/run/docker.sock"
 
+  ai-copilot:
+    build:
+      context: ../
+      dockerfile: ai-copilot/Dockerfile
+    container_name: nju-ai-copilot
+    restart: unless-stopped
+    ports:
+      - "50053:50053"
+    env_file:
+      - ../.env
+    environment:
+      GRPC_PORT: "50053"
+
+  ai-chat:
+    build:
+      context: ../
+      dockerfile: ai-chat/Dockerfile
+    container_name: nju-ai-chat
+    restart: unless-stopped
+    ports:
+      - "50054:50054"
+    env_file:
+      - ../.env
+    environment:
+      GRPC_PORT: "50054"
+
   gateway:
     build:
       context: ../
@@ -59,11 +85,17 @@ services:
         condition: service_started
       sandbox:
         condition: service_started
+      ai-copilot:
+        condition: service_started
+      ai-chat:
+        condition: service_started
     env_file:
       - ../.env
     environment:
       USER_SERVICE_ADDR: "user-services:50051"
       SANDBOX_SERVICE_ADDR: "sandbox:50052"
+      AI_COPILOT_SERVICE_ADDR: "ai-copilot:50053"
+      AI_CHAT_SERVICE_ADDR: "ai-chat:50054"
 
 volumes:
   mysql-data:

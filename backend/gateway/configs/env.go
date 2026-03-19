@@ -16,8 +16,10 @@ var (
 	FrontendURL    string
 	DatabaseDSN    string
 	JWTSecret      string
-	UserServiceAddr    string
-	SandboxServiceAddr string
+	UserServiceAddr      string
+	SandboxServiceAddr   string
+	AIChatServiceAddr    string
+	AICopilotServiceAddr string
 )
 
 // Load reads .env (if present) and populates config variables.
@@ -61,5 +63,15 @@ func Load() {
 	SandboxServiceAddr = os.Getenv("SANDBOX_SERVICE_ADDR")
 	if SandboxServiceAddr == "" {
 		SandboxServiceAddr = "localhost:50052"
+	}
+
+	AICopilotServiceAddr = os.Getenv("AI_COPILOT_SERVICE_ADDR")
+	if AICopilotServiceAddr == "" {
+		AICopilotServiceAddr = "localhost:50053"
+	}
+
+	AIChatServiceAddr = os.Getenv("AI_CHAT_SERVICE_ADDR")
+	if AIChatServiceAddr == "" {
+		AIChatServiceAddr = "localhost:50054"
 	}
 }

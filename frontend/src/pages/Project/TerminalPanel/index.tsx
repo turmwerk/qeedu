@@ -1,13 +1,16 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { CloseOutlined, MinusOutlined } from "@ant-design/icons";
+import { CloseOutlined, DownOutlined, PlusOutlined } from "@ant-design/icons";
 import { useContextMenu, type ContextMenuItem } from "@/ui/ContextMenu";
-import type { ToolItemProps } from "@/ui/TabBar";
 import PanelTabBar from "./PanelTabBar";
 import TerminalView from "./Views/TerminalView";
 import OutputView from "./Views/OutputView";
 import ProblemsView from "./Views/ProblemsView";
 import ConsoleView from "./Views/ConsoleView";
 import PortsView from "./Views/PortsView";
+import {
+  terminalProfiles,
+  useTerminalSessionStore,
+} from "./Views/TerminalView/sessionStore";
 
 interface TerminalPanelProps {
   onClose: () => void;
@@ -50,12 +53,21 @@ const viewConfigs: ViewConfig[] = [
   },
 ];
 
-const TerminalPanel: React.FC<TerminalPanelProps> = ({ onClose, onMinimize }) => {
+const TerminalPanel: React.FC<TerminalPanelProps> = ({ onClose }) => {
   const { openAtEvent } = useContextMenu();
   const [activeViewId, setActiveViewId] = useState<ViewId>("terminal");
   const [visibleViews, setVisibleViews] = useState<ViewId[]>(() =>
     viewConfigs.map((view) => view.id),
   );
+  const sessions = useTerminalSessionStore((state) => state.sessions);
+  const activeSessionId = useTerminalSessionStore((state) => state.activeId);
+  const selectedProfileId = useTerminalSessionStore(
+    (state) => state.selectedProfileId,
+  );
+  const setSelectedProfileId = useTerminalSessionStore(
+    (state) => state.setSelectedProfileId,
+  );
+  const addSession = useTerminalSessionStore((state) => state.addSession);
 
   const visibleConfigs = useMemo(
     () => viewConfigs.filter((view) => visibleViews.includes(view.id)),
@@ -65,22 +77,14 @@ const TerminalPanel: React.FC<TerminalPanelProps> = ({ onClose, onMinimize }) =>
     () => visibleConfigs.map((view) => ({ id: view.id, label: view.label })),
     [visibleConfigs],
   );
-  const tools = useMemo<ToolItemProps[]>(() => {
-    const items: ToolItemProps[] = [];
-    if (onMinimize) {
-      items.push({
-        icon: <MinusOutlined className="text-[12px]" />,
-        title: "最小化",
-        onClick: onMinimize,
-      });
-    }
-    items.push({
-      icon: <CloseOutlined className="text-[12px]" />,
-      title: "隐藏面板",
-      onClick: onClose,
-    });
-    return items;
-  }, [onClose, onMinimize]);
+  const profileMap = useMemo(
+    () => new Map(terminalProfiles.map((profile) => [profile.id, profile])),
+    [],
+  );
+  const selectedProfile =
+    profileMap.get(selectedProfileId) ?? terminalProfiles[0];
+  const activeSession =
+    sessions.find((session) => session.id === activeSessionId) ?? sessions[0];
 
   useEffect(() => {
     if (!visibleViews.includes(activeViewId)) {
@@ -116,6 +120,19 @@ const TerminalPanel: React.FC<TerminalPanelProps> = ({ onClose, onMinimize }) =>
     openAtEvent(event, items);
   };
 
+  const handleAddSession = () => {
+    addSession(selectedProfileId);
+  };
+
+  const handleProfileMenu = (event: React.MouseEvent) => {
+    const items: ContextMenuItem[] = terminalProfiles.map((profile) => ({
+      label: profile.title,
+      checked: profile.id === selectedProfileId,
+      onClick: () => setSelectedProfileId(profile.id),
+    }));
+    openAtEvent(event, items);
+  };
+
   const activeConfig =
     visibleConfigs.find((view) => view.id === activeViewId) ??
     visibleConfigs[0] ??
@@ -128,7 +145,43 @@ const TerminalPanel: React.FC<TerminalPanelProps> = ({ onClose, onMinimize }) =>
         activeId={activeViewId}
         onTabClick={(id) => setActiveViewId(id as ViewId)}
         onTabContextMenu={handleViewBarContextMenu}
-        tools={tools}
+        rightSlot={
+          <div className="flex items-center gap-2">
+            {activeViewId === "terminal" && (
+              <>
+                <div className="flex items-center gap-1">
+                  <button
+                    className="flex h-6 w-6 items-center justify-center rounded text-[#9d9d9d] hover:bg-white/10 hover:text-[#dddddd]"
+                    title={`新建终端（${selectedProfile?.title ?? "bash"}）`}
+                    onClick={handleAddSession}
+                  >
+                    <PlusOutlined className="text-[10px]" />
+                  </button>
+                  <button
+                    className="flex h-6 items-center gap-1 rounded px-1 text-[10px] text-[#9d9d9d] hover:bg-white/10 hover:text-[#dddddd]"
+                    onClick={handleProfileMenu}
+                    title="选择终端类型"
+                  >
+                    <span className="max-w-[60px] truncate">
+                      {selectedProfile?.title ?? "bash"}
+                    </span>
+                    <DownOutlined className="text-[9px]" />
+                  </button>
+                </div>
+                <div className="max-w-[140px] truncate text-[10px] text-[#8a8a8a]">
+                  {activeSession?.title ?? ""}
+                </div>
+              </>
+            )}
+            <button
+              className="flex h-7 w-7 items-center justify-center rounded text-[#9d9d9d] hover:bg-white/10 hover:text-[#dddddd]"
+              title="隐藏面板"
+              onClick={onClose}
+            >
+              <CloseOutlined className="text-[12px]" />
+            </button>
+          </div>
+        }
       />
       <div className="min-h-0 flex-1 overflow-hidden">
         {activeConfig ? activeConfig.render() : null}

@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package ai_chat.v1;
+
+option go_package = "github.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/ai-chat/v1;aichatv1";
+
+service AIChatService {
+  rpc Chat(ChatRequest) returns (stream ChatResponse);
+  rpc FixBug(FixBugRequest) returns (stream FixBugResponse);
+}
+
+message ChatMessage {
+  string role    = 1;  // "user" | "assistant" | "system"
+  string content = 2;
+}
+
+message ChatRequest {
+  repeated ChatMessage messages = 1;
+  string file_context           = 2;
+  string language               = 3;
+}
+
+message ChatResponse {
+  string delta = 1;
+  bool   done  = 2;
+}
+
+message FixBugRequest {
+  string code          = 1;
+  string error_message = 2;
+  string language      = 3;
+}
+
+message FixBugResponse {
+  string delta = 1;
+  bool   done  = 2;
+}

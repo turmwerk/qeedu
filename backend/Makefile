@@ -22,7 +22,7 @@ logs:
 restart:
 	$(COMPOSE) restart
 
-# 生成 protobuf 代码
+# 生成 protobuf 代码（输出到 pkg/pb/）
 proto:
 	MSYS_NO_PATHCONV=1 docker run --rm \
 		-v "$(CURDIR):/workspace" \
@@ -30,7 +30,13 @@ proto:
 		-w "/workspace" \
 		--entrypoint sh \
 		namely/protoc-all:1.51_2 \
-		-c 'PATH="/go-plugins:$$PATH" && protoc --proto_path=proto --go_out=proto --go_opt=paths=source_relative --go-grpc_out=proto --go-grpc_opt=paths=source_relative sandbox/v1/runner.proto sandbox/v1/terminal.proto user/v1/user.proto'
+		-c 'PATH="/go-plugins:$$PATH" && protoc --proto_path=proto \
+			--go_out=pkg/pb --go_opt=paths=source_relative \
+			--go-grpc_out=pkg/pb --go-grpc_opt=paths=source_relative \
+			sandbox/v1/runner.proto sandbox/v1/terminal.proto \
+			user/v1/user.proto \
+			ai-chat/v1/ai-chat.proto \
+			ai-copilot/v1/ai-copilot.proto'
 
 # 整理依赖
 tidy:

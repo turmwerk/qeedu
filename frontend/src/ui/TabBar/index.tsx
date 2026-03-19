@@ -13,6 +13,7 @@ export interface TabBarProps {
   onTabContextMenu?: (id: string, event: React.MouseEvent) => void;
   /** 右侧工具按钮列表 */
   tools?: ToolItemProps[];
+  rightSlot?: React.ReactNode;
   className?: string;
   height?: string;
   showCloseButton?: boolean;
@@ -25,6 +26,7 @@ const TabBar: React.FC<TabBarProps> = ({
   onTabClose,
   onTabContextMenu,
   tools = [],
+  rightSlot,
   className = "",
   height = "h-9",
   showCloseButton = true,
@@ -62,6 +64,12 @@ const TabBar: React.FC<TabBarProps> = ({
           {tools.map((tool, i) => (
             <ToolItemComp key={i} {...tool} />
           ))}
+        </div>
+      )}
+
+      {rightSlot && (
+        <div className="flex shrink-0 items-center gap-2 border-l border-[#2d2d2d] px-2">
+          {rightSlot}
         </div>
       )}
     </div>

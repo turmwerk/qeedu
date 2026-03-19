@@ -1,7 +1,7 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { useSearchParams, Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { WorkspaceProvider, useWorkspace } from "./context";
+import { WorkspaceProvider } from "./context";
 import { PROJECT_NAMES } from "./data/projectNames";
 import TopBar from "./TopBar";
 import Sidebar from "./Sidebar";
@@ -10,7 +10,6 @@ import AssistantPanel from "./AssistantPanel";
 import TerminalPanel from "./TerminalPanel";
 import BottomBar from "./BottomBar";
 import { ContextMenuProvider } from "@/ui/ContextMenu";
-import { useHotkeys } from "react-hotkeys-hook";
 import QuickOpen from "./QuickOpen";
 import {
   Group as PanelGroup,
@@ -18,41 +17,42 @@ import {
   Separator as PanelResizeHandle,
   type PanelImperativeHandle,
 } from "react-resizable-panels";
+import ProjectShortcuts from "./Shortcuts";
+import { useProjectCommands } from "./Shortcuts/commands";
+import { SidebarViewProvider } from "./Sidebar/SidebarViewContext";
 
 const ProjectPageInner: React.FC = () => {
-  const { saveActiveTab, setQuickOpenOpen } = useWorkspace();
   const terminalPanelRef = useRef<PanelImperativeHandle | null>(null);
-
-  useHotkeys(
-    "ctrl+s, meta+s",
-    (event) => {
-      event.preventDefault();
-      saveActiveTab();
-    },
-    [saveActiveTab],
-  );
-
-  useHotkeys(
-    "ctrl+p, meta+p",
-    (event) => {
-      event.preventDefault();
-      setQuickOpenOpen(true);
-    },
-    [setQuickOpenOpen],
-  );
+  const [isTerminalCollapsed, setIsTerminalCollapsed] = useState(false);
 
   const handleTerminalClose = () => {
     terminalPanelRef.current?.collapse();
+    setIsTerminalCollapsed(true);
   };
 
   const handleTerminalMinimize = () => {
     terminalPanelRef.current?.resize("140px");
+    setIsTerminalCollapsed(false);
   };
+
+  const toggleTerminalPanel = () => {
+    if (!terminalPanelRef.current) return;
+    if (isTerminalCollapsed) {
+      terminalPanelRef.current.resize("30%");
+      setIsTerminalCollapsed(false);
+      return;
+    }
+    terminalPanelRef.current.collapse();
+    setIsTerminalCollapsed(true);
+  };
+
+  const commandBundle = useProjectCommands({ toggleTerminalPanel });
 
   return (
     <div className="project-page-root relative flex h-screen w-screen flex-col overflow-hidden bg-[#1e1e1e] text-[#cccccc]">
       {/* 顶部菜单栏 */}
-      <TopBar />
+      <ProjectShortcuts commands={commandBundle.commands} />
+      <TopBar commands={commandBundle.commands} state={commandBundle.state} />
 
       {/* 主工作区（左侧栏 + 编辑器/终端 + 右侧助手） */}
       <PanelGroup
@@ -128,7 +128,9 @@ const ProjectPage: React.FC = () => {
   return (
     <WorkspaceProvider projectName={projectName}>
       <ContextMenuProvider>
-        <ProjectPageInner />
+        <SidebarViewProvider>
+          <ProjectPageInner />
+        </SidebarViewProvider>
       </ContextMenuProvider>
     </WorkspaceProvider>
   );

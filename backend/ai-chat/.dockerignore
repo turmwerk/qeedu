@@ -1,0 +1,27 @@
+.git
+.gitignore
+.env
+*.md
+bin
+tmp
+data
+
+# Other services
+gateway
+sandbox
+user-services
+ai-copilot
+proto
+deploy
+
+# Python artifacts
+__pycache__
+*.pyc
+*.pyo
+.venv
+.mypy_cache
+.pytest_cache
+
+# IDE
+.vscode
+.idea

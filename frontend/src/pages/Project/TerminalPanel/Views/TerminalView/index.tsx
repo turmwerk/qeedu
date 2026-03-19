@@ -1,36 +1,17 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { DownOutlined, PlusOutlined } from "@ant-design/icons";
+import React, { useEffect, useMemo, useRef } from "react";
 import { Terminal } from "xterm";
 import { FitAddon } from "xterm-addon-fit";
 import { WebLinksAddon } from "xterm-addon-web-links";
 import "xterm/css/xterm.css";
 import { useContextMenu, type ContextMenuItem } from "@/ui/ContextMenu";
 import { buildTerminalWsUrl } from "@/api/sandbox";
-import cmdProfile from "./Cmd";
-import powershellProfile from "./Powershell";
-import bashProfile from "./Bash";
-
-type TerminalProfile = typeof cmdProfile;
-
-type TerminalSession = {
-  id: string;
-  title: string;
-  profileId: TerminalProfile["id"];
-};
-
-const profiles: TerminalProfile[] = [bashProfile, powershellProfile, cmdProfile];
-
-const createSessionMeta = (
-  profile: TerminalProfile,
-  index: number,
-): TerminalSession => {
-  const seed = Math.random().toString(36).slice(2, 8);
-  return {
-    id: `${profile.id}-${Date.now()}-${seed}`,
-    title: `${profile.title} ${index}`,
-    profileId: profile.id,
-  };
-};
+import { getFileIcon } from "../../../utils/filePresentation";
+import {
+  useTerminalSessionStore,
+  terminalProfiles,
+  type TerminalProfile,
+  type TerminalSession,
+} from "./sessionStore";
 
 /* ---------- xterm + WebSocket session handle ---------- */
 interface XtermHandle {
@@ -41,27 +22,25 @@ interface XtermHandle {
 }
 
 const TerminalView: React.FC = () => {
-  const [sessions, setSessions] = useState<TerminalSession[]>(() => [
-    createSessionMeta(bashProfile, 1),
-  ]);
-  const [activeId, setActiveId] = useState<string | null>(null);
-  const [selectedProfileId, setSelectedProfileId] = useState<TerminalProfile["id"]>(
-    profiles[0]?.id ?? "bash",
+  const sessions = useTerminalSessionStore((state) => state.sessions);
+  const activeId = useTerminalSessionStore((state) => state.activeId);
+  const selectedProfileId = useTerminalSessionStore(
+    (state) => state.selectedProfileId,
   );
+  const setActiveId = useTerminalSessionStore((state) => state.setActiveId);
+  const addSession = useTerminalSessionStore((state) => state.addSession);
+  const removeSession = useTerminalSessionStore((state) => state.removeSession);
   const { openAtEvent } = useContextMenu();
-  const sessionsRef = useRef(sessions);
-  const activeIdRef = useRef<string | null>(null);
+  const sessionsRef = useRef<TerminalSession[]>(sessions);
+  const activeIdRef = useRef<string | null>(activeId);
 
   const handleMapRef = useRef(new Map<string, XtermHandle>());
   const containerMapRef = useRef(new Map<string, HTMLDivElement | null>());
   const wrapperRef = useRef<HTMLDivElement>(null);
-
   const profileMap = useMemo(
-    () => new Map(profiles.map((p) => [p.id, p])),
+    () => new Map(terminalProfiles.map((profile) => [profile.id, profile])),
     [],
   );
-
-  const selectedProfile = profileMap.get(selectedProfileId) ?? profiles[0];
 
   /* keep refs in sync */
   useEffect(() => {
@@ -72,13 +51,10 @@ const TerminalView: React.FC = () => {
   }, [activeId]);
   useEffect(() => {
     if (!activeId && sessions.length > 0) setActiveId(sessions[0].id);
-  }, [activeId, sessions]);
+  }, [activeId, sessions, setActiveId]);
 
   const activeSession =
     sessions.find((s) => s.id === activeId) ?? sessions[0];
-  const activeProfile = activeSession
-    ? profileMap.get(activeSession.profileId)
-    : undefined;
 
   /* ---------- xterm + WebSocket lifecycle ---------- */
 
@@ -123,6 +99,14 @@ const TerminalView: React.FC = () => {
     term.loadAddon(new WebLinksAddon());
 
     const handle: XtermHandle = { term, fit, ws: null, disposed: false };
+
+    const profile = profileMap.get(shell as TerminalProfile["id"]);
+    if (profile?.initialLines?.length) {
+      profile.initialLines.forEach((line) => term.writeln(line));
+    }
+    if (profile?.prompt) {
+      term.write(`${profile.prompt} `);
+    }
 
     /* --- WebSocket connection --- */
     const wsUrl = buildTerminalWsUrl(shell);
@@ -307,31 +291,12 @@ const TerminalView: React.FC = () => {
   /* ---------- session CRUD ---------- */
 
   const handleAddSession = (profileId?: TerminalProfile["id"]) => {
-    setSessions((prev) => {
-      const targetProfile =
-        profileMap.get(profileId ?? selectedProfileId) ?? profiles[0];
-      const count =
-        prev.filter((s) => s.profileId === targetProfile.id).length + 1;
-      const next = createSessionMeta(targetProfile, count);
-      setActiveId(next.id);
-      return [...prev, next];
-    });
+    addSession(profileId);
   };
 
   const handleCloseSession = (id: string) => {
     disposeHandle(id);
-    setSessions((prev) => {
-      const next = prev.filter((s) => s.id !== id);
-      if (next.length === 0) {
-        const fallback = createSessionMeta(bashProfile, 1);
-        setActiveId(fallback.id);
-        return [fallback];
-      }
-      if (activeId === id) {
-        setActiveId(next[next.length - 1]?.id ?? null);
-      }
-      return next;
-    });
+    removeSession(id);
   };
 
   /* ---------- context menus ---------- */
@@ -381,94 +346,61 @@ const TerminalView: React.FC = () => {
     openAtEvent(event, items);
   };
 
-  const handleProfileMenu = (event: React.MouseEvent) => {
-    const items: ContextMenuItem[] = profiles.map((profile) => ({
-      label: profile.title,
-      checked: profile.id === selectedProfileId,
-      onClick: () => setSelectedProfileId(profile.id),
-    }));
-    openAtEvent(event, items);
-  };
-
   /* ---------- render ---------- */
 
-  if (!activeSession || !activeProfile) {
+  if (!activeSession) {
     return <div className="h-full" />;
   }
 
   return (
-    <div className="flex h-full flex-col">
-      {/* action bar */}
-      <div className="flex items-center justify-between border-b border-[#2d2d2d] bg-[#1f1f1f] px-2 py-1 text-[11px]">
-        <div className="flex items-center gap-1">
-          <button
-            className="flex h-6 w-6 items-center justify-center rounded text-[#9d9d9d] hover:bg-white/10 hover:text-[#dddddd]"
-            title={`新建终端（${selectedProfile?.title ?? "bash"}）`}
-            onClick={() => handleAddSession(selectedProfileId)}
-          >
-            <PlusOutlined className="text-[10px]" />
-          </button>
-          <button
-            className="flex h-6 items-center gap-1 rounded px-1 text-[10px] text-[#9d9d9d] hover:bg-white/10 hover:text-[#dddddd]"
-            onClick={handleProfileMenu}
-            title="选择终端类型"
-          >
-            <span className="max-w-[60px] truncate">
-              {selectedProfile?.title ?? "bash"}
-            </span>
-            <DownOutlined className="text-[9px]" />
-          </button>
-        </div>
-        <div className="truncate text-[10px] text-[#8a8a8a]">
-          {activeSession.title}
-        </div>
+    <div className="flex h-full min-h-0">
+      {/* terminal panels */}
+      <div
+        ref={wrapperRef}
+        className="relative min-h-0 flex-1 bg-[#1e1e1e]"
+        onContextMenu={handleTerminalContextMenu}
+      >
+        {sessions.map((session) => (
+          <div
+            key={session.id}
+            ref={(el) => {
+              containerMapRef.current.set(session.id, el);
+              ensureTerminal(session, el);
+            }}
+            className={
+              session.id === activeSession.id ? "absolute inset-0" : "hidden"
+            }
+          />
+        ))}
       </div>
 
-      <div className="flex min-h-0 flex-1 overflow-hidden">
-        {/* left tabs */}
-        <div className="flex w-14 shrink-0 flex-col gap-1 border-r border-[#2d2d2d] bg-[#1f1f1f] py-2">
-          {sessions.map((session) => {
-            const parts = session.title.split(" ");
-            const name = parts[0] ?? session.title;
-            const index = parts.slice(1).join(" ");
-            return (
-              <button
-                key={session.id}
-                title={session.title}
-                className={`mx-auto flex h-10 w-10 flex-col items-center justify-center rounded text-[10px] leading-tight transition-colors ${
-                  session.id === activeSession.id
-                    ? "bg-[#094771] text-white"
-                    : "text-[#9d9d9d] hover:bg-white/10 hover:text-[#dddddd]"
-                }`}
-                onClick={() => setActiveId(session.id)}
-                onContextMenu={(event) => handleTabContextMenu(session.id, event)}
-              >
-                <span className="max-w-[36px] truncate">{name}</span>
-                {index && <span className="text-[9px] opacity-80">{index}</span>}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* terminal panels */}
-        <div
-          ref={wrapperRef}
-          className="relative min-h-0 flex-1 bg-[#1e1e1e]"
-          onContextMenu={handleTerminalContextMenu}
-        >
-          {sessions.map((session) => (
-            <div
+      {/* right tabs */}
+      <div className="flex w-12 shrink-0 flex-col gap-1 border-l border-[#2d2d2d] bg-[#1f1f1f] py-2">
+        {sessions.map((session) => {
+          const icon = getFileIcon(
+            session.profileId === "powershell"
+              ? "terminal.ps1"
+              : session.profileId === "cmd"
+                ? "terminal.bat"
+                : "terminal.sh",
+            "h-5 w-5",
+          );
+          return (
+            <button
               key={session.id}
-              ref={(el) => {
-                containerMapRef.current.set(session.id, el);
-                ensureTerminal(session, el);
-              }}
-              className={
-                session.id === activeSession.id ? "absolute inset-0" : "hidden"
-              }
-            />
-          ))}
-        </div>
+              title={session.title}
+              className={`mx-auto flex h-9 w-9 items-center justify-center rounded transition-colors ${
+                session.id === activeSession.id
+                  ? "bg-[#094771] text-white"
+                  : "text-[#9d9d9d] hover:bg-white/10 hover:text-[#dddddd]"
+              }`}
+              onClick={() => setActiveId(session.id)}
+              onContextMenu={(event) => handleTabContextMenu(session.id, event)}
+            >
+              <span className="text-[14px]">{icon}</span>
+            </button>
+          );
+        })}
       </div>
     </div>
   );

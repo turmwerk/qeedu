@@ -3,7 +3,7 @@ package handler
 import (
 	"context"
 
-	userv1 "github.com/dieWehmut/nju-edu-ai-system/backend/proto/user/v1"
+	userv1 "github.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/user/v1"
 	"github.com/dieWehmut/nju-edu-ai-system/backend/user-services/internal/entity"
 	"github.com/dieWehmut/nju-edu-ai-system/backend/user-services/internal/services"
 	"google.golang.org/grpc/codes"
