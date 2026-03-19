@@ -34,6 +34,12 @@ type Props = {
 	widthEventName: string;
 	getWidthEventName: string;
 	listModalComponent?: React.ComponentType<ListModalProps>;
+	buildCreatedItem?: (context: {
+		id: string;
+		createdAt: number;
+		payload: Record<string, unknown>;
+	}) => Record<string, unknown>;
+	detailPathBuilder?: (id: string) => string;
 };
 
 
@@ -50,6 +56,8 @@ const Sider: React.FC<Props> = ({
 	widthEventName,
 	getWidthEventName,
 	listModalComponent: ListModalComponent,
+	buildCreatedItem,
+	detailPathBuilder,
 }) => {
 	const navigate = useNavigate();
 	const [items, setItems] = useState<SiderItem[]>([]);
@@ -248,6 +256,24 @@ const Sider: React.FC<Props> = ({
 					? payload.name.trim()
 					: "未命名";
 			const createdAt = Date.now();
+			if (buildCreatedItem && detailPathBuilder) {
+				const item = buildCreatedItem({ id, createdAt, payload });
+				try {
+					const raw = localStorage.getItem(storageKey);
+					const parsed = raw ? (JSON.parse(raw) as any[]) : [];
+					const next = [item, ...parsed];
+					localStorage.setItem(storageKey, JSON.stringify(next));
+					window.dispatchEvent(new Event(updatedEventName));
+					window.dispatchEvent(
+						new CustomEvent(currentIdEventName, { detail: { id } })
+					);
+				} catch (e) {
+					console.warn("create workspace item failed", e);
+				}
+				setListModalOpen(false);
+				navigate(detailPathBuilder(id));
+				return;
+			}
 			if (storageKey === SYLLABUS_STORAGE_KEY) {
 				const md = buildSyllabusMarkdown(payload);
 				const item = { id, title: name, md, createdAt };
@@ -283,7 +309,14 @@ const Sider: React.FC<Props> = ({
 				navigate(`/teaching/exam/detail?examId=${encodeURIComponent(id)}`);
 			}
 		},
-		[storageKey, updatedEventName, currentIdEventName, navigate]
+		[
+			buildCreatedItem,
+			currentIdEventName,
+			detailPathBuilder,
+			navigate,
+			storageKey,
+			updatedEventName,
+		]
 	);
 
 	return (

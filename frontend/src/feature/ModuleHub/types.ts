@@ -8,5 +8,9 @@ export type Feature = {
   to?: string;
   icon?: ReactNode;
   subLinks?: SubLink[];
+  details?: string[];
+  badgeLabel?: string;
+  footerLabel?: string;
+  ctaLabel?: string;
   [extra: string]: unknown;
 };

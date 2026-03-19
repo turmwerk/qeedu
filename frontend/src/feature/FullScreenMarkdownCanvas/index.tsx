@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { SYLLABUS_EVENTS } from "@/pages/Teaching/Syllabus/constants";
 import { getStoredTheme, toggleTheme } from "@/utils/theme/controller";
+import type { WorkspaceEventSet } from "@/feature/RecordWorkspace";
 import CanvasHeader from "./Header";
 import CanvasContents from "./Contents";
 
@@ -8,11 +9,16 @@ const FullScreenMarkdownCanvas: React.FC<{
   value: string;
   onClose: (updated: string | null) => void;
   onSave?: (text: string) => void;
-}> = ({ value, onClose, onSave }) => {
+  siderEvents?: Pick<
+    WorkspaceEventSet,
+    "siderState" | "toggleSider" | "getSiderState"
+  >;
+}> = ({ value, onClose, onSave, siderEvents }) => {
   const [text, setText] = useState(value);
   const [siderOpen, setSiderOpen] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const [theme, setTheme] = useState(getStoredTheme);
+  const events = siderEvents ?? SYLLABUS_EVENTS;
 
   useEffect(() => {
     const handleSiderState = (event: Event) => {
@@ -20,16 +26,16 @@ const FullScreenMarkdownCanvas: React.FC<{
       if (detail) setSiderOpen(detail.open);
     };
     const handleThemeChange = () => setTheme(getStoredTheme());
-    window.addEventListener(SYLLABUS_EVENTS.siderState, handleSiderState as EventListener);
+    window.addEventListener(events.siderState, handleSiderState as EventListener);
     window.addEventListener("theme-change", handleThemeChange);
     window.addEventListener("storage", handleThemeChange);
-    window.dispatchEvent(new Event(SYLLABUS_EVENTS.getSiderState));
+    window.dispatchEvent(new Event(events.getSiderState));
     return () => {
-      window.removeEventListener(SYLLABUS_EVENTS.siderState, handleSiderState as EventListener);
+      window.removeEventListener(events.siderState, handleSiderState as EventListener);
       window.removeEventListener("theme-change", handleThemeChange);
       window.removeEventListener("storage", handleThemeChange);
     };
-  }, []);
+  }, [events.getSiderState, events.siderState]);
 
   useEffect(() => {
     setText(value);
@@ -44,7 +50,7 @@ const FullScreenMarkdownCanvas: React.FC<{
   }, []);
 
   const handleToggleSider = () => {
-    window.dispatchEvent(new Event(SYLLABUS_EVENTS.toggleSider));
+    window.dispatchEvent(new Event(events.toggleSider));
     setSiderOpen((v) => !v);
   };
 

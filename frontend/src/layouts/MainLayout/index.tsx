@@ -9,6 +9,7 @@ import SyllabusListModal from "@/pages/Teaching/Syllabus/ListModal";
 import ExamListModal from "@/pages/Teaching/ExamDesign/ListModal";
 import { SYLLABUS_EVENTS, SYLLABUS_STORAGE_KEY, SYLLABUS_TITLE } from "@/pages/Teaching/Syllabus/constants";
 import { EXAM_EVENTS, EXAM_STORAGE_KEY, EXAM_TITLE } from "@/pages/Teaching/ExamDesign/constants";
+import { allWorkspaceModules } from "@/pages/workspaceRegistry";
 import { getStoredTheme, applyTheme } from "@/utils/theme/controller";
 import SnowLayer from "@/effects/SnowLayer";
 import StarsLayer from "@/effects/StarsLayer";
@@ -20,6 +21,10 @@ const MainLayout: React.FC = () => {
   const location = useLocation();
   const [syllabusSiderOpen, setSyllabusSiderOpen] = useState(false);
   const [examSiderOpen, setExamSiderOpen] = useState(false);
+  const [workspaceSiders, setWorkspaceSiders] = useState<Record<string, boolean>>(() =>
+    Object.fromEntries(allWorkspaceModules.map((module) => [module.key, false])),
+  );
+  const workspaceSidersRef = useRef(workspaceSiders);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
   // Theme control (centralized here)
@@ -119,6 +124,50 @@ const MainLayout: React.FC = () => {
   }, [examSiderOpen, syllabusSiderOpen]);
 
   useEffect(() => {
+    workspaceSidersRef.current = workspaceSiders;
+  }, [workspaceSiders]);
+
+  useEffect(() => {
+    const cleanups = allWorkspaceModules.map((module) => {
+      const handleToggle = () => {
+        setWorkspaceSiders((prev) => {
+          const nextOpen = !prev[module.key];
+          window.setTimeout(() => {
+            window.dispatchEvent(
+              new CustomEvent(module.events.siderState, {
+                detail: { open: nextOpen },
+              }),
+            );
+          }, 0);
+          return {
+            ...prev,
+            [module.key]: nextOpen,
+          };
+        });
+      };
+
+      const handleGetState = () => {
+        window.dispatchEvent(
+          new CustomEvent(module.events.siderState, {
+            detail: { open: workspaceSidersRef.current[module.key] ?? false },
+          }),
+        );
+      };
+
+      window.addEventListener(module.events.toggleSider, handleToggle);
+      window.addEventListener(module.events.getSiderState, handleGetState);
+      return () => {
+        window.removeEventListener(module.events.toggleSider, handleToggle);
+        window.removeEventListener(module.events.getSiderState, handleGetState);
+      };
+    });
+
+    return () => {
+      cleanups.forEach((cleanup) => cleanup());
+    };
+  }, []);
+
+  useEffect(() => {
     window.dispatchEvent(
         new CustomEvent(SYLLABUS_EVENTS.siderState, {
         detail: { open: syllabusSiderOpen },
@@ -134,6 +183,16 @@ const MainLayout: React.FC = () => {
     );
   }, [examSiderOpen]);
 
+  useEffect(() => {
+    allWorkspaceModules.forEach((module) => {
+      window.dispatchEvent(
+        new CustomEvent(module.events.siderState, {
+          detail: { open: workspaceSiders[module.key] ?? false },
+        }),
+      );
+    });
+  }, [workspaceSiders]);
+
   // 只要路径包含 detail 视为 detail 页面
   const isDetailPage = /\/detail(\/|$)/.test(location.pathname);
   const isHomePage = location.pathname === "/";
@@ -148,6 +207,18 @@ const MainLayout: React.FC = () => {
     if (location.pathname === "/teaching/exam/ListPage") {
       setExamSiderOpen(false);
     }
+    allWorkspaceModules.forEach((module) => {
+      if (location.pathname === `${module.routeBase}/ListPage`) {
+        setWorkspaceSiders((prev) =>
+          prev[module.key]
+            ? {
+                ...prev,
+                [module.key]: false,
+              }
+            : prev,
+        );
+      }
+    });
   }, [location.pathname]);
 
   return (
@@ -209,6 +280,35 @@ const MainLayout: React.FC = () => {
           getWidthEventName={EXAM_EVENTS.getSiderWidth}
           listModalComponent={ExamListModal}
         />
+        {allWorkspaceModules.map((module) => {
+          const isWorkspaceDetail = location.pathname.startsWith(`${module.routeBase}/detail`);
+          return (
+            <Sider
+              key={module.key}
+              open={(workspaceSiders[module.key] ?? false) && isWorkspaceDetail}
+              onClose={() =>
+                setWorkspaceSiders((prev) => ({
+                  ...prev,
+                  [module.key]: false,
+                }))
+              }
+              storageKey={module.storageKey}
+              title={module.listTitle}
+              createEventName={module.events.create}
+              updatedEventName={module.events.updated}
+              currentIdEventName={module.events.currentId}
+              selectEventName={module.events.select}
+              deleteEventName={module.events.delete}
+              widthEventName={module.events.siderWidth}
+              getWidthEventName={module.events.getSiderWidth}
+              listModalComponent={module.listModalComponent}
+              buildCreatedItem={({ id, createdAt, payload }) =>
+                module.buildRecord({ id, createdAt, payload })
+              }
+              detailPathBuilder={module.detailPathBuilder}
+            />
+          );
+        })}
         
         {/* 右侧内容区域 */}
         <Layout style={{ minWidth: 0 }} className={`flex-1 relative flex flex-col min-h-0 min-w-0 h-full${isDetailPage ? ' bg-white/[0.45] dark:bg-white/[0.06] backdrop-blur-[18px] backdrop-saturate-[160%]' : ''}`}>

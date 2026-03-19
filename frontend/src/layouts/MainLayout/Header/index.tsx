@@ -1,27 +1,34 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Layout } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
-import {
-  ReadOutlined,
-  SearchOutlined,
-  ExperimentOutlined,
-  TeamOutlined,
-  ControlOutlined,
-  CodeOutlined,
-  BookOutlined,
-  FormOutlined,
-  BuildOutlined,
-  NotificationOutlined,
-  HomeOutlined,
-  ArrowLeftOutlined,
-  UserOutlined,
-  SettingOutlined,
-} from "@ant-design/icons";
 import Dropdown from "@/ui/Dropdown";
 import Button from "@/ui/Button";
+import {
+  ArrowLeftOutlinedIcon,
+  BookOutlinedIcon,
+  BuildOutlinedIcon,
+  CodeOutlinedIcon,
+  ControlOutlinedIcon,
+  ExperimentOutlinedIcon,
+  FormOutlinedIcon,
+  GlobalOutlinedIcon,
+  HomeOutlinedIcon,
+  NotificationOutlinedIcon,
+  ReadOutlinedIcon,
+  SearchOutlinedIcon,
+  SettingOutlinedIcon,
+  TeamOutlinedIcon,
+  UserOutlinedIcon,
+} from "@/ui/Icon";
 import SearchModal from "@/layouts/MainLayout/SearchModal";
 import { getStoredTheme, toggleTheme } from "@/utils/theme/controller";
 import { useAuth } from "@/hooks/useAuth";
+import { internationalModuleCatalog } from "@/pages/International/moduleCatalog";
+import { researchModuleCatalog } from "@/pages/Research/moduleCatalog";
+import {
+  internationalWorkspaceModules,
+  researchWorkspaceModules,
+} from "@/pages/workspaceRegistry";
 
 const { Header } = Layout;
 
@@ -68,6 +75,7 @@ const MainHeader: React.FC = () => {
   const isHomePage = location.pathname === "/";
   const isStudy = location.pathname.startsWith("/study");
   const isTeaching = location.pathname.startsWith("/teaching");
+  const isInternational = location.pathname.startsWith("/international");
   const isManagement = location.pathname.startsWith("/management");
   const isResearch = location.pathname.startsWith("/research");
 
@@ -91,7 +99,17 @@ const MainHeader: React.FC = () => {
 
   const normalizeRoute = (pathname: string, search: string): string => {
     // Canonicalize redirect source route to avoid back-button ping-pong.
-    const canonicalPath = pathname === "/study/code-tutor" ? "/study/code-tutor/ListPage" : pathname;
+    const workspaceModule = [...internationalWorkspaceModules, ...researchWorkspaceModules].find(
+      (module) => pathname === module.routeBase,
+    );
+    const canonicalPath =
+      pathname === "/study/code-tutor"
+        ? "/study/code-tutor/ListPage"
+        : pathname === "/research/collaboration"
+          ? "/research/paper-writing/ListPage"
+          : workspaceModule
+            ? `${workspaceModule.routeBase}/ListPage`
+            : pathname;
     return `${canonicalPath}${search}`;
   };
 
@@ -112,6 +130,7 @@ const MainHeader: React.FC = () => {
     const exact: Record<string, string> = {
       "/study": "/",
       "/teaching": "/",
+      "/international": "/",
       "/research": "/",
       "/management": "/",
       "/study/code-tutor": "/study",
@@ -119,8 +138,12 @@ const MainHeader: React.FC = () => {
       "/study/code-tutor/ProjectPage": "/study/code-tutor/ListPage",
       "/teaching/exam/ListPage": "/teaching",
       "/teaching/syllabus/ListPage": "/teaching",
+      "/international/welcome-portal/ListPage": "/international",
       "/management/major": "/management",
       "/management/policy": "/management",
+      "/research/literature-search/ListPage": "/research",
+      "/research/paper-reader/ListPage": "/research",
+      "/research/paper-writing/ListPage": "/research",
       "/research/collaboration": "/research",
     };
     if (exact[pathname]) return exact[pathname];
@@ -128,9 +151,14 @@ const MainHeader: React.FC = () => {
     // Prefix matches (detail pages, etc.)
     if (pathname.startsWith("/teaching/exam/detail")) return "/teaching/exam/ListPage";
     if (pathname.startsWith("/teaching/syllabus/detail")) return "/teaching/syllabus/ListPage";
+    const workspaceDetailTarget = [...internationalWorkspaceModules, ...researchWorkspaceModules].find(
+      (module) => pathname.startsWith(`${module.routeBase}/detail`),
+    );
+    if (workspaceDetailTarget) return `${workspaceDetailTarget.routeBase}/ListPage`;
     if (pathname.startsWith("/study/code-tutor/")) return "/study/code-tutor/ListPage";
     if (pathname.startsWith("/study/")) return "/study";
     if (pathname.startsWith("/teaching/")) return "/teaching";
+    if (pathname.startsWith("/international/")) return "/international";
     if (pathname.startsWith("/management/")) return "/management";
     if (pathname.startsWith("/research/")) return "/research";
 
@@ -168,13 +196,13 @@ const MainHeader: React.FC = () => {
             onClick={handleBack}
             data-oid="36x2h-h"
           >
-            <ArrowLeftOutlined />
+            <ArrowLeftOutlinedIcon />
             <span className="hidden sm:inline">返回</span>
           </Button>
         )}
         {isHomePage && (
           <span className="inline-flex items-center gap-2 text-[var(--brand-blue)] select-none">
-            <HomeOutlined style={{ fontSize: 20 }} />
+            <HomeOutlinedIcon style={{ fontSize: 20 }} />
             <span className="text-[16px] sm:text-[18px] font-bold tracking-wide">南京大学·智能教学</span>
           </span>
         )}
@@ -185,7 +213,7 @@ const MainHeader: React.FC = () => {
           onClick={() => {}}
           data-oid="settings-button"
         >
-          <SettingOutlined />
+          <SettingOutlinedIcon />
           <span className="hidden sm:inline">设置</span>
         </Button>
         <Button
@@ -217,7 +245,7 @@ const MainHeader: React.FC = () => {
           onClick={() => setSearchVisible(true)}
           data-oid="search-button"
         >
-          <SearchOutlined />
+          <SearchOutlinedIcon />
           <span className="hidden sm:inline">搜索</span>
         </Button>
         {!isHomePage && (
@@ -226,7 +254,7 @@ const MainHeader: React.FC = () => {
             onClick={() => navigate("/")}
             data-oid="obxmeer"
           >
-            <HomeOutlined />
+            <HomeOutlinedIcon />
             <span className="hidden sm:inline">首页</span>
           </Button>
         )}
@@ -236,7 +264,7 @@ const MainHeader: React.FC = () => {
             active={isStudy}
             button={
               <span className="inline-flex items-center gap-1.5">
-                <ReadOutlined />
+                <ReadOutlinedIcon />
                 <span>助学</span>
               </span>
             }
@@ -247,7 +275,7 @@ const MainHeader: React.FC = () => {
               if (location.pathname !== "/study") navigate("/study");
             }}
             items={buildItems(location.pathname, navigate, [
-              { label: "编程辅导", path: "/study/code-tutor", icon: <CodeOutlined /> },
+              { label: "编程辅导", path: "/study/code-tutor", icon: <CodeOutlinedIcon /> },
             ])}
             showBorder={false}
             portalToBody={true}
@@ -258,7 +286,7 @@ const MainHeader: React.FC = () => {
             active={isTeaching}
             button={
               <span className="inline-flex items-center gap-1.5">
-                <ExperimentOutlined />
+                <ExperimentOutlinedIcon />
                 <span>助教</span>
               </span>
             }
@@ -269,8 +297,8 @@ const MainHeader: React.FC = () => {
               if (location.pathname !== "/teaching") navigate("/teaching");
             }}
             items={buildItems(location.pathname, navigate, [
-              { label: "大纲设计", path: "/teaching/syllabus/ListPage", icon: <BookOutlined /> },
-              { label: "试卷设计", path: "/teaching/exam/ListPage", icon: <FormOutlined /> },
+              { label: "大纲设计", path: "/teaching/syllabus/ListPage", icon: <BookOutlinedIcon /> },
+              { label: "试卷设计", path: "/teaching/exam/ListPage", icon: <FormOutlinedIcon /> },
             ])}
             showBorder={false}
             portalToBody={true}
@@ -281,7 +309,7 @@ const MainHeader: React.FC = () => {
             active={isManagement}
             button={
               <span className="inline-flex items-center gap-1.5">
-                <ControlOutlined />
+                <ControlOutlinedIcon />
                 <span>助管</span>
               </span>
             }
@@ -292,8 +320,8 @@ const MainHeader: React.FC = () => {
               if (location.pathname !== "/management") navigate("/management");
             }}
             items={buildItems(location.pathname, navigate, [
-              { label: "专业建设", path: "/management/major", icon: <BuildOutlined /> },
-              { label: "政策响应", path: "/management/policy", icon: <NotificationOutlined /> },
+              { label: "专业建设", path: "/management/major", icon: <BuildOutlinedIcon /> },
+              { label: "政策响应", path: "/management/policy", icon: <NotificationOutlinedIcon /> },
             ])}
             showBorder={false}
             portalToBody={true}
@@ -304,7 +332,7 @@ const MainHeader: React.FC = () => {
             active={isResearch}
             button={
               <span className="inline-flex items-center gap-1.5">
-                <TeamOutlined />
+                <TeamOutlinedIcon />
                 <span>助研</span>
               </span>
             }
@@ -314,9 +342,43 @@ const MainHeader: React.FC = () => {
             onButtonClick={() => {
               if (location.pathname !== "/research") navigate("/research");
             }}
-            items={buildItems(location.pathname, navigate, [
-              { label: "科研协作", path: "/research/collaboration", icon: <TeamOutlined /> },
-            ])}
+            items={buildItems(
+              location.pathname,
+              navigate,
+              researchModuleCatalog.map((module) => ({
+                label: module.title,
+                path: module.to,
+                icon: module.icon,
+              })),
+            )}
+            showBorder={false}
+            portalToBody={true}
+          />
+        </div>
+        <div className="hidden sm:block">
+          <Dropdown
+            active={isInternational}
+            button={
+              <span className="inline-flex items-center gap-1.5">
+                <GlobalOutlinedIcon />
+                <span>国际交流</span>
+              </span>
+            }
+            buttonClassName={`${menuButtonBase} ${
+              isInternational ? menuButtonActive : menuButtonIdle
+            }`}
+            onButtonClick={() => {
+              if (location.pathname !== "/international") navigate("/international");
+            }}
+            items={buildItems(
+              location.pathname,
+              navigate,
+              internationalModuleCatalog.map((module) => ({
+                label: module.title,
+                path: module.to,
+                icon: module.icon,
+              })),
+            )}
             showBorder={false}
             portalToBody={true}
           />
@@ -327,7 +389,7 @@ const MainHeader: React.FC = () => {
             active={false}
             button={
               <span className="inline-flex items-center gap-1.5">
-                <UserOutlined />
+                <UserOutlinedIcon />
                 <span>{user?.name || "用户"}</span>
               </span>
             }
@@ -349,7 +411,7 @@ const MainHeader: React.FC = () => {
           onClick={() => (isAuthenticated ? logout() : navigate("/login"))}
           data-oid="login-button"
         >
-          <UserOutlined />
+          <UserOutlinedIcon />
           <span className="hidden sm:inline">{isAuthenticated ? "退出" : "登录"}</span>
         </Button>
       </div>

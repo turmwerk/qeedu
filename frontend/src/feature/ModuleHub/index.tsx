@@ -16,7 +16,8 @@ type Props = {
   renderFeature?: (item: Feature) => React.ReactNode;
   /**
    * Tailwind grid-cols class applied to the card grid.
-   * Defaults to `"grid-cols-2"` (the original ModuleHub layout).
+   * Defaults to `"grid-cols-2 lg:grid-cols-3"` so module hubs render
+   * two cards per row on phones and three cards per row on desktop.
    * Pass e.g. `"grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"` for tutorial grids.
    */
   gridCols?: string;
@@ -27,7 +28,7 @@ const ModuleHub: React.FC<Props> = ({
   subtitle,
   features,
   renderFeature,
-  gridCols = "grid-cols-2",
+  gridCols = "grid-cols-2 lg:grid-cols-3",
 }) => {
   return (
     <div className="module-hub-section relative w-full max-w-full overflow-x-hidden" data-oid="ntkw4hz">

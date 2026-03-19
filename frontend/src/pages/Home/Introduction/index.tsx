@@ -1,8 +1,8 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import NavButton from "./NavButton";
-import { InfoCircleOutlined, RocketOutlined } from "@ant-design/icons";
 import Button from "@/ui/Button";
+import { InfoCircleOutlinedIcon, RocketOutlinedIcon } from "@/ui/Icon";
 
 interface IntroductionProps {
   onScrollToNext?: () => void;
@@ -28,14 +28,14 @@ const Introduction: React.FC<IntroductionProps> = ({ onScrollToNext }) => {
             className="glass-btn flex items-center gap-1.5 px-5 py-2 text-[15px] font-semibold rounded-xl select-none"
             onClick={() => onScrollToNext?.()}
           >
-            <RocketOutlined />
+            <RocketOutlinedIcon />
             立即开始
           </Button>
           <Button
             className="glass-btn flex items-center gap-1.5 px-5 py-2 text-[15px] font-semibold rounded-xl select-none"
             onClick={() => navigate("/login")}
           >
-            <InfoCircleOutlined />
+            <InfoCircleOutlinedIcon />
             了解更多
           </Button>
         </div>
