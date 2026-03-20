@@ -9,6 +9,15 @@ interface DialogProps {
   dialogId: string;
   botName?: string;
   initMessage?: string; // 初始消息
+  seedMessages?: DialogMessage[];
+  transport?: (args: {
+    messages: ChatMessage[];
+    input: string;
+    files: File[];
+    onDelta: (text: string) => void;
+    onDone: () => void;
+    onError: (err: string) => void;
+  }) => AbortController;
 }
 
 const getStorageKey = (dialogId: string) => `dialog_messages_${dialogId}`;
@@ -19,6 +28,8 @@ const Dialog: React.FC<DialogProps> & {
   dialogId,
   botName = "对话助手",
   initMessage = "欢迎使用对话助手，你可以开始提问。",
+  seedMessages,
+  transport,
 }) => {
   const storageKey = useMemo(() => getStorageKey(dialogId), [dialogId]);
   const [messages, setMessages] = useState<DialogMessage[]>(() => {
@@ -26,6 +37,7 @@ const Dialog: React.FC<DialogProps> & {
       const raw = localStorage.getItem(storageKey);
       if (raw) return JSON.parse(raw);
     } catch {}
+    if (seedMessages?.length) return seedMessages;
     return [{ from: "bot", text: initMessage }];
   });
   const [input, setInput] = useState("");
@@ -59,12 +71,20 @@ const Dialog: React.FC<DialogProps> & {
         return;
       }
     } catch {}
+    if (seedMessages?.length) {
+      setMessages(seedMessages);
+      setInput("");
+      setPending(false);
+      abortRef.current?.abort();
+      abortRef.current = null;
+      return;
+    }
     setMessages([{ from: "bot", text: initMessage }]);
     setInput("");
     setPending(false);
     abortRef.current?.abort();
     abortRef.current = null;
-  }, [storageKey, initMessage]);
+  }, [storageKey, initMessage, seedMessages]);
 
   const scrollToBottom = useCallback((behavior: ScrollBehavior = "auto") => {
     const body = bodyRef.current;
@@ -101,9 +121,8 @@ const Dialog: React.FC<DialogProps> & {
     // Add empty bot message that will be filled by streaming
     setMessages((m) => [...m, { from: "bot", text: "" }]);
 
-    abortRef.current = chatStream({
-      messages: chatHistory,
-      onDelta: (delta) => {
+    const handlers = {
+      onDelta: (delta: string) => {
         setMessages((m) => {
           const updated = [...m];
           const last = updated[updated.length - 1];
@@ -117,7 +136,7 @@ const Dialog: React.FC<DialogProps> & {
         setPending(false);
         abortRef.current = null;
       },
-      onError: (err) => {
+      onError: (err: string) => {
         setMessages((m) => {
           const updated = [...m];
           const last = updated[updated.length - 1];
@@ -129,7 +148,19 @@ const Dialog: React.FC<DialogProps> & {
         setPending(false);
         abortRef.current = null;
       },
-    });
+    };
+
+    abortRef.current = transport
+      ? transport({
+          messages: chatHistory,
+          input: text,
+          files: sentFiles,
+          ...handlers,
+        })
+      : chatStream({
+          messages: chatHistory,
+          ...handlers,
+        });
   };
 
   const stop = () => {

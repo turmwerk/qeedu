@@ -10,8 +10,6 @@ import Loader from "@/effects/Loader";
 
 const TeachingHub = lazy(() => import("@/pages/Teaching"));
 const AssignmentReview = lazy(() => import("@/pages/Teaching/AssignmentReview"));
-const AssignmentReviewListPage = lazy(() => import("@/pages/Teaching/AssignmentReview/ListPage"));
-const AssignmentReviewDetailPage = lazy(() => import("@/pages/Teaching/AssignmentReview/DetailPage"));
 const SyllabusList = lazy(() =>
   import("@/pages/Teaching/Syllabus/router").then((module) => ({
     default: module.ListRoute,
@@ -57,8 +55,21 @@ const teachingRoutes: RouteObject[] = [
     element: createElement(Navigate, { to: "/teaching/syllabus/ListPage", replace: true }),
   },
   { path: "teaching/assignment-review", element: lazyElement(AssignmentReview) },
-  { path: "teaching/assignment-review/ListPage", element: lazyElement(AssignmentReviewListPage) },
-  { path: "teaching/assignment-review/detail", element: lazyElement(AssignmentReviewDetailPage) },
+  { path: "teaching/assignment-review/tasks", element: lazyElement(AssignmentReview) },
+  { path: "teaching/assignment-review/tasks/new", element: lazyElement(AssignmentReview) },
+  { path: "teaching/assignment-review/tasks/:assignmentId", element: lazyElement(AssignmentReview) },
+  {
+    path: "teaching/assignment-review/tasks/:assignmentId/submissions/:submissionId",
+    element: lazyElement(AssignmentReview),
+  },
+  {
+    path: "teaching/assignment-review/ListPage",
+    element: createElement(Navigate, { to: "/teaching/assignment-review/tasks", replace: true }),
+  },
+  {
+    path: "teaching/assignment-review/detail",
+    element: createElement(Navigate, { to: "/teaching/assignment-review/tasks", replace: true }),
+  },
   { path: "teaching/syllabus/ListPage", element: lazyElement(SyllabusList) },
   { path: "teaching/syllabus/detail", element: lazyElement(SyllabusDetail) },
   { path: "teaching/exam/ListPage", element: lazyElement(ExamDesignList) },

@@ -1,35 +1,11 @@
-import { createElement, type ComponentType } from "react";
+import { createElement } from "react";
 import { Navigate, type RouteObject } from "react-router-dom";
+import LegacyParamRedirect from "@/router/LegacyParamRedirect";
 import ResearchHub from "@/pages/Research";
 import ConferenceList from "@/pages/Research/ConferenceList";
 import LiteratureSearch from "@/pages/Research/LiteratureSearch";
-import LiteratureSearchListPage from "@/pages/Research/LiteratureSearch/ListPage";
-import LiteratureSearchDetailPage from "@/pages/Research/LiteratureSearch/DetailPage";
 import PaperReader from "@/pages/Research/PaperReader";
-import PaperReaderListPage from "@/pages/Research/PaperReader/ListPage";
-import PaperReaderDetailPage from "@/pages/Research/PaperReader/DetailPage";
 import PaperWriting from "@/pages/Research/PaperWriting";
-import PaperWritingListPage from "@/pages/Research/PaperWriting/ListPage";
-import PaperWritingDetailPage from "@/pages/Research/PaperWriting/DetailPage";
-import { researchWorkspaceModules } from "@/pages/workspaceRegistry";
-
-const moduleLandingComponents: Record<string, ComponentType> = {
-  "research-literature-search": LiteratureSearch,
-  "research-paper-reader": PaperReader,
-  "research-paper-writing": PaperWriting,
-};
-
-const moduleListPageComponents: Record<string, ComponentType> = {
-  "research-literature-search": LiteratureSearchListPage,
-  "research-paper-reader": PaperReaderListPage,
-  "research-paper-writing": PaperWritingListPage,
-};
-
-const moduleDetailPageComponents: Record<string, ComponentType> = {
-  "research-literature-search": LiteratureSearchDetailPage,
-  "research-paper-reader": PaperReaderDetailPage,
-  "research-paper-writing": PaperWritingDetailPage,
-};
 
 const researchRoutes: RouteObject[] = [
   { path: "research", element: createElement(ResearchHub) },
@@ -38,23 +14,56 @@ const researchRoutes: RouteObject[] = [
     path: "research/collaboration",
     element: createElement(Navigate, { to: "/research/paper-writing", replace: true }),
   },
-  ...researchWorkspaceModules.flatMap((module) => {
-    const basePath = module.routeBase.replace(/^\//, "");
-    return [
-      {
-        path: basePath,
-        element: createElement(moduleLandingComponents[module.key]),
-      },
-      {
-        path: `${basePath}/ListPage`,
-        element: createElement(moduleListPageComponents[module.key]),
-      },
-      {
-        path: `${basePath}/detail`,
-        element: createElement(moduleDetailPageComponents[module.key]),
-      },
-    ];
-  }),
+  { path: "research/literature-search", element: createElement(LiteratureSearch) },
+  { path: "research/literature-search/queries/new", element: createElement(LiteratureSearch) },
+  { path: "research/literature-search/queries/:queryId", element: createElement(LiteratureSearch) },
+  {
+    path: "research/literature-search/ListPage",
+    element: createElement(Navigate, { to: "/research/literature-search", replace: true }),
+  },
+  {
+    path: "research/literature-search/detail",
+    element: createElement(Navigate, { to: "/research/literature-search", replace: true }),
+  },
+  {
+    path: "research/literature-search/detail/:id",
+    element: createElement(LegacyParamRedirect, {
+      to: (params) => `/research/literature-search/queries/${params.id ?? ""}`,
+    }),
+  },
+  { path: "research/paper-reader", element: createElement(PaperReader) },
+  { path: "research/paper-reader/papers/:paperId", element: createElement(PaperReader) },
+  {
+    path: "research/paper-reader/ListPage",
+    element: createElement(Navigate, { to: "/research/paper-reader", replace: true }),
+  },
+  {
+    path: "research/paper-reader/detail",
+    element: createElement(Navigate, { to: "/research/paper-reader", replace: true }),
+  },
+  {
+    path: "research/paper-reader/detail/:id",
+    element: createElement(LegacyParamRedirect, {
+      to: (params) => `/research/paper-reader/papers/${params.id ?? ""}`,
+    }),
+  },
+  { path: "research/paper-writing", element: createElement(PaperWriting) },
+  { path: "research/paper-writing/drafts/new", element: createElement(PaperWriting) },
+  { path: "research/paper-writing/drafts/:draftId", element: createElement(PaperWriting) },
+  {
+    path: "research/paper-writing/ListPage",
+    element: createElement(Navigate, { to: "/research/paper-writing", replace: true }),
+  },
+  {
+    path: "research/paper-writing/detail",
+    element: createElement(Navigate, { to: "/research/paper-writing", replace: true }),
+  },
+  {
+    path: "research/paper-writing/detail/:id",
+    element: createElement(LegacyParamRedirect, {
+      to: (params) => `/research/paper-writing/drafts/${params.id ?? ""}`,
+    }),
+  },
 ];
 
 export default researchRoutes;

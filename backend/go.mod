@@ -1,6 +1,6 @@
 module github.com/dieWehmut/nju-edu-ai-system/backend
 
-go 1.22.0
+go 1.24
 
 
 require (

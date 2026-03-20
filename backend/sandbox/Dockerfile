@@ -1,11 +1,10 @@
-FROM golang:1.22-alpine AS builder
+FROM golang:1.24-alpine AS builder
 WORKDIR /src
-ENV GOPROXY=direct
-ENV http_proxy="" https_proxy="" all_proxy=""
+ENV GOPROXY=https://goproxy.cn,https://proxy.golang.org,direct
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
-RUN CGO_ENABLED=0 go build -o /sandbox ./sandbox/cmd/server
+RUN go mod tidy && CGO_ENABLED=0 go build -o /sandbox ./sandbox/cmd/server
 
 FROM alpine:3.20
 RUN apk add --no-cache ca-certificates tzdata docker-cli

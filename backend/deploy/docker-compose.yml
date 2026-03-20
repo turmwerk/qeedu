@@ -21,6 +21,7 @@ services:
     build:
       context: ../
       dockerfile: user-services/Dockerfile
+      network: host
     container_name: nju-user-services
     restart: unless-stopped
     ports:
@@ -36,6 +37,7 @@ services:
     build:
       context: ../
       dockerfile: sandbox/Dockerfile
+      network: host
     container_name: nju-sandbox
     restart: unless-stopped
     ports:
@@ -76,6 +78,7 @@ services:
     build:
       context: ../
       dockerfile: gateway/Dockerfile
+      network: host
     container_name: nju-gateway
     restart: unless-stopped
     ports:

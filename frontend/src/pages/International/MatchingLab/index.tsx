@@ -1,150 +1,154 @@
 import React from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import ChatDialog from "@/feature/ChatDialog";
+import FeatureRecordDialog from "@/feature/FeatureRecordDialog";
+import ResourceBoard from "@/feature/RecordWorkspace/ResourceBoard";
+import { useFeatureRecords } from "@/hooks/useFeatureRecords";
+import { matchingLabAdapter } from "@/pages/International/featureAdapters";
+import { matchingLabPageData, matchingLabQuickActions } from "@/pages/International/featureData";
 import Button from "@/ui/Button";
-import {
-  ConversationBoard,
-  RecordList,
-  ShowcasePanel,
-  ShowcaseTag,
-  showcasePanelClass,
-} from "@/feature/ScenarioShowcase";
+import List from "@/ui/List";
+import { showToast } from "@/ui/Toast";
 
 const MatchingLab: React.FC = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { analysisId } = useParams();
+  const { records, createRecord } = useFeatureRecords(matchingLabAdapter);
+  const createOpen = location.pathname.endsWith("/new");
+  const selected = records.find((record) => record.id === analysisId) ?? records[0] ?? null;
+
   return (
     <div className="flex w-full min-w-0 flex-col gap-6 px-4 py-6 md:px-6 xl:px-8">
-      <div className="text-[34px] font-black leading-tight text-[#243246] md:text-[64px] dark:text-white">
-        智能项目匹配与申请决策
-      </div>
+      <section className="rounded-[34px] bg-[linear-gradient(135deg,#1e1b4b_0%,#312e81_48%,#0f766e_100%)] p-6 text-white shadow-[0_24px_60px_rgba(49,46,129,0.32)]">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="max-w-3xl">
+            <div className="text-xs font-bold uppercase tracking-[0.24em] text-violet-100/80">
+              Decision Lab
+            </div>
+            <div className="mt-3 text-3xl font-black md:text-4xl">
+              {matchingLabPageData.headline}
+            </div>
+            <div className="mt-3 text-sm leading-7 text-violet-50/90">
+              {matchingLabPageData.description}
+            </div>
+          </div>
+          <Button
+            className="rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-900"
+            onClick={() => navigate("/international/matching-lab/analyses/new")}
+          >
+            新建分析
+          </Button>
+        </div>
+      </section>
 
-      <RecordList
-        eyebrow="History Records"
-        title="历史分析记录"
-        description="点击一条记录继续分析，或删除不再需要的旧会话。"
-        actionLabel="新增分析"
-        records={[
-          {
-            title: "Canada / Singapore 交换项目分析",
-            meta: "创建于 2026/03/17 · 最近更新 12 分钟前",
-            status: "进行中",
-            tags: ["TOEFL 102", "CS / HCI", "预算中等", "2026 秋季"],
-            actions: [{ label: "继续分析", primary: true }, { label: "查看摘要" }, { label: "删除" }],
-          },
-          {
-            title: "暑校优先方案比较",
-            meta: "创建于 2026/03/15 · 最近更新 1 天前",
-            status: "已完成",
-            tags: ["暑校", "Singapore / Japan", "费用敏感"],
-            actions: [{ label: "继续分析", primary: true }, { label: "查看摘要" }, { label: "删除" }],
-          },
-          {
-            title: "研究导向联合培养评估",
-            meta: "创建于 2026/03/11 · 最近更新 4 天前",
-            status: "已归档",
-            tags: ["联合培养", "Research fit", "导师匹配优先"],
-            actions: [{ label: "继续分析", primary: true }, { label: "查看摘要" }, { label: "删除" }],
-          },
-        ]}
-      />
-
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
-        <ShowcasePanel
-          eyebrow="New Analysis"
-          title="新增分析"
-          description="填写必要背景信息后，确认即可创建一条新的分析记录，并直接进入对应的大模型对话。"
-        >
-          <div className="grid gap-4 md:grid-cols-2">
-            {[
-              ["GPA", "3.72 / 4.0"],
-              ["语言成绩", "TOEFL 102"],
-              ["专业背景", "Computer Science"],
-              ["研究方向", "HCI / AI"],
-              ["预算范围", "¥ 80,000 - 150,000 / 学期"],
-              ["时间安排", "2026 秋季学期"],
-            ].map(([label, value]) => (
-              <div key={label}>
-                <div className="mb-2 text-[15px] font-bold text-[#243246] dark:text-white">{label}</div>
-                <div className={`${showcasePanelClass} px-5 py-4 text-[16px] text-[#475569] dark:text-[#dbe5f3]`}>{value}</div>
+      <section className="grid gap-6 2xl:grid-cols-[320px_minmax(0,1fr)_360px]">
+        <div className="rounded-[28px] border border-slate-200 bg-white/92 p-5 shadow-[0_18px_40px_rgba(15,23,42,0.08)] dark:border-white/10 dark:bg-white/6">
+          <div className="mb-4 text-xl font-black text-slate-900 dark:text-white">分析记录</div>
+          <List
+            items={records}
+            keyExtractor={(item) => item.id}
+            onItemClick={(item) => navigate(`/international/matching-lab/analyses/${item.id}`)}
+            renderItem={(item) => (
+              <div className="space-y-2">
+                <div className="text-sm font-bold text-slate-900 dark:text-white">{item.title}</div>
+                <div className="text-xs text-slate-500 dark:text-slate-300">{item.subtitle}</div>
+                <div className="text-sm leading-6 text-slate-600 dark:text-slate-300">{item.summary}</div>
               </div>
-            ))}
-          </div>
-          <div className="mt-5">
-            <div className="mb-2 text-[15px] font-bold text-[#243246] dark:text-white">目标国家 / 地区</div>
-            <div className="flex flex-wrap gap-2">
-              {["Canada", "Singapore", "Japan", "UK", "Europe"].map((item, index) => (
-                <ShowcaseTag key={item} tone={index < 2 ? "blue" : "gray"}>
-                  {item}
-                </ShowcaseTag>
-              ))}
-            </div>
-          </div>
-          <div className="mt-5">
-            <div className="mb-2 text-[15px] font-bold text-[#243246] dark:text-white">补充偏好</div>
-            <div className={`${showcasePanelClass} min-h-[160px] px-5 py-4 text-[16px] leading-8 text-[#475569] dark:text-[#dbe5f3]`}>
-              希望优先考虑课程匹配度高、预算压力适中、学分转换规则较成熟的项目。如果有 HCI 或跨学科设计相关课程会更好。
-            </div>
-          </div>
-          <div className="mt-5 flex flex-wrap gap-2">
-            <ShowcaseTag>课程匹配度优先</ShowcaseTag>
-            <ShowcaseTag>预算可控</ShowcaseTag>
-            <ShowcaseTag tone="gray">录取难度保守</ShowcaseTag>
-          </div>
-          <div className="mt-6 flex justify-end gap-3">
-            <Button className="rounded-[20px] border border-[#dbe1f3] bg-white px-5 py-3 text-sm font-semibold text-[#334155]">取消</Button>
-            <Button className="rounded-[20px] bg-[var(--brand-blue)] px-5 py-3 text-sm font-semibold text-white">确认并开始分析</Button>
-          </div>
-        </ShowcasePanel>
+            )}
+            actions={[
+              {
+                label: "打开",
+                onClick: (item) => navigate(`/international/matching-lab/analyses/${item.id}`),
+              },
+            ]}
+          />
+        </div>
 
-        <ConversationBoard
-          eyebrow="Current Session"
-          title="新分析 · Canada / Singapore 交换项目匹配"
-          description="已根据刚填写的表单创建新的分析记录，现在开始进入大模型推荐与比较对话。"
-          messages={[
-            {
-              role: "Applicant",
-              time: "10:12 AM",
-              content:
-                "我已经填写了 GPA、语言成绩、专业背景和预算。请先根据这些条件给我推荐几个适合的交换或暑校项目，并说明为什么适合我。",
-            },
-            {
-              role: "Matching Copilot",
-              time: "10:13 AM",
-              content:
-                "基于你目前的画像，我会优先推荐课程匹配度高、预算压力适中、学分转换明确的项目。初步最适合的方向是 UBC Exchange、NUS Summer School 和 KU Leuven Joint Training。",
-              cards: [
-                { title: "UBC Exchange", description: "课程匹配度高，英语门槛与你当前成绩匹配，学费互免降低预算压力。" },
-                { title: "NUS Summer School", description: "时间灵活、课程丰富，但整体费用更高，更适合作为短期补体验型选择。" },
-                { title: "KU Leuven Joint Training", description: "研究导向更强，适合长期规划，但录取不确定性和申请复杂度更高。" },
-              ],
-            },
-            {
-              role: "Applicant",
-              time: "10:15 AM",
-              content:
-                "帮我比较这三个项目，重点看录取难度、预算压力、课程匹配度和申请风险。最后给我一个优先级排序。",
-            },
-            {
-              role: "Matching Copilot",
-              time: "10:16 AM",
-              content:
-                "如果以你当前条件为基础，UBC Exchange 是最平衡的选择；NUS Summer School 更适合把它当作灵活的短期补充选项；KU Leuven Joint Training 更偏研究型，适合把它放在冲刺位，但申请复杂度最高。",
-              cards: [
-                { title: "优先级 1", description: "UBC Exchange：综合适配度最高，风险与收益最平衡。" },
-                { title: "优先级 2", description: "NUS Summer School：灵活、直观，但费用压力偏高。" },
-                { title: "优先级 3", description: "KU Leuven Joint Training：适合冲刺，但申请风险更高。" },
-              ],
-            },
-          ]}
-          summaryTitle="当前分析摘要"
-          summaryItems={[
-            { title: "用户画像", description: "CS / HCI、TOEFL 102、预算中等，目标国家偏向 Canada 与 Singapore，课程匹配度优先。" },
-            { title: "当前推荐排序", description: "1. UBC Exchange 2. NUS Summer School 3. KU Leuven Joint Training" },
-            { title: "主要判断依据", description: "课程匹配度、学分转换成熟度、预算压力与整体申请风险。" },
-            { title: "下一步建议", description: "继续让 LLM 输出正式比较表，并针对第一志愿生成申请准备清单。" },
-          ]}
-          promptTabs={["项目推荐", "多项目比较", "申请风险分析", "预算压力评估"]}
-          promptText="继续比较 UBC、NUS 和 KU Leuven 这三个项目。请分别说明录取难度、预算压力、课程匹配度、语言门槛和申请风险，并给出一个更细的申请建议。"
-          promptSuffix="历史画像已附加"
-        />
-      </div>
+        <div className="space-y-6">
+          <div className="rounded-[28px] border border-slate-200 bg-white/92 p-5 shadow-[0_18px_44px_rgba(15,23,42,0.08)] dark:border-white/10 dark:bg-white/6">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <div className="text-xs font-bold uppercase tracking-[0.22em] text-slate-400">Profile Snapshot</div>
+                <div className="mt-2 text-xl font-black text-slate-900 dark:text-white">画像与候选矩阵</div>
+              </div>
+              <Button variant="primary" onClick={() => showToast("已运行项目推荐")}>
+                运行推荐
+              </Button>
+            </div>
+            {selected ? (
+              <div className="space-y-4">
+                <div className="rounded-[22px] border border-slate-200 bg-slate-50 p-4 text-sm leading-7 text-slate-700 dark:border-white/10 dark:bg-slate-900/40 dark:text-slate-200">
+                  {selected.content}
+                </div>
+                <div className="grid gap-3 md:grid-cols-3">
+                  {(selected.recommendations ?? []).map((item: any, index: number) => (
+                    <div
+                      key={item.title}
+                      className={`rounded-[22px] border p-4 ${
+                        index === 0
+                          ? "border-emerald-200 bg-emerald-50 dark:border-emerald-400/20 dark:bg-emerald-500/10"
+                          : index === 1
+                            ? "border-sky-200 bg-sky-50 dark:border-sky-400/20 dark:bg-sky-500/10"
+                            : "border-violet-200 bg-violet-50 dark:border-violet-400/20 dark:bg-violet-500/10"
+                      }`}
+                    >
+                      <div className="text-sm font-bold text-slate-900 dark:text-white">{item.title}</div>
+                      <div className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">{item.reason}</div>
+                      <div className="mt-3 text-2xl font-black text-slate-900 dark:text-white">{item.score}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+          </div>
+
+          {selected ? (
+            <div className="rounded-[28px] border border-slate-200 bg-slate-950 p-4 text-white shadow-[0_22px_52px_rgba(15,23,42,0.24)]">
+              <ChatDialog
+                dialogId={`international-matching-${selected.id}`}
+                botName="决策分析助手"
+                initMessage="我已经读取当前画像、候选排序和联动模块，可以继续解释优先级、补决策说明或输出导师沟通稿。"
+                transport={matchingLabAdapter.createChatTransport(selected.title)}
+              />
+            </div>
+          ) : null}
+        </div>
+
+        <div className="space-y-6">
+          <div className="rounded-[28px] border border-slate-200 bg-white/92 p-5 shadow-[0_18px_44px_rgba(15,23,42,0.08)] dark:border-white/10 dark:bg-white/6">
+            <div className="text-xs font-bold uppercase tracking-[0.22em] text-slate-400">Decision Actions</div>
+            <div className="mt-4 grid gap-3">
+              {matchingLabQuickActions.map((item) => (
+                <Button
+                  key={item.id}
+                  variant="secondary"
+                  className="justify-start"
+                  onClick={() => showToast(`${item.title} 已触发`)}
+                >
+                  {item.title}
+                </Button>
+              ))}
+              <Button variant="primary" onClick={() => showToast("已锁定当前优先级")}>
+                锁定优先级
+              </Button>
+            </div>
+          </div>
+          <ResourceBoard resources={selected?.resources ?? []} />
+        </div>
+      </section>
+
+      <FeatureRecordDialog
+        open={createOpen}
+        title="新建匹配分析"
+        fields={matchingLabPageData.createFields}
+        onClose={() => navigate("/international/matching-lab")}
+        onSubmit={(values) => {
+          const created = createRecord(values);
+          navigate(`/international/matching-lab/analyses/${created.id}`);
+          showToast("已创建新的匹配分析");
+        }}
+      />
     </div>
   );
 };

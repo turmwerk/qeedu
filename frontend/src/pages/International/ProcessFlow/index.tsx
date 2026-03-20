@@ -1,122 +1,133 @@
 import React from "react";
-import {
-  ConversationBoard,
-  ShowcaseStatGrid,
-  showcasePanelClass,
-} from "@/feature/ScenarioShowcase";
+import { useParams } from "react-router-dom";
+import ChatDialog from "@/feature/ChatDialog";
+import ActionDock from "@/feature/RecordWorkspace/ActionDock";
+import ChecklistBoard from "@/feature/RecordWorkspace/ChecklistBoard";
+import TimelinePanel from "@/feature/RecordWorkspace/TimelinePanel";
+import { useFeatureRecords } from "@/hooks/useFeatureRecords";
+import { processFlowAdapter } from "@/pages/International/featureAdapters";
+import { processFlowPageData, processFlowQuickActions } from "@/pages/International/featureData";
+import Button from "@/ui/Button";
+import { showToast } from "@/ui/Toast";
 
 const ProcessFlow: React.FC = () => {
+  const { planId } = useParams();
+  const { records, patchRecord } = useFeatureRecords(processFlowAdapter);
+  const selected = records.find((record) => record.id === planId) ?? records[0] ?? null;
+
   return (
     <div className="flex w-full min-w-0 flex-col gap-6 px-4 py-6 md:px-6 xl:px-8">
-      <div className="text-[34px] font-black leading-tight text-[#243246] md:text-[64px] dark:text-white">
-        申请流程助手
-      </div>
-
-      <section className="rounded-[34px] bg-[linear-gradient(135deg,#5f67f4_0%,#6b7bff_48%,#7f88ff_100%)] px-8 py-8 text-white shadow-[0_24px_60px_rgba(87,102,241,0.28)]">
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,1.6fr)_460px]">
+      <section className="rounded-[34px] bg-[linear-gradient(135deg,#1d4ed8_0%,#2563eb_48%,#0f172a_100%)] p-6 text-white shadow-[0_24px_60px_rgba(37,99,235,0.3)]">
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,1.4fr)_360px]">
           <div>
-            <div className="text-[13px] font-bold uppercase tracking-[0.2em] text-white/82">Application Workflow</div>
-            <div className="mt-3 text-[30px] font-black leading-tight md:text-[44px]">
-              围绕具体项目自动生成个人化 checklist 和申请时间线
+            <div className="text-xs font-bold uppercase tracking-[0.24em] text-sky-100/80">
+              Application Command Board
             </div>
-            <div className="mt-4 text-[17px] leading-8 text-white/88">
-              围绕报名、院系审批、推荐信、成绩单、语言成绩、签证等环节形成一套可执行的申请流程，并自动提醒报名截止、补件截止、提名时间等关键节点。
-            </div>
+            <div className="mt-3 text-3xl font-black md:text-4xl">{processFlowPageData.headline}</div>
+            <div className="mt-3 text-sm leading-7 text-slate-100">{processFlowPageData.description}</div>
           </div>
-          <ShowcaseStatGrid
-            compact
-            stats={[
-              { label: "当前待办事项", value: "18" },
-              { label: "临近提醒", value: "4" },
-              { label: "已完成项目", value: "7 / 18" },
-              { label: "最近申请截止", value: "04/18" },
-            ]}
-          />
+          <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-1">
+            {processFlowPageData.metrics.map((metric) => (
+              <div key={metric.label} className="rounded-[22px] border border-white/10 bg-white/8 px-4 py-4">
+                <div className="text-xs font-bold uppercase tracking-[0.18em] text-sky-100/70">{metric.label}</div>
+                <div className="mt-2 text-3xl font-black">{metric.value}</div>
+                <div className="mt-2 text-xs text-slate-200">{metric.detail}</div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
-      <ConversationBoard
-        eyebrow="Timeline & Checklist"
-        title="申请流程对话"
-        description="和大模型讨论当前进度、材料优先级和截止风险，实时生成下一步建议。"
-        messages={[
-          {
-            role: "你",
-            time: "10:18 AM",
-            content: "我这周要优先推进什么？我担心 03/28 的院系审批会来不及。",
-          },
-          {
-            role: "LLM 助手",
-            time: "10:19 AM",
-            content:
-              "建议按顺序处理：1）今天先完成审批表初稿；2）明天确认课程计划与学分转换；3）后天提交院系审批并同步推荐信老师。",
-          },
-          {
-            role: "你",
-            time: "10:21 AM",
-            content: "那推荐信和成绩单上传怎么安排更稳妥？",
-          },
-          {
-            role: "LLM 助手",
-            time: "10:22 AM",
-            content:
-              "推荐信今天发出邀请，最晚 04/02 前确认；成绩单先检查盖章版本与清晰度，04/05 前完成上传。你可以先在右侧 checklist 勾选已完成项。",
-          },
-        ]}
-        checklistTitle="个人化 checklist"
-        checklistSubtitle="围绕当前项目自动生成，支持逐项勾选与补充说明。"
-        checklistItems={[
-          {
-            title: "确认目标项目与申请学期",
-            description: "已选定 UBC 2026 秋季交换，并完成基本项目阅读。",
-            checked: true,
-            status: "完成",
-            tone: "green",
-          },
-          {
-            title: "提交院系审批表",
-            description: "需附课程计划、学分转换设想，并在 03/28 前完成提交。",
-            status: "高优先",
-            tone: "red",
-          },
-          {
-            title: "联系推荐信老师",
-            description: "至少确认 1 位推荐人，并准备英文说明材料。",
-            status: "中优先",
-            tone: "orange",
-          },
-          {
-            title: "准备语言成绩单",
-            description: "托福成绩已满足低要求，可直接上传系统。",
-            checked: true,
-            status: "完成",
-            tone: "green",
-          },
-          {
-            title: "上传中英文成绩单",
-            description: "需确认盖章版本与 PDF 清晰度，避免补件。",
-            status: "中优先",
-            tone: "orange",
-          },
-        ]}
-        promptTabs={["自动附加当前时间线", "自动附加未完成任务", "生成 3 日行动计划"]}
-        promptText="请基于我当前未完成任务，给我一个按天拆分的三日执行计划，并标注每项风险点。"
-      />
+      <section className="grid gap-6 2xl:grid-cols-[minmax(0,1.15fr)_360px]">
+        <div className="space-y-6">
+          <div className="grid gap-4 md:grid-cols-4">
+            {["选项目", "做审批", "交材料", "等提名"].map((step, index) => (
+              <div
+                key={step}
+                className={`rounded-[24px] border p-5 ${
+                  index === 1
+                    ? "border-amber-200 bg-amber-50 dark:border-amber-400/20 dark:bg-amber-500/10"
+                    : "border-slate-200 bg-white/92 dark:border-white/10 dark:bg-white/6"
+                }`}
+              >
+                <div className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Stage {index + 1}</div>
+                <div className="mt-2 text-lg font-black text-slate-900 dark:text-white">{step}</div>
+              </div>
+            ))}
+          </div>
 
-      <section className={`${showcasePanelClass} p-6`}>
-        <div className="grid gap-4 md:grid-cols-4">
-          {[
-            ["03/22", "校内报名开放", "已开始"],
-            ["03/28", "院系审批提交", "临近"],
-            ["04/05", "推荐信与成绩单补齐", "进行中"],
-            ["04/18", "校内申请截止", "关键"],
-          ].map(([date, title, status]) => (
-            <div key={date} className="rounded-[24px] border border-[#dbe1f3] bg-white/76 p-5 dark:border-white/10 dark:bg-white/6">
-              <div className="text-[24px] font-black text-[#5672ff]">{date}</div>
-              <div className="mt-3 text-[20px] font-black text-[#243246] dark:text-white">{title}</div>
-              <div className="mt-3 text-[15px] text-[#67748a] dark:text-[#dbe5f3]">{status}</div>
+          <div className="grid gap-6 xl:grid-cols-[0.92fr_1.08fr]">
+            <ChecklistBoard
+              tasks={selected?.tasks ?? []}
+              onToggle={(taskId) => {
+                if (!selected) return;
+                patchRecord(selected.id, {
+                  tasks: (selected.tasks ?? []).map((task: any) =>
+                    task.id === taskId ? { ...task, done: !task.done } : task,
+                  ),
+                });
+              }}
+            />
+            <TimelinePanel
+              milestones={selected?.milestones ?? []}
+              onStatusChange={(milestoneId, status) => {
+                if (!selected) return;
+                patchRecord(selected.id, {
+                  milestones: (selected.milestones ?? []).map((item: any) =>
+                    item.id === milestoneId ? { ...item, status } : item,
+                  ),
+                });
+              }}
+            />
+          </div>
+
+          <div className="rounded-[28px] border border-slate-200 bg-white/92 p-5 shadow-[0_18px_44px_rgba(15,23,42,0.08)] dark:border-white/10 dark:bg-white/6">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <div className="text-xs font-bold uppercase tracking-[0.22em] text-slate-400">Risk Console</div>
+                <div className="mt-2 text-xl font-black text-slate-900 dark:text-white">风险提醒与动作</div>
+              </div>
+              <Button variant="primary" onClick={() => showToast("已发送当前风险提醒")}>
+                发送提醒
+              </Button>
             </div>
-          ))}
+            <div className="grid gap-3 md:grid-cols-3">
+              {[
+                "推荐信尚未确认，今天内需发出邀请",
+                "院系审批临近截止，需要补课程计划说明",
+                "成绩单上传已完成，可转入校内终检",
+              ].map((item, index) => (
+                <div
+                  key={item}
+                  className={`rounded-[22px] border p-4 ${
+                    index === 0
+                      ? "border-rose-200 bg-rose-50 dark:border-rose-400/20 dark:bg-rose-500/10"
+                      : "border-slate-200 bg-slate-50 dark:border-white/10 dark:bg-slate-900/40"
+                  }`}
+                >
+                  <div className="text-sm leading-6 text-slate-700 dark:text-slate-200">{item}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-6">
+          <ActionDock
+            actions={processFlowQuickActions}
+            templates={[]}
+            onInsert={() => showToast("流程动作提示已复制")}
+          />
+          {selected ? (
+            <div className="rounded-[28px] border border-slate-200 bg-slate-950 p-4 text-white shadow-[0_22px_52px_rgba(15,23,42,0.24)]">
+              <ChatDialog
+                dialogId={`international-process-${selected.id}`}
+                botName="流程计划助手"
+                initMessage="我已经读取当前计划、任务与里程碑，可以继续压缩三日执行计划、重排节点或生成补件提醒。"
+                transport={processFlowAdapter.createChatTransport(selected.title)}
+              />
+            </div>
+          ) : null}
         </div>
       </section>
     </div>

@@ -12,6 +12,11 @@ export interface ChatStreamOptions {
 	onError: (err: string) => void;
 }
 
+export interface CustomChatStreamOptions extends ChatStreamOptions {
+	endpoint: string;
+	extraBody?: Record<string, unknown>;
+}
+
 export interface CompleteRequest {
 	language: string;
 	file_content: string;
@@ -35,16 +40,21 @@ function getAuthHeaders(): Record<string, string> {
  * Stream a chat response from the backend using SSE (Server-Sent Events).
  * Returns an AbortController so the caller can cancel the request.
  */
-export function chatStream(options: ChatStreamOptions): AbortController {
-	const { messages, file_context, language, onDelta, onDone, onError } = options;
+function createStreamRequest(
+	endpoint: string,
+	body: Record<string, unknown>,
+	onDelta: (text: string) => void,
+	onDone: () => void,
+	onError: (err: string) => void,
+): AbortController {
 	const controller = new AbortController();
 
 	(async () => {
 		try {
-			const res = await fetch("/api/v1/ai/chat", {
+			const res = await fetch(endpoint, {
 				method: "POST",
 				headers: getAuthHeaders(),
-				body: JSON.stringify({ messages, file_context, language }),
+				body: JSON.stringify(body),
 				signal: controller.signal,
 			});
 
@@ -87,6 +97,28 @@ export function chatStream(options: ChatStreamOptions): AbortController {
 	})();
 
 	return controller;
+}
+
+export function chatStream(options: ChatStreamOptions): AbortController {
+	const { messages, file_context, language, onDelta, onDone, onError } = options;
+	return createStreamRequest(
+		"/api/v1/ai/chat",
+		{ messages, file_context, language },
+		onDelta,
+		onDone,
+		onError,
+	);
+}
+
+export function customChatStream(options: CustomChatStreamOptions): AbortController {
+	const { endpoint, messages, file_context, language, extraBody, onDelta, onDone, onError } = options;
+	return createStreamRequest(
+		endpoint,
+		{ messages, file_context, language, ...(extraBody ?? {}) },
+		onDelta,
+		onDone,
+		onError,
+	);
 }
 
 /**

@@ -62,7 +62,7 @@ const ResearchHub: React.FC = () => {
         <ShowcasePanel
           eyebrow="Quick Access"
           title="快捷入口"
-          description="正式 landing page 负责说明场景，工作台继续承接记录与详情。"
+          description="每个功能都已切到语义化页面，入口不再指向旧的 ListPage/detail。"
         >
           <div className="grid gap-4">
             {researchModuleCatalog.map((module) => (
@@ -72,8 +72,8 @@ const ResearchHub: React.FC = () => {
                   {module.desc}
                 </div>
                 <div className="mt-4 flex flex-wrap gap-3 text-[14px] font-semibold text-[#5672ff]">
-                  <span>正式页：{module.to}</span>
-                  {module.workspaceTo ? <span>工作台：{module.workspaceTo}</span> : null}
+                  <span>入口：{module.to}</span>
+                  {module.workspaceTo ? <span>新建 / 深入：{module.workspaceTo}</span> : null}
                 </div>
               </div>
             ))}

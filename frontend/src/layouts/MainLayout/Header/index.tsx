@@ -20,10 +20,6 @@ import { managementModuleCatalog, managementIcon } from "@/pages/Management/modu
 import { researchModuleCatalog } from "@/pages/Research/moduleCatalog";
 import { studyModuleCatalog, studyIcon } from "@/pages/Study/moduleCatalog";
 import { teachingModuleCatalog, teachingIcon } from "@/pages/Teaching/moduleCatalog";
-import {
-  internationalWorkspaceModules,
-  researchWorkspaceModules,
-} from "@/pages/workspaceRegistry";
 
 const { Header } = Layout;
 
@@ -132,7 +128,15 @@ const MainHeader: React.FC = () => {
         ? "/study/code-tutor/ListPage"
         : pathname === "/research/collaboration"
           ? "/research/paper-writing"
-          : pathname;
+          : /\/ListPage$/i.test(pathname)
+            ? pathname.replace(/\/ListPage$/i, "")
+            : /\/detail\/([^/]+)$/i.test(pathname) && pathname.startsWith("/research/literature-search")
+              ? pathname.replace(/\/detail\/([^/]+)$/i, "/queries/$1")
+              : /\/detail\/([^/]+)$/i.test(pathname) && pathname.startsWith("/research/paper-reader")
+                ? pathname.replace(/\/detail\/([^/]+)$/i, "/papers/$1")
+                : /\/detail\/([^/]+)$/i.test(pathname) && pathname.startsWith("/research/paper-writing")
+                  ? pathname.replace(/\/detail\/([^/]+)$/i, "/drafts/$1")
+                  : pathname;
     return `${canonicalPath}${search}`;
   };
 
@@ -163,24 +167,31 @@ const MainHeader: React.FC = () => {
       "/teaching/syllabus/ListPage": "/teaching",
       "/teaching/exam/ListPage": "/teaching",
       "/teaching/assignment-review": "/teaching",
-      "/teaching/assignment-review/ListPage": "/teaching/assignment-review",
+      "/teaching/assignment-review/tasks": "/teaching/assignment-review",
       "/management": "/",
       "/research": "/",
       "/research/conference-list": "/research",
       "/research/collaboration": "/research",
       "/international": "/",
+      "/international/exchange-hub": "/international",
+      "/international/matching-lab": "/international",
+      "/international/process-flow": "/international",
+      "/international/writing-desk": "/international",
+      "/international/pre-departure": "/international",
+      "/international/welcome-portal": "/international",
       "/international/cultural-training": "/international",
-      "/international/cultural-training/ListPage": "/international/cultural-training",
+      "/international/abroad-life": "/international",
+      "/international/return-service": "/international",
+      "/research/literature-search": "/research",
+      "/research/paper-reader": "/research",
+      "/research/paper-writing": "/research",
+      "/management/process-assistant": "/management",
+      "/management/announcement-generator": "/management",
+      "/management/materials-center": "/management",
+      "/management/student-qa": "/management",
+      "/management/dashboard": "/management",
+      "/management/timeline": "/management",
     };
-
-    researchWorkspaceModules.forEach((module) => {
-      exact[module.routeBase] = "/research";
-      exact[`${module.routeBase}/ListPage`] = module.routeBase;
-    });
-    internationalWorkspaceModules.forEach((module) => {
-      exact[module.routeBase] = "/international";
-      exact[`${module.routeBase}/ListPage`] = module.routeBase;
-    });
 
     if (exact[pathname]) return exact[pathname];
 
@@ -200,21 +211,44 @@ const MainHeader: React.FC = () => {
 
     if (pathname.startsWith("/teaching/syllabus/detail")) return "/teaching/syllabus/ListPage";
     if (pathname.startsWith("/teaching/exam/detail")) return "/teaching/exam/ListPage";
-    if (pathname.startsWith("/teaching/assignment-review/detail")) return "/teaching/assignment-review/ListPage";
-
-    const researchDetailTarget = researchWorkspaceModules.find((module) =>
-      pathname.startsWith(`${module.routeBase}/detail`),
-    );
-    if (researchDetailTarget) return `${researchDetailTarget.routeBase}/ListPage`;
-
-    const internationalDetailTarget = internationalWorkspaceModules.find((module) =>
-      pathname.startsWith(`${module.routeBase}/detail`),
-    );
-    if (internationalDetailTarget) return `${internationalDetailTarget.routeBase}/ListPage`;
-
-    if (pathname.startsWith("/international/cultural-training/detail")) {
-      return "/international/cultural-training/ListPage";
+    if (pathname.startsWith("/teaching/assignment-review/tasks/")) {
+      const parts = pathname.split("/").filter(Boolean);
+      if (parts.length >= 6) return `/teaching/assignment-review/tasks/${parts[3]}`;
+      return "/teaching/assignment-review/tasks";
     }
+
+    if (pathname.startsWith("/management/process-assistant/cases/")) {
+      return "/management/process-assistant";
+    }
+    if (pathname.startsWith("/management/announcement-generator/")) {
+      return "/management/announcement-generator";
+    }
+    if (pathname.startsWith("/management/materials-center/collections/")) {
+      return "/management/materials-center";
+    }
+    if (pathname.startsWith("/management/student-qa/threads/")) {
+      return "/management/student-qa";
+    }
+    if (pathname.startsWith("/management/dashboard/insights/")) {
+      return "/management/dashboard";
+    }
+    if (pathname.startsWith("/management/timeline/")) {
+      return "/management/timeline";
+    }
+
+    if (pathname.startsWith("/research/literature-search/queries/")) return "/research/literature-search";
+    if (pathname.startsWith("/research/paper-reader/papers/")) return "/research/paper-reader";
+    if (pathname.startsWith("/research/paper-writing/drafts/")) return "/research/paper-writing";
+
+    if (pathname.startsWith("/international/exchange-hub/programs/")) return "/international/exchange-hub";
+    if (pathname.startsWith("/international/matching-lab/analyses/")) return "/international/matching-lab";
+    if (pathname.startsWith("/international/process-flow/plans/")) return "/international/process-flow";
+    if (pathname.startsWith("/international/writing-desk/drafts/")) return "/international/writing-desk";
+    if (pathname.startsWith("/international/pre-departure/cases/")) return "/international/pre-departure";
+    if (pathname.startsWith("/international/welcome-portal/cases/")) return "/international/welcome-portal";
+    if (pathname.startsWith("/international/cultural-training/profiles/")) return "/international/cultural-training";
+    if (pathname.startsWith("/international/abroad-life/tickets/")) return "/international/abroad-life";
+    if (pathname.startsWith("/international/return-service/cases/")) return "/international/return-service";
 
     if (pathname.startsWith("/study/code-tutor/")) return "/study/code-tutor/ListPage";
     if (pathname.startsWith("/study/")) return "/study";
