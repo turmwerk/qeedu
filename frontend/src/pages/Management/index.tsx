@@ -1,29 +1,15 @@
 import React from "react";
-import { BuildOutlined, NotificationOutlined } from "@ant-design/icons";
 import ModuleHub from "@/feature/ModuleHub";
+import { managementHubFeatures } from "./moduleCatalog";
 
 const ManagementHub: React.FC = () => {
   return (
     <ModuleHub
-      headline="助管模块可以帮你更高效完成教学管理"
-      subtitle="班级管理 · 通知发布 · 资料归档"
-      features={[ 
-        {
-          key: "major-construct",
-          title: "专业建设",
-          desc: "培养方案优化与课程体系建设。",
-          to: "/management/major",
-          icon: <BuildOutlined data-oid="uw2stnm" />,
-        },
-        {
-          key: "policy-response",
-          title: "政策响应",
-          desc: "政策解读、要求落实与跟进。",
-          to: "/management/policy",
-          icon: <NotificationOutlined data-oid="ytwgwpq" />,
-        },
-      ]}
-      data-oid="yj.85pj"
+      headline="助管模块覆盖事务推进、通知生成、材料管理与节点统筹"
+      subtitle="事务处理 · 通知公告 · 材料表单 · 学生问答 · 数据看板 · 时间节点"
+      features={managementHubFeatures}
+      gridCols="grid-cols-2 xl:grid-cols-3"
+      data-oid="management-hub"
     />
   );
 };

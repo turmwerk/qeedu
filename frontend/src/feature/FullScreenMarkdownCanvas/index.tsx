@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { SYLLABUS_EVENTS } from "@/pages/Teaching/Syllabus/constants";
 import { getStoredTheme, toggleTheme } from "@/utils/theme/controller";
 import type { WorkspaceEventSet } from "@/feature/RecordWorkspace";
 import CanvasHeader from "./Header";
@@ -18,24 +17,25 @@ const FullScreenMarkdownCanvas: React.FC<{
   const [siderOpen, setSiderOpen] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const [theme, setTheme] = useState(getStoredTheme);
-  const events = siderEvents ?? SYLLABUS_EVENTS;
 
   useEffect(() => {
+    if (!siderEvents) return;
+
     const handleSiderState = (event: Event) => {
       const detail = (event as CustomEvent<{ open: boolean }>).detail;
       if (detail) setSiderOpen(detail.open);
     };
     const handleThemeChange = () => setTheme(getStoredTheme());
-    window.addEventListener(events.siderState, handleSiderState as EventListener);
+    window.addEventListener(siderEvents.siderState, handleSiderState as EventListener);
     window.addEventListener("theme-change", handleThemeChange);
     window.addEventListener("storage", handleThemeChange);
-    window.dispatchEvent(new Event(events.getSiderState));
+    window.dispatchEvent(new Event(siderEvents.getSiderState));
     return () => {
-      window.removeEventListener(events.siderState, handleSiderState as EventListener);
+      window.removeEventListener(siderEvents.siderState, handleSiderState as EventListener);
       window.removeEventListener("theme-change", handleThemeChange);
       window.removeEventListener("storage", handleThemeChange);
     };
-  }, [events.getSiderState, events.siderState]);
+  }, [siderEvents]);
 
   useEffect(() => {
     setText(value);
@@ -50,7 +50,8 @@ const FullScreenMarkdownCanvas: React.FC<{
   }, []);
 
   const handleToggleSider = () => {
-    window.dispatchEvent(new Event(events.toggleSider));
+    if (!siderEvents) return;
+    window.dispatchEvent(new Event(siderEvents.toggleSider));
     setSiderOpen((v) => !v);
   };
 

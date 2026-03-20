@@ -13,12 +13,10 @@ import studyRoutes from "./study.routes";
 import teachingRoutes from "./teaching.routes";
 import internationalRoutes from "./international.routes";
 import researchRoutes from "./research.routes";
+import managementRoutes from "./management.routes";
 import projectRoutes from "./project.routes";
 
 const Home = lazy(() => import("@/pages/Home"));
-const ManagementHub = lazy(() => import("@/pages/Management"));
-const MajorConstruct = lazy(() => import("@/pages/Management/MajorConstruct"));
-const PolicyResponse = lazy(() => import("@/pages/Management/PolicyResponse"));
 
 const lazyElement = (Component: LazyExoticComponent<ComponentType<any>>) =>
   createElement(
@@ -43,9 +41,7 @@ const mainRoutes: RouteObject[] = [
       ...teachingRoutes,
       ...internationalRoutes,
       ...researchRoutes,
-      { path: "management", element: lazyElement(ManagementHub) },
-      { path: "management/major", element: lazyElement(MajorConstruct) },
-      { path: "management/policy", element: lazyElement(PolicyResponse) },
+      ...managementRoutes,
     ],
   },
 ];

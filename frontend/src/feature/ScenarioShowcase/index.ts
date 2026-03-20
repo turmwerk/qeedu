@@ -1,14 +1,14 @@
-export { default as ConversationBoard } from "./ConversationBoard";
-export { default as RecordList } from "./RecordList";
-export { default as ResourceGroups } from "./ResourceGroups";
-export { default as ResultWorkbench } from "./ResultWorkbench";
+export { default as ConversationBoard } from "./ConversationBoard/index";
+export { default as RecordList } from "./RecordList/index";
+export { default as ResourceGroups } from "./ResourceGroups/index";
+export { default as ResultWorkbench } from "./ResultWorkbench/index";
 export {
   ShowcasePanel,
   ShowcaseSectionHeader,
   ShowcaseStatGrid,
   ShowcaseTag,
   showcasePanelClass,
-} from "./shared";
+} from "./shared/index";
 export type {
   ShowcaseChecklistItem,
   ShowcaseConversationCard,

@@ -4,7 +4,7 @@ import Form from "@/ui/Form";
 import {
   getExamCreateFields,
   type DifficultyValue,
-} from "../data/createModalFields";
+} from "../data";
 
 type CreateModalProps = {
   open: boolean;

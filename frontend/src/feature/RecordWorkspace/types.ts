@@ -17,6 +17,10 @@ export type WorkspaceEventSet = {
 export type WorkspaceMetric = {
   label: string;
   value: string;
+  description?: string;
+  badge?: string;
+  to?: string;
+  tone?: "default" | "blue" | "green" | "orange";
 };
 
 export type WorkspaceTask = {

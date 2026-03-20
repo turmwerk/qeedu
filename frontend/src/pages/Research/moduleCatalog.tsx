@@ -14,6 +14,7 @@ type ModuleCatalogEntry = {
   shortLabel: string;
   desc: string;
   to: string;
+  workspaceTo?: string;
   icon: React.ReactNode;
   badgeLabel: string;
   footerLabel: string;
@@ -32,15 +33,16 @@ export const researchModuleCatalog: ModuleCatalogEntry[] = [
     key: "research-literature-search",
     title: "文献检索",
     shortLabel: "文献检索",
-    desc: "检索式管理、数据库切换、样本池初筛与精筛复盘。",
+    desc: `智能检索与综述助手
+• 检索式管理
+• 数据库切换
+• 样本池初筛与精筛复盘`,
     to: "/research/literature-search",
+    workspaceTo: "/research/literature-search/ListPage",
     icon: <SearchOutlinedIcon />,
     badgeLabel: "Search",
     footerLabel: "检索与筛选",
-    subLinks: [
-      { label: "检索方案", to: "/research/literature-search/ListPage" },
-      { label: "论文精读", to: "/research/paper-reader" },
-      { label: "论文写作", to: "/research/paper-writing" },
+    subLinks: [ 
     ],
     landingHeadline: "文献检索",
     landingSubtitle: "从研究问题拆解、检索式设计到样本池筛选，先把入口做对，后面精读和写作才不跑偏。",
@@ -67,7 +69,7 @@ export const researchModuleCatalog: ModuleCatalogEntry[] = [
         key: "search-handoff",
         title: "向精读工作台移交",
         desc: "把高价值论文批量移交到精读阶段，而不是重复抄录文献信息。",
-        to: "/research/paper-reader",
+        to: "/research/paper-reader/ListPage",
         icon: <ReadOutlinedIcon />,
         badgeLabel: "Handoff",
         footerLabel: "进入精读",
@@ -76,7 +78,7 @@ export const researchModuleCatalog: ModuleCatalogEntry[] = [
         key: "search-review",
         title: "综述结构与主题簇",
         desc: "按方法、任务、数据集和时间线聚合样本，为后续写作提供骨架。",
-        to: "/research/paper-writing",
+        to: "/research/paper-writing/ListPage",
         icon: <EditOutlinedIcon />,
         badgeLabel: "Review",
         footerLabel: "综述骨架",
@@ -87,15 +89,17 @@ export const researchModuleCatalog: ModuleCatalogEntry[] = [
     key: "research-paper-reader",
     title: "论文精读",
     shortLabel: "论文精读",
-    desc: "结构化读论文、提炼贡献、理解方法与实验、沉淀复现清单。",
+    desc: `智能文献阅读器
+• 结构化读论文
+• 提炼贡献与方法
+• 沉淀复现清单`,
     to: "/research/paper-reader",
+    workspaceTo: "/research/paper-reader/ListPage",
     icon: <ReadOutlinedIcon />,
     badgeLabel: "Reader",
     footerLabel: "结构化精读",
     subLinks: [
-      { label: "精读笔记", to: "/research/paper-reader/ListPage" },
-      { label: "文献检索", to: "/research/literature-search" },
-      { label: "论文写作", to: "/research/paper-writing" },
+
     ],
     landingHeadline: "论文精读",
     landingSubtitle: "不是把论文从头到尾复述一遍，而是把问题定义、核心方法、实验结论和可复用思路拆出来。",
@@ -131,7 +135,7 @@ export const researchModuleCatalog: ModuleCatalogEntry[] = [
         key: "reader-writing",
         title: "向写作工作台沉淀论据",
         desc: "把贡献摘要、方法对比和实验结论迁移到自己的论文结构中。",
-        to: "/research/paper-writing",
+        to: "/research/paper-writing/ListPage",
         icon: <EditOutlinedIcon />,
         badgeLabel: "Writing",
         footerLabel: "论据转写作",
@@ -142,15 +146,17 @@ export const researchModuleCatalog: ModuleCatalogEntry[] = [
     key: "research-paper-writing",
     title: "论文写作",
     shortLabel: "论文写作",
-    desc: "从摘要、提纲、章节到投稿前检查，统一管理论文全流程写作。",
+    desc: `论文写作与协同工具
+• 摘要与提纲
+• 章节推进
+• 投稿前检查`,
     to: "/research/paper-writing",
+    workspaceTo: "/research/paper-writing/ListPage",
     icon: <EditOutlinedIcon />,
     badgeLabel: "Writing",
     footerLabel: "提纲与投稿",
     subLinks: [
-      { label: "写作草稿", to: "/research/paper-writing/ListPage" },
-      { label: "文献检索", to: "/research/literature-search" },
-      { label: "论文精读", to: "/research/paper-reader" },
+
     ],
     landingHeadline: "论文写作",
     landingSubtitle: "把提纲、摘要、实验章节和投稿检查串成连续工作流，而不是把写作当成最后才补的一步。",
@@ -177,7 +183,7 @@ export const researchModuleCatalog: ModuleCatalogEntry[] = [
         key: "writing-argument",
         title: "引文论据与相关工作嵌入",
         desc: "把检索和精读得到的论据回填到相关工作、方法设计和讨论部分。",
-        to: "/research/paper-reader",
+        to: "/research/paper-reader/ListPage",
         icon: <ReadOutlinedIcon />,
         badgeLabel: "Argument",
         footerLabel: "论据组织",
@@ -195,16 +201,18 @@ export const researchModuleCatalog: ModuleCatalogEntry[] = [
   }),
 ];
 
-export const researchHubFeatures: Feature[] = researchModuleCatalog.map((item) => ({
-  key: item.key,
-  title: item.title,
-  desc: item.desc,
-  to: item.to,
-  icon: item.icon,
-  badgeLabel: item.badgeLabel,
-  footerLabel: item.footerLabel,
-  subLinks: item.subLinks,
-}));
+export const researchHubFeatures: Feature[] = researchModuleCatalog.map((item) => {
+  return {
+    key: item.key,
+    title: item.title,
+    desc: item.desc,
+    to: item.to,
+    icon: item.icon,
+    badgeLabel: item.badgeLabel,
+    footerLabel: item.footerLabel,
+    subLinks: item.subLinks,
+  };
+});
 
 export const researchHomeSubLinks = researchModuleCatalog.map((item) => ({
   label: item.shortLabel,

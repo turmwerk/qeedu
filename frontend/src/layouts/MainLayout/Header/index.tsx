@@ -1,30 +1,25 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Layout } from "antd";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Dropdown from "@/ui/Dropdown";
 import Button from "@/ui/Button";
 import {
   ArrowLeftOutlinedIcon,
-  BookOutlinedIcon,
-  BuildOutlinedIcon,
-  CodeOutlinedIcon,
-  ControlOutlinedIcon,
-  ExperimentOutlinedIcon,
-  FormOutlinedIcon,
   GlobalOutlinedIcon,
   HomeOutlinedIcon,
-  NotificationOutlinedIcon,
-  ReadOutlinedIcon,
   SearchOutlinedIcon,
   SettingOutlinedIcon,
   TeamOutlinedIcon,
   UserOutlinedIcon,
 } from "@/ui/Icon";
 import SearchModal from "@/layouts/MainLayout/SearchModal";
-import { getStoredTheme, toggleTheme } from "@/utils/theme/controller";
 import { useAuth } from "@/hooks/useAuth";
+import { getStoredTheme, toggleTheme } from "@/utils/theme/controller";
 import { internationalModuleCatalog } from "@/pages/International/moduleCatalog";
+import { managementModuleCatalog, managementIcon } from "@/pages/Management/moduleCatalog";
 import { researchModuleCatalog } from "@/pages/Research/moduleCatalog";
+import { studyModuleCatalog, studyIcon } from "@/pages/Study/moduleCatalog";
+import { teachingModuleCatalog, teachingIcon } from "@/pages/Teaching/moduleCatalog";
 import {
   internationalWorkspaceModules,
   researchWorkspaceModules,
@@ -32,20 +27,24 @@ import {
 
 const { Header } = Layout;
 
-
-
 const menuButtonBase =
   "relative inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3.5 py-1 text-[14px] font-semibold rounded-xl transition-[color] hover:text-[var(--brand-purple)]";
-const menuButtonUnderline = 
+const menuButtonUnderline =
   "after:content-[''] after:absolute after:left-0 after:-bottom-[1px] after:h-[1.5px] after:w-0 after:bg-current after:transition-all after:duration-200 hover:after:w-full";
 const menuButtonIdle = "text-[var(--brand-blue)] bg-transparent";
 const menuButtonActive =
   "text-[var(--brand-purple)] bg-[var(--brand-accent-soft)]";
 
+type DropdownItem = {
+  label: string;
+  path: string;
+  icon?: React.ReactNode;
+};
+
 const buildItems = (
   pathname: string,
   navigate: ReturnType<typeof useNavigate>,
-  items: Array<{ label: string; path: string; icon?: React.ReactNode }>,
+  items: DropdownItem[],
 ) =>
   items.map((item) => {
     const normalizedItemPath = item.path.replace(/\/ListPage$/i, "");
@@ -67,6 +66,36 @@ const buildItems = (
     };
   });
 
+const studyDropdownItems: DropdownItem[] = studyModuleCatalog.map((item) => ({
+  label: item.title,
+  path: item.to,
+  icon: item.icon,
+}));
+
+const teachingDropdownItems: DropdownItem[] = teachingModuleCatalog.map((item) => ({
+  label: item.title,
+  path: item.to,
+  icon: item.icon,
+}));
+
+const managementDropdownItems: DropdownItem[] = managementModuleCatalog.map((item) => ({
+  label: item.title,
+  path: item.to,
+  icon: item.icon,
+}));
+
+const researchDropdownItems: DropdownItem[] = researchModuleCatalog.map((item) => ({
+  label: item.title,
+  path: item.to,
+  icon: item.icon,
+}));
+
+const internationalDropdownItems: DropdownItem[] = internationalModuleCatalog.map((item) => ({
+  label: item.title,
+  path: item.to,
+  icon: item.icon,
+}));
+
 const MainHeader: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -84,11 +113,11 @@ const MainHeader: React.FC = () => {
 
   useEffect(() => {
     const handler = () => setTheme(getStoredTheme());
-    window.addEventListener('theme-change', handler);
-    window.addEventListener('storage', handler);
+    window.addEventListener("theme-change", handler);
+    window.addEventListener("storage", handler);
     return () => {
-      window.removeEventListener('theme-change', handler);
-      window.removeEventListener('storage', handler);
+      window.removeEventListener("theme-change", handler);
+      window.removeEventListener("storage", handler);
     };
   }, []);
 
@@ -98,18 +127,12 @@ const MainHeader: React.FC = () => {
   };
 
   const normalizeRoute = (pathname: string, search: string): string => {
-    // Canonicalize redirect source route to avoid back-button ping-pong.
-    const workspaceModule = [...internationalWorkspaceModules, ...researchWorkspaceModules].find(
-      (module) => pathname === module.routeBase,
-    );
     const canonicalPath =
       pathname === "/study/code-tutor"
         ? "/study/code-tutor/ListPage"
         : pathname === "/research/collaboration"
-          ? "/research/paper-writing/ListPage"
-          : workspaceModule
-            ? `${workspaceModule.routeBase}/ListPage`
-            : pathname;
+          ? "/research/paper-writing"
+          : pathname;
     return `${canonicalPath}${search}`;
   };
 
@@ -124,51 +147,88 @@ const MainHeader: React.FC = () => {
     }
   }, [location.pathname, location.search]);
 
-  // Fallback deterministic parent route when stack history is unavailable.
   const getFallbackBackTarget = (pathname: string): string => {
-    // Exact matches first
     const exact: Record<string, string> = {
       "/study": "/",
-      "/teaching": "/",
-      "/international": "/",
-      "/research": "/",
-      "/management": "/",
+      "/study/resource-pack": "/study",
+      "/study/resource-pack/nju-schools": "/study/resource-pack",
+      "/study/resource-pack/disciplines": "/study/resource-pack",
+      "/study/resource-pack/admissions-categories": "/study/resource-pack",
+      "/study/progress-radar": "/study",
+      "/study/career-planner": "/study",
       "/study/code-tutor": "/study",
       "/study/code-tutor/ListPage": "/study/code-tutor",
       "/study/code-tutor/ProjectPage": "/study/code-tutor/ListPage",
-      "/teaching/exam/ListPage": "/teaching",
+      "/teaching": "/",
       "/teaching/syllabus/ListPage": "/teaching",
-      "/international/welcome-portal/ListPage": "/international",
-      "/management/major": "/management",
-      "/management/policy": "/management",
-      "/research/literature-search/ListPage": "/research",
-      "/research/paper-reader/ListPage": "/research",
-      "/research/paper-writing/ListPage": "/research",
+      "/teaching/exam/ListPage": "/teaching",
+      "/teaching/assignment-review": "/teaching",
+      "/teaching/assignment-review/ListPage": "/teaching/assignment-review",
+      "/management": "/",
+      "/research": "/",
+      "/research/conference-list": "/research",
       "/research/collaboration": "/research",
+      "/international": "/",
+      "/international/cultural-training": "/international",
+      "/international/cultural-training/ListPage": "/international/cultural-training",
     };
+
+    researchWorkspaceModules.forEach((module) => {
+      exact[module.routeBase] = "/research";
+      exact[`${module.routeBase}/ListPage`] = module.routeBase;
+    });
+    internationalWorkspaceModules.forEach((module) => {
+      exact[module.routeBase] = "/international";
+      exact[`${module.routeBase}/ListPage`] = module.routeBase;
+    });
+
     if (exact[pathname]) return exact[pathname];
 
-    // Prefix matches (detail pages, etc.)
-    if (pathname.startsWith("/teaching/exam/detail")) return "/teaching/exam/ListPage";
+    if (pathname.startsWith("/study/resource-pack/nju-schools/")) {
+      return "/study/resource-pack/nju-schools";
+    }
+    if (pathname.startsWith("/study/resource-pack/admissions-categories/")) {
+      return "/study/resource-pack/admissions-categories";
+    }
+    if (pathname.startsWith("/study/resource-pack/disciplines/")) {
+      const parts = pathname.split("/").filter(Boolean);
+      if (parts.length >= 5) {
+        return `/study/resource-pack/disciplines/${parts[3]}`;
+      }
+      return "/study/resource-pack/disciplines";
+    }
+
     if (pathname.startsWith("/teaching/syllabus/detail")) return "/teaching/syllabus/ListPage";
-    const workspaceDetailTarget = [...internationalWorkspaceModules, ...researchWorkspaceModules].find(
-      (module) => pathname.startsWith(`${module.routeBase}/detail`),
+    if (pathname.startsWith("/teaching/exam/detail")) return "/teaching/exam/ListPage";
+    if (pathname.startsWith("/teaching/assignment-review/detail")) return "/teaching/assignment-review/ListPage";
+
+    const researchDetailTarget = researchWorkspaceModules.find((module) =>
+      pathname.startsWith(`${module.routeBase}/detail`),
     );
-    if (workspaceDetailTarget) return `${workspaceDetailTarget.routeBase}/ListPage`;
+    if (researchDetailTarget) return `${researchDetailTarget.routeBase}/ListPage`;
+
+    const internationalDetailTarget = internationalWorkspaceModules.find((module) =>
+      pathname.startsWith(`${module.routeBase}/detail`),
+    );
+    if (internationalDetailTarget) return `${internationalDetailTarget.routeBase}/ListPage`;
+
+    if (pathname.startsWith("/international/cultural-training/detail")) {
+      return "/international/cultural-training/ListPage";
+    }
+
     if (pathname.startsWith("/study/code-tutor/")) return "/study/code-tutor/ListPage";
     if (pathname.startsWith("/study/")) return "/study";
     if (pathname.startsWith("/teaching/")) return "/teaching";
-    if (pathname.startsWith("/international/")) return "/international";
     if (pathname.startsWith("/management/")) return "/management";
     if (pathname.startsWith("/research/")) return "/research";
+    if (pathname.startsWith("/international/")) return "/international";
 
-    // Fallback: go home
     return "/";
   };
+
   const handleBack = () => {
     const stack = navStackRef.current;
 
-    // Drop current page and navigate to the previous stack entry.
     if (stack.length > 1) {
       stack.pop();
       const prev = stack[stack.length - 1];
@@ -180,8 +240,6 @@ const MainHeader: React.FC = () => {
 
     navigate(getFallbackBackTarget(location.pathname));
   };
-
-
 
   return (
     <Header
@@ -207,6 +265,7 @@ const MainHeader: React.FC = () => {
           </span>
         )}
       </div>
+
       <div className="flex items-center gap-1 sm:gap-1.5" data-oid="lg2sztd">
         <Button
           className={`${menuButtonBase} ${menuButtonUnderline} ${menuButtonIdle}`}
@@ -221,23 +280,23 @@ const MainHeader: React.FC = () => {
           onClick={handleToggleTheme}
           data-oid="theme-button"
         >
-              {theme === 'dark' ? (
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="leading-none inline-block">
-                  <path d="M12 4V2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="M12 22v-2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="M4.93 4.93L3.51 3.51" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="M20.49 20.49l-1.42-1.42" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="M4 12H2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="M22 12h-2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="M4.93 19.07l-1.42 1.42" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="M20.49 3.51l-1.42 1.42" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                  <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.8" />
-                </svg>
-              ) : (
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="leading-none inline-block">
-                  <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              )}
+          {theme === "dark" ? (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="leading-none inline-block">
+              <path d="M12 4V2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M12 22v-2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M4.93 4.93L3.51 3.51" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M20.49 20.49l-1.42-1.42" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M4 12H2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M22 12h-2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M4.93 19.07l-1.42 1.42" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M20.49 3.51l-1.42 1.42" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.8" />
+            </svg>
+          ) : (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="leading-none inline-block">
+              <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          )}
           <span className="hidden sm:inline">主题</span>
         </Button>
         <Button
@@ -264,69 +323,58 @@ const MainHeader: React.FC = () => {
             active={isStudy}
             button={
               <span className="inline-flex items-center gap-1.5">
-                <ReadOutlinedIcon />
+                {studyIcon}
                 <span>助学</span>
               </span>
             }
-            buttonClassName={`${menuButtonBase} ${
-              isStudy ? menuButtonActive : menuButtonIdle
-            }`}
+            buttonClassName={`${menuButtonBase} ${isStudy ? menuButtonActive : menuButtonIdle}`}
             onButtonClick={() => {
               if (location.pathname !== "/study") navigate("/study");
             }}
-            items={buildItems(location.pathname, navigate, [
-              { label: "编程辅导", path: "/study/code-tutor", icon: <CodeOutlinedIcon /> },
-            ])}
+            items={buildItems(location.pathname, navigate, studyDropdownItems)}
             showBorder={false}
             portalToBody={true}
           />
         </div>
+
         <div className="hidden sm:block">
           <Dropdown
             active={isTeaching}
             button={
               <span className="inline-flex items-center gap-1.5">
-                <ExperimentOutlinedIcon />
+                {teachingIcon}
                 <span>助教</span>
               </span>
             }
-            buttonClassName={`${menuButtonBase} ${
-              isTeaching ? menuButtonActive : menuButtonIdle
-            }`}
+            buttonClassName={`${menuButtonBase} ${isTeaching ? menuButtonActive : menuButtonIdle}`}
             onButtonClick={() => {
               if (location.pathname !== "/teaching") navigate("/teaching");
             }}
-            items={buildItems(location.pathname, navigate, [
-              { label: "大纲设计", path: "/teaching/syllabus/ListPage", icon: <BookOutlinedIcon /> },
-              { label: "试卷设计", path: "/teaching/exam/ListPage", icon: <FormOutlinedIcon /> },
-            ])}
+            items={buildItems(location.pathname, navigate, teachingDropdownItems)}
             showBorder={false}
             portalToBody={true}
           />
         </div>
+
         <div className="hidden sm:block">
           <Dropdown
             active={isManagement}
             button={
               <span className="inline-flex items-center gap-1.5">
-                <ControlOutlinedIcon />
+                {managementIcon}
                 <span>助管</span>
               </span>
             }
-            buttonClassName={`${menuButtonBase} ${
-              isManagement ? menuButtonActive : menuButtonIdle
-            }`}
+            buttonClassName={`${menuButtonBase} ${isManagement ? menuButtonActive : menuButtonIdle}`}
             onButtonClick={() => {
               if (location.pathname !== "/management") navigate("/management");
             }}
-            items={buildItems(location.pathname, navigate, [
-              { label: "专业建设", path: "/management/major", icon: <BuildOutlinedIcon /> },
-              { label: "政策响应", path: "/management/policy", icon: <NotificationOutlinedIcon /> },
-            ])}
+            items={buildItems(location.pathname, navigate, managementDropdownItems)}
             showBorder={false}
             portalToBody={true}
           />
         </div>
+
         <div className="hidden sm:block">
           <Dropdown
             active={isResearch}
@@ -336,25 +384,16 @@ const MainHeader: React.FC = () => {
                 <span>助研</span>
               </span>
             }
-            buttonClassName={`${menuButtonBase} ${
-              isResearch ? menuButtonActive : menuButtonIdle
-            }`}
+            buttonClassName={`${menuButtonBase} ${isResearch ? menuButtonActive : menuButtonIdle}`}
             onButtonClick={() => {
               if (location.pathname !== "/research") navigate("/research");
             }}
-            items={buildItems(
-              location.pathname,
-              navigate,
-              researchModuleCatalog.map((module) => ({
-                label: module.title,
-                path: module.to,
-                icon: module.icon,
-              })),
-            )}
+            items={buildItems(location.pathname, navigate, researchDropdownItems)}
             showBorder={false}
             portalToBody={true}
           />
         </div>
+
         <div className="hidden sm:block">
           <Dropdown
             active={isInternational}
@@ -364,21 +403,11 @@ const MainHeader: React.FC = () => {
                 <span>国际交流</span>
               </span>
             }
-            buttonClassName={`${menuButtonBase} ${
-              isInternational ? menuButtonActive : menuButtonIdle
-            }`}
+            buttonClassName={`${menuButtonBase} ${isInternational ? menuButtonActive : menuButtonIdle}`}
             onButtonClick={() => {
               if (location.pathname !== "/international") navigate("/international");
             }}
-            items={buildItems(
-              location.pathname,
-              navigate,
-              internationalModuleCatalog.map((module) => ({
-                label: module.title,
-                path: module.to,
-                icon: module.icon,
-              })),
-            )}
+            items={buildItems(location.pathname, navigate, internationalDropdownItems)}
             showBorder={false}
             portalToBody={true}
           />

@@ -123,7 +123,6 @@ const DetailPage: React.FC<{
     [localQuestions, persistExam]
   );
 
-  // insert modal state
   const [showInsertModal, setShowInsertModal] = useState(false);
   const [insertAt, setInsertAt] = useState<number | null>(null);
   const [editingQuestionId, setEditingQuestionId] = useState<string | null>(null);
@@ -484,4 +483,5 @@ const DetailPage: React.FC<{
     </>
   );
 };
+
 export default DetailPage;

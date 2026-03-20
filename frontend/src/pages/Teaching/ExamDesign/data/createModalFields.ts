@@ -1,16 +1,6 @@
 import React from "react";
 import type { FormField } from "@/ui/Form";
-
-export type DifficultyValue = {
-  easy: number;
-  medium: number;
-  hard: number;
-};
-
-type DifficultyPickerType = React.FC<{
-  value: DifficultyValue | undefined;
-  onChange: (v: DifficultyValue) => void;
-}>;
+import type { DifficultyPickerType, DifficultyValue } from "./types";
 
 export const getExamCreateFields = (
   DifficultyPicker: DifficultyPickerType,

@@ -13,7 +13,6 @@ import {
   MailOutlinedIcon,
   RocketOutlinedIcon,
   RollbackOutlinedIcon,
-  TranslationOutlinedIcon,
 } from "@/ui/Icon";
 
 const text = (value: unknown, fallback = "待补充") => {
@@ -40,22 +39,22 @@ const buildRecord = (
 export const internationalWorkspaceConfigs: WorkspaceConfig[] = [
   {
     key: "international-welcome-portal",
-    title: "来华留学生支持",
-    headline: "来华留学生智能助手",
+    title: "来华支援助手",
+    headline: "来华学习支援助手",
     subtitle: "签证材料 · 报到注册 · 住宿校园 · 语言适应",
-    description: "面向 incoming students 提供签证、报到、住宿、校园办事、语言支持与适应建议。",
+    description: "为个人来华学习提供签证、报到、住宿、校园办事、语言支持与适应建议的个人助手。",
     icon: <GlobalOutlinedIcon />,
     routeBase: "/international/welcome-portal",
-    listTitle: "来华支持档案",
-    listEmptyText: "暂无来华留学生支持档案。",
-    createModalTitle: "新建来华支持档案",
-    createModalDescription: "为 incoming students 建立一份连续支持档案，跟踪签证、报到、住宿和到校适应全过程。",
-    createButtonLabel: "新建档案",
-    searchPlaceholder: "搜索学生姓名、项目或国别",
+    listTitle: "来华支援方案",
+    listEmptyText: "暂无来华学习支援方案。",
+    createModalTitle: "新建来华支援方案",
+    createModalDescription: "为个人来华学习建立一份连续支援方案，跟踪签证、报到、住宿和到校适应全过程。",
+    createButtonLabel: "新建方案",
+    searchPlaceholder: "搜索支援方案、项目或国别",
     createFields: [
-      { name: "name", label: "学生姓名", placeholder: "例如：Anna Lee" },
-      { name: "country", label: "国别/地区", placeholder: "例如：新加坡" },
-      { name: "program", label: "项目/院系", placeholder: "例如：交换生项目 / 汉语进修" },
+      { name: "name", label: "方案名称", placeholder: "例如：我的来华学习支援计划" },
+      { name: "country", label: "来源国别/地区", placeholder: "例如：新加坡" },
+      { name: "program", label: "目标项目/院系", placeholder: "例如：交换生项目 / 汉语进修" },
       {
         name: "arrivalTerm",
         label: "来校学期",
@@ -79,8 +78,8 @@ export const internationalWorkspaceConfigs: WorkspaceConfig[] = [
         ],
         defaultValue: "签证准备",
       },
-      { name: "owner", label: "支持负责人", placeholder: "例如：国际处王老师 / buddy 学生" },
-      { name: "supportNeeds", label: "核心支持需求", type: "textarea", rows: 4, placeholder: "例如：签证流程不熟、宿舍入住沟通困难、需要中英双语通知。" },
+      { name: "owner", label: "支持联系人", placeholder: "例如：国际处联系人 / buddy / 宿舍前台" },
+      { name: "supportNeeds", label: "支援需求", type: "textarea", rows: 4, placeholder: "例如：签证流程不熟、宿舍入住沟通困难、需要中英双语通知。" },
     ],
     filters: [
       { key: "all", label: "全部", match: () => true },
@@ -92,37 +91,37 @@ export const internationalWorkspaceConfigs: WorkspaceConfig[] = [
     currentKey: "international_welcome_portal_current_id",
     counterKey: "international_welcome_portal_counter",
     events: createWorkspaceEvents("international-welcome-portal"),
-    botName: "来华支持助手",
-    botIntro: "我可以帮你把 incoming student 的签证、arrival、住宿、注册和语言适应整理成连续支持方案。",
+    botName: "来华支援助手",
+    botIntro: "我可以帮你规划来华学习的签证、arrival、住宿、注册和语言适应全流程方案。",
     assistantPrompts: [
-      "帮我生成一份来校前双语通知",
-      "把报到事项整理成 checklist",
-      "补一份首周适应支持方案",
+      "帮我生成一份来校前准备清单",
+      "把报到事项整理成个人 checklist",
+      "制定我的首周适应计划",
     ],
     capabilities: [
-      "incoming 支持档案",
-      "来华前材料核验",
-      "报到注册清单生成",
-      "首周适应支持联动",
+      "个人来华支援方案",
+      "来华前材料准备指导",
+      "报到注册流程规划",
+      "首周适应计划制定",
     ],
     deliverables: [
-      "来华支持档案",
+      "来华支援方案",
       "报到与住宿清单",
-      "双语通知模板",
-      "首周适应方案",
+      "个人准备模板",
+      "首周适应计划",
     ],
     relatedLinks: [
       { label: "多语言沟通与邮件助手", to: "/international/writing-desk/ListPage" },
-      { label: "跨文化培训与风险提示", to: "/international/cultural-training/ListPage" },
+      { label: "跨文化培训与风险提示", to: "/international/cultural-training" },
     ],
     buildRecord: (context) => {
-      const name = text(context.payload.name, "未命名来华学生");
+      const name = text(context.payload.name, "未命名来华方案");
       const country = text(context.payload.country, "待定国别");
       const program = text(context.payload.program, "待定项目");
       const arrivalTerm = text(context.payload.arrivalTerm, "待定学期");
       const status = text(context.payload.status, "签证准备");
-      const owner = text(context.payload.owner, "待分配");
-      const supportNeeds = text(context.payload.supportNeeds, "待补充支持需求");
+      const owner = text(context.payload.owner, "待设定");
+      const supportNeeds = text(context.payload.supportNeeds, "待补充支援需求");
       return buildRecord(context, {
         title: name,
         subtitle: `${program} · ${arrivalTerm}`,
@@ -130,15 +129,15 @@ export const internationalWorkspaceConfigs: WorkspaceConfig[] = [
         status,
         tags: [country, program, owner],
         metrics: [
-          { label: "国别/地区", value: country },
-          { label: "项目/院系", value: program },
+          { label: "来源国别/地区", value: country },
+          { label: "目标项目/院系", value: program },
           { label: "来校学期", value: arrivalTerm },
-          { label: "支持负责人", value: owner },
+          { label: "支持联系人", value: owner },
         ],
         highlights: [
           "来华前材料、签证与抵达安排要并行推进，而不是线性串行。",
-          "报到、宿舍、校园卡和选课最好在首周支持方案里一起统筹。",
-          "尽量为 incoming students 预留双语说明和 buddy 对接信息。",
+          "报到、宿舍、校园卡和选课最好在首周计划里一起统筹。",
+          "尽量准备双语说明和联系人信息作为应急备案。",
         ],
         nextSteps: [
           "核对签证和入境前必备材料。",
@@ -146,9 +145,9 @@ export const internationalWorkspaceConfigs: WorkspaceConfig[] = [
           "准备中英双语的校园办事与首周适应说明。",
         ],
         references: [
-          { label: "学生", value: name },
-          { label: "项目/院系", value: program },
-          { label: "支持负责人", value: owner },
+          { label: "方案名称", value: name },
+          { label: "目标项目/院系", value: program },
+          { label: "项目联系人", value: owner },
         ],
         tasks: [
           { id: "incoming-1", title: "核验签证、保险和来华前文件", detail: "确认录取材料、签证、保险和航班信息。", done: status !== "签证准备", priority: "high" },
@@ -170,7 +169,7 @@ export const internationalWorkspaceConfigs: WorkspaceConfig[] = [
           {
             id: "incoming-template-briefing",
             title: "来华前双语通知模板",
-            summary: "适合给 incoming students 发送抵达前说明。",
+            summary: "适合整理个人来华前的双语通知与自查说明。",
             content: "## Arrival Notice\n- Arrival date:\n- Check-in location:\n- Required documents:\n- Emergency contact:\n\n## 到校前提醒\n- 报到时间：\n- 住宿办理：\n- 校园办事：\n",
           },
           {
@@ -181,23 +180,23 @@ export const internationalWorkspaceConfigs: WorkspaceConfig[] = [
           },
         ],
         quickActions: [
-          { id: "incoming-action-1", title: "生成双语通知", description: "输出给 incoming student 的到校前通知。", prompt: "请基于当前档案生成一份中英双语的 arrival notice，覆盖签证、报到、住宿和紧急联系。", action: "append_template", templateId: "incoming-template-briefing" },
+          { id: "incoming-action-1", title: "生成双语通知", description: "输出一份个人来华前通知与自查说明。", prompt: "请基于当前档案生成一份中英双语的 arrival notice，覆盖签证、报到、住宿和紧急联系。", action: "append_template", templateId: "incoming-template-briefing" },
           { id: "incoming-action-2", title: "压缩首周安排", description: "把当前信息整理成首周支持清单。", prompt: "把当前记录压缩成首周适应支持 checklist，按 arrival 当天、前 3 天和第一周拆分。", action: "append_prompt" },
-          { id: "incoming-action-3", title: "检查支持缺口", description: "识别 अभी还没覆盖的支持事项。", prompt: "检查当前 incoming support 档案，指出还缺少哪些签证、住宿、校园办事或语言支持信息。", action: "copy_prompt" },
+          { id: "incoming-action-3", title: "检查支持缺口", description: "识别当前还没覆盖的支持事项。", prompt: "检查当前来华支援档案，指出还缺少哪些签证、住宿、校园办事或语言支持信息。", action: "copy_prompt" },
         ],
         content: buildMarkdown([
-          { title: "核心支持需求", body: supportNeeds },
+          { title: "支援需求", body: supportNeeds },
           {
             title: "关键信息",
-            body: `- 学生姓名：${name}\n- 国别/地区：${country}\n- 项目/院系：${program}\n- 来校学期：${arrivalTerm}\n- 当前阶段：${status}\n- 支持负责人：${owner}`,
+            body: `- 方案名称：${name}\n- 来源国别/地区：${country}\n- 目标项目/院系：${program}\n- 来校学期：${arrivalTerm}\n- 当前阶段：${status}\n- 项目联系人：${owner}`,
           },
           {
-            title: "支持路径",
-            body: "- 来华前：签证、保险、arrival 通知\n- 报到阶段：注册、宿舍、校园卡与账号\n- 首周适应：课程、语言、生活服务与 buddy 对接",
+            title: "支援路径",
+            body: "- 来华前：签证、保险、arrival 准备\n- 报到阶段：注册、宿舍、校园卡与账号\n- 首周适应：课程、语言、生活服务与联系人对接",
           },
           {
             title: "风险提醒",
-            body: "- 避免只发中文通知，必要事项保留双语版本\n- 宿舍、报到和校园卡开通要明确线下地点与联系人\n- 提前确认医疗、保险和紧急联系机制",
+            body: "- 避免只准备中文材料，重要事项保留双语版本\n- 宿舍、报到和校园卡开通要明确线下地点与联系人\n- 提前确认医疗、保险和紧急联系机制",
           },
         ]),
       });
@@ -205,16 +204,16 @@ export const internationalWorkspaceConfigs: WorkspaceConfig[] = [
   },
   {
     key: "international-exchange-hub",
-    title: "交换项目库",
-    headline: "交换项目库",
+    title: "交换项目中心",
+    headline: "交换项目中心",
     subtitle: "合作院校 · 区域分布 · 要求比对",
-    description: "把目标项目、区域和门槛条件整理成可筛选项目库。",
+    description: "为个人申请决策沉淀可筛选的交换、暑校、访学与联合培养项目库。",
     icon: <BankOutlinedIcon />,
     routeBase: "/international/exchange-hub",
-    listTitle: "项目条目",
-    listEmptyText: "暂无交换项目条目。",
-    createModalTitle: "新建交换项目条目",
-    createModalDescription: "适合先沉淀项目库，再把候选项目同步到申请总览。",
+    listTitle: "项目清单",
+    listEmptyText: "暂无交换项目记录。",
+    createModalTitle: "新建交换项目记录",
+    createModalDescription: "适合先沉淀候选项目，再把项目同步到匹配与申请流程里。",
     createButtonLabel: "新建项目",
     searchPlaceholder: "搜索交换项目",
     createFields: [
@@ -360,7 +359,7 @@ export const internationalWorkspaceConfigs: WorkspaceConfig[] = [
         defaultValue: "校内审批",
       },
       { name: "deadline", label: "最晚完成时间", placeholder: "例如：2026-11-01" },
-      { name: "owner", label: "流程责任人", placeholder: "例如：学生本人 / 辅导员" },
+      { name: "owner", label: "当前责任人", placeholder: "例如：我自己 / 院系秘书 / 国际处联系人" },
       { name: "blockers", label: "当前卡点", type: "textarea", rows: 4, placeholder: "例如：尚未拿到学院公章，系统附件格式不通过。" },
     ],
     filters: [
@@ -565,26 +564,26 @@ export const internationalWorkspaceConfigs: WorkspaceConfig[] = [
   },
   {
     key: "international-matching-lab",
-    title: "项目匹配与决策",
-    headline: "智能项目匹配与申请决策",
-    subtitle: "个人画像 · 候选比较 · 申报优先级",
-    description: "根据 GPA、语言、预算、国家和时间安排推荐合适项目，并支持多项目比较。",
+    title: "交换项目配对推荐",
+    headline: "智能交换项目配对推荐",
+    subtitle: "个人画像 · 项目匹配 · 配对评分",
+    description: "基于个人背景和偏好智能推荐最适合的交换项目，提供精准配对和匹配度分析。",
     icon: <ExperimentOutlinedIcon />,
     routeBase: "/international/matching-lab",
-    listTitle: "匹配方案",
-    listEmptyText: "暂无项目匹配方案。",
-    createModalTitle: "新建匹配方案",
-    createModalDescription: "基于个人背景和约束条件生成候选项目池，并输出决策说明。",
+    listTitle: "项目推荐方案",
+    listEmptyText: "暂无交换项目配对方案。",
+    createModalTitle: "新建推荐方案",
+    createModalDescription: "基于个人背景和偏好智能匹配最适合的交换项目，生成推荐与比较报告。",
     createButtonLabel: "新建方案",
-    searchPlaceholder: "搜索匹配方案或申请画像",
+    searchPlaceholder: "搜索配对方案或个人画像",
     createFields: [
-      { name: "name", label: "方案名称", placeholder: "例如：2027 春季交换项目匹配" },
-      { name: "gpa", label: "GPA / 排名", placeholder: "例如：3.78 / 前 15%" },
-      { name: "language", label: "语言成绩", placeholder: "例如：IELTS 7.0 / 日语 N2" },
-      { name: "budget", label: "预算约束", placeholder: "例如：总预算 8 万以内" },
+      { name: "name", label: "配对方案名称", placeholder: "例如：2027 春季交换配对推荐" },
+      { name: "gpa", label: "学术成绩", placeholder: "例如：3.78 / 前 15%" },
+      { name: "language", label: "语言能力", placeholder: "例如：IELTS 7.0 / 日语 N2" },
+      { name: "interests", label: "专业兴趣", placeholder: "例如：国际商务、文化研究" },
       {
         name: "region",
-        label: "目标国家/区域",
+        label: "偏好地区",
         type: "select",
         options: [
           { label: "亚洲", value: "亚洲" },
@@ -596,7 +595,7 @@ export const internationalWorkspaceConfigs: WorkspaceConfig[] = [
       },
       {
         name: "status",
-        label: "当前阶段",
+        label: "配对阶段",
         type: "select",
         options: [
           { label: "画像整理", value: "画像整理" },
@@ -606,37 +605,38 @@ export const internationalWorkspaceConfigs: WorkspaceConfig[] = [
         ],
         defaultValue: "画像整理",
       },
-      { name: "timeline", label: "时间约束", placeholder: "例如：希望 2027 春季派出，11 月前完成校内审批" },
+      { name: "preferences", label: "其他偏好", type: "textarea", rows: 3, placeholder: "例如：希望体验不同的教育体系，偏向小班教学，预算控制在10万以内。" },
       { name: "goals", label: "匹配目标", type: "textarea", rows: 4, placeholder: "写清楚希望优先满足的学术、预算、语言或城市偏好。" },
     ],
     filters: [
       { key: "all", label: "全部", match: () => true },
-      { key: "profile", label: "画像整理", match: (record) => record.status === "画像整理" },
-      { key: "compare", label: "候选比较", match: (record) => record.status === "候选比较" },
-      { key: "decision", label: "待决策", match: (record) => record.status === "待决策" },
+      { key: "analysis", label: "画像整理", match: (record) => record.status === "画像整理" },
+      { key: "matching", label: "候选比较", match: (record) => record.status === "候选比较" },
+      { key: "recommend", label: "方案收敛", match: (record) => record.status === "方案收敛" },
+      { key: "confirm", label: "待决策", match: (record) => record.status === "待决策" },
     ],
     storageKey: "international_matching_lab_records",
     currentKey: "international_matching_lab_current_id",
     counterKey: "international_matching_lab_counter",
     events: createWorkspaceEvents("international-matching-lab"),
-    botName: "匹配决策助手",
-    botIntro: "我可以基于你的背景、语言、预算和时间约束，帮你筛候选项目并输出决策说明。",
+    botName: "项目配对助手",
+    botIntro: "我可以基于你的背景、偏好和目标，智能推荐最匹配的交换项目并提供配对分析。",
     assistantPrompts: [
-      "根据画像推荐三档候选项目",
-      "把两个项目做优缺点比较",
-      "生成一份申报优先级建议",
+      "为我推荐三个最匹配的交换项目",
+      "分析我与某个项目的匹配度",
+      "生成项目配对推荐报告",
     ],
     capabilities: [
-      "个人画像建模",
-      "候选项目推荐",
-      "多项目比较与排序",
-      "申报决策说明生成",
+      "个人背景分析",
+      "智能项目配对",
+      "匹配度评估",
+      "个性化推荐生成",
     ],
     deliverables: [
-      "候选项目池",
-      "优先级排序建议",
-      "多项目比较说明",
-      "申报决策纪要",
+      "推荐项目清单",
+      "配对匹配度分析",
+      "个性化推荐报告",
+      "项目对比总结",
     ],
     relatedLinks: [
       { label: "交换与访学项目中心", to: "/international/exchange-hub/ListPage" },
@@ -692,7 +692,7 @@ export const internationalWorkspaceConfigs: WorkspaceConfig[] = [
         resources: [
           { id: "matching-r1", title: "候选项目池", kind: "候选清单", summary: "沉淀满足硬门槛的候选项目集合。", to: "/international/exchange-hub/ListPage" },
           { id: "matching-r2", title: "比较维度模板", kind: "比较框架", summary: "用于比较课程、预算、语言、名额和节奏。 " },
-          { id: "matching-r3", title: "决策说明稿", kind: "输出材料", summary: "可直接复用于和老师、家长或学院沟通。", to: "/international/writing-desk/ListPage" },
+          { id: "matching-r3", title: "决策说明稿", kind: "输出材料", summary: "可直接复用于和导师、家人或项目联系人沟通。", to: "/international/writing-desk/ListPage" },
         ],
         templates: [
           {
@@ -794,7 +794,7 @@ export const internationalWorkspaceConfigs: WorkspaceConfig[] = [
     ],
     relatedLinks: [
       { label: "行前准备", to: "/international/pre-departure/ListPage" },
-      { label: "文化培训", to: "/international/cultural-training/ListPage" },
+      { label: "文化培训", to: "/international/cultural-training" },
     ],
     buildRecord: (context) => {
       const name = text(context.payload.name, "未命名生活指南");
@@ -848,130 +848,9 @@ export const internationalWorkspaceConfigs: WorkspaceConfig[] = [
     },
   },
   {
-    key: "international-cultural-training",
-    title: "文化培训",
-    headline: "文化培训",
-    subtitle: "跨文化案例 · 培训提纲 · 场景演练",
-    description: "面向派出或来校学生准备跨文化培训内容与案例。",
-    icon: <TranslationOutlinedIcon />,
-    routeBase: "/international/cultural-training",
-    listTitle: "培训方案",
-    listEmptyText: "暂无文化培训方案。",
-    createModalTitle: "新建文化培训方案",
-    createModalDescription: "适合记录培训目标、案例脚本和互动环节安排。",
-    createButtonLabel: "新建培训",
-    searchPlaceholder: "搜索培训方案",
-    createFields: [
-      { name: "name", label: "培训名称", placeholder: "例如：赴日交换跨文化沟通工作坊" },
-      {
-        name: "audience",
-        label: "面向对象",
-        type: "select",
-        options: [
-          { label: "派出学生", value: "派出学生" },
-          { label: "来校学生", value: "来校学生" },
-          { label: "双向交流", value: "双向交流" },
-        ],
-        defaultValue: "派出学生",
-      },
-      {
-        name: "status",
-        label: "准备状态",
-        type: "select",
-        options: [
-          { label: "待准备", value: "待准备" },
-          { label: "进行中", value: "进行中" },
-          { label: "已归档", value: "已归档" },
-        ],
-        defaultValue: "待准备",
-      },
-      { name: "objective", label: "培训目标", type: "textarea", rows: 3, placeholder: "例如：降低文化冲击、提升沟通效率。" },
-      { name: "caseFocus", label: "重点案例", type: "textarea", rows: 4, placeholder: "例如：课堂表达、邮件礼仪、住宿沟通等场景。" },
-    ],
-    filters: [
-      { key: "all", label: "全部", match: () => true },
-      { key: "todo", label: "待准备", match: (record) => record.status === "待准备" },
-      { key: "doing", label: "进行中", match: (record) => record.status === "进行中" },
-      { key: "done", label: "已归档", match: (record) => record.status === "已归档" },
-    ],
-    storageKey: "international_cultural_training_records",
-    currentKey: "international_cultural_training_current_id",
-    counterKey: "international_cultural_training_counter",
-    events: createWorkspaceEvents("international-cultural-training"),
-    botName: "文化培训助手",
-    botIntro: "我可以帮你拆解培训提纲、扩写案例脚本，并补上互动环节与注意事项。",
-    assistantPrompts: [
-      "把这份培训目标扩成课程提纲",
-      "补一个跨文化冲突案例",
-      "设计一个 20 分钟互动活动",
-    ],
-    capabilities: [
-      "培训大纲搭建",
-      "案例脚本编排",
-      "互动活动设计",
-      "培训复盘沉淀",
-    ],
-    deliverables: [
-      "培训提纲",
-      "案例脚本",
-      "活动设计单",
-      "培训复盘纪要",
-    ],
-    relatedLinks: [
-      { label: "海外生活", to: "/international/abroad-life/ListPage" },
-      { label: "归国服务", to: "/international/return-service/ListPage" },
-    ],
-    buildRecord: (context) => {
-      const name = text(context.payload.name, "未命名培训方案");
-      const audience = text(context.payload.audience, "派出学生");
-      const status = text(context.payload.status, "待准备");
-      const objective = text(context.payload.objective, "待补充培训目标");
-      const caseFocus = text(context.payload.caseFocus, "待补充重点案例");
-      return buildRecord(context, {
-        title: name,
-        subtitle: `${audience} · ${status}`,
-        summary: objective,
-        status,
-        tags: [audience],
-        metrics: [
-          { label: "面向对象", value: audience },
-          { label: "准备状态", value: status },
-          { label: "培训目标", value: "已定义" },
-          { label: "案例状态", value: "待完善" },
-        ],
-        highlights: [
-          "围绕真实交流场景设计案例和讨论问题。",
-          "培训材料要覆盖邮件礼仪、课堂沟通和日常协作。",
-          "建议加入角色扮演和经验复盘环节。",
-        ],
-        nextSteps: [
-          "把培训目标拆成三段式课程结构。",
-          "为每个案例配一组讨论问题。",
-          "沉淀可复用的讲义和主持词。",
-        ],
-        references: [
-          { label: "面向对象", value: audience },
-          { label: "准备状态", value: status },
-        ],
-        content: buildMarkdown([
-          { title: "培训目标", body: objective },
-          { title: "重点案例", body: caseFocus },
-          {
-            title: "课程结构",
-            body: "- 破冰与预期对齐\n- 典型文化场景讲解\n- 角色演练与小组复盘\n- Q&A 与资源发放",
-          },
-          {
-            title: "注意事项",
-            body: "- 案例尽量使用真实、可讨论的情境\n- 避免抽象表达，突出行为建议\n- 培训后收集反馈并更新材料",
-          },
-        ]),
-      });
-    },
-  },
-  {
     key: "international-return-service",
-    title: "归国服务",
-    headline: "归国服务",
+    title: "返校归档与经验沉淀",
+    headline: "返校归档与经验沉淀",
     subtitle: "学分认定 · 报销归档 · 经验回流",
     description: "支持返校后的认定、归档和经验沉淀。",
     icon: <RollbackOutlinedIcon />,
@@ -1030,7 +909,7 @@ export const internationalWorkspaceConfigs: WorkspaceConfig[] = [
       "归国分享提纲",
     ],
     relatedLinks: [
-      { label: "文化培训", to: "/international/cultural-training/ListPage" },
+      { label: "文化培训", to: "/international/cultural-training" },
       { label: "申请总览", to: "/international/welcome-portal/ListPage" },
     ],
     buildRecord: (context) => {
@@ -1078,7 +957,7 @@ export const internationalWorkspaceConfigs: WorkspaceConfig[] = [
           },
           {
             title: "经验回流",
-            body: "- 将交流经验整理成 10 分钟分享稿\n- 补充常见问题和建议\n- 同步给后续项目负责老师",
+            body: "- 将交流经验整理成 10 分钟分享稿\n- 补充常见问题和建议\n- 沉淀为自己后续申请和分享可复用的资料",
           },
         ]),
       });
@@ -1171,7 +1050,7 @@ export const internationalWorkspaceConfigs: WorkspaceConfig[] = [
     ],
     relatedLinks: [
       { label: "智能项目匹配与申请决策", to: "/international/matching-lab/ListPage" },
-      { label: "来华留学生智能助手", to: "/international/welcome-portal/ListPage" },
+      { label: "来华支援助手", to: "/international/welcome-portal/ListPage" },
     ],
     buildRecord: (context) => {
       const name = text(context.payload.name, "未命名文书草稿");
@@ -1223,7 +1102,7 @@ export const internationalWorkspaceConfigs: WorkspaceConfig[] = [
         ],
         resources: [
           { id: "writing-r1", title: "沟通场景模板库", kind: "模板", summary: "包含导师联系、项目问询、签证说明和住宿沟通常用结构。" },
-          { id: "writing-r2", title: "双语 FAQ 草稿", kind: "FAQ", summary: "适合沉淀给学生或合作院校的高频问答。" },
+          { id: "writing-r2", title: "双语 FAQ 草稿", kind: "FAQ", summary: "适合沉淀个人或合作院校的高频问答。" },
           { id: "writing-r3", title: "发送前检查表", kind: "Checklist", summary: "用于核对附件、落款、日期、链接和请求表达。" },
         ],
         templates: [
@@ -1242,7 +1121,7 @@ export const internationalWorkspaceConfigs: WorkspaceConfig[] = [
         ],
         quickActions: [
           { id: "writing-action-1", title: "生成双语邮件", description: "把当前草稿组织成中英双语邮件。", prompt: "请基于当前记录生成一封中英双语邮件，突出请求、deadline 和附件说明。", action: "append_template", templateId: "writing-template-email" },
-          { id: "writing-action-2", title: "改写成 FAQ / 通知", description: "把当前信息改成对学生友好的通知格式。", prompt: "把当前草稿改写成 FAQ / 通知格式，要求信息更直接、结构更清晰。", action: "append_template", templateId: "writing-template-faq" },
+          { id: "writing-action-2", title: "改写成 FAQ / 通知", description: "把当前信息改成通用友好的通知格式。", prompt: "把当前草稿改写成 FAQ / 通知格式，要求信息更直接、结构更清晰。", action: "append_template", templateId: "writing-template-faq" },
           { id: "writing-action-3", title: "执行发送前终检", description: "识别是否有遗漏项。", prompt: "检查当前草稿是否遗漏称呼、附件说明、deadline、联系人或 closing 信息。", action: "copy_prompt" },
         ],
         content: buildMarkdown([

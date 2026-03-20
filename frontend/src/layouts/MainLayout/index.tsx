@@ -7,10 +7,19 @@ import Footer from "./Footer";
 import FloatActions from "./FloatActions";
 import SyllabusListModal from "@/pages/Teaching/Syllabus/ListModal";
 import ExamListModal from "@/pages/Teaching/ExamDesign/ListModal";
-import { SYLLABUS_EVENTS, SYLLABUS_STORAGE_KEY, SYLLABUS_TITLE } from "@/pages/Teaching/Syllabus/constants";
-import { EXAM_EVENTS, EXAM_STORAGE_KEY, EXAM_TITLE } from "@/pages/Teaching/ExamDesign/constants";
+import {
+  SYLLABUS_EVENTS,
+  SYLLABUS_STORAGE_KEY,
+  SYLLABUS_TITLE,
+} from "@/pages/Teaching/Syllabus/constants";
+import {
+  EXAM_EVENTS,
+  EXAM_STORAGE_KEY,
+  EXAM_TITLE,
+} from "@/pages/Teaching/ExamDesign/constants";
 import { allWorkspaceModules } from "@/pages/workspaceRegistry";
 import { getStoredTheme, applyTheme } from "@/utils/theme/controller";
+import { getEffectsEnabled } from "@/utils/effects/controller";
 import SnowLayer from "@/effects/SnowLayer";
 import StarsLayer from "@/effects/StarsLayer";
 
@@ -30,6 +39,9 @@ const MainLayout: React.FC = () => {
   // Theme control (centralized here)
   const [theme, setTheme] = useState<"light" | "dark">(() => getStoredTheme());
 
+  // Effects control
+  const [effectsEnabled, setEffectsEnabled] = useState(() => getEffectsEnabled());
+
   useEffect(() => {
     // Ensure document and other parts are updated
     applyTheme(theme);
@@ -48,6 +60,22 @@ const MainLayout: React.FC = () => {
       window.removeEventListener("storage", onStorage);
     };
   }, [theme]);
+
+  useEffect(() => {
+    const onEffectsChange = (e: Event) => {
+      const enabled = (e as CustomEvent).detail?.enabled as boolean | undefined;
+      if (enabled !== undefined) setEffectsEnabled(enabled);
+      else setEffectsEnabled(getEffectsEnabled());
+    };
+    const onStorage = () => setEffectsEnabled(getEffectsEnabled());
+
+    window.addEventListener("effects-change", onEffectsChange as EventListener);
+    window.addEventListener("storage", onStorage);
+    return () => {
+      window.removeEventListener("effects-change", onEffectsChange as EventListener);
+      window.removeEventListener("storage", onStorage);
+    };
+  }, []);
 
   useEffect(() => {
     // 首次访问站点时引导至登录（仅一次，保存�?localStorage�?
@@ -169,7 +197,7 @@ const MainLayout: React.FC = () => {
 
   useEffect(() => {
     window.dispatchEvent(
-        new CustomEvent(SYLLABUS_EVENTS.siderState, {
+      new CustomEvent(SYLLABUS_EVENTS.siderState, {
         detail: { open: syllabusSiderOpen },
       })
     );
@@ -177,7 +205,7 @@ const MainLayout: React.FC = () => {
 
   useEffect(() => {
     window.dispatchEvent(
-        new CustomEvent(EXAM_EVENTS.siderState, {
+      new CustomEvent(EXAM_EVENTS.siderState, {
         detail: { open: examSiderOpen },
       })
     );
@@ -194,10 +222,11 @@ const MainLayout: React.FC = () => {
   }, [workspaceSiders]);
 
   // 只要路径包含 detail 视为 detail 页面
-  const isDetailPage = /\/detail(\/|$)/.test(location.pathname);
+  const isDetailPage = /\/detail(\/|$)/.test(location.pathname) || location.pathname.includes("/DetailPage");
   const isHomePage = location.pathname === "/";
-  // 侧边栏切换按钮逻辑：只在大�?试卷详情页显�?
-  const isSyllabusDetail = location.pathname.startsWith("/teaching/syllabus") && location.pathname !== "/teaching/syllabus/ListPage";
+  const isSyllabusDetail =
+    location.pathname.startsWith("/teaching/syllabus") &&
+    location.pathname !== "/teaching/syllabus/ListPage";
   const isExamDetail = location.pathname.startsWith("/teaching/exam/detail");
 
   useEffect(() => {
@@ -238,7 +267,8 @@ const MainLayout: React.FC = () => {
         }
       `}</style>
       {/* 全屏雪花特效：固定定位在最底层，pointer-events:none 不影响交�?*/}
-      <SnowLayer />
+      {/* 全屏特效：固定定位在最底层，pointer-events:none 不影响交互 */}
+      {effectsEnabled && <SnowLayer />}
       {/* 深色主题独立星点背景（不连线，不跟鼠标交互） */}
       {theme === 'dark' && <StarsLayer />}
 
@@ -281,7 +311,9 @@ const MainLayout: React.FC = () => {
           listModalComponent={ExamListModal}
         />
         {allWorkspaceModules.map((module) => {
-          const isWorkspaceDetail = location.pathname.startsWith(`${module.routeBase}/detail`);
+          const isWorkspaceDetail =
+            location.pathname.startsWith(`${module.routeBase}/detail`) ||
+            location.pathname.startsWith(`${module.routeBase}/DetailPage`);
           return (
             <Sider
               key={module.key}

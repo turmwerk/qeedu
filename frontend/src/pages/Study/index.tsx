@@ -1,22 +1,14 @@
 import React from "react";
-import { CodeOutlined } from "@ant-design/icons";
 import ModuleHub from "@/feature/ModuleHub";
+import { studyHubFeatures } from "./moduleCatalog";
 
 const StudyHub: React.FC = () => {
   return (
     <ModuleHub
-      headline="助学模块可以帮你更高效学习与答疑"
-      subtitle="自学导航 · 练习计划 · 随问随答"
-      features={[
-        {
-          key: "code-tutor",
-          title: "编程辅导",
-          desc: "代码答疑、错误定位与讲解。",
-          to: "/study/code-tutor",
-          icon: <CodeOutlined data-oid="zhwlmwp" />,
-        },
-      ]}
-      data-oid="t.qib16"
+      headline="助学模块围绕资源导航、学业诊断与成长规划展开"
+      subtitle="学科资源包 · 学业进度雷达 · 智能生涯规划"
+      features={studyHubFeatures}
+      data-oid="study-hub"
     />
   );
 };

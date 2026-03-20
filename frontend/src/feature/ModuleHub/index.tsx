@@ -28,13 +28,28 @@ const ModuleHub: React.FC<Props> = ({
   subtitle,
   features,
   renderFeature,
-  gridCols = "grid-cols-2 lg:grid-cols-3",
+  gridCols,
 }) => {
+  // 根据卡片数量决定布局
+  const getGridCols = () => {
+    if (gridCols) {
+      return gridCols; // 如果手动指定了 gridCols，则使用指定的值
+    }
+
+    const featuresCount = features.length;
+    // 当只有 2 个或 4 个卡片时，显示为每行 2 个
+    if (featuresCount === 2 || featuresCount === 4) {
+      return "grid-cols-2";
+    }
+
+    // 其他情况使用默认布局：移动端 2 列，桌面端 3 列
+    return "grid-cols-2 lg:grid-cols-3";
+  };
   return (
     <div className="module-hub-section relative w-full max-w-full overflow-x-hidden" data-oid="ntkw4hz">
-      <div className="pt-6 pb-6 sm:pt-16 sm:pb-16 px-0 sm:px-6 text-[#444] w-full relative z-10" data-oid="w:tm0qp">
+      <div className="pt-6 pb-6 sm:pt-16 sm:pb-16 px-0 sm:px-8 text-[#444] w-full relative z-10" data-oid="w:tm0qp">
         <div
-          className="module-hub-shell bg-transparent px-1.5 sm:px-[48px] pt-[8px] pb-[8px] w-full sm:w-[90%] max-w-[1040px] shadow-none flex flex-col gap-5 relative overflow-hidden mx-auto"
+          className="module-hub-shell bg-transparent px-2 sm:px-[60px] pt-[8px] pb-[8px] w-full sm:w-[85%] max-w-[1120px] shadow-none flex flex-col gap-5 relative overflow-hidden mx-auto"
           data-oid="oes92qw"
         >
           {headline && (
@@ -53,7 +68,7 @@ const ModuleHub: React.FC<Props> = ({
               {subtitle}
             </div>
           )}
-          <div className={`module-hub-grid grid gap-x-2 gap-y-2 sm:gap-x-8 sm:gap-y-8 relative z-[1] min-w-0 ${gridCols}`} data-oid="offsvqz">
+          <div className={`module-hub-grid grid gap-x-3 gap-y-3 sm:gap-x-10 sm:gap-y-10 relative z-[1] min-w-0 ${getGridCols()}`} data-oid="offsvqz">
             {features.map((item) =>
               renderFeature ? (
                 <React.Fragment key={item.key}>
@@ -78,3 +93,4 @@ const ModuleHub: React.FC<Props> = ({
 };
 
 export default ModuleHub;
+export { ModuleCard };

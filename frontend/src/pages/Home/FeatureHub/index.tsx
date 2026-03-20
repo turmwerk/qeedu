@@ -1,17 +1,12 @@
 import React from "react";
 import ModuleHub from "@/feature/ModuleHub";
-import { researchHomeSubLinks } from "@/pages/Research/moduleCatalog";
 import { internationalHomeSubLinks } from "@/pages/International/moduleCatalog";
+import { managementHomeSubLinks, managementIcon } from "@/pages/Management/moduleCatalog";
+import { researchHomeSubLinks } from "@/pages/Research/moduleCatalog";
+import { studyHomeSubLinks, studyIcon } from "@/pages/Study/moduleCatalog";
+import { teachingHomeSubLinks, teachingIcon } from "@/pages/Teaching/moduleCatalog";
 import {
-  BookOutlinedIcon,
-  BuildOutlinedIcon,
-  CodeOutlinedIcon,
-  ControlOutlinedIcon,
-  ExperimentOutlinedIcon,
-  FormOutlinedIcon,
   GlobalOutlinedIcon,
-  NotificationOutlinedIcon,
-  ReadOutlinedIcon,
   TeamOutlinedIcon,
 } from "@/ui/Icon";
 
@@ -19,28 +14,23 @@ const modules = [
   {
     key: "study",
     title: "助学",
-    desc: "自学导航、练习计划、随问随答。",
+    desc: "学科资源包、学业进度诊断与智能成长规划。",
     to: "/study",
-    icon: <ReadOutlinedIcon data-oid="r9i6-at" />,
-    subLinks: [
-      { label: "编程辅导", to: "/study/code-tutor", icon: <CodeOutlinedIcon /> },
-    ],
+    icon: studyIcon,
+    subLinks: studyHomeSubLinks,
   },
   {
     key: "teaching",
     title: "助教",
-    desc: "试卷生成、大纲设计、作业批改与反馈。",
+    desc: "大纲生成、试卷设计与作业批改反馈。",
     to: "/teaching",
-    icon: <ExperimentOutlinedIcon data-oid="4hschjv" />,
-    subLinks: [
-      { label: "大纲设计", to: "/teaching/syllabus/ListPage", icon: <BookOutlinedIcon /> },
-      { label: "试卷设计", to: "/teaching/exam/ListPage", icon: <FormOutlinedIcon /> },
-    ],
+    icon: teachingIcon,
+    subLinks: teachingHomeSubLinks,
   },
   {
     key: "research",
     title: "助研",
-    desc: "文献检索、论文精读、写作推进与投稿准备。",
+    desc: "文献检索、论文精读、写作推进与 deadline 管理。",
     to: "/research",
     icon: <TeamOutlinedIcon data-oid="ga65l.j" />,
     subLinks: researchHomeSubLinks,
@@ -48,18 +38,15 @@ const modules = [
   {
     key: "management",
     title: "助管",
-    desc: "班级管理、通知发布、资料归档与跟进。",
+    desc: "事务处理、通知公告、材料管理、问答、看板与时间节点。",
     to: "/management",
-    icon: <ControlOutlinedIcon data-oid="5f1:ofq" />,
-    subLinks: [
-      { label: "专业建设", to: "/management/major", icon: <BuildOutlinedIcon /> },
-      { label: "政策响应", to: "/management/policy", icon: <NotificationOutlinedIcon /> },
-    ],
+    icon: managementIcon,
+    subLinks: managementHomeSubLinks,
   },
   {
     key: "international",
     title: "国际交流",
-    desc: "项目申请、流程推进、派出支持、在外服务与归国沉淀。",
+    desc: "项目中心、智能匹配、流程推进、沟通、行前与来华支持。",
     to: "/international",
     icon: <GlobalOutlinedIcon data-oid="w1u7at2" />,
     subLinks: internationalHomeSubLinks,

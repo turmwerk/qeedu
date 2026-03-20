@@ -60,7 +60,7 @@ const SplitSiderLayout: React.FC<{
       <style data-oid="split:cols">{`.${layoutClass} { grid-template-columns: ${columns}; }`}</style>
       <div
         ref={wrapRef}
-        className={`grid items-stretch gap-0 flex-1 min-h-0 overflow-hidden h-full ${layoutClass} ${className || ""}`}
+        className={`grid items-start gap-0 min-h-full ${layoutClass} ${className || ""}`}
         onMouseMove={onMouseMove}
         onMouseUp={stopDrag}
         onMouseLeave={stopDrag}
@@ -70,7 +70,7 @@ const SplitSiderLayout: React.FC<{
       >
         <div
           className={
-            leftClassName || "flex flex-col h-full min-h-0 overflow-hidden"
+            leftClassName || "flex min-w-0 flex-col"
           }
         >
           {left}
@@ -91,7 +91,7 @@ const SplitSiderLayout: React.FC<{
 
         <div
           className={
-            rightClassName || "flex flex-col h-full min-h-0 overflow-hidden"
+            rightClassName || "flex min-w-0 flex-col"
           }
         >
           {right}

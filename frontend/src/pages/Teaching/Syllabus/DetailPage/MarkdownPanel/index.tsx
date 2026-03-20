@@ -43,7 +43,7 @@ const MarkdownPanel: React.FC<MarkdownPanelProps> = ({
             !showRaw && !md ? "opacity-100" : "opacity-0 pointer-events-none"
           }`}
         >
-          <div className="text-slate-400">绌虹殑 Markdown</div>
+          <div className="text-slate-400">空的 Markdown</div>
         </div>
       </div>
     </div>

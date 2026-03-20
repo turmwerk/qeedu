@@ -217,7 +217,7 @@ const Card: React.FC<CardProps> = ({
 
         {/* description */}
         {desc && (
-          <div className="text-[14px] leading-[1.6] text-[#5a6475] dark:text-[#c1cbde]">
+          <div className="text-[14px] leading-[1.6] text-[#5a6475] dark:text-[#c1cbde] whitespace-pre-line">
             {desc}
           </div>
         )}
@@ -299,7 +299,7 @@ const Card: React.FC<CardProps> = ({
 
       {/* description */}
       {desc && (
-        <div className="mb-4 flex-1 text-[12px] sm:text-[13px] leading-relaxed break-words text-gray-600 dark:text-white/80">
+        <div className="mb-4 flex-1 text-[12px] sm:text-[13px] leading-relaxed break-words text-gray-600 dark:text-white/80 whitespace-pre-line">
           {desc}
         </div>
       )}

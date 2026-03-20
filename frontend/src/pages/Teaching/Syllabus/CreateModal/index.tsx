@@ -23,7 +23,7 @@ const CreateModal: React.FC<CreateModalProps> = ({ open, onClose, onCreate }) =>
   };
 
   return (
-    <Modal  
+    <Modal
       visible={open}
       title="新建课程大纲"
       width={1000}

@@ -19,6 +19,7 @@ type ModuleCatalogEntry = {
   shortLabel: string;
   desc: string;
   to: string;
+  workspaceTo?: string;
   icon: React.ReactNode;
   badgeLabel: string;
   footerLabel: string;
@@ -37,15 +38,19 @@ export const internationalModuleCatalog: ModuleCatalogEntry[] = [
     key: "international-exchange-hub",
     title: "交换与访学项目中心",
     shortLabel: "项目中心",
-    desc: "集中查看 partner universities、交换、暑校、短期访学与联合培养项目。",
+    desc: `交换与访学项目总入口
+• 合作院校筛选
+• 申请门槛比较
+• 项目节奏排程`,
     to: "/international/exchange-hub",
+    workspaceTo: "/international/exchange-hub/ListPage",
     icon: <GlobalOutlinedIcon />,
     badgeLabel: "Projects",
     footerLabel: "项目总入口",
     subLinks: [
       { label: "项目清单", to: "/international/exchange-hub/ListPage" },
-      { label: "申请决策", to: "/international/matching-lab" },
-      { label: "流程安排", to: "/international/process-flow" },
+      { label: "申请决策", to: "/international/matching-lab/ListPage" },
+      { label: "流程安排", to: "/international/process-flow/ListPage" },
     ],
     landingHeadline: "交换与访学项目中心",
     landingSubtitle: "从合作院校筛选、项目门槛比较到正式纳入申请池，都在这里完成。",
@@ -63,7 +68,7 @@ export const internationalModuleCatalog: ModuleCatalogEntry[] = [
         key: "exchange-criteria",
         title: "申请门槛与名额比较",
         desc: "对齐 GPA、语言、预算、学分要求和名额限制，提前识别硬门槛。",
-        to: "/international/matching-lab",
+        to: "/international/matching-lab/ListPage",
         icon: <SearchOutlinedIcon />,
         badgeLabel: "Criteria",
         footerLabel: "门槛与比较",
@@ -72,7 +77,7 @@ export const internationalModuleCatalog: ModuleCatalogEntry[] = [
         key: "exchange-timeline",
         title: "学期节奏与节点排程",
         desc: "把官网 deadline、校内审批、提名与递交流程对齐成统一时间线。",
-        to: "/international/process-flow",
+        to: "/international/process-flow/ListPage",
         icon: <DeploymentUnitOutlinedIcon />,
         badgeLabel: "Timeline",
         footerLabel: "申请时间节奏",
@@ -80,7 +85,7 @@ export const internationalModuleCatalog: ModuleCatalogEntry[] = [
       {
         key: "exchange-briefing",
         title: "项目摘要与决策纪要",
-        desc: "为每个候选项目生成可比摘要，方便和老师、家长或导师快速讨论。",
+        desc: "为每个候选项目生成可比摘要，方便和导师、家人或项目联系人快速讨论。",
         to: "/international/exchange-hub/ListPage",
         icon: <MailOutlinedIcon />,
         badgeLabel: "Brief",
@@ -92,15 +97,19 @@ export const internationalModuleCatalog: ModuleCatalogEntry[] = [
     key: "international-matching-lab",
     title: "智能项目匹配与申请决策",
     shortLabel: "项目匹配",
-    desc: "根据 GPA、语言、预算、国家和时间安排推荐合适项目，并支持多项目比较。",
+    desc: `智能项目匹配与申请决策
+• 个人画像建模
+• 多项目对比
+• 优先级排序`,
     to: "/international/matching-lab",
+    workspaceTo: "/international/matching-lab/ListPage",
     icon: <SearchOutlinedIcon />,
     badgeLabel: "Matching",
     footerLabel: "匹配与比较",
     subLinks: [
       { label: "候选推荐", to: "/international/matching-lab/ListPage" },
-      { label: "项目中心", to: "/international/exchange-hub" },
-      { label: "邮件沟通", to: "/international/writing-desk" },
+      { label: "项目中心", to: "/international/exchange-hub/ListPage" },
+      { label: "邮件沟通", to: "/international/writing-desk/ListPage" },
     ],
     landingHeadline: "智能项目匹配与申请决策",
     landingSubtitle: "把个人画像、项目门槛和风险偏好放到同一个决策面板里，输出真正可执行的候选名单。",
@@ -136,7 +145,7 @@ export const internationalModuleCatalog: ModuleCatalogEntry[] = [
         key: "matching-material",
         title: "申报依据与说明稿",
         desc: "自动沉淀推荐理由、比较结论和沟通要点，方便后续写邮件或做说明。",
-        to: "/international/writing-desk",
+        to: "/international/writing-desk/ListPage",
         icon: <MailOutlinedIcon />,
         badgeLabel: "Output",
         footerLabel: "比较结论输出",
@@ -147,15 +156,19 @@ export const internationalModuleCatalog: ModuleCatalogEntry[] = [
     key: "international-process-flow",
     title: "申请流程助手",
     shortLabel: "流程助手",
-    desc: "自动生成个人 checklist 和申请时间线，跟踪报名、审批、材料与签证节点。",
+    desc: `申请流程助手
+• 个人 Checklist 生成
+• 审批与签证跟踪
+• 堵点识别与补救`,
     to: "/international/process-flow",
+    workspaceTo: "/international/process-flow/ListPage",
     icon: <DeploymentUnitOutlinedIcon />,
     badgeLabel: "Checklist",
     footerLabel: "流程管理",
     subLinks: [
       { label: "节点清单", to: "/international/process-flow/ListPage" },
-      { label: "行前准备", to: "/international/pre-departure" },
-      { label: "回国归档", to: "/international/return-service" },
+      { label: "行前准备", to: "/international/pre-departure/ListPage" },
+      { label: "回国归档", to: "/international/return-service/ListPage" },
     ],
     landingHeadline: "申请流程助手",
     landingSubtitle: "把校内审批、平台提交、签证和材料准备串成真正能执行的节点链，不再靠碎片备忘录推进。",
@@ -182,7 +195,7 @@ export const internationalModuleCatalog: ModuleCatalogEntry[] = [
         key: "process-visa",
         title: "签证与官方材料跟踪",
         desc: "单独管理签证预约、保险、录取文件与入境材料，避免和校内流程混在一起。",
-        to: "/international/pre-departure",
+        to: "/international/pre-departure/ListPage",
         icon: <RocketOutlinedIcon />,
         badgeLabel: "Visa",
         footerLabel: "证件与出入境",
@@ -202,15 +215,19 @@ export const internationalModuleCatalog: ModuleCatalogEntry[] = [
     key: "international-writing-desk",
     title: "多语言沟通与邮件助手",
     shortLabel: "邮件助手",
-    desc: "支持中英双语邮件、通知、FAQ、导师联系、签证说明与住宿沟通写作。",
+    desc: `多语言沟通与邮件助手
+• 导师与项目联系
+• 中英双语通知
+• 住宿与校务沟通`,
     to: "/international/writing-desk",
+    workspaceTo: "/international/writing-desk/ListPage",
     icon: <MailOutlinedIcon />,
     badgeLabel: "Communication",
     footerLabel: "写作与沟通",
     subLinks: [
       { label: "邮件草稿", to: "/international/writing-desk/ListPage" },
-      { label: "项目匹配", to: "/international/matching-lab" },
-      { label: "来华支持", to: "/international/welcome-portal" },
+      { label: "项目匹配", to: "/international/matching-lab/ListPage" },
+      { label: "来华支持", to: "/international/welcome-portal/ListPage" },
     ],
     landingHeadline: "多语言沟通与邮件助手",
     landingSubtitle: "不只是润色邮件，而是把导师联系、项目问询、签证说明、住宿沟通和 FAQ 都纳入统一沟通工作台。",
@@ -237,7 +254,7 @@ export const internationalModuleCatalog: ModuleCatalogEntry[] = [
         key: "email-proof",
         title: "附件说明与发送前检查",
         desc: "统一管理附件命名、链接说明、closing 语和发送前核对清单。",
-        to: "/international/process-flow",
+        to: "/international/process-flow/ListPage",
         icon: <DeploymentUnitOutlinedIcon />,
         badgeLabel: "Checklist",
         footerLabel: "发送前终检",
@@ -246,7 +263,7 @@ export const internationalModuleCatalog: ModuleCatalogEntry[] = [
         key: "email-support",
         title: "住宿、签证与校务沟通",
         desc: "针对宿舍、保险、报到、课程变更等场景生成更稳妥的沟通草稿。",
-        to: "/international/welcome-portal",
+        to: "/international/welcome-portal/ListPage",
         icon: <GlobalOutlinedIcon />,
         badgeLabel: "Support",
         footerLabel: "事务沟通模板",
@@ -257,14 +274,18 @@ export const internationalModuleCatalog: ModuleCatalogEntry[] = [
     key: "international-pre-departure",
     title: "行前准备助手",
     shortLabel: "行前准备",
-    desc: "生成出发前任务清单，覆盖签证、保险、机票、住宿、注册与银行卡等事项。",
+    desc: `行前准备助手
+• 证件与签证核验
+• 住宿交通安排
+• 行李与应急包规划`,
     to: "/international/pre-departure",
+    workspaceTo: "/international/pre-departure/ListPage",
     icon: <RocketOutlinedIcon />,
     badgeLabel: "Departure",
     footerLabel: "出发前准备",
     subLinks: [
       { label: "证件清单", to: "/international/pre-departure/ListPage" },
-      { label: "在外支持", to: "/international/abroad-life" },
+      { label: "在外支持", to: "/international/abroad-life/ListPage" },
       { label: "跨文化培训", to: "/international/cultural-training" },
     ],
     landingHeadline: "行前准备助手",
@@ -283,7 +304,7 @@ export const internationalModuleCatalog: ModuleCatalogEntry[] = [
         key: "departure-housing",
         title: "住宿交通落地安排",
         desc: "确认首晚住宿、接机路线、入住宿舍和到校路径，衔接到达第一周安排。",
-        to: "/international/abroad-life",
+        to: "/international/abroad-life/ListPage",
         icon: <EnvironmentOutlinedIcon />,
         badgeLabel: "Arrival",
         footerLabel: "落地安排",
@@ -312,15 +333,18 @@ export const internationalModuleCatalog: ModuleCatalogEntry[] = [
     key: "international-cultural-training",
     title: "跨文化培训与风险提示",
     shortLabel: "跨文化培训",
-    desc: "提供学术礼仪、课堂参与、学术诚信、当地法律、安全事项与应急提示。",
+    desc: `跨文化培训与风险提示
+• 课堂参与与学术礼仪
+• 当地法律与制度
+• 安全场景与应急预案`,
     to: "/international/cultural-training",
     icon: <TranslationOutlinedIcon />,
     badgeLabel: "Culture",
     footerLabel: "适应与安全",
     subLinks: [
-      { label: "文化适应", to: "/international/cultural-training/ListPage" },
-      { label: "在外支持", to: "/international/abroad-life" },
-      { label: "回国沉淀", to: "/international/return-service" },
+      { label: "文化适应", to: "/international/cultural-training" },
+      { label: "在外支持", to: "/international/abroad-life/ListPage" },
+      { label: "回国沉淀", to: "/international/return-service/ListPage" },
     ],
     landingHeadline: "跨文化培训与风险提示",
     landingSubtitle: "围绕课堂参与、学术表达、法律意识和安全预案做情境化提示，而不是只给一页抽象提醒。",
@@ -329,7 +353,7 @@ export const internationalModuleCatalog: ModuleCatalogEntry[] = [
         key: "culture-academic",
         title: "课堂参与与学术礼仪",
         desc: "整理课堂讨论、office hour、邮件礼仪和学术诚信等高频情境建议。",
-        to: "/international/cultural-training/ListPage",
+        to: "/international/cultural-training",
         icon: <TranslationOutlinedIcon />,
         badgeLabel: "Academic",
         footerLabel: "课堂与学术",
@@ -338,7 +362,7 @@ export const internationalModuleCatalog: ModuleCatalogEntry[] = [
         key: "culture-law",
         title: "当地法律与制度提醒",
         desc: "聚合居留、兼职、医疗、交通和住宿合同等容易踩线的规则提示。",
-        to: "/international/cultural-training/ListPage",
+        to: "/international/cultural-training",
         icon: <SafetyOutlinedIcon />,
         badgeLabel: "Law",
         footerLabel: "规则与边界",
@@ -347,7 +371,7 @@ export const internationalModuleCatalog: ModuleCatalogEntry[] = [
         key: "culture-safety",
         title: "安全场景与应急预案",
         desc: "针对夜间出行、证件遗失、医疗就诊和校园报警等场景给出具体动作。",
-        to: "/international/abroad-life",
+        to: "/international/abroad-life/ListPage",
         icon: <EnvironmentOutlinedIcon />,
         badgeLabel: "Safety",
         footerLabel: "应急处置",
@@ -355,8 +379,8 @@ export const internationalModuleCatalog: ModuleCatalogEntry[] = [
       {
         key: "culture-reflection",
         title: "适应反馈与经验回流",
-        desc: "把适应过程中的案例和建议沉淀下来，供后来者复用。",
-        to: "/international/return-service",
+        desc: "把适应过程中的案例和建议沉淀下来，作为自己后续复盘与分享的资料。",
+        to: "/international/return-service/ListPage",
         icon: <RollbackOutlinedIcon />,
         badgeLabel: "Reflection",
         footerLabel: "培训复盘",
@@ -367,15 +391,19 @@ export const internationalModuleCatalog: ModuleCatalogEntry[] = [
     key: "international-abroad-life",
     title: "在外期间支持",
     shortLabel: "在外支持",
-    desc: "提供选课调整、学分确认、住宿续约、签证续办和常见紧急事务支持。",
+    desc: `在外期间支持
+• 选课调整与学分确认
+• 住宿续约与生活问题
+• 签证续办与紧急事务`,
     to: "/international/abroad-life",
+    workspaceTo: "/international/abroad-life/ListPage",
     icon: <EnvironmentOutlinedIcon />,
     badgeLabel: "Abroad",
     footerLabel: "在外服务",
     subLinks: [
       { label: "生活支持", to: "/international/abroad-life/ListPage" },
       { label: "风险提示", to: "/international/cultural-training" },
-      { label: "回国事项", to: "/international/return-service" },
+      { label: "回国事项", to: "/international/return-service/ListPage" },
     ],
     landingHeadline: "在外期间支持",
     landingSubtitle: "在海外期间的课程、住宿、签证和突发事务支持统一放在一个场景化工作台里。",
@@ -402,7 +430,7 @@ export const internationalModuleCatalog: ModuleCatalogEntry[] = [
         key: "abroad-visa",
         title: "签证续办与材料更新",
         desc: "追踪续签时间、证明文件、学校支持函和线上预约进度。",
-        to: "/international/process-flow",
+        to: "/international/process-flow/ListPage",
         icon: <RocketOutlinedIcon />,
         badgeLabel: "Visa",
         footerLabel: "身份与材料",
@@ -422,15 +450,19 @@ export const internationalModuleCatalog: ModuleCatalogEntry[] = [
     key: "international-return-service",
     title: "回国与成果沉淀",
     shortLabel: "回国沉淀",
-    desc: "提醒学分认定、成绩转换、报销归档，并沉淀交换经验与课程评价。",
+    desc: `回国与成果沉淀
+• 学分认定与成绩转换
+• 报销办理与材料归档
+• 经验分享与项目复盘`,
     to: "/international/return-service",
+    workspaceTo: "/international/return-service/ListPage",
     icon: <RollbackOutlinedIcon />,
     badgeLabel: "Return",
     footerLabel: "返校与经验库",
     subLinks: [
       { label: "返校事项", to: "/international/return-service/ListPage" },
-      { label: "在外支持", to: "/international/abroad-life" },
-      { label: "项目中心", to: "/international/exchange-hub" },
+      { label: "在外支持", to: "/international/abroad-life/ListPage" },
+      { label: "项目中心", to: "/international/exchange-hub/ListPage" },
     ],
     landingHeadline: "回国与成果沉淀",
     landingSubtitle: "返校之后不是结束，而是把学分、材料、报销和经验沉淀成可复用资产的关键阶段。",
@@ -456,7 +488,7 @@ export const internationalModuleCatalog: ModuleCatalogEntry[] = [
       {
         key: "return-sharing",
         title: "经验分享与 FAQ 沉淀",
-        desc: "把课程体验、城市建议、坑点和流程经验回流给后续学生。",
+        desc: "把课程体验、城市建议、坑点和流程经验沉淀成自己的返校资料与分享素材。",
         to: "/international/return-service/ListPage",
         icon: <TranslationOutlinedIcon />,
         badgeLabel: "Sharing",
@@ -466,7 +498,7 @@ export const internationalModuleCatalog: ModuleCatalogEntry[] = [
         key: "return-evaluation",
         title: "项目复盘与评价反馈",
         desc: "形成院校项目、课程质量和支持体系的复盘，反哺下一轮申请决策。",
-        to: "/international/matching-lab",
+        to: "/international/matching-lab/ListPage",
         icon: <SearchOutlinedIcon />,
         badgeLabel: "Review",
         footerLabel: "复盘与评价",
@@ -475,19 +507,23 @@ export const internationalModuleCatalog: ModuleCatalogEntry[] = [
   }),
   entry({
     key: "international-welcome-portal",
-    title: "来华留学生智能助手",
+    title: "来华支援助手",
     shortLabel: "来华留学",
-    desc: "面向 incoming students 提供签证、报到、住宿、校园办事、语言支持与适应建议。",
+    desc: `来华支援助手
+• 签证与来华前材料
+• 报到注册与校园办理
+• 语言支持与日常适应`,
     to: "/international/welcome-portal",
+    workspaceTo: "/international/welcome-portal/ListPage",
     icon: <GlobalOutlinedIcon />,
     badgeLabel: "Incoming",
     footerLabel: "来华留学服务",
     subLinks: [
       { label: "报到支持", to: "/international/welcome-portal/ListPage" },
-      { label: "邮件沟通", to: "/international/writing-desk" },
+      { label: "邮件沟通", to: "/international/writing-desk/ListPage" },
       { label: "文化适应", to: "/international/cultural-training" },
     ],
-    landingHeadline: "来华留学生智能助手",
+    landingHeadline: "来华支援助手",
     landingSubtitle: "把来华前的签证、报到注册、住宿办理、校园办事和语言适应做成一站式支持面板。",
     landingFeatures: [
       {
@@ -512,7 +548,7 @@ export const internationalModuleCatalog: ModuleCatalogEntry[] = [
         key: "incoming-language",
         title: "语言支持与日常适应",
         desc: "为中文沟通、课堂适应、生活服务和常见问题提供可复用模板与 FAQ。",
-        to: "/international/writing-desk",
+        to: "/international/writing-desk/ListPage",
         icon: <TranslationOutlinedIcon />,
         badgeLabel: "Language",
         footerLabel: "语言与生活",
@@ -521,7 +557,7 @@ export const internationalModuleCatalog: ModuleCatalogEntry[] = [
         key: "incoming-community",
         title: "住宿、社群与支持网络",
         desc: "沉淀宿舍、校园地图、就医、辅导员和国际处联系方式，帮助快速落地。",
-        to: "/international/abroad-life",
+        to: "/international/abroad-life/ListPage",
         icon: <EnvironmentOutlinedIcon />,
         badgeLabel: "Community",
         footerLabel: "住宿与支持",

@@ -1,8 +1,7 @@
 module github.com/dieWehmut/nju-edu-ai-system/backend
 
-go 1.24.0
+go 1.22.0
 
-toolchain go1.24.13
 
 require (
 	github.com/creack/pty v1.1.24

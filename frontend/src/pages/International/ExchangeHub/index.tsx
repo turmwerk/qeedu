@@ -1,5 +1,5 @@
 import React from "react";
-import ResultWorkbench from "@/feature/ScenarioShowcase/ResultWorkbench";
+import ResultWorkbench from "@/feature/ScenarioShowcase/ResultWorkbench/index";
 
 const ExchangeHub: React.FC = () => {
   return (

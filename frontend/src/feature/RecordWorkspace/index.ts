@@ -1,6 +1,7 @@
 export { createWorkspaceEvents } from "./events";
 export { createWorkspaceListModalComponent } from "./ListModal";
 export { default as WorkspaceModuleLanding } from "./ModuleLanding";
+export { default as WorkspaceOverviewMetrics } from "./OverviewMetrics";
 export {
   WorkspaceDetailRoute,
   WorkspaceEntryRedirect,

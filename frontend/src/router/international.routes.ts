@@ -1,108 +1,59 @@
-import {
-  lazy,
-  Suspense,
-  type ComponentType,
-  type LazyExoticComponent,
-} from "react";
 import { createElement } from "react";
+import type { ComponentType } from "react";
 import type { RouteObject } from "react-router-dom";
-import Loader from "@/effects/Loader";
+import {
+  WorkspaceDetailRoute,
+  WorkspaceListRoute,
+} from "@/feature/RecordWorkspace";
+import InternationalHub from "@/pages/International";
+import AbroadLife from "@/pages/International/AbroadLife";
+import CulturalTraining from "@/pages/International/CulturalTraining";
+import CulturalTrainingDetailPage from "@/pages/International/CulturalTraining/DetailPage";
+import CulturalTrainingListPage from "@/pages/International/CulturalTraining/ListPage";
+import ExchangeHub from "@/pages/International/ExchangeHub";
+import MatchingLab from "@/pages/International/MatchingLab";
+import PreDeparture from "@/pages/International/PreDeparture";
+import ProcessFlow from "@/pages/International/ProcessFlow";
+import ReturnService from "@/pages/International/ReturnService";
+import WelcomePortal from "@/pages/International/WelcomePortal";
+import WritingDesk from "@/pages/International/WritingDesk";
 import { internationalWorkspaceModules } from "@/pages/workspaceRegistry";
 
-const InternationalHub = lazy(() => import("@/pages/International"));
-const WelcomePortal = lazy(() => import("@/pages/International/WelcomePortal"));
-const WelcomePortalListPage = lazy(() => import("@/pages/International/WelcomePortal/ListPage"));
-const WelcomePortalDetailPage = lazy(() => import("@/pages/International/WelcomePortal/DetailPage"));
-const ExchangeHub = lazy(() => import("@/pages/International/ExchangeHub"));
-const ExchangeHubListPage = lazy(() => import("@/pages/International/ExchangeHub/ListPage"));
-const ExchangeHubDetailPage = lazy(() => import("@/pages/International/ExchangeHub/DetailPage"));
-const ProcessFlow = lazy(() => import("@/pages/International/ProcessFlow"));
-const ProcessFlowListPage = lazy(() => import("@/pages/International/ProcessFlow/ListPage"));
-const ProcessFlowDetailPage = lazy(() => import("@/pages/International/ProcessFlow/DetailPage"));
-const PreDeparture = lazy(() => import("@/pages/International/PreDeparture"));
-const PreDepartureListPage = lazy(() => import("@/pages/International/PreDeparture/ListPage"));
-const PreDepartureDetailPage = lazy(() => import("@/pages/International/PreDeparture/DetailPage"));
-const MatchingLab = lazy(() => import("@/pages/International/MatchingLab"));
-const MatchingLabListPage = lazy(() => import("@/pages/International/MatchingLab/ListPage"));
-const MatchingLabDetailPage = lazy(() => import("@/pages/International/MatchingLab/DetailPage"));
-const AbroadLife = lazy(() => import("@/pages/International/AbroadLife"));
-const AbroadLifeListPage = lazy(() => import("@/pages/International/AbroadLife/ListPage"));
-const AbroadLifeDetailPage = lazy(() => import("@/pages/International/AbroadLife/DetailPage"));
-const CulturalTraining = lazy(() => import("@/pages/International/CulturalTraining"));
-const CulturalTrainingListPage = lazy(() => import("@/pages/International/CulturalTraining/ListPage"));
-const CulturalTrainingDetailPage = lazy(() => import("@/pages/International/CulturalTraining/DetailPage"));
-const ReturnService = lazy(() => import("@/pages/International/ReturnService"));
-const ReturnServiceListPage = lazy(() => import("@/pages/International/ReturnService/ListPage"));
-const ReturnServiceDetailPage = lazy(() => import("@/pages/International/ReturnService/DetailPage"));
-const WritingDesk = lazy(() => import("@/pages/International/WritingDesk"));
-const WritingDeskListPage = lazy(() => import("@/pages/International/WritingDesk/ListPage"));
-const WritingDeskDetailPage = lazy(() => import("@/pages/International/WritingDesk/DetailPage"));
-
-const lazyElement = (Component: LazyExoticComponent<ComponentType<any>>) =>
-  createElement(
-    Suspense,
-    {
-      fallback: createElement(
-        "div",
-        { className: "mt-12 flex justify-center" },
-        createElement(Loader, { size: "lg", text: "加载中", subtext: "正在准备国际交流模块..." }),
-      ),
-    },
-    createElement(Component),
-  );
-
-const moduleEntryComponents: Record<string, LazyExoticComponent<ComponentType<any>>> = {
-  "international-welcome-portal": WelcomePortal,
+const moduleLandingComponents: Record<string, ComponentType> = {
   "international-exchange-hub": ExchangeHub,
-  "international-process-flow": ProcessFlow,
-  "international-pre-departure": PreDeparture,
   "international-matching-lab": MatchingLab,
-  "international-abroad-life": AbroadLife,
-  "international-cultural-training": CulturalTraining,
-  "international-return-service": ReturnService,
+  "international-process-flow": ProcessFlow,
   "international-writing-desk": WritingDesk,
-};
-
-const moduleListPageComponents: Record<string, LazyExoticComponent<ComponentType<any>>> = {
-  "international-welcome-portal": WelcomePortalListPage,
-  "international-exchange-hub": ExchangeHubListPage,
-  "international-process-flow": ProcessFlowListPage,
-  "international-pre-departure": PreDepartureListPage,
-  "international-matching-lab": MatchingLabListPage,
-  "international-abroad-life": AbroadLifeListPage,
-  "international-cultural-training": CulturalTrainingListPage,
-  "international-return-service": ReturnServiceListPage,
-  "international-writing-desk": WritingDeskListPage,
-};
-
-const moduleDetailPageComponents: Record<string, LazyExoticComponent<ComponentType<any>>> = {
-  "international-welcome-portal": WelcomePortalDetailPage,
-  "international-exchange-hub": ExchangeHubDetailPage,
-  "international-process-flow": ProcessFlowDetailPage,
-  "international-pre-departure": PreDepartureDetailPage,
-  "international-matching-lab": MatchingLabDetailPage,
-  "international-abroad-life": AbroadLifeDetailPage,
-  "international-cultural-training": CulturalTrainingDetailPage,
-  "international-return-service": ReturnServiceDetailPage,
-  "international-writing-desk": WritingDeskDetailPage,
+  "international-pre-departure": PreDeparture,
+  "international-welcome-portal": WelcomePortal,
+  "international-abroad-life": AbroadLife,
+  "international-return-service": ReturnService,
 };
 
 const internationalRoutes: RouteObject[] = [
-  { path: "international", element: lazyElement(InternationalHub) },
+  { path: "international", element: createElement(InternationalHub) },
+  { path: "international/cultural-training", element: createElement(CulturalTraining) },
+  { path: "international/cultural-training/ListPage", element: createElement(CulturalTrainingListPage) },
+  { path: "international/cultural-training/detail", element: createElement(CulturalTrainingDetailPage) },
+  { path: "international/cultural-training/detail/:id", element: createElement(CulturalTrainingDetailPage) },
   ...internationalWorkspaceModules.flatMap((module) => {
     const basePath = module.routeBase.replace(/^\//, "");
     return [
       {
         path: basePath,
-        element: lazyElement(moduleEntryComponents[module.key]),
+        element: createElement(moduleLandingComponents[module.key]),
       },
       {
         path: `${basePath}/ListPage`,
-        element: lazyElement(moduleListPageComponents[module.key]),
+        element: createElement(WorkspaceListRoute, { config: module }),
       },
       {
         path: `${basePath}/detail`,
-        element: lazyElement(moduleDetailPageComponents[module.key]),
+        element: createElement(WorkspaceDetailRoute, { config: module }),
+      },
+      {
+        path: `${basePath}/detail/:id`,
+        element: createElement(WorkspaceDetailRoute, { config: module }),
       },
     ];
   }),
