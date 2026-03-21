@@ -1,8 +1,24 @@
 import React from "react";
+import { SearchOutlined } from "@ant-design/icons";
 import ModuleCard from "./ModuleCard";
 import type { Feature } from "./types";
+import SearchBar from "@/ui/SearchBar";
+import { normalizeSearchText } from "@/utils/search/text";
+import type { GlobalSearchEntry } from "@/utils/search/global";
+import Card from "@/ui/Card";
 
 export type { Feature } from "./types";
+
+// 专门处理 GlobalSearchEntry，只提取有意义的字段
+const buildGlobalSearchEntryText = (entry: GlobalSearchEntry) => {
+  const parts: string[] = [
+    entry.title,
+    entry.desc,
+    entry.scope,
+    ...(entry.keywords ?? []),
+  ];
+  return normalizeSearchText(parts.join(" "));
+};
 
 type Props = {
   headline?: string;
@@ -21,6 +37,8 @@ type Props = {
    * Pass e.g. `"grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"` for tutorial grids.
    */
   gridCols?: string;
+  searchable?: boolean;
+  searchPlaceholder?: string;
 };
 
 const ModuleHub: React.FC<Props> = ({
@@ -29,8 +47,38 @@ const ModuleHub: React.FC<Props> = ({
   features,
   renderFeature,
   gridCols,
+  searchable = true,
+  searchPlaceholder = "搜索模块、关键词或入口",
 }) => {
-  // 根据卡片数量决定布局
+  const [searchValue, setSearchValue] = React.useState("");
+  const deferredSearchValue = React.useDeferredValue(searchValue);
+  const normalizedSearchValue = normalizeSearchText(deferredSearchValue);
+
+  // 计算可见的项目：无搜索时显示features，搜索时显示匹配的深层条目
+  const visibleItems = React.useMemo(() => {
+    if (!normalizedSearchValue) {
+      // 无搜索时显示原始 features
+      return features.map(feature => ({ type: 'feature' as const, data: feature }));
+    }
+
+    // 搜索时收集所有匹配的深层条目
+    const matchedEntries: Array<{ type: 'entry', data: GlobalSearchEntry }> = [];
+
+    features.forEach(feature => {
+      if (feature.searchIndex && Array.isArray(feature.searchIndex)) {
+        (feature.searchIndex as GlobalSearchEntry[]).forEach(entry => {
+          const entrySearchText = buildGlobalSearchEntryText(entry);
+          if (entrySearchText.includes(normalizedSearchValue)) {
+            matchedEntries.push({ type: 'entry', data: entry });
+          }
+        });
+      }
+    });
+
+    return matchedEntries;
+  }, [features, normalizedSearchValue]);
+
+  // 根据原始卡片总数决定布局，避免搜索过滤后打乱四卡页的固定两列结构
   const getGridCols = () => {
     if (gridCols) {
       return gridCols; // 如果手动指定了 gridCols，则使用指定的值
@@ -68,22 +116,61 @@ const ModuleHub: React.FC<Props> = ({
               {subtitle}
             </div>
           )}
+          {searchable && features.length > 0 && (
+            <div className="w-full">
+              <SearchBar
+                value={searchValue}
+                onChange={setSearchValue}
+                placeholder={searchPlaceholder}
+                className="w-full"
+                leftSlot={
+                  <SearchOutlined className="text-[var(--brand-blue)]" />
+                }
+              />
+            </div>
+          )}
           <div className={`module-hub-grid grid gap-x-3 gap-y-3 sm:gap-x-10 sm:gap-y-10 relative z-[1] min-w-0 ${getGridCols()}`} data-oid="offsvqz">
-            {features.map((item) =>
-              renderFeature ? (
-                <React.Fragment key={item.key}>
-                  {renderFeature(item)}
-                </React.Fragment>
-              ) : (
-                <ModuleCard
-                  key={item.key}
-                  title={item.title}
-                  desc={item.desc}
-                  to={item.to as string}
-                  icon={item.icon}
-                  subLinks={item.subLinks}
-                />
-              )
+            {visibleItems.length > 0 ? (
+              visibleItems.map((item) => {
+                if (item.type === 'feature') {
+                  // 渲染 Feature 卡片
+                  const feature = item.data;
+                  return renderFeature ? (
+                    <React.Fragment key={feature.key}>
+                      {renderFeature(feature)}
+                    </React.Fragment>
+                  ) : (
+                    <ModuleCard
+                      key={feature.key}
+                      title={feature.title}
+                      desc={feature.desc}
+                      to={feature.to as string}
+                      icon={feature.icon}
+                      details={feature.details}
+                      subLinks={feature.subLinks}
+                    />
+                  );
+                } else {
+                  // 渲染 GlobalSearchEntry 卡片
+                  const entry = item.data;
+                  return (
+                    <Card
+                      key={entry.key}
+                      iconLayout="inline"
+                      title={entry.title}
+                      titleLink={entry.to}
+                      desc={entry.desc}
+                      details={entry.scope ? [entry.scope] : undefined}
+                      level={entry.kind === 'module' ? '模块' : '页面'}
+                      className="!px-7 !py-6 hover:!-translate-y-1.5 hover:!bg-white/[0.74] dark:hover:!bg-white/[0.16] hover:!shadow-[0_14px_40px_rgba(104,86,180,0.22),inset_0_1px_0_rgba(255,255,255,0.82),inset_0_-1px_0_rgba(255,255,255,0.42)] dark:hover:!shadow-[0_18px_44px_rgba(0,0,0,0.60),inset_0_1px_0_rgba(255,255,255,0.18),inset_0_-1px_0_rgba(255,255,255,0.10)]"
+                    />
+                  );
+                }
+              })
+            ) : (
+              <div className="col-span-full rounded-[24px] bg-white/70 px-6 py-8 text-center text-[15px] leading-7 text-[#67748a] shadow-[0_8px_30px_rgba(120,90,200,0.10),inset_0_1px_0_rgba(255,255,255,0.72)] backdrop-blur-[32px] dark:bg-white/10 dark:text-[#dbe5f3]">
+                没有找到匹配的模块，换个学院、专业、关键词或入口名称再试试。
+              </div>
             )}
           </div>
         </div>

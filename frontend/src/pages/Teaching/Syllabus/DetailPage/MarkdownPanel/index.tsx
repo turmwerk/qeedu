@@ -14,8 +14,8 @@ const MarkdownPanel: React.FC<MarkdownPanelProps> = ({
   showRaw,
 }) => {
   return (
-    <div className="flex-1 min-h-0 overflow-hidden p-4 flex flex-col rounded-xl bg-white/[0.88] dark:bg-white/[0.28] border-0 dark:border dark:border-white/[0.28] shadow-[0_8px_30px_rgba(120,90,200,0.14),inset_0_1px_0_rgba(255,255,255,0.74),inset_0_-1px_0_rgba(255,255,255,0.34)] dark:shadow-[0_10px_32px_rgba(0,0,0,0.42),inset_0_1px_0_rgba(255,255,255,0.22),inset_0_-1px_0_rgba(255,255,255,0.12)] backdrop-blur-[40px] backdrop-saturate-[210%]">
-      <div className="flex-1 min-h-0 overflow-hidden relative">
+    <div className="flex h-full min-h-0 min-w-0 flex-col overflow-hidden rounded-xl bg-white/[0.88] p-4 dark:bg-white/[0.28] border-0 dark:border dark:border-white/[0.28] shadow-[0_8px_30px_rgba(120,90,200,0.14),inset_0_1px_0_rgba(255,255,255,0.74),inset_0_-1px_0_rgba(255,255,255,0.34)] dark:shadow-[0_10px_32px_rgba(0,0,0,0.42),inset_0_1px_0_rgba(255,255,255,0.22),inset_0_-1px_0_rgba(255,255,255,0.12)] backdrop-blur-[40px] backdrop-saturate-[210%]">
+      <div className="relative flex-1 min-h-0 min-w-0 overflow-hidden">
         <div
           className={`absolute inset-0 transition-all duration-300 ease-out ${
             showRaw ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4 pointer-events-none"

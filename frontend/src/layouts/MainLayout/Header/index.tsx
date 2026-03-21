@@ -180,6 +180,7 @@ const MainHeader: React.FC = () => {
       "/international/pre-departure": "/international",
       "/international/welcome-portal": "/international",
       "/international/cultural-training": "/international",
+      "/international/cultural-training/resources": "/international/cultural-training",
       "/international/abroad-life": "/international",
       "/international/return-service": "/international",
       "/research/literature-search": "/research",
@@ -246,6 +247,7 @@ const MainHeader: React.FC = () => {
     if (pathname.startsWith("/international/writing-desk/drafts/")) return "/international/writing-desk";
     if (pathname.startsWith("/international/pre-departure/cases/")) return "/international/pre-departure";
     if (pathname.startsWith("/international/welcome-portal/cases/")) return "/international/welcome-portal";
+    if (pathname.startsWith("/international/cultural-training/resources")) return "/international/cultural-training";
     if (pathname.startsWith("/international/cultural-training/profiles/")) return "/international/cultural-training";
     if (pathname.startsWith("/international/abroad-life/tickets/")) return "/international/abroad-life";
     if (pathname.startsWith("/international/return-service/cases/")) return "/international/return-service";

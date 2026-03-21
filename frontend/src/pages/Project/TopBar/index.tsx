@@ -1,10 +1,12 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useContextMenu } from "@/ui/ContextMenu";
 import { showToast } from "@/ui/Toast";
 import { TOP_BAR_MENU_ITEMS, type TopBarMenuId } from "../data/topBar";
 import { useWorkspace } from "../context";
 import BackButton from "./BackButton";
+import type { FileTreeNode } from "../EditorArea/types";
+import FolderImportDialog from "./FolderImportDialog";
 import MenuBar from "./MenuBar";
 import ProjectSearch from "./ProjectSearch";
 import RightActions from "./RightActions";
@@ -24,7 +26,9 @@ const TopBar: React.FC<TopBarProps> = ({ commands, state }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { openAtEvent } = useContextMenu();
-  const { projectName } = useWorkspace();
+  const projectName = useWorkspace((workspace) => workspace.projectName);
+  const loadFileTree = useWorkspace((workspace) => workspace.loadFileTree);
+  const [folderImportOpen, setFolderImportOpen] = useState(false);
 
   const from =
     typeof (location.state as { from?: unknown } | null)?.from === "string"
@@ -50,8 +54,42 @@ const TopBar: React.FC<TopBarProps> = ({ commands, state }) => {
     [commands, state],
   );
 
+  const requestFolderUpload = useCallback(() => {
+    setFolderImportOpen(true);
+  }, []);
+
+  const topBarMenuMap = useMemo(() => {
+    const fileItems = menuMap.file.map((item) => {
+      if (item.type === "separator" || item.id !== "file.openFolder") {
+        return item;
+      }
+      return {
+        ...item,
+        onClick: requestFolderUpload,
+      };
+    });
+
+    return {
+      ...menuMap,
+      file: fileItems,
+    };
+  }, [menuMap, requestFolderUpload]);
+
+  const handleFolderImportClose = useCallback(() => {
+    setFolderImportOpen(false);
+  }, []);
+
+  const handleFolderImport = useCallback(
+    (tree: FileTreeNode) => {
+      loadFileTree(tree);
+      setFolderImportOpen(false);
+      showToast(`已导入本地文件夹：${tree.name}`);
+    },
+    [loadFileTree],
+  );
+
   const handleMenuOpen = (id: TopBarMenuId, event: React.MouseEvent) => {
-    const items = menuMap[id];
+    const items = topBarMenuMap[id];
     if (!items || items.length === 0) {
       showToast("该菜单暂无内容");
       return;
@@ -70,6 +108,11 @@ const TopBar: React.FC<TopBarProps> = ({ commands, state }) => {
       <RightActions
         onHelp={commands["app.openHelp"].handler}
         onSettings={commands["app.openSettings"].handler}
+      />
+      <FolderImportDialog
+        open={folderImportOpen}
+        onClose={handleFolderImportClose}
+        onImport={handleFolderImport}
       />
     </div>
   );

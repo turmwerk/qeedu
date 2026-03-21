@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/dieWehmut/nju-edu-ai-system/backend/sandbox/internal/services/runner"
+	"github.com/dieWehmut/nju-edu-ai-system/backend/sandbox/internal/services/runtimeimages"
 )
 
 type TypeScript struct{}
@@ -11,7 +12,7 @@ type TypeScript struct{}
 func (TypeScript) Config() runner.LangConfig {
 	return runner.LangConfig{
 		Language:    "typescript",
-		Image:       "denoland/deno:2.1.4",
+		Image:       runtimeimages.TypeScript,
 		Filename:    "main.ts",
 		RunCmd:      []string{"deno", "run", "--allow-all", "main.ts"},
 		Timeout:     15 * time.Second,

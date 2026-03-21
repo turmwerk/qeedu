@@ -6,6 +6,9 @@ import { researchHomeSubLinks } from "@/pages/Research/moduleCatalog";
 import { studyHomeSubLinks, studyIcon } from "@/pages/Study/moduleCatalog";
 import { teachingHomeSubLinks, teachingIcon } from "@/pages/Teaching/moduleCatalog";
 import {
+  getSearchEntriesByRoutePrefix,
+} from "@/utils/search/global";
+import {
   GlobalOutlinedIcon,
   TeamOutlinedIcon,
 } from "@/ui/Icon";
@@ -54,11 +57,22 @@ const modules = [
 ];
 
 const FeatureHub: React.FC = () => {
+  const features = React.useMemo(
+    () => [
+      { ...modules[0], searchIndex: getSearchEntriesByRoutePrefix("/study") },
+      { ...modules[1], searchIndex: getSearchEntriesByRoutePrefix("/teaching") },
+      { ...modules[2], searchIndex: getSearchEntriesByRoutePrefix("/research") },
+      { ...modules[3], searchIndex: getSearchEntriesByRoutePrefix("/management") },
+      { ...modules[4], searchIndex: getSearchEntriesByRoutePrefix("/international") },
+    ],
+    [],
+  );
+
   return (
     <ModuleHub
       headline="nju-edu-ai-system"
       subtitle="南京大学教育AI"
-      features={modules}
+      features={features}
       gridCols="grid-cols-2 xl:grid-cols-3"
     />
   );

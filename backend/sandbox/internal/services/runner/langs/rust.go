@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/dieWehmut/nju-edu-ai-system/backend/sandbox/internal/services/runner"
+	"github.com/dieWehmut/nju-edu-ai-system/backend/sandbox/internal/services/runtimeimages"
 )
 
 type Rust struct{}
@@ -11,7 +12,7 @@ type Rust struct{}
 func (Rust) Config() runner.LangConfig {
 	return runner.LangConfig{
 		Language:    "rust",
-		Image:       "rust:1.83-slim",
+		Image:       runtimeimages.Rust,
 		Filename:    "main.rs",
 		CompileCmd:  []string{"rustc", "-o", "main", "main.rs"},
 		RunCmd:      []string{"./main"},

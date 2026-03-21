@@ -4,6 +4,7 @@ import LegacyParamRedirect from "@/router/LegacyParamRedirect";
 import InternationalHub from "@/pages/International";
 import AbroadLife from "@/pages/International/AbroadLife";
 import CulturalTraining from "@/pages/International/CulturalTraining";
+import CulturalTrainingResourceSection from "@/pages/International/CulturalTraining/ResourceSection";
 import ExchangeHub from "@/pages/International/ExchangeHub";
 import MatchingLab from "@/pages/International/MatchingLab";
 import PreDeparture from "@/pages/International/PreDeparture";
@@ -30,6 +31,7 @@ const internationalRoutes: RouteObject[] = [
   { path: "international/welcome-portal/cases/:caseId", element: createElement(WelcomePortal) },
   { path: "international/cultural-training", element: createElement(CulturalTraining) },
   { path: "international/cultural-training/profiles/:profileId", element: createElement(CulturalTraining) },
+  { path: "international/cultural-training/resources", element: createElement(CulturalTrainingResourceSection) },
   { path: "international/abroad-life", element: createElement(AbroadLife) },
   { path: "international/abroad-life/tickets/:ticketId", element: createElement(AbroadLife) },
   { path: "international/return-service", element: createElement(ReturnService) },

@@ -12,6 +12,7 @@ type runCodeRequest struct {
 	Code           string `json:"code" binding:"required"`
 	Stdin          string `json:"stdin"`
 	TimeoutSeconds int32  `json:"timeout_seconds"`
+	WorkspaceKey   string `json:"workspace_key"`
 }
 
 // RunCode handles POST /api/v1/sandbox/run
@@ -26,7 +27,15 @@ func RunCode(c *gin.Context) {
 		req.TimeoutSeconds = 10
 	}
 
-	resp, err := sandboxRPC.RunCode(c.Request.Context(), req.Language, req.Code, req.Stdin, req.TimeoutSeconds)
+	resp, err := sandboxRPC.RunCode(
+		c.Request.Context(),
+		req.Language,
+		req.Code,
+		req.Stdin,
+		req.TimeoutSeconds,
+		currentUserID(c),
+		req.WorkspaceKey,
+	)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

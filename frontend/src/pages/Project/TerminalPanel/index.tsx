@@ -1,23 +1,29 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo } from "react";
 import { CloseOutlined, DownOutlined, PlusOutlined } from "@ant-design/icons";
 import { useContextMenu, type ContextMenuItem } from "@/ui/ContextMenu";
+import { showToast } from "@/ui/Toast";
 import PanelTabBar from "./PanelTabBar";
 import TerminalView from "./Views/TerminalView";
 import OutputView from "./Views/OutputView";
 import ProblemsView from "./Views/ProblemsView";
 import ConsoleView from "./Views/ConsoleView";
 import PortsView from "./Views/PortsView";
+import HistoryBridge from "./HistoryBridge";
+import { clearWorkspaceHistory } from "./history";
+import { useWorkspace } from "../context";
 import {
   terminalProfiles,
   useTerminalSessionStore,
 } from "./Views/TerminalView/sessionStore";
+import {
+  type TerminalPanelViewId as ViewId,
+  useTerminalPanelViewStore,
+} from "./viewStore";
 
 interface TerminalPanelProps {
   onClose: () => void;
   onMinimize?: () => void;
 }
-
-type ViewId = "terminal" | "output" | "problems" | "console" | "ports";
 
 type ViewConfig = {
   id: ViewId;
@@ -55,10 +61,16 @@ const viewConfigs: ViewConfig[] = [
 
 const TerminalPanel: React.FC<TerminalPanelProps> = ({ onClose }) => {
   const { openAtEvent } = useContextMenu();
-  const [activeViewId, setActiveViewId] = useState<ViewId>("terminal");
-  const [visibleViews, setVisibleViews] = useState<ViewId[]>(() =>
-    viewConfigs.map((view) => view.id),
+  const workspaceKey = useWorkspace((state) => state.workspaceKey);
+  const activeViewId = useTerminalPanelViewStore((state) => state.activeViewId);
+  const visibleViews = useTerminalPanelViewStore((state) => state.visibleViews);
+  const setActiveViewId = useTerminalPanelViewStore(
+    (state) => state.setActiveViewId,
   );
+  const toggleViewVisibility = useTerminalPanelViewStore(
+    (state) => state.toggleViewVisibility,
+  );
+  const resetViews = useTerminalPanelViewStore((state) => state.reset);
   const sessions = useTerminalSessionStore((state) => state.sessions);
   const activeSessionId = useTerminalSessionStore((state) => state.activeId);
   const selectedProfileId = useTerminalSessionStore(
@@ -92,17 +104,7 @@ const TerminalPanel: React.FC<TerminalPanelProps> = ({ onClose }) => {
     }
   }, [activeViewId, visibleViews]);
 
-  const toggleViewVisibility = (id: ViewId) => {
-    setVisibleViews((prev) => {
-      const isVisible = prev.includes(id);
-      if (isVisible) {
-        if (prev.length === 1) return prev;
-        return prev.filter((viewId) => viewId !== id);
-      }
-      const next = [...prev, id];
-      return viewConfigs.map((view) => view.id).filter((viewId) => next.includes(viewId));
-    });
-  };
+  useEffect(() => resetViews, [resetViews]);
 
   const handleViewBarContextMenu = (
     _id: string,
@@ -133,6 +135,16 @@ const TerminalPanel: React.FC<TerminalPanelProps> = ({ onClose }) => {
     openAtEvent(event, items);
   };
 
+  const handleClearHistory = async () => {
+    if (!workspaceKey) return;
+    try {
+      await clearWorkspaceHistory(workspaceKey);
+      showToast("已清空当前项目历史");
+    } catch {
+      showToast("清空历史失败");
+    }
+  };
+
   const activeConfig =
     visibleConfigs.find((view) => view.id === activeViewId) ??
     visibleConfigs[0] ??
@@ -140,6 +152,7 @@ const TerminalPanel: React.FC<TerminalPanelProps> = ({ onClose }) => {
 
   return (
     <div className="flex h-full min-w-0 flex-col bg-[#1e1e1e]">
+      <HistoryBridge />
       <PanelTabBar
         tabs={tabs}
         activeId={activeViewId}
@@ -173,6 +186,13 @@ const TerminalPanel: React.FC<TerminalPanelProps> = ({ onClose }) => {
                 </div>
               </>
             )}
+            <button
+              className="rounded px-2 py-1 text-[10px] text-[#9d9d9d] hover:bg-white/10 hover:text-[#dddddd]"
+              title="清空当前项目历史"
+              onClick={handleClearHistory}
+            >
+              清空历史
+            </button>
             <button
               className="flex h-7 w-7 items-center justify-center rounded text-[#9d9d9d] hover:bg-white/10 hover:text-[#dddddd]"
               title="隐藏面板"

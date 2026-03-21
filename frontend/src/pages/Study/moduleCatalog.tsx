@@ -12,6 +12,7 @@ type StudyModuleCatalogEntry = {
   title: string;
   shortLabel: string;
   desc: string;
+  details: string[];
   to: string;
   icon: React.ReactNode;
 };
@@ -25,7 +26,8 @@ export const studyModuleCatalog: StudyModuleCatalogEntry[] = [
     key: "study-resource-pack",
     title: "学科资源包",
     shortLabel: "资源包",
-    desc: "学院分类、学科大类和招生专业分类三套入口。",
+    desc: "从学院、学科门类和招生专业类三条入口组织资源，再继续下钻到具体专业和学院详情。",
+    details: ["学院入口", "学科地图", "招生分类", "专业详情"],
     to: "/study/resource-pack",
     icon: <BookOutlinedIcon />,
   }),
@@ -33,7 +35,8 @@ export const studyModuleCatalog: StudyModuleCatalogEntry[] = [
     key: "study-progress-radar",
     title: "学业进度雷达",
     shortLabel: "进度雷达",
-    desc: "培养方案匹配、风险课程和毕业路径偏离分析。",
+    desc: "围绕培养方案匹配、学分完成情况、风险课程和毕业偏离做持续诊断，适合阶段性复盘。",
+    details: ["培养方案", "学分进度", "风险课程", "毕业偏离"],
     to: "/study/progress-radar",
     icon: <SlidersOutlinedIcon />,
   }),
@@ -41,7 +44,8 @@ export const studyModuleCatalog: StudyModuleCatalogEntry[] = [
     key: "study-career-planner",
     title: "智能生涯规划",
     shortLabel: "生涯规划",
-    desc: "对话生成大学阶段成长路径并沉淀关键节点。",
+    desc: "通过对话梳理目标画像、大学阶段成长路径和关键节点，把想法逐步转成可执行计划。",
+    details: ["目标画像", "路径拆解", "节点提醒", "对话共创"],
     to: "/study/career-planner",
     icon: <TeamOutlinedIcon />,
   }),
@@ -51,6 +55,7 @@ export const studyHubFeatures: Feature[] = studyModuleCatalog.map((item) => ({
   key: item.key,
   title: item.title,
   desc: item.desc,
+  details: item.details,
   to: item.to,
   icon: item.icon,
 }));

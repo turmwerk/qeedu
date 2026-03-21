@@ -11,6 +11,7 @@ type TeachingModuleCatalogEntry = {
   title: string;
   shortLabel: string;
   desc: string;
+  details: string[];
   to: string;
   icon: React.ReactNode;
 };
@@ -25,6 +26,7 @@ export const teachingModuleCatalog: TeachingModuleCatalogEntry[] = [
     title: "大纲生成",
     shortLabel: "大纲生成",
     desc: "匹配教学目标、学时结构和考核方式。",
+    details: ["教学目标", "学时结构", "考核方式", "内容编排"],
     to: "/teaching/syllabus",
     icon: <BookOutlinedIcon />,
   }),
@@ -33,6 +35,7 @@ export const teachingModuleCatalog: TeachingModuleCatalogEntry[] = [
     title: "试卷设计",
     shortLabel: "试卷设计",
     desc: "组织题型结构、题目池和预览导出。",
+    details: ["题型结构", "题目池", "难度分配", "预览导出"],
     to: "/teaching/exam",
     icon: <FormOutlinedIcon />,
   }),
@@ -41,6 +44,7 @@ export const teachingModuleCatalog: TeachingModuleCatalogEntry[] = [
     title: "作业批改与反馈",
     shortLabel: "作业批改",
     desc: "批改任务、rubric、反馈草稿和学生订正状态。",
+    details: ["批改任务", "评分标准", "反馈草稿", "订正状态"],
     to: "/teaching/assignment-review",
     icon: <ExperimentOutlinedIcon />,
   }),
@@ -50,6 +54,7 @@ export const teachingHubFeatures: Feature[] = teachingModuleCatalog.map((item) =
   key: item.key,
   title: item.title,
   desc: item.desc,
+  details: item.details,
   to: item.to,
   icon: item.icon,
 }));

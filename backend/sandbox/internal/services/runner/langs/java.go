@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/dieWehmut/nju-edu-ai-system/backend/sandbox/internal/services/runner"
+	"github.com/dieWehmut/nju-edu-ai-system/backend/sandbox/internal/services/runtimeimages"
 )
 
 type Java struct{}
@@ -11,7 +12,7 @@ type Java struct{}
 func (Java) Config() runner.LangConfig {
 	return runner.LangConfig{
 		Language:    "java",
-		Image:       "eclipse-temurin:21-jdk-alpine",
+		Image:       runtimeimages.Java,
 		Filename:    "Main.java",
 		CompileCmd:  []string{"javac", "Main.java"},
 		RunCmd:      []string{"java", "Main"},

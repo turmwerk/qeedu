@@ -12,8 +12,14 @@ interface FileNodeProps {
   editState: InlineEditState | null;
   selectedPath: string | null;
   onSelectNode: (node: { path: string; type: "file" | "directory" }) => void;
-  onStartCreateFile: (parentPath: string) => void;
-  onStartCreateFolder: (parentPath: string) => void;
+  onStartCreateFile: (placement?: {
+    parentPath?: string;
+    anchorPath?: string;
+  }) => void;
+  onStartCreateFolder: (placement?: {
+    parentPath?: string;
+    anchorPath?: string;
+  }) => void;
   onStartRename: (targetPath: string, initialName: string) => void;
   onCommitEdit: (value: string) => void;
   onCancelEdit: () => void;
@@ -31,7 +37,10 @@ const FileNode: React.FC<FileNodeProps> = ({
   onCommitEdit,
   onCancelEdit,
 }) => {
-  const { openFileTab, activeTabId, deleteNode, moveNode } = useWorkspace();
+  const openFileTab = useWorkspace((state) => state.openFileTab);
+  const activeTabId = useWorkspace((state) => state.activeTabId);
+  const deleteNode = useWorkspace((state) => state.deleteNode);
+  const moveNode = useWorkspace((state) => state.moveNode);
   const { openAtEvent } = useContextMenu();
   const isActive = activeTabId === node.path;
   const isRenaming =
@@ -49,21 +58,21 @@ const FileNode: React.FC<FileNodeProps> = ({
 
   const handleContextMenu = (event: React.MouseEvent) => {
     event.stopPropagation();
-    onSelectNode({ path: node.path, type: "file" });
     const parentPath = node.path.split("/").slice(0, -1).join("/") || "/";
+    onSelectNode({ path: node.path, type: "file" });
     const items: ContextMenuItem[] = [
       { label: "打开", onClick: () => openFileTab(node) },
       { type: "separator" },
       {
         label: "新建文件",
         onClick: () => {
-          onStartCreateFile(parentPath);
+          onStartCreateFile({ parentPath, anchorPath: node.path });
         },
       },
       {
         label: "新建文件夹",
         onClick: () => {
-          onStartCreateFolder(parentPath);
+          onStartCreateFolder({ parentPath, anchorPath: node.path });
         },
       },
       { type: "separator" },

@@ -11,13 +11,20 @@ import (
 // and injects user_id / name into the context.
 func AuthRequired() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		token := ""
 		h := c.GetHeader("Authorization")
-		if h == "" || !strings.HasPrefix(h, "Bearer ") {
+		if h != "" && strings.HasPrefix(h, "Bearer ") {
+			token = strings.TrimPrefix(h, "Bearer ")
+		}
+		if token == "" && strings.EqualFold(c.GetHeader("Upgrade"), "websocket") {
+			token = strings.TrimSpace(c.Query("token"))
+		}
+		if token == "" {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "missing or invalid token"})
 			return
 		}
 
-		claims, err := ParseToken(strings.TrimPrefix(h, "Bearer "))
+		claims, err := ParseToken(token)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid token: " + err.Error()})
 			return

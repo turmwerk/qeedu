@@ -38,9 +38,9 @@ const QuestionList: React.FC<QuestionListProps> = ({
   onQuestionsChange,
 }) => {
   return (
-    <div className="h-full min-h-0 flex flex-col">
-      <div className="flex flex-col gap-3 flex-1 min-h-0">
-        <div className="rounded-xl p-3 flex-1 min-h-0 overflow-y-auto bg-white/[0.88] dark:bg-white/[0.28] border-0 dark:border dark:border-white/[0.28] shadow-[0_8px_30px_rgba(120,90,200,0.14),inset_0_1px_0_rgba(255,255,255,0.74),inset_0_-1px_0_rgba(255,255,255,0.34)] dark:shadow-[0_10px_32px_rgba(0,0,0,0.42),inset_0_1px_0_rgba(255,255,255,0.22),inset_0_-1px_0_rgba(255,255,255,0.12)] backdrop-blur-[40px] backdrop-saturate-[210%]">
+    <div className="flex h-full min-h-0 min-w-0 flex-col">
+      <div className="flex flex-1 min-h-0 min-w-0 flex-col gap-3">
+        <div className="flex-1 min-h-0 min-w-0 overflow-y-auto rounded-xl bg-white/[0.88] p-3 dark:bg-white/[0.28] border-0 dark:border dark:border-white/[0.28] shadow-[0_8px_30px_rgba(120,90,200,0.14),inset_0_1px_0_rgba(255,255,255,0.74),inset_0_-1px_0_rgba(255,255,255,0.34)] dark:shadow-[0_10px_32px_rgba(0,0,0,0.42),inset_0_1px_0_rgba(255,255,255,0.22),inset_0_-1px_0_rgba(255,255,255,0.12)] backdrop-blur-[40px] backdrop-saturate-[210%]">
           <div className="font-bold mb-2.5 text-[var(--brand-text)] dark:text-black/85">试卷</div>
           <div className="flex flex-col gap-3">
             {questions.length === 0 && (

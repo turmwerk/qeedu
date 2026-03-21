@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 interface NavButtonProps {
   onClick?: () => void;
@@ -9,13 +9,21 @@ const NavButton: React.FC<NavButtonProps> = ({ onClick, ariaLabel }) => {
   const [isJumping, setIsJumping] = useState(false);
   const jumpTimer = useRef<number | null>(null);
 
+  useEffect(() => {
+    return () => {
+      if (jumpTimer.current) {
+        window.clearTimeout(jumpTimer.current);
+      }
+    };
+  }, []);
+
   return (
     <div className="flex items-center justify-center nav-float">
       <button
         type="button"
         onClick={onClick || (() => {})}
         aria-label={ariaLabel || "向下导航"}
-        className="w-10 h-10 flex items-center justify-center transition text-[var(--brand-blue)] hover:text-[var(--brand-purple)] bg-transparent border-none p-0"
+        className="flex h-10 w-10 items-center justify-center border-none bg-transparent p-0 text-[var(--brand-blue)] transition hover:text-[var(--brand-purple)]"
         onMouseEnter={() => {
           setIsJumping(true);
           if (jumpTimer.current) {

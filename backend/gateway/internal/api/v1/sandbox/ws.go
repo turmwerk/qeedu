@@ -1,7 +1,9 @@
 package sandbox
 
 import (
+	"context"
 	"encoding/json"
+	"errors"
 	"io"
 	"log"
 	"net/http"
@@ -34,19 +36,33 @@ func TerminalWS(c *gin.Context) {
 	rows := int32(24)
 
 	// Create a backend terminal session via gRPC
-	sessionID, err := sandboxRPC.CreateSession(c.Request.Context(), shell, cols, rows)
+	createCtx, createCancel := context.WithTimeout(c.Request.Context(), 8*time.Second)
+	defer createCancel()
+
+	sessionID, err := sandboxRPC.CreateSession(createCtx, shell, cols, rows)
 	if err != nil {
 		log.Printf("[ws] create session: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create session"})
+		statusCode := http.StatusInternalServerError
+		if errors.Is(createCtx.Err(), context.DeadlineExceeded) {
+			statusCode = http.StatusGatewayTimeout
+		}
+		c.JSON(statusCode, gin.H{"error": "failed to create session"})
 		return
 	}
 
 	// Open bidi gRPC stream
-	grpcStream, err := sandboxRPC.OpenInteractiveSession(c.Request.Context())
+	streamCtx, streamCancel := context.WithTimeout(c.Request.Context(), 8*time.Second)
+	defer streamCancel()
+
+	grpcStream, err := sandboxRPC.OpenInteractiveSession(streamCtx)
 	if err != nil {
 		log.Printf("[ws] open grpc stream: %v", err)
 		_ = sandboxRPC.DestroySession(c.Request.Context(), sessionID)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to open stream"})
+		statusCode := http.StatusInternalServerError
+		if errors.Is(streamCtx.Err(), context.DeadlineExceeded) {
+			statusCode = http.StatusGatewayTimeout
+		}
+		c.JSON(statusCode, gin.H{"error": "failed to open stream"})
 		return
 	}
 

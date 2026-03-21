@@ -10,6 +10,11 @@ import Loader from "@/effects/Loader";
 
 const TeachingHub = lazy(() => import("@/pages/Teaching"));
 const AssignmentReview = lazy(() => import("@/pages/Teaching/AssignmentReview"));
+const AssignmentReviewDetail = lazy(() =>
+  import("@/pages/Teaching/AssignmentReview/router").then((module) => ({
+    default: module.DetailRoute,
+  })),
+);
 const SyllabusList = lazy(() =>
   import("@/pages/Teaching/Syllabus/router").then((module) => ({
     default: module.ListRoute,
@@ -55,20 +60,26 @@ const teachingRoutes: RouteObject[] = [
     element: createElement(Navigate, { to: "/teaching/syllabus/ListPage", replace: true }),
   },
   { path: "teaching/assignment-review", element: lazyElement(AssignmentReview) },
-  { path: "teaching/assignment-review/tasks", element: lazyElement(AssignmentReview) },
+  {
+    path: "teaching/assignment-review/tasks",
+    element: createElement(Navigate, { to: "/teaching/assignment-review", replace: true }),
+  },
   { path: "teaching/assignment-review/tasks/new", element: lazyElement(AssignmentReview) },
-  { path: "teaching/assignment-review/tasks/:assignmentId", element: lazyElement(AssignmentReview) },
+  {
+    path: "teaching/assignment-review/tasks/:assignmentId",
+    element: lazyElement(AssignmentReviewDetail),
+  },
   {
     path: "teaching/assignment-review/tasks/:assignmentId/submissions/:submissionId",
-    element: lazyElement(AssignmentReview),
+    element: lazyElement(AssignmentReviewDetail),
   },
   {
     path: "teaching/assignment-review/ListPage",
-    element: createElement(Navigate, { to: "/teaching/assignment-review/tasks", replace: true }),
+    element: createElement(Navigate, { to: "/teaching/assignment-review", replace: true }),
   },
   {
     path: "teaching/assignment-review/detail",
-    element: createElement(Navigate, { to: "/teaching/assignment-review/tasks", replace: true }),
+    element: createElement(Navigate, { to: "/teaching/assignment-review", replace: true }),
   },
   { path: "teaching/syllabus/ListPage", element: lazyElement(SyllabusList) },
   { path: "teaching/syllabus/detail", element: lazyElement(SyllabusDetail) },

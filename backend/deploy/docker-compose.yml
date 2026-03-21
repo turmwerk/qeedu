@@ -24,8 +24,8 @@ services:
       network: host
     container_name: nju-user-services
     restart: unless-stopped
-    ports:
-      - "50051:50051"
+    expose:
+      - "50051"
     depends_on:
       mysql:
         condition: service_healthy
@@ -40,8 +40,8 @@ services:
       network: host
     container_name: nju-sandbox
     restart: unless-stopped
-    ports:
-      - "50052:50052"
+    expose:
+      - "50052"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
@@ -54,8 +54,8 @@ services:
       dockerfile: ai-copilot/Dockerfile
     container_name: nju-ai-copilot
     restart: unless-stopped
-    ports:
-      - "50053:50053"
+    expose:
+      - "50053"
     env_file:
       - ../.env
     environment:
@@ -67,8 +67,8 @@ services:
       dockerfile: ai-chat/Dockerfile
     container_name: nju-ai-chat
     restart: unless-stopped
-    ports:
-      - "50054:50054"
+    expose:
+      - "50054"
     env_file:
       - ../.env
     environment:

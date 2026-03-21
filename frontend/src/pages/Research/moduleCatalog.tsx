@@ -13,12 +13,12 @@ type ModuleCatalogEntry = {
   title: string;
   shortLabel: string;
   desc: string;
+  details: string[];
   to: string;
   workspaceTo?: string;
   icon: React.ReactNode;
   badgeLabel: string;
   footerLabel: string;
-  subLinks: Feature["subLinks"];
   landingHeadline: string;
   landingSubtitle: string;
   landingFeatures: Feature[];
@@ -30,16 +30,12 @@ export const researchModuleCatalog: ModuleCatalogEntry[] = [
     title: "文献检索",
     shortLabel: "文献检索",
     desc: "检索式、筛选记录、主题聚类和论文移交。",
+    details: ["检索式", "筛选记录", "主题聚类", "论文移交"],
     to: "/research/literature-search",
     workspaceTo: "/research/literature-search/queries/new",
     icon: <SearchOutlinedIcon />,
     badgeLabel: "Search",
     footerLabel: "检索实验室",
-    subLinks: [
-      { label: "新建查询", to: "/research/literature-search/queries/new" },
-      { label: "进入精读", to: "/research/paper-reader" },
-      { label: "回填写作", to: "/research/paper-writing" },
-    ],
     landingHeadline: "文献检索实验室",
     landingSubtitle: "围绕研究问题构造查询、筛选样本并把高价值论文移交给精读与写作。",
     landingFeatures: [
@@ -77,16 +73,12 @@ export const researchModuleCatalog: ModuleCatalogEntry[] = [
     title: "论文精读",
     shortLabel: "论文精读",
     desc: "论文队列、结构化阅读卡、证据摘录和写作移交。",
+    details: ["论文队列", "结构化阅读", "证据摘录", "写作移交"],
     to: "/research/paper-reader",
     workspaceTo: "/research/paper-reader",
     icon: <ReadOutlinedIcon />,
     badgeLabel: "Reader",
     footerLabel: "阅读桌面",
-    subLinks: [
-      { label: "阅读桌面", to: "/research/paper-reader" },
-      { label: "检索实验室", to: "/research/literature-search" },
-      { label: "稿件工作室", to: "/research/paper-writing" },
-    ],
     landingHeadline: "阅读桌面",
     landingSubtitle: "把精读、证据摘录、比较和写作移交放在一张桌面上完成。",
     landingFeatures: [
@@ -124,16 +116,12 @@ export const researchModuleCatalog: ModuleCatalogEntry[] = [
     title: "论文写作",
     shortLabel: "论文写作",
     desc: "章节树、正文草稿、模板插入、引用与里程碑。",
+    details: ["章节树", "正文草稿", "模板插入", "引用与里程碑"],
     to: "/research/paper-writing",
     workspaceTo: "/research/paper-writing/drafts/new",
     icon: <EditOutlinedIcon />,
     badgeLabel: "Writing",
     footerLabel: "稿件工作室",
-    subLinks: [
-      { label: "新建草稿", to: "/research/paper-writing/drafts/new" },
-      { label: "阅读桌面", to: "/research/paper-reader" },
-      { label: "检索实验室", to: "/research/literature-search" },
-    ],
     landingHeadline: "稿件工作室",
     landingSubtitle: "以章节、模板、引文和里程碑为骨架持续推进论文写作。",
     landingFeatures: [
@@ -172,11 +160,11 @@ export const researchHubFeatures: Feature[] = researchModuleCatalog.map((item) =
   key: item.key,
   title: item.title,
   desc: item.desc,
+  details: item.details,
   to: item.to,
   icon: item.icon,
   badgeLabel: item.badgeLabel,
   footerLabel: item.footerLabel,
-  subLinks: item.subLinks,
 }));
 
 export const researchHomeSubLinks = researchModuleCatalog.map((item) => ({

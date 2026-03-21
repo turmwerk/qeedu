@@ -5,7 +5,10 @@ export type SchoolCatalogEntry = {
   slug: string;
   title: string;
   desc: string;
+  details: string[];
   status: "planned";
+  aliases?: string[];
+  relatedLinks?: SubLink[];
 };
 
 export type MajorCatalogEntry = {
@@ -39,6 +42,14 @@ export type AdmissionsCategoryEntry = {
   tracks: AdmissionsTrackEntry[];
 };
 
+type SchoolCatalogSeed = {
+  title: string;
+  desc: string;
+  details: string[];
+  aliases?: string[];
+  relatedLinks?: SubLink[];
+};
+
 const buildMajors = (
   disciplineSlug: string,
   majors: Array<{
@@ -54,61 +65,250 @@ const buildMajors = (
     ...major,
   }));
 
-const buildSchools = (titles: string[]): SchoolCatalogEntry[] =>
-  titles.map((title, index) => ({
+const buildSchools = (schools: SchoolCatalogSeed[]): SchoolCatalogEntry[] =>
+  schools.map((school, index) => ({
     key: `school-${index + 1}`,
     slug: `school-${String(index + 1).padStart(2, "0")}`,
-    title,
-    desc: "当前只预留学院分类入口与路由，后续在此挂接学院专业与学习资源。",
+    ...school,
     status: "planned",
   }));
 
 export const njuSchoolCatalog: SchoolCatalogEntry[] = buildSchools([
-  "文学院",
-  "历史学院",
-  "哲学学院",
-  "新闻传播学院",
-  "法学院",
-  "商学院（含经济学院、管理学院）",
-  "外国语学院",
-  "政府管理学院",
-  "国际关系学院",
-  "信息管理学院",
-  "社会学院",
-  "数学学院",
-  "物理学院",
-  "天文与空间科学学院",
-  "化学学院",
-  "化工学院",
-  "计算机学院",
-  "软件学院",
-  "人工智能学院",
-  "电子科学与工程学院",
-  "现代工程与应用科学学院",
-  "环境学院",
-  "地球科学与工程学院",
-  "地理与海洋科学学院",
-  "大气科学学院",
-  "南京赫尔辛基大气与地球系统科学学院（南赫学院）",
-  "生命科学学院",
-  "医学院",
-  "工程管理学院",
-  "匡亚明学院",
-  "海外教育学院",
-  "建筑与城市规划学院",
-  "马克思主义学院",
-  "艺术学院",
-  "智能科学与技术学院",
-  "智能软件与工程学院",
-  "集成电路学院",
-  "数字经济与管理学院",
-  "能源与资源学院",
-  "国家卓越工程师学院",
-  "机器人与自动化学院",
-  "未来技术学院",
-  "前沿科学学院",
-  "先进制造学院",
-  "生物医学工程学院",
+  {
+    title: "文学院",
+    desc: "以中文与古典文献为底座，覆盖汉语言文学与戏剧影视文学，适合从文本细读、创作表达和人文传统三个方向进入。",
+    details: ["古典文本", "文学写作", "戏文创作", "中文表达"],
+  },
+  {
+    title: "历史学院",
+    desc: "以中国史、世界史、考古与文博为主线，强调史料解读、田野考察和历史叙事能力。",
+    details: ["中国史", "史料方法", "考古田野", "文博策展"],
+  },
+  {
+    title: "哲学学院",
+    desc: "聚焦哲学、伦理学和逻辑训练，适合喜欢抽象思辨、经典研读和概念辨析的同学。",
+    details: ["思想史", "伦理学", "逻辑分析", "经典研读"],
+  },
+  {
+    title: "新闻传播学院",
+    desc: "覆盖新闻、广电、广告与数据传播，强调采写、视听表达和内容策划能力。",
+    details: ["新闻采写", "视听传播", "广告创意", "数据传播"],
+  },
+  {
+    title: "法学院",
+    desc: "以法理、部门法和案例研习为核心，同时兼顾法律实务和公共议题分析。",
+    details: ["法理框架", "部门法", "案例研习", "法律实务"],
+  },
+  {
+    title: "商学院（含经济学院、管理学院）",
+    desc: "连接经济分析、金融工具和企业管理，适合关注数智商业、组织决策和产业问题的同学。",
+    details: ["经济分析", "金融工具", "商业管理", "数智经营"],
+    aliases: ["商学院", "经济学院", "管理学院"],
+  },
+  {
+    title: "外国语学院",
+    desc: "以语言能力、翻译写作和跨文化理解为主轴，支持多语种学习与区域研究发展。",
+    details: ["语言训练", "翻译写作", "跨文化", "区域研究"],
+  },
+  {
+    title: "政府管理学院",
+    desc: "围绕公共政策、行政管理和社会保障展开，强调治理问题拆解和制度分析能力。",
+    details: ["公共治理", "政策分析", "行政管理", "社会保障"],
+  },
+  {
+    title: "国际关系学院",
+    desc: "聚焦国际政治、外交与全球治理，适合关注国际议题、区域安全和国际组织的同学。",
+    details: ["国际政治", "外交议题", "全球治理", "区域安全"],
+  },
+  {
+    title: "信息管理学院",
+    desc: "连接信息组织、知识服务、出版传播和数据治理，兼顾信息科学与人文场景。",
+    details: ["信息组织", "知识服务", "数据治理", "出版传播"],
+  },
+  {
+    title: "社会学院",
+    desc: "覆盖社会学、社会工作和应用心理学，强调调查方法、测量工具和现实介入能力。",
+    details: ["社会调查", "社工实务", "心理测量", "群体研究"],
+  },
+  {
+    title: "数学学院",
+    desc: "以分析、代数、统计和建模为基础，适合走理论研究与应用计算并重的路线。",
+    details: ["数学分析", "代数结构", "概率统计", "数理建模"],
+  },
+  {
+    title: "物理学院",
+    desc: "以理论物理与实验训练为核心，并延展到声学等交叉方向，强调基础扎实与实验能力。",
+    details: ["理论物理", "实验训练", "声学方向", "交叉研究"],
+  },
+  {
+    title: "天文与空间科学学院",
+    desc: "以天体物理、观测技术和宇宙学为特色，适合对空间科学与观测研究感兴趣的同学。",
+    details: ["天体物理", "观测技术", "宇宙学", "空间科学"],
+  },
+  {
+    title: "化学学院",
+    desc: "聚焦基础化学与实验方法，适合关注结构、反应、表征与分析能力培养的同学。",
+    details: ["无机化学", "有机化学", "分析方法", "实验训练"],
+    aliases: ["化学化工学院"],
+  },
+  {
+    title: "化工学院",
+    desc: "更偏向化工过程、工艺设计和材料转化，强调工程放大、流程优化与产业应用。",
+    details: ["化工过程", "工艺设计", "材料转化", "工程放大"],
+    aliases: ["化学化工学院"],
+  },
+  {
+    title: "计算机学院",
+    desc: "以编程、系统、算法和人工智能为核心，适合希望走硬核技术路线的同学。",
+    details: ["编程基础", "系统能力", "算法设计", "AI应用"],
+  },
+  {
+    title: "软件学院",
+    desc: "强调软件工程、协作开发、测试交付与产业化落地，适合工程实践导向学生。",
+    details: ["工程协作", "架构设计", "测试交付", "产业实践"],
+  },
+  {
+    title: "人工智能学院",
+    desc: "聚焦机器学习、深度学习与智能系统，适合关注算法研究和应用落地的同学。",
+    details: ["机器学习", "深度学习", "智能系统", "交叉应用"],
+  },
+  {
+    title: "电子科学与工程学院",
+    desc: "覆盖电路、微电子、通信与芯片器件，更偏底层硬件、信号链路与系统实现。",
+    details: ["电路系统", "微电子", "通信网络", "芯片器件"],
+  },
+  {
+    title: "现代工程与应用科学学院",
+    desc: "连接光电、材料、新能源和生医交叉，强调实验平台、工程应用和跨学科协同。",
+    details: ["光电材料", "新能源", "生医交叉", "工程实验"],
+  },
+  {
+    title: "环境学院",
+    desc: "围绕环境监测、污染治理和可持续发展，适合关注环境与健康问题的同学。",
+    details: ["环境监测", "污染治理", "可持续", "环境健康"],
+  },
+  {
+    title: "地球科学与工程学院",
+    desc: "以地质、地球物理、水文工程和行星科学为特色，强调地球系统视角与工程实践。",
+    details: ["地球物理", "地质演化", "水文工程", "行星科学"],
+  },
+  {
+    title: "地理与海洋科学学院",
+    desc: "覆盖地理信息、海洋过程、资源环境和区域规划，强调空间分析与区域问题研究。",
+    details: ["地理信息", "海洋过程", "资源环境", "区域规划"],
+  },
+  {
+    title: "大气科学学院",
+    desc: "以天气动力、气候系统和数值预报见长，强调观测、模拟和气候分析结合。",
+    details: ["天气动力", "气候系统", "数值预报", "观测分析"],
+  },
+  {
+    title: "南京赫尔辛基大气与地球系统科学学院（南赫学院）",
+    desc: "聚焦大气与地球系统科学，中外合作办学特色明显，英文课程和国际科研氛围较强。",
+    details: ["地球系统", "国际合作", "英文课程", "气候研究"],
+    aliases: ["南赫学院"],
+  },
+  {
+    title: "生命科学学院",
+    desc: "以分子、细胞、生态和实验平台为核心，适合生命科学基础与交叉探索。",
+    details: ["分子生物", "细胞机制", "生态保护", "实验平台"],
+  },
+  {
+    title: "医学院",
+    desc: "覆盖基础医学、临床培养和医工交叉，适合关注长期医学训练路径和临床实践的同学。",
+    details: ["基础医学", "临床训练", "5+3培养", "医工交叉"],
+  },
+  {
+    title: "工程管理学院",
+    desc: "连接工业工程、运筹优化、金融工程和管理决策，偏数量方法与应用管理。",
+    details: ["工业工程", "运筹优化", "金融工程", "管理决策"],
+  },
+  {
+    title: "匡亚明学院",
+    desc: "强调拔尖培养、大理科底座和本研贯通，适合高强度、交叉化和研究导向的学生。",
+    details: ["拔尖培养", "大理科", "交叉研修", "本研贯通"],
+  },
+  {
+    title: "海外教育学院",
+    desc: "承担汉语国际教育与国际学生培养，适合关注跨文化教学与国际课堂场景。",
+    details: ["汉语教学", "国际学生", "跨文化", "国际课堂"],
+  },
+  {
+    title: "建筑与城市规划学院",
+    desc: "以建筑设计、城乡规划和空间表达为主线，强调人居环境、城市议题与设计实践。",
+    details: ["建筑设计", "城乡规划", "空间表达", "人居营造"],
+  },
+  {
+    title: "马克思主义学院",
+    desc: "以马克思主义理论、思政教育和中国化研究为核心，适合理论研究与公共表达并重的学生。",
+    details: ["理论研究", "思政教育", "中国化研究", "经典原著"],
+  },
+  {
+    title: "艺术学院",
+    desc: "覆盖艺术史论、数字媒体与戏文创作，偏理论研究与创作表达融合发展。",
+    details: ["艺术史论", "数字媒体", "戏文创作", "视觉表达"],
+  },
+  {
+    title: "智能科学与技术学院",
+    desc: "以智能系统、感知认知和机器人交叉为特色，学生社区资源也比较活跃，适合关注智能方向的同学。",
+    details: ["智能系统", "认知计算", "智能感知", "学生社区"],
+    relatedLinks: [
+      {
+        label: "NJUIS Students 社区站",
+        href: "https://njuis-students.github.io/",
+      },
+    ],
+  },
+  {
+    title: "智能软件与工程学院",
+    desc: "连接智能软件、大模型应用与工程落地，适合关注 AI 工程化、产品化与平台建设。",
+    details: ["智能软件", "大模型应用", "工程落地", "产学协同"],
+  },
+  {
+    title: "集成电路学院",
+    desc: "以芯片设计、EDA 流程和工艺器件为主线，面向集成电路全流程能力培养。",
+    details: ["芯片设计", "EDA流程", "工艺器件", "系统集成"],
+  },
+  {
+    title: "数字经济与管理学院",
+    desc: "连接数字经济、数据资产和平台治理，适合关注数智管理和产业创新的同学。",
+    details: ["数字经济", "数据资产", "平台治理", "数智管理"],
+  },
+  {
+    title: "能源与资源学院",
+    desc: "聚焦能源转型、资源治理和低碳系统，适合关注“双碳”与资源工程议题。",
+    details: ["能源转型", "资源治理", "低碳系统", "交叉工程"],
+  },
+  {
+    title: "国家卓越工程师学院",
+    desc: "面向重大工程任务，强调校企协同、项目制训练和产业问题解决能力。",
+    details: ["工程实践", "校企协同", "项目制", "产业任务"],
+  },
+  {
+    title: "机器人与自动化学院",
+    desc: "聚焦自动化控制、机器人与系统集成，适合机电智能与控制方向学生。",
+    details: ["自动化控制", "机器人", "感知规划", "系统集成"],
+  },
+  {
+    title: "未来技术学院",
+    desc: "面向前沿交叉与新兴方向孵化，适合探索型、研究导向和跨学科兴趣强的学生。",
+    details: ["前沿探索", "交叉孵化", "科研训练", "新兴方向"],
+  },
+  {
+    title: "前沿科学学院",
+    desc: "更偏基础前沿和高强度科研训练，适合对原始创新与学术探索有兴趣的同学。",
+    details: ["基础前沿", "学科交叉", "科研导向", "高强度训练"],
+  },
+  {
+    title: "先进制造学院",
+    desc: "聚焦智能制造、先进工艺和装备系统，强调工程实训与真实制造场景。",
+    details: ["智能制造", "先进工艺", "装备系统", "工程实训"],
+  },
+  {
+    title: "生物医学工程学院",
+    desc: "连接医疗器械、生物信号、医学成像和系统设计，是典型的医工融合学院。",
+    details: ["医疗器械", "信号成像", "医工融合", "系统设计"],
+  },
 ]);
 
 const codeTutorLink = [{ label: "进入编程辅导", to: "/study/code-tutor" }];
@@ -645,3 +845,108 @@ export const getMajorByDisciplineAndSlug = (
   const major = discipline.majors.find((item) => item.slug === majorSlug);
   return major ? { discipline, major } : null;
 };
+
+const normalizeCatalogTitle = (value: string) =>
+  value.replace(/（[^）]*）/g, "").replace(/\([^)]*\)/g, "").replace(/\s+/g, "").trim();
+
+const uniqueBy = <T,>(items: T[], getKey: (item: T) => string) => {
+  const seen = new Set<string>();
+  return items.filter((item) => {
+    const key = getKey(item);
+    if (seen.has(key)) {
+      return false;
+    }
+    seen.add(key);
+    return true;
+  });
+};
+
+export const findSchoolsByTitle = (title?: string) => {
+  if (!title) {
+    return [];
+  }
+
+  return njuSchoolCatalog.filter(
+    (school) => school.title === title || school.aliases?.includes(title),
+  );
+};
+
+export const findAdmissionsCategoriesByMajorTitle = (majorTitle?: string) => {
+  if (!majorTitle) {
+    return [];
+  }
+
+  const normalizedTitle = normalizeCatalogTitle(majorTitle);
+  return admissionsCategoryCatalog.filter((category) =>
+    category.tracks.some(
+      (track) => normalizeCatalogTitle(track.title) === normalizedTitle,
+    ),
+  );
+};
+
+export const findSchoolsByAdmissionsCategory = (
+  category?: AdmissionsCategoryEntry,
+) => {
+  if (!category) {
+    return [];
+  }
+
+  return uniqueBy(
+    category.tracks.flatMap((track) =>
+      track.schools.flatMap((schoolName) => findSchoolsByTitle(schoolName)),
+    ),
+    (school) => school.key,
+  );
+};
+
+export const findDisciplinesByAdmissionsCategory = (
+  category?: AdmissionsCategoryEntry,
+) => {
+  if (!category) {
+    return [];
+  }
+
+  const trackTitles = new Set(
+    category.tracks.map((track) => normalizeCatalogTitle(track.title)),
+  );
+
+  return disciplineCatalog.filter((discipline) =>
+    discipline.majors.some((major) =>
+      trackTitles.has(normalizeCatalogTitle(major.title)),
+    ),
+  );
+};
+
+export const findAdmissionsCategoriesBySchoolTitle = (schoolTitle?: string) => {
+  const schoolKeys = new Set(findSchoolsByTitle(schoolTitle).map((school) => school.key));
+
+  if (!schoolKeys.size) {
+    return [];
+  }
+
+  return admissionsCategoryCatalog.filter((category) =>
+    category.tracks.some((track) =>
+      track.schools.some((trackSchoolName) =>
+        findSchoolsByTitle(trackSchoolName).some((school) =>
+          schoolKeys.has(school.key),
+        ),
+      ),
+    ),
+  );
+};
+
+export const findDisciplinesBySchoolTitle = (schoolTitle?: string) =>
+  uniqueBy(
+    findAdmissionsCategoriesBySchoolTitle(schoolTitle).flatMap((category) =>
+      findDisciplinesByAdmissionsCategory(category),
+    ),
+    (discipline) => discipline.key,
+  );
+
+export const findSchoolsByMajorTitle = (majorTitle?: string) =>
+  uniqueBy(
+    findAdmissionsCategoriesByMajorTitle(majorTitle).flatMap((category) =>
+      findSchoolsByAdmissionsCategory(category),
+    ),
+    (school) => school.key,
+  );

@@ -3,12 +3,20 @@ package handler
 import (
 	"context"
 	"errors"
+	"strconv"
+	"strings"
 	"time"
 
 	sandboxv1 "github.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/sandbox/v1"
 	"github.com/dieWehmut/nju-edu-ai-system/backend/sandbox/internal/services/runner"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+)
+
+const (
+	runnerOwnerIDMetadataKey      = "x-sandbox-owner-id"
+	runnerWorkspaceKeyMetadataKey = "x-sandbox-workspace-key"
 )
 
 type RunnerHandler struct {
@@ -33,11 +41,15 @@ func (h *RunnerHandler) RunCode(ctx context.Context, req *sandboxv1.RunCodeReque
 		timeout = 0 // use default from LangConfig
 	}
 
+	ownerID, workspaceKey := runnerScopeFromContext(ctx)
+
 	result, err := h.mgr.Run(ctx, runner.RunRequest{
-		Language: req.Language,
-		Code:     req.Code,
-		Stdin:    req.Stdin,
-		Timeout:  timeout,
+		OwnerID:      ownerID,
+		WorkspaceKey: workspaceKey,
+		Language:     req.Language,
+		Code:         req.Code,
+		Stdin:        req.Stdin,
+		Timeout:      timeout,
 	})
 	if err != nil {
 		if errors.Is(err, runner.ErrUnsupportedLanguage) {
@@ -62,4 +74,26 @@ func (h *RunnerHandler) RunCode(ctx context.Context, req *sandboxv1.RunCodeReque
 		ExitCode:    int32(result.ExitCode),
 		ExecutionMs: result.ExecutionMs,
 	}, nil
+}
+
+func runnerScopeFromContext(ctx context.Context) (uint64, string) {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return 0, ""
+	}
+
+	var ownerID uint64
+	if values := md.Get(runnerOwnerIDMetadataKey); len(values) > 0 {
+		parsed, err := strconv.ParseUint(values[0], 10, 64)
+		if err == nil {
+			ownerID = parsed
+		}
+	}
+
+	var workspaceKey string
+	if values := md.Get(runnerWorkspaceKeyMetadataKey); len(values) > 0 {
+		workspaceKey = strings.TrimSpace(values[0])
+	}
+
+	return ownerID, workspaceKey
 }

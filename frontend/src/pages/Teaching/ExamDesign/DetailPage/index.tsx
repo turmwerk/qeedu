@@ -400,8 +400,8 @@ const DetailPage: React.FC<{
           />
           <SplitSiderLayout
             className="p-0 flex-1 min-h-0 h-full"
-            leftClassName="flex flex-col h-full min-h-0 bg-white overflow-hidden"
-            rightClassName="bg-white h-full flex flex-col min-h-0 overflow-hidden"
+            leftClassName="flex h-full min-h-0 min-w-0 flex-col overflow-hidden bg-white"
+            rightClassName="flex h-full min-h-0 min-w-0 flex-col overflow-hidden bg-white"
             left={
               <QuestionList
                 questions={localQuestions}

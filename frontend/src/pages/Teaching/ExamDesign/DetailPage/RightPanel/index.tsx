@@ -32,7 +32,7 @@ const RightPanel: React.FC<RightPanelProps> = ({
   const [recsCollapsed, setRecsCollapsed] = useState(false);
 
   return (
-    <div className="h-full min-h-0 flex flex-col">
+    <div className="flex h-full min-h-0 min-w-0 flex-col">
       <style>{`
         @keyframes fadeSlideIn {
           from {
@@ -49,7 +49,7 @@ const RightPanel: React.FC<RightPanelProps> = ({
           opacity: 0;
         }
       `}</style>
-      <div className="rounded-xl p-[18px] flex-1 min-h-0 flex flex-col gap-3 overflow-y-auto relative bg-white/[0.88] dark:bg-white/[0.28] border-0 dark:border dark:border-white/[0.28] shadow-[0_8px_30px_rgba(120,90,200,0.14),inset_0_1px_0_rgba(255,255,255,0.74),inset_0_-1px_0_rgba(255,255,255,0.34)] dark:shadow-[0_10px_32px_rgba(0,0,0,0.42),inset_0_1px_0_rgba(255,255,255,0.22),inset_0_-1px_0_rgba(255,255,255,0.12)] backdrop-blur-[40px] backdrop-saturate-[210%]">
+      <div className="relative flex-1 min-h-0 min-w-0 overflow-y-auto rounded-xl bg-white/[0.88] p-[18px] dark:bg-white/[0.28] border-0 dark:border dark:border-white/[0.28] shadow-[0_8px_30px_rgba(120,90,200,0.14),inset_0_1px_0_rgba(255,255,255,0.74),inset_0_-1px_0_rgba(255,255,255,0.34)] dark:shadow-[0_10px_32px_rgba(0,0,0,0.42),inset_0_1px_0_rgba(255,255,255,0.22),inset_0_-1px_0_rgba(255,255,255,0.12)] backdrop-blur-[40px] backdrop-saturate-[210%]">
         <div className={`flex flex-col gap-3 transition-opacity ${recommendActive ? "opacity-0 pointer-events-none" : "opacity-100"}`}>
           <div className="bg-white dark:bg-white/10 rounded-[10px] p-3 shadow-[0_1px_6px_rgba(0,0,0,0.06)] dark:shadow-[0_1px_6px_rgba(0,0,0,0.2)] min-h-[320px]">
             <div className="font-bold mb-2 text-[var(--brand-text)] dark:text-black/85">试卷质量画像</div>

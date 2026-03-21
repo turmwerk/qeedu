@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/dieWehmut/nju-edu-ai-system/backend/sandbox/internal/services/runner"
+	"github.com/dieWehmut/nju-edu-ai-system/backend/sandbox/internal/services/runtimeimages"
 )
 
 type JavaScript struct{}
@@ -11,7 +12,7 @@ type JavaScript struct{}
 func (JavaScript) Config() runner.LangConfig {
 	return runner.LangConfig{
 		Language:    "javascript",
-		Image:       "node:22-slim",
+		Image:       runtimeimages.JavaScript,
 		Filename:    "main.js",
 		RunCmd:      []string{"node", "main.js"},
 		Timeout:     10 * time.Second,

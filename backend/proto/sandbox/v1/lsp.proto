@@ -1,0 +1,93 @@
+syntax = "proto3";
+
+package sandbox.v1;
+
+option go_package = "github.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/sandbox/v1;sandboxv1";
+
+service LSPService {
+  rpc EnsureSession(EnsureSessionRequest) returns (EnsureSessionResponse);
+  rpc SyncFile(SyncFileRequest) returns (SyncFileResponse);
+  rpc GetDiagnostics(GetDiagnosticsRequest) returns (GetDiagnosticsResponse);
+  rpc GetCompletions(GetCompletionsRequest) returns (GetCompletionsResponse);
+  rpc DestroySession(DestroyLSPSessionRequest) returns (DestroyLSPSessionResponse);
+}
+
+message WorkspaceFile {
+  string path     = 1;
+  string content  = 2;
+  string language = 3;
+}
+
+message EnsureSessionRequest {
+  uint64               owner_id       = 1;
+  string               workspace_key  = 2;
+  string               language_group = 3;
+  repeated WorkspaceFile files        = 4;
+}
+
+message EnsureSessionResponse {
+  string session_id = 1;
+}
+
+message SyncFileRequest {
+  string session_id = 1;
+  string file_path  = 2;
+  string content    = 3;
+  int32  version    = 4;
+}
+
+message SyncFileResponse {}
+
+message GetDiagnosticsRequest {
+  string session_id = 1;
+}
+
+message Diagnostic {
+  string             file_path    = 1;
+  int32              start_line   = 2;
+  int32              start_column = 3;
+  int32              end_line     = 4;
+  int32              end_column   = 5;
+  DiagnosticSeverity severity     = 6;
+  string             source       = 7;
+  string             message      = 8;
+  string             code         = 9;
+}
+
+message GetDiagnosticsResponse {
+  repeated Diagnostic diagnostics = 1;
+}
+
+message GetCompletionsRequest {
+  string session_id = 1;
+  string file_path  = 2;
+  int32  line       = 3;
+  int32  column     = 4;
+  int32  version    = 5;
+}
+
+message CompletionItem {
+  string label         = 1;
+  string insert_text   = 2;
+  string detail        = 3;
+  string documentation = 4;
+  string kind          = 5;
+}
+
+message GetCompletionsResponse {
+  repeated CompletionItem items = 1;
+}
+
+message DestroyLSPSessionRequest {
+  string session_id = 1;
+}
+
+message DestroyLSPSessionResponse {}
+
+enum DiagnosticSeverity {
+  DIAGNOSTIC_SEVERITY_UNSPECIFIED = 0;
+  DIAGNOSTIC_SEVERITY_ERROR       = 1;
+  DIAGNOSTIC_SEVERITY_WARNING     = 2;
+  DIAGNOSTIC_SEVERITY_INFORMATION = 3;
+  DIAGNOSTIC_SEVERITY_HINT        = 4;
+}

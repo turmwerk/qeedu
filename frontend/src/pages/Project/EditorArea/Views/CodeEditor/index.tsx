@@ -24,6 +24,7 @@ const CodeEditorView: React.FC<CodeEditorViewProps> = ({ tab }) => {
           value={tab.content ?? ""}
           onChange={handleChange}
           language={tab.language ?? "plaintext"}
+          path={tab.id}
           height="100%"
           showHeader={false}
           minimap={false}

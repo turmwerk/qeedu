@@ -101,7 +101,7 @@ const AuthLayout: React.FC = () => {
         <Outlet data-oid="v5m5e:5" />
       </div>
       <div className="absolute bottom-0 w-full z-20">
-        <Footer />
+        <Footer showLinksPanel={false} />
       </div>
     </div>
   );

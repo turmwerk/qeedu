@@ -5,7 +5,12 @@ import {
   ShowcaseTag,
   showcasePanelClass,
 } from "@/feature/ScenarioShowcase";
-import { getSchoolBySlug } from "../../resourceCatalog";
+import {
+  findAdmissionsCategoriesBySchoolTitle,
+  findDisciplinesBySchoolTitle,
+  getSchoolBySlug,
+} from "../../resourceCatalog";
+import RelatedLinksPanel from "../RelatedLinksPanel";
 
 const NJUSchoolDetailPage: React.FC = () => {
   const { schoolSlug } = useParams();
@@ -23,6 +28,14 @@ const NJUSchoolDetailPage: React.FC = () => {
     );
   }
 
+  const relatedAdmissionsCategories = findAdmissionsCategoriesBySchoolTitle(
+    school.title,
+  ).slice(0, 6);
+  const relatedDisciplines = findDisciplinesBySchoolTitle(school.title).slice(
+    0,
+    6,
+  );
+
   return (
     <div className="flex w-full min-w-0 flex-col gap-6 px-4 py-6 md:px-6 xl:px-8">
       <section className={`${showcasePanelClass} p-6`}>
@@ -34,6 +47,11 @@ const NJUSchoolDetailPage: React.FC = () => {
             </div>
             <div className="mt-3 max-w-3xl text-[16px] leading-8 text-[#67748a] dark:text-[#dbe5f3]">
               {school.desc}
+            </div>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {school.details.map((detail) => (
+                <ShowcaseTag key={detail}>{detail}</ShowcaseTag>
+              ))}
             </div>
           </div>
           <ShowcaseTag tone="orange">规划中</ShowcaseTag>
@@ -58,6 +76,51 @@ const NJUSchoolDetailPage: React.FC = () => {
           ))}
         </div>
       </ShowcasePanel>
+
+      <RelatedLinksPanel
+        title="继续浏览"
+        description="把学院页和上级目录、相关学科、招生专业类串起来，方便从培养单位继续切到专业和招生视角。"
+        groups={[
+          {
+            title: "上级入口",
+            description: "先回到资源包主入口，或切换到其他两种组织维度继续浏览。",
+            links: [
+              { label: "学院分类总览", to: "/study/resource-pack/nju-schools" },
+              { label: "学科大类总览", to: "/study/resource-pack/disciplines" },
+              { label: "招生专业分类", to: "/study/resource-pack/admissions-categories" },
+            ],
+          },
+          {
+            title: "关联招生类",
+            description: "这些招生专业类会流向当前学院，适合继续查看分流方向和培养院系。",
+            links: relatedAdmissionsCategories.map((category) => ({
+              label: category.title,
+              to: `/study/resource-pack/admissions-categories/${category.slug}`,
+            })),
+          },
+          {
+            title: "相关学科",
+            description: "从学院视角切到学科视角时，可以优先关注这些已能对应上的学科门类。",
+            links: relatedDisciplines.map((discipline) => ({
+              label: discipline.title,
+              to: `/study/resource-pack/disciplines/${discipline.slug}`,
+            })),
+          },
+        ]}
+      />
+
+      <RelatedLinksPanel
+        title="学院相关链接"
+        description="这里放学院手动维护的站点、社区或资料链接，和页面导航分开呈现。"
+        gridCols="md:grid-cols-1 xl:grid-cols-2"
+        groups={[
+          {
+            title: "外部资源",
+            description: "优先放学院官网、学生社区、课程导航或学院特色资源入口。",
+            links: school.relatedLinks ?? [],
+          },
+        ]}
+      />
     </div>
   );
 };

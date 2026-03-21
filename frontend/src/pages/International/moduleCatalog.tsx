@@ -18,12 +18,12 @@ type ModuleCatalogEntry = {
   title: string;
   shortLabel: string;
   desc: string;
+  details: string[];
   to: string;
   workspaceTo?: string;
   icon: React.ReactNode;
   badgeLabel: string;
   footerLabel: string;
-  subLinks: Feature["subLinks"];
   landingHeadline: string;
   landingSubtitle: string;
   landingFeatures: Feature[];
@@ -37,16 +37,12 @@ export const internationalModuleCatalog: ModuleCatalogEntry[] = [
     title: "交换与访学项目中心",
     shortLabel: "项目中心",
     desc: "项目搜索、预览、比较托盘和流程联动。",
+    details: ["项目搜索", "项目预览", "比较托盘", "流程联动"],
     to: "/international/exchange-hub",
     workspaceTo: "/international/exchange-hub",
     icon: <GlobalOutlinedIcon />,
     badgeLabel: "Projects",
     footerLabel: "项目目录页",
-    subLinks: [
-      { label: "项目中心", to: "/international/exchange-hub" },
-      { label: "项目匹配", to: "/international/matching-lab" },
-      { label: "流程助手", to: "/international/process-flow" },
-    ],
     landingHeadline: "项目目录页",
     landingSubtitle: "完成项目筛选、预览、收藏和比较，再决定是否进入匹配和申请流程。",
     landingFeatures: [
@@ -60,16 +56,12 @@ export const internationalModuleCatalog: ModuleCatalogEntry[] = [
     title: "智能项目匹配与申请决策",
     shortLabel: "项目匹配",
     desc: "画像录入、推荐结果、比较矩阵和决策说明。",
+    details: ["画像录入", "推荐结果", "比较矩阵", "决策说明"],
     to: "/international/matching-lab",
     workspaceTo: "/international/matching-lab/analyses/new",
     icon: <SearchOutlinedIcon />,
     badgeLabel: "Matching",
     footerLabel: "决策实验室",
-    subLinks: [
-      { label: "决策实验室", to: "/international/matching-lab" },
-      { label: "项目中心", to: "/international/exchange-hub" },
-      { label: "沟通写作台", to: "/international/writing-desk" },
-    ],
     landingHeadline: "决策实验室",
     landingSubtitle: "把个人画像、项目门槛和风险偏好拉到同一张矩阵中，输出可执行的排序。",
     landingFeatures: [
@@ -83,16 +75,12 @@ export const internationalModuleCatalog: ModuleCatalogEntry[] = [
     title: "申请流程助手",
     shortLabel: "流程助手",
     desc: "阶段地图、任务清单、里程碑和风险提醒。",
+    details: ["阶段地图", "任务清单", "里程碑", "风险提醒"],
     to: "/international/process-flow",
     workspaceTo: "/international/process-flow",
     icon: <DeploymentUnitOutlinedIcon />,
     badgeLabel: "Flow",
     footerLabel: "申请指挥板",
-    subLinks: [
-      { label: "申请指挥板", to: "/international/process-flow" },
-      { label: "行前准备", to: "/international/pre-departure" },
-      { label: "回国收尾", to: "/international/return-service" },
-    ],
     landingHeadline: "申请指挥板",
     landingSubtitle: "围绕项目计划生成真正能执行的任务链、提醒链和里程碑。",
     landingFeatures: [
@@ -106,16 +94,12 @@ export const internationalModuleCatalog: ModuleCatalogEntry[] = [
     title: "多语言沟通与邮件助手",
     shortLabel: "邮件助手",
     desc: "双语草稿、模板抽屉、发送前检查和沟通对话。",
+    details: ["双语草稿", "模板抽屉", "发送前检查", "沟通对话"],
     to: "/international/writing-desk",
     workspaceTo: "/international/writing-desk/drafts/new",
     icon: <MailOutlinedIcon />,
     badgeLabel: "Writing",
     footerLabel: "沟通写作台",
-    subLinks: [
-      { label: "沟通写作台", to: "/international/writing-desk" },
-      { label: "项目匹配", to: "/international/matching-lab" },
-      { label: "来华支持", to: "/international/welcome-portal" },
-    ],
     landingHeadline: "沟通写作台",
     landingSubtitle: "统一管理导师联系、住宿沟通、签证说明和双语 FAQ 草稿。",
     landingFeatures: [
@@ -129,16 +113,12 @@ export const internationalModuleCatalog: ModuleCatalogEntry[] = [
     title: "行前准备助手",
     shortLabel: "行前准备",
     desc: "准备案例、证件校验、文件包和行前提醒。",
+    details: ["准备案例", "证件校验", "文件包", "行前提醒"],
     to: "/international/pre-departure",
     workspaceTo: "/international/pre-departure",
     icon: <RocketOutlinedIcon />,
     badgeLabel: "Departure",
     footerLabel: "出发准备板",
-    subLinks: [
-      { label: "出发准备板", to: "/international/pre-departure" },
-      { label: "在外支持", to: "/international/abroad-life" },
-      { label: "跨文化培训", to: "/international/cultural-training" },
-    ],
     landingHeadline: "出发准备板",
     landingSubtitle: "把签证、保险、住宿、机票和落地准备拆成可勾选的倒计时工作区。",
     landingFeatures: [
@@ -152,22 +132,19 @@ export const internationalModuleCatalog: ModuleCatalogEntry[] = [
     title: "跨文化培训与风险提示",
     shortLabel: "跨文化培训",
     desc: "画像概览、模块进度、风险备注和适应建议。",
+    details: ["画像概览", "模块进度", "风险备注", "适应建议"],
     to: "/international/cultural-training",
     workspaceTo: "/international/cultural-training",
     icon: <TranslationOutlinedIcon />,
     badgeLabel: "Culture",
     footerLabel: "培训地图页",
-    subLinks: [
-      { label: "培训地图页", to: "/international/cultural-training" },
-      { label: "在外支持", to: "/international/abroad-life" },
-      { label: "行前准备", to: "/international/pre-departure" },
-    ],
     landingHeadline: "培训地图页",
     landingSubtitle: "围绕学术礼仪、课堂参与、法律规则和安全场景进行情境化训练。",
     landingFeatures: [
       { key: "culture-profile", title: "训练画像", desc: "按项目和国家生成适应画像。", to: "/international/cultural-training", icon: <TranslationOutlinedIcon />, badgeLabel: "Profile", footerLabel: "查看画像" },
       { key: "culture-modules", title: "模块进度", desc: "追踪课堂礼仪与安全模块。", to: "/international/cultural-training", icon: <SlidersOutlinedIconFallback />, badgeLabel: "Progress", footerLabel: "追踪进度" },
       { key: "culture-ai", title: "适应建议", desc: "对接 AI 生成具体建议。", to: "/international/cultural-training", icon: <SafetyOutlinedIcon />, badgeLabel: "Advice", footerLabel: "生成建议" },
+      { key: "culture-resource", title: "资源页", desc: "集中查看学术礼仪、安全与适应支持。", to: "/international/cultural-training/resources", icon: <TranslationOutlinedIcon />, badgeLabel: "Resource", footerLabel: "打开资源页" },
     ],
   }),
   entry({
@@ -175,16 +152,12 @@ export const internationalModuleCatalog: ModuleCatalogEntry[] = [
     title: "在外期间支持",
     shortLabel: "在外支持",
     desc: "support ticket、生活指南、应急卡和海外支持 AI。",
+    details: ["支持工单", "生活指南", "应急卡", "海外 AI"],
     to: "/international/abroad-life",
     workspaceTo: "/international/abroad-life",
     icon: <EnvironmentOutlinedIcon />,
     badgeLabel: "Abroad",
     footerLabel: "在外支持中心",
-    subLinks: [
-      { label: "在外支持中心", to: "/international/abroad-life" },
-      { label: "回国收尾", to: "/international/return-service" },
-      { label: "申请流程", to: "/international/process-flow" },
-    ],
     landingHeadline: "在外支持中心",
     landingSubtitle: "集中处理课程调整、住房续租、签证续办和夜间突发事务。",
     landingFeatures: [
@@ -198,16 +171,12 @@ export const internationalModuleCatalog: ModuleCatalogEntry[] = [
     title: "回国与成果沉淀",
     shortLabel: "回国收尾",
     desc: "学分认定、报销、归档、经验反思和结案。",
+    details: ["学分认定", "报销归档", "经验反思", "结案"],
     to: "/international/return-service",
     workspaceTo: "/international/return-service",
     icon: <RollbackOutlinedIcon />,
     badgeLabel: "Return",
     footerLabel: "回国收尾页",
-    subLinks: [
-      { label: "回国收尾页", to: "/international/return-service" },
-      { label: "在外支持", to: "/international/abroad-life" },
-      { label: "项目中心", to: "/international/exchange-hub" },
-    ],
     landingHeadline: "回国收尾页",
     landingSubtitle: "返校后统一处理学分认定、报销归档和经验回流，不让项目在收尾阶段断掉。",
     landingFeatures: [
@@ -221,16 +190,12 @@ export const internationalModuleCatalog: ModuleCatalogEntry[] = [
     title: "来华支援助手",
     shortLabel: "来华支持",
     desc: "support profile、FAQ、onboarding notice 和双语支持 AI。",
+    details: ["支持档案", "双语 FAQ", "入学通知", "双语 AI"],
     to: "/international/welcome-portal",
     workspaceTo: "/international/welcome-portal",
     icon: <EnvironmentOutlinedIcon />,
     badgeLabel: "Welcome",
     footerLabel: "来华支持台",
-    subLinks: [
-      { label: "来华支持台", to: "/international/welcome-portal" },
-      { label: "沟通写作台", to: "/international/writing-desk" },
-      { label: "在外支持", to: "/international/abroad-life" },
-    ],
     landingHeadline: "来华支持台",
     landingSubtitle: "面向 incoming students 统一处理 arrival、报到、宿舍和校园办事支持。",
     landingFeatures: [
@@ -249,11 +214,11 @@ export const internationalHubFeatures: Feature[] = internationalModuleCatalog.ma
   key: item.key,
   title: item.title,
   desc: item.desc,
+  details: item.details,
   to: item.to,
   icon: item.icon,
   badgeLabel: item.badgeLabel,
   footerLabel: item.footerLabel,
-  subLinks: item.subLinks,
 }));
 
 export const internationalHomeSubLinks = internationalModuleCatalog.map((item) => ({

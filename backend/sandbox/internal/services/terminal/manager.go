@@ -9,13 +9,33 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/dieWehmut/nju-edu-ai-system/backend/sandbox/internal/services/container"
+	terminalshell "github.com/dieWehmut/nju-edu-ai-system/backend/sandbox/internal/services/terminal/shell"
 )
 
 const (
-	defaultImage = "ubuntu:22.04"
-	defaultShell = "bash"
+	defaultShell = terminalshell.Bash
 	sessionTTL   = 30 * time.Minute
 )
+
+var keepAliveCmd = []string{"sleep", "infinity"}
+
+func resolveShellProfile(shell string) (image string, cmd []string) {
+	switch shell {
+	case terminalshell.Bash:
+		return terminalshell.BashImage, terminalshell.BashCmd
+	default:
+		return terminalshell.BashImage, terminalshell.BashCmd
+	}
+}
+
+func resolveCommandShell(shell string) []string {
+	switch shell {
+	case terminalshell.Bash:
+		return []string{"/bin/bash", "-lc"}
+	default:
+		return []string{"/bin/bash", "-lc"}
+	}
+}
 
 // Manager manages terminal sessions.
 type Manager struct {
@@ -45,12 +65,14 @@ func (m *Manager) CreateSession(ctx context.Context, shell string, cols, rows in
 		rows = 24
 	}
 
-	containerID, err := m.docker.CreateInteractive(ctx, defaultImage, []string{shell})
+	image, shellCmd := resolveShellProfile(shell)
+
+	containerID, err := m.docker.CreateInteractive(ctx, image, keepAliveCmd)
 	if err != nil {
 		return nil, err
 	}
 
-	execID, conn, err := m.docker.ExecAttach(ctx, containerID, []string{shell}, uint(cols), uint(rows))
+	execID, conn, err := m.docker.ExecAttach(ctx, containerID, shellCmd, uint(cols), uint(rows))
 	if err != nil {
 		_ = m.docker.Remove(ctx, containerID)
 		return nil, err
@@ -108,9 +130,12 @@ func (m *Manager) ExecuteCommand(ctx context.Context, command, shell, workingDir
 		workingDir = "/root"
 	}
 
+	image, _ := resolveShellProfile(shell)
+	shellCmd := resolveCommandShell(shell)
+
 	result, err := m.docker.Run(ctx, container.RunConfig{
-		Image:      defaultImage,
-		Cmd:        []string{shell, "-c", command},
+		Image:      image,
+		Cmd:        append(shellCmd, command),
 		WorkingDir: workingDir,
 		Memory:     256 << 20,
 		CPUQuota:   100000,

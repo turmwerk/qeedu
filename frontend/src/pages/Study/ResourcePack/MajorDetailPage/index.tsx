@@ -1,15 +1,18 @@
 import React from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import {
   ShowcasePanel,
   ShowcaseTag,
   showcasePanelClass,
 } from "@/feature/ScenarioShowcase";
-import { getMajorByDisciplineAndSlug } from "../../resourceCatalog";
-import Button from "@/ui/Button";
+import {
+  findAdmissionsCategoriesByMajorTitle,
+  findSchoolsByMajorTitle,
+  getMajorByDisciplineAndSlug,
+} from "../../resourceCatalog";
+import RelatedLinksPanel from "../RelatedLinksPanel";
 
 const MajorDetailPage: React.FC = () => {
-  const navigate = useNavigate();
   const { disciplineSlug, majorSlug } = useParams();
   const matched = getMajorByDisciplineAndSlug(disciplineSlug, majorSlug);
 
@@ -26,6 +29,10 @@ const MajorDetailPage: React.FC = () => {
   }
 
   const { discipline, major } = matched;
+  const relatedAdmissionsCategories = findAdmissionsCategoriesByMajorTitle(
+    major.title,
+  ).slice(0, 6);
+  const relatedSchools = findSchoolsByMajorTitle(major.title).slice(0, 6);
 
   return (
     <div className="flex w-full min-w-0 flex-col gap-6 px-4 py-6 md:px-6 xl:px-8">
@@ -35,7 +42,7 @@ const MajorDetailPage: React.FC = () => {
           {major.title}
         </div>
         <div className="mt-3 text-[16px] leading-8 text-[#67748a] dark:text-[#dbe5f3]">
-          所属学科：{discipline.title}。{major.desc}
+          所属学科：{discipline.title}。{major.desc} 可以先结合下方的资源组织结构建立学习路径，再沿着相关链接切到招生类、学院页或已接通能力。
         </div>
         {major.tags?.length ? (
           <div className="mt-4 flex flex-wrap gap-2">
@@ -65,27 +72,46 @@ const MajorDetailPage: React.FC = () => {
         </div>
       </ShowcasePanel>
 
-      {major.relatedLinks?.length ? (
-        <ShowcasePanel
-          eyebrow="Related Entry"
-          title="已接通的现有能力"
-          description="部分信息类专业优先复用现有编程辅导与代码项目工作台。"
-        >
-          <div className="flex flex-wrap gap-3">
-            {major.relatedLinks.map((link) => (
-              <Button
-                key={link.label}
-                className="rounded-2xl border border-[#dbe1f3] bg-white px-5 py-3 text-sm font-semibold text-[#334155] dark:border-white/10 dark:bg-white/8 dark:text-white"
-                onClick={() => {
-                  if (link.to) navigate(link.to);
-                }}
-              >
-                {link.label}
-              </Button>
-            ))}
-          </div>
-        </ShowcasePanel>
-      ) : null}
+      <RelatedLinksPanel
+        title="继续浏览"
+        description="把当前专业页和上级目录、关联招生类、相关学院以及已接通能力串起来，方便继续下钻。"
+        gridCols="md:grid-cols-2 xl:grid-cols-4"
+        groups={[
+          {
+            title: "上级入口",
+            description: "从专业页返回到学科页、学科总览或资源包首页，快速切换浏览维度。",
+            links: [
+              {
+                label: `返回${discipline.title}`,
+                to: `/study/resource-pack/disciplines/${discipline.slug}`,
+              },
+              { label: "学科大类总览", to: "/study/resource-pack/disciplines" },
+              { label: "资源包首页", to: "/study/resource-pack" },
+            ],
+          },
+          {
+            title: "关联招生类",
+            description: "这些招生专业类会流向当前专业或其同名培养方向，适合继续查看分流与培养院系。",
+            links: relatedAdmissionsCategories.map((category) => ({
+              label: category.title,
+              to: `/study/resource-pack/admissions-categories/${category.slug}`,
+            })),
+          },
+          {
+            title: "相关学院",
+            description: "这些学院与当前专业存在招生或培养关联，可以继续回到学院视角查看资源布局。",
+            links: relatedSchools.map((school) => ({
+              label: school.title,
+              to: `/study/resource-pack/nju-schools/${school.slug}`,
+            })),
+          },
+          {
+            title: "已接通能力",
+            description: "部分专业已经挂上现有学习工具或工作台，可以直接继续使用。",
+            links: major.relatedLinks ?? [],
+          },
+        ]}
+      />
     </div>
   );
 };

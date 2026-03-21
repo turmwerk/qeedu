@@ -1,4 +1,11 @@
-import React, { useEffect, useMemo, useRef } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Terminal } from "xterm";
 import { FitAddon } from "xterm-addon-fit";
 import { WebLinksAddon } from "xterm-addon-web-links";
@@ -6,22 +13,39 @@ import "xterm/css/xterm.css";
 import { useContextMenu, type ContextMenuItem } from "@/ui/ContextMenu";
 import { buildTerminalWsUrl } from "@/api/sandbox";
 import { getFileIcon } from "../../../utils/filePresentation";
+import { useWorkspace } from "../../../context";
+import {
+  appendTerminalHistory,
+  listPanelHistory,
+  subscribeHistoryChanges,
+  type PanelHistoryRecord,
+  type TerminalHistoryPayload,
+} from "../../history";
 import {
   useTerminalSessionStore,
-  terminalProfiles,
   type TerminalProfile,
   type TerminalSession,
 } from "./sessionStore";
 
-/* ---------- xterm + WebSocket session handle ---------- */
+const CONNECT_TIMEOUT_MS = 8000;
+
 interface XtermHandle {
   term: Terminal;
   fit: FitAddon;
   ws: WebSocket | null;
   disposed: boolean;
+  historyHydrated: boolean;
+  connectTimeoutId: number | null;
+  timeoutTriggered: boolean;
 }
 
+const formatMetaTimestamp = (timestamp: number): string =>
+  new Date(timestamp).toLocaleString("zh-CN", {
+    hour12: false,
+  });
+
 const TerminalView: React.FC = () => {
+  const workspaceKey = useWorkspace((state) => state.workspaceKey);
   const sessions = useTerminalSessionStore((state) => state.sessions);
   const activeId = useTerminalSessionStore((state) => state.activeId);
   const selectedProfileId = useTerminalSessionStore(
@@ -33,35 +57,147 @@ const TerminalView: React.FC = () => {
   const { openAtEvent } = useContextMenu();
   const sessionsRef = useRef<TerminalSession[]>(sessions);
   const activeIdRef = useRef<string | null>(activeId);
+  const textDecoderRef = useRef(new TextDecoder());
 
   const handleMapRef = useRef(new Map<string, XtermHandle>());
   const containerMapRef = useRef(new Map<string, HTMLDivElement | null>());
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const profileMap = useMemo(
-    () => new Map(terminalProfiles.map((profile) => [profile.id, profile])),
-    [],
-  );
+  const pendingFocusRef = useRef<string | null>(null);
+  const [historyRecords, setHistoryRecords] = useState<
+    Array<PanelHistoryRecord<TerminalHistoryPayload>>
+  >([]);
+  const [historyLoaded, setHistoryLoaded] = useState(false);
 
-  /* keep refs in sync */
+  const activeSession =
+    sessions.find((session) => session.id === activeId) ?? sessions[0];
+
+  const historyTranscript = useMemo(() => {
+    const orderedRecords = [...historyRecords].sort(
+      (left, right) => left.createdAt - right.createdAt,
+    );
+    return orderedRecords
+      .map((record) =>
+        [...(record.payload?.chunks ?? [])]
+          .sort((left, right) => left.timestamp - right.timestamp)
+          .map((chunk) => chunk.text)
+          .join(""),
+      )
+      .join("");
+  }, [historyRecords]);
+
   useEffect(() => {
     sessionsRef.current = sessions;
   }, [sessions]);
+
   useEffect(() => {
     activeIdRef.current = activeId;
   }, [activeId]);
+
   useEffect(() => {
-    if (!activeId && sessions.length > 0) setActiveId(sessions[0].id);
+    if (!activeId && sessions.length > 0) {
+      setActiveId(sessions[0].id);
+    }
   }, [activeId, sessions, setActiveId]);
 
-  const activeSession =
-    sessions.find((s) => s.id === activeId) ?? sessions[0];
+  useEffect(() => {
+    let cancelled = false;
 
-  /* ---------- xterm + WebSocket lifecycle ---------- */
+    const loadHistory = async () => {
+      if (!workspaceKey) {
+        if (!cancelled) {
+          setHistoryRecords([]);
+          setHistoryLoaded(true);
+        }
+        return;
+      }
+      try {
+        const next = await listPanelHistory<TerminalHistoryPayload>(
+          workspaceKey,
+          "terminal",
+        );
+        if (!cancelled) {
+          setHistoryRecords(next);
+          setHistoryLoaded(true);
+        }
+      } catch {
+        if (!cancelled) {
+          setHistoryRecords([]);
+          setHistoryLoaded(true);
+        }
+      }
+    };
 
-  const createXtermHandle = (
-    sessionId: string,
-    shell: string,
-  ): XtermHandle => {
+    setHistoryLoaded(false);
+    void loadHistory();
+    const unsubscribe = subscribeHistoryChanges((changedWorkspace, changedView) => {
+      if (changedWorkspace && changedWorkspace !== workspaceKey) {
+        return;
+      }
+      if (changedView && changedView !== "terminal") {
+        return;
+      }
+      void loadHistory();
+    });
+
+    return () => {
+      cancelled = true;
+      unsubscribe();
+    };
+  }, [workspaceKey]);
+
+  const persistTerminalChunk = useCallback(
+    (sessionId: string, text: string, kind: "meta" | "output" | "error" = "output") => {
+      if (!workspaceKey || !text) return;
+      const session = sessionsRef.current.find((item) => item.id === sessionId);
+      if (!session) return;
+      void appendTerminalHistory({
+        workspaceKey,
+        sessionId,
+        title: session.title,
+        text,
+        kind,
+        meta: {
+          profileId: session.profileId,
+        },
+      });
+    },
+    [workspaceKey],
+  );
+
+  const clearConnectTimeout = (handle: XtermHandle) => {
+    if (handle.connectTimeoutId) {
+      window.clearTimeout(handle.connectTimeoutId);
+      handle.connectTimeoutId = null;
+    }
+  };
+
+  const writeTerminalText = useCallback(
+    (
+      handle: XtermHandle,
+      sessionId: string,
+      text: string,
+      kind: "meta" | "output" | "error" = "output",
+    ) => {
+      handle.term.write(text);
+      persistTerminalChunk(sessionId, text, kind);
+    },
+    [persistTerminalChunk],
+  );
+
+  const hydrateHistory = useCallback(
+    (sessionId: string, handle: XtermHandle) => {
+      if (handle.historyHydrated || !historyLoaded) return;
+      handle.historyHydrated = true;
+      const historySessionId =
+        sessionsRef.current[sessionsRef.current.length - 1]?.id;
+      if (sessionId === historySessionId && historyTranscript) {
+        handle.term.write(historyTranscript);
+      }
+    },
+    [historyLoaded, historyTranscript],
+  );
+
+  const createXtermHandle = (): XtermHandle => {
     const term = new Terminal({
       cursorBlink: true,
       fontFamily:
@@ -98,75 +234,32 @@ const TerminalView: React.FC = () => {
     term.loadAddon(fit);
     term.loadAddon(new WebLinksAddon());
 
-    const handle: XtermHandle = { term, fit, ws: null, disposed: false };
-
-    const profile = profileMap.get(shell as TerminalProfile["id"]);
-    if (profile?.initialLines?.length) {
-      profile.initialLines.forEach((line) => term.writeln(line));
-    }
-    if (profile?.prompt) {
-      term.write(`${profile.prompt} `);
-    }
-
-    /* --- WebSocket connection --- */
-    const wsUrl = buildTerminalWsUrl(shell);
-    const ws = new WebSocket(wsUrl);
-    ws.binaryType = "arraybuffer";
-    handle.ws = ws;
-
-    ws.onopen = () => {
-      const dims = fit.proposeDimensions();
-      if (dims) {
-        ws.send(
-          JSON.stringify({ type: "resize", cols: dims.cols, rows: dims.rows }),
-        );
-      }
+    const handle: XtermHandle = {
+      term,
+      fit,
+      ws: null,
+      disposed: false,
+      historyHydrated: false,
+      connectTimeoutId: null,
+      timeoutTriggered: false,
     };
 
-    ws.onmessage = (ev) => {
-      if (handle.disposed) return;
-      if (ev.data instanceof ArrayBuffer) {
-        term.write(new Uint8Array(ev.data));
-      } else {
-        term.write(ev.data as string);
-      }
-    };
-
-    ws.onclose = () => {
-      if (!handle.disposed) {
-        term.write("\r\n\x1b[90m[会话已断开 — 按任意键重连]\x1b[0m\r\n");
-        // one-shot reconnect on any keypress
-        const disposable = term.onData(() => {
-          disposable.dispose();
-          reconnect(sessionId, shell);
-        });
-      }
-    };
-
-    ws.onerror = () => {
-      if (!handle.disposed) {
-        term.write("\r\n\x1b[31m[连接错误]\x1b[0m\r\n");
-      }
-    };
-
-    /* xterm → WS (every keystroke goes straight to PTY) */
     term.onData((data) => {
       if (handle.ws?.readyState === WebSocket.OPEN) {
-        handle.ws.send(new TextEncoder().encode(data));
+        handle.ws.send(data);
       }
     });
 
     term.onBinary((data) => {
       if (handle.ws?.readyState === WebSocket.OPEN) {
         const bytes = new Uint8Array(data.length);
-        for (let i = 0; i < data.length; i++) {
+        for (let i = 0; i < data.length; i += 1) {
           bytes[i] = data.charCodeAt(i) & 0xff;
         }
         handle.ws.send(bytes);
       }
     });
 
-    /* resize → WS */
     term.onResize(({ cols, rows }) => {
       if (handle.ws?.readyState === WebSocket.OPEN) {
         handle.ws.send(JSON.stringify({ type: "resize", cols, rows }));
@@ -176,119 +269,215 @@ const TerminalView: React.FC = () => {
     return handle;
   };
 
-  const reconnect = (sessionId: string, shell: string) => {
-    const old = handleMapRef.current.get(sessionId);
-    if (!old) return;
+  const connectHandle = useCallback(
+    (
+      handle: XtermHandle,
+      sessionId: string,
+      shell: string,
+      reconnecting = false,
+    ) => {
+      if (handle.disposed) return;
 
-    // close old WS only (keep terminal)
-    if (old.ws && old.ws.readyState <= WebSocket.OPEN) {
-      old.ws.onclose = null; // suppress onclose handler
-      old.ws.close();
-    }
-
-    const wsUrl = buildTerminalWsUrl(shell);
-    const ws = new WebSocket(wsUrl);
-    ws.binaryType = "arraybuffer";
-    old.ws = ws;
-
-    ws.onopen = () => {
-      old.term.write("\x1b[90m[已重连]\x1b[0m\r\n");
-      const dims = old.fit.proposeDimensions();
-      if (dims) {
-        ws.send(
-          JSON.stringify({ type: "resize", cols: dims.cols, rows: dims.rows }),
+      const wsUrl = buildTerminalWsUrl(shell);
+      const ws = new WebSocket(wsUrl);
+      ws.binaryType = "arraybuffer";
+      handle.ws = ws;
+      handle.timeoutTriggered = false;
+      clearConnectTimeout(handle);
+      handle.connectTimeoutId = window.setTimeout(() => {
+        if (handle.disposed || handle.timeoutTriggered) return;
+        handle.timeoutTriggered = true;
+        writeTerminalText(
+          handle,
+          sessionId,
+          "\r\n\x1b[31m[连接超时]\x1b[0m\r\n",
+          "error",
         );
-      }
-    };
+        ws.close();
+      }, CONNECT_TIMEOUT_MS);
 
-    ws.onmessage = (ev) => {
-      if (old.disposed) return;
-      if (ev.data instanceof ArrayBuffer) {
-        old.term.write(new Uint8Array(ev.data));
-      } else {
-        old.term.write(ev.data as string);
-      }
-    };
+      ws.onopen = () => {
+        clearConnectTimeout(handle);
+        const metaText = reconnecting
+          ? `\x1b[90m[${formatMetaTimestamp(Date.now())}] 已重连\x1b[0m\r\n`
+          : `\x1b[90m[${formatMetaTimestamp(Date.now())}] 终端已连接\x1b[0m\r\n`;
+        writeTerminalText(handle, sessionId, metaText, "meta");
+        const dims = handle.fit.proposeDimensions();
+        if (dims) {
+          ws.send(
+            JSON.stringify({ type: "resize", cols: dims.cols, rows: dims.rows }),
+          );
+        }
+      };
 
-    ws.onclose = () => {
-      if (!old.disposed) {
-        old.term.write("\r\n\x1b[90m[会话已断开 — 按任意键重连]\x1b[0m\r\n");
-        const disposable = old.term.onData(() => {
+      ws.onmessage = (event) => {
+        if (handle.disposed) return;
+        if (event.data instanceof ArrayBuffer) {
+          handle.term.write(new Uint8Array(event.data));
+          persistTerminalChunk(
+            sessionId,
+            textDecoderRef.current.decode(event.data, { stream: true }),
+            "output",
+          );
+          return;
+        }
+
+        const text = String(event.data);
+        handle.term.write(text);
+        persistTerminalChunk(sessionId, text, "output");
+      };
+
+      ws.onerror = () => {
+        if (handle.disposed || handle.timeoutTriggered) return;
+        writeTerminalText(handle, sessionId, "\r\n\x1b[31m[连接错误]\x1b[0m\r\n", "error");
+      };
+
+      ws.onclose = () => {
+        clearConnectTimeout(handle);
+        if (handle.disposed || handle.timeoutTriggered) return;
+        writeTerminalText(
+          handle,
+          sessionId,
+          "\r\n\x1b[90m[会话已断开，按任意键重连]\x1b[0m\r\n",
+          "meta",
+        );
+        const disposable = handle.term.onData(() => {
           disposable.dispose();
           reconnect(sessionId, shell);
         });
-      }
-    };
+      };
+    },
+    [persistTerminalChunk, writeTerminalText],
+  );
 
-    ws.onerror = () => {
-      if (!old.disposed) {
-        old.term.write("\r\n\x1b[31m[连接错误]\x1b[0m\r\n");
+  const reconnect = useCallback(
+    (sessionId: string, shell: string) => {
+      const handle = handleMapRef.current.get(sessionId);
+      if (!handle) return;
+
+      if (handle.ws && handle.ws.readyState <= WebSocket.OPEN) {
+        handle.ws.onclose = null;
+        handle.ws.close();
       }
-    };
-  };
+
+      connectHandle(handle, sessionId, shell, true);
+    },
+    [connectHandle],
+  );
 
   const disposeHandle = (id: string) => {
-    const h = handleMapRef.current.get(id);
-    if (!h) return;
-    h.disposed = true;
-    if (h.ws && h.ws.readyState <= WebSocket.OPEN) h.ws.close();
-    h.term.dispose();
+    const handle = handleMapRef.current.get(id);
+    if (!handle) return;
+    handle.disposed = true;
+    clearConnectTimeout(handle);
+    if (handle.ws && handle.ws.readyState <= WebSocket.OPEN) {
+      handle.ws.close();
+    }
+    handle.term.dispose();
     handleMapRef.current.delete(id);
     containerMapRef.current.delete(id);
   };
 
-  /* ---------- mount terminal into DOM ---------- */
-
-  const ensureTerminal = (session: TerminalSession, el: HTMLDivElement | null) => {
-    if (!el) return;
-    if (handleMapRef.current.has(session.id)) return;
-
-    const handle = createXtermHandle(session.id, session.profileId);
-    handleMapRef.current.set(session.id, handle);
-
-    handle.term.open(el);
-    requestAnimationFrame(() => {
-      try {
-        handle.fit.fit();
-      } catch {
-        /* not visible */
+  const ensureTerminal = useCallback(
+    (session: TerminalSession, element: HTMLDivElement | null) => {
+      if (!element) return;
+      const existing = handleMapRef.current.get(session.id);
+      if (existing) {
+        if (element.childElementCount === 0) {
+          existing.term.open(element);
+          requestAnimationFrame(() => {
+            try {
+              existing.fit.fit();
+            } catch {
+              /* ignore hidden containers */
+            }
+          });
+        }
+        hydrateHistory(session.id, existing);
+        return;
       }
-    });
-  };
 
-  /* ---------- resize observer ---------- */
+      const handle = createXtermHandle();
+      handleMapRef.current.set(session.id, handle);
+      handle.term.open(element);
+      hydrateHistory(session.id, handle);
+
+      requestAnimationFrame(() => {
+        try {
+          handle.fit.fit();
+          handle.term.focus();
+          pendingFocusRef.current = session.id;
+          writeTerminalText(
+            handle,
+            session.id,
+            "\x1b[90m[正在连接终端...]\x1b[0m\r\n",
+            "meta",
+          );
+          connectHandle(handle, session.id, session.profileId);
+        } catch {
+          /* ignore hidden containers */
+        }
+      });
+    },
+    [connectHandle, hydrateHistory, writeTerminalText],
+  );
 
   useEffect(() => {
-    if (!wrapperRef.current) return;
+    sessions.forEach((session) => {
+      const handle = handleMapRef.current.get(session.id);
+      if (handle) {
+        hydrateHistory(session.id, handle);
+      }
+    });
+  }, [hydrateHistory, sessions]);
+
+  useEffect(() => {
+    if (!wrapperRef.current) return undefined;
     const observer = new ResizeObserver(() => {
       const rect = wrapperRef.current?.getBoundingClientRect();
       if (!rect || rect.width <= 0 || rect.height <= 0) return;
       const currentId = activeIdRef.current;
       if (!currentId) return;
-      const h = handleMapRef.current.get(currentId);
-      if (h) requestAnimationFrame(() => h.fit.fit());
+      const handle = handleMapRef.current.get(currentId);
+      if (handle) {
+        requestAnimationFrame(() => handle.fit.fit());
+      }
     });
     observer.observe(wrapperRef.current);
     return () => observer.disconnect();
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!activeId) return;
     const rect = wrapperRef.current?.getBoundingClientRect();
     if (!rect || rect.width <= 0 || rect.height <= 0) return;
-    const h = handleMapRef.current.get(activeId);
-    if (h) requestAnimationFrame(() => h.fit.fit());
+    const handle = handleMapRef.current.get(activeId);
+    if (handle) {
+      requestAnimationFrame(() => {
+        handle.fit.fit();
+        handle.term.focus();
+        pendingFocusRef.current = activeId;
+      });
+    }
   }, [activeId]);
 
-  /* ---------- cleanup on unmount ---------- */
+  useEffect(() => {
+    const currentId = pendingFocusRef.current;
+    if (!currentId) return;
+    const handle = handleMapRef.current.get(currentId);
+    if (!handle) return;
+    const timer = window.setTimeout(() => {
+      handle.term.focus();
+      pendingFocusRef.current = null;
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [activeId, sessions]);
 
   useEffect(() => {
     return () => {
       handleMapRef.current.forEach((_, id) => disposeHandle(id));
     };
   }, []);
-
-  /* ---------- session CRUD ---------- */
 
   const handleAddSession = (profileId?: TerminalProfile["id"]) => {
     addSession(profileId);
@@ -299,17 +488,17 @@ const TerminalView: React.FC = () => {
     removeSession(id);
   };
 
-  /* ---------- context menus ---------- */
-
   const handleCopyAll = async () => {
     if (!activeSession) return;
-    const h = handleMapRef.current.get(activeSession.id);
-    if (!h) return;
-    const buffer = h.term.buffer.active;
+    const handle = handleMapRef.current.get(activeSession.id);
+    if (!handle) return;
+    const buffer = handle.term.buffer.active;
     const lines: string[] = [];
-    for (let i = 0; i < buffer.length; i++) {
+    for (let i = 0; i < buffer.length; i += 1) {
       const line = buffer.getLine(i);
-      if (line) lines.push(line.translateToString(true));
+      if (line) {
+        lines.push(line.translateToString(true));
+      }
     }
     try {
       await navigator.clipboard.writeText(lines.join("\n"));
@@ -320,9 +509,9 @@ const TerminalView: React.FC = () => {
 
   const handleClear = () => {
     if (!activeSession) return;
-    const h = handleMapRef.current.get(activeSession.id);
-    if (!h) return;
-    h.term.clear();
+    const handle = handleMapRef.current.get(activeSession.id);
+    if (!handle) return;
+    handle.term.clear();
   };
 
   const handleTerminalContextMenu = (event: React.MouseEvent) => {
@@ -335,10 +524,7 @@ const TerminalView: React.FC = () => {
     openAtEvent(event, items);
   };
 
-  const handleTabContextMenu = (
-    sessionId: string,
-    event: React.MouseEvent,
-  ) => {
+  const handleTabContextMenu = (sessionId: string, event: React.MouseEvent) => {
     const items: ContextMenuItem[] = [
       { label: "关闭终端", onClick: () => handleCloseSession(sessionId) },
       { label: "新建终端", onClick: () => handleAddSession(selectedProfileId) },
@@ -346,35 +532,37 @@ const TerminalView: React.FC = () => {
     openAtEvent(event, items);
   };
 
-  /* ---------- render ---------- */
-
   if (!activeSession) {
     return <div className="h-full" />;
   }
 
   return (
     <div className="flex h-full min-h-0">
-      {/* terminal panels */}
       <div
         ref={wrapperRef}
-        className="relative min-h-0 flex-1 bg-[#1e1e1e]"
+        className="terminal-view relative h-full min-h-0 flex-1 overflow-hidden bg-[#1e1e1e]"
         onContextMenu={handleTerminalContextMenu}
+        onClick={() => {
+          if (!activeSession) return;
+          handleMapRef.current.get(activeSession.id)?.term.focus();
+        }}
       >
         {sessions.map((session) => (
           <div
             key={session.id}
-            ref={(el) => {
-              containerMapRef.current.set(session.id, el);
-              ensureTerminal(session, el);
+            ref={(element) => {
+              containerMapRef.current.set(session.id, element);
+              ensureTerminal(session, element);
             }}
             className={
-              session.id === activeSession.id ? "absolute inset-0" : "hidden"
+              session.id === activeSession.id
+                ? "absolute inset-0 h-full w-full"
+                : "absolute inset-0 hidden h-full w-full"
             }
           />
         ))}
       </div>
 
-      {/* right tabs */}
       <div className="flex w-12 shrink-0 flex-col gap-1 border-l border-[#2d2d2d] bg-[#1f1f1f] py-2">
         {sessions.map((session) => {
           const icon = getFileIcon(

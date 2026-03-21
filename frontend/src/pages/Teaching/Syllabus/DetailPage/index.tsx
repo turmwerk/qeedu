@@ -37,9 +37,9 @@ const DetailPage: React.FC<{
           onFullScreen={() => setOpenFull(true)}
         />
         <SplitSiderLayout
-          className="p-0"
-          leftClassName="flex flex-col h-full min-h-0 overflow-hidden"
-          rightClassName="h-full flex flex-col min-h-0 overflow-hidden"
+          className="flex-1 min-h-0 min-w-0 p-0"
+          leftClassName="flex h-full min-h-0 min-w-0 flex-col overflow-hidden"
+          rightClassName="flex h-full min-h-0 min-w-0 flex-col overflow-hidden"
           left={
             <>
               <div

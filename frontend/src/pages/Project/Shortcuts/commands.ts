@@ -2,8 +2,10 @@ import { useCallback, useMemo, useState } from "react";
 import { runCode } from "@/api/sandbox";
 import { showToast } from "@/ui/Toast";
 import { useWorkspace } from "../context";
+import { inferLanguage, isRunnableLanguage } from "../data/languageSupport";
 import { ViewType, type FileTreeNode } from "../EditorArea/types";
 import { useTerminalSessionStore } from "../TerminalPanel/Views/TerminalView/sessionStore";
+import { useTerminalPanelViewStore } from "../TerminalPanel/viewStore";
 import { SidebarView } from "../Sidebar/constants";
 import { useSidebarView } from "../Sidebar/SidebarViewContext";
 
@@ -22,18 +24,44 @@ const findNodeByPath = (
   return null;
 };
 
-const inferLanguage = (name: string): string => {
-  const ext = name.split(".").pop()?.toLowerCase() ?? "";
-  if (["ts", "tsx"].includes(ext)) return "typescript";
-  if (["js", "jsx"].includes(ext)) return "javascript";
-  if (["py"].includes(ext)) return "python";
-  if (["md", "markdown"].includes(ext)) return "markdown";
-  if (["json"].includes(ext)) return "json";
-  if (["yml", "yaml"].includes(ext)) return "yaml";
-  if (["html", "htm"].includes(ext)) return "html";
-  if (["css"].includes(ext)) return "css";
-  return "plaintext";
+const findFirstFile = (node: FileTreeNode): FileTreeNode | null => {
+  if (node.type === "file") return node;
+  if (!node.children) return null;
+  for (const child of node.children) {
+    const file = findFirstFile(child);
+    if (file) return file;
+  }
+  return null;
 };
+
+type LocalFileSystemFileHandle = {
+  kind: "file";
+  name: string;
+  getFile: () => Promise<File>;
+};
+
+type LocalFileSystemDirectoryHandle = {
+  kind: "directory";
+  name: string;
+  values: () => AsyncIterable<LocalFileSystemHandle>;
+};
+
+type LocalFileSystemHandle =
+  | LocalFileSystemFileHandle
+  | LocalFileSystemDirectoryHandle;
+
+type DirectoryPickerWindow = Window &
+  typeof globalThis & {
+    showDirectoryPicker?: () => Promise<LocalFileSystemDirectoryHandle>;
+  };
+
+const sortTreeChildren = (children: FileTreeNode[]): FileTreeNode[] =>
+  [...children].sort((left, right) => {
+    if (left.type !== right.type) {
+      return left.type === "directory" ? -1 : 1;
+    }
+    return left.name.localeCompare(right.name, "zh-CN");
+  });
 
 const buildLocalFileTree = async (files: FileList): Promise<FileTreeNode | null> => {
   if (!files || files.length === 0) return null;
@@ -96,7 +124,56 @@ const buildLocalFileTree = async (files: FileList): Promise<FileTreeNode | null>
     }
   }
 
-  return root;
+  return {
+    ...root,
+    children: sortTreeChildren(root.children ?? []),
+  };
+};
+
+const buildLocalFileTreeFromDirectoryHandle = async (
+  directoryHandle: LocalFileSystemDirectoryHandle,
+): Promise<FileTreeNode> => {
+  const buildChildren = async (
+    handle: LocalFileSystemDirectoryHandle,
+    parentPath: string,
+  ): Promise<FileTreeNode[]> => {
+    const children: FileTreeNode[] = [];
+
+    for await (const entry of handle.values()) {
+      const path = parentPath === "/" ? `/${entry.name}` : `${parentPath}/${entry.name}`;
+
+      if (entry.kind === "directory") {
+        children.push({
+          id: path,
+          name: entry.name,
+          path,
+          type: "directory",
+          children: await buildChildren(entry, path),
+        });
+        continue;
+      }
+
+      const file = await entry.getFile();
+      children.push({
+        id: path,
+        name: entry.name,
+        path,
+        type: "file",
+        language: inferLanguage(entry.name),
+        content: await file.text(),
+      });
+    }
+
+    return sortTreeChildren(children);
+  };
+
+  return {
+    id: "/",
+    name: directoryHandle.name || "workspace",
+    path: "/",
+    type: "directory",
+    children: await buildChildren(directoryHandle, "/"),
+  };
 };
 
 export const PROJECT_COMMAND_IDS = [
@@ -274,6 +351,7 @@ export const useProjectCommands = (
   options: ProjectCommandsOptions = {},
 ): ProjectCommandBundle => {
   const {
+    workspaceKey,
     fileTree,
     tabs,
     activeTabId,
@@ -298,10 +376,7 @@ export const useProjectCommands = (
   const hasTabs = tabs.length > 0;
   const hasSavedTabs = tabs.some((tab) => !tab.isDirty);
   const hasActiveTab = !!activeTabId;
-  const isRunnable =
-    !!activeTab?.language &&
-    activeTab.language !== "plaintext" &&
-    activeTab.language !== "markdown";
+  const isRunnable = isRunnableLanguage(activeTab?.language);
 
   const soon = useCallback(
     (label: string) => () => showToast(`${label} 功能即将开放`),
@@ -326,11 +401,17 @@ export const useProjectCommands = (
 
   const openHelpDoc = useCallback(() => {
     const readme = findNodeByPath(fileTree, "/README.md");
-    if (!readme) {
-      showToast("未找到 README.md");
+    if (readme) {
+      openFileTab(readme);
       return;
     }
-    openFileTab(readme);
+    const firstFile = findFirstFile(fileTree);
+    if (!firstFile) {
+      showToast("当前工作区没有可打开的文件");
+      return;
+    }
+    openFileTab(firstFile);
+    showToast(`已打开示例文件：${firstFile.name}`);
   }, [fileTree, openFileTab]);
 
   const saveAllTabs = useCallback(() => {
@@ -374,25 +455,47 @@ export const useProjectCommands = (
   }, [addFileWithContent]);
 
   const openLocalFolder = useCallback(() => {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.setAttribute("webkitdirectory", "true");
-    input.onchange = async () => {
-      const files = input.files;
-      if (!files || files.length === 0) return;
-      try {
-        const tree = await buildLocalFileTree(files);
-        if (!tree) {
-          showToast("无法打开文件夹");
-          return;
+    const openFolderByInput = () => {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.setAttribute("webkitdirectory", "true");
+      input.onchange = async () => {
+        const files = input.files;
+        if (!files || files.length === 0) return;
+        try {
+          const tree = await buildLocalFileTree(files);
+          if (!tree) {
+            showToast("无法打开文件夹");
+            return;
+          }
+          loadFileTree(tree);
+          showToast(`已打开本地文件夹：${tree.name}`);
+        } catch {
+          showToast("读取本地文件夹失败");
         }
+      };
+      input.click();
+    };
+
+    const showDirectoryPicker = (window as DirectoryPickerWindow).showDirectoryPicker;
+    if (typeof showDirectoryPicker !== "function") {
+      openFolderByInput();
+      return;
+    }
+
+    void (async () => {
+      try {
+        const directoryHandle = await showDirectoryPicker();
+        const tree = await buildLocalFileTreeFromDirectoryHandle(directoryHandle);
         loadFileTree(tree);
         showToast(`已打开本地文件夹：${tree.name}`);
-      } catch {
+      } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError") {
+          return;
+        }
         showToast("读取本地文件夹失败");
       }
-    };
-    input.click();
+    })();
   }, [loadFileTree]);
 
   const handleRun = useCallback(async () => {
@@ -405,12 +508,26 @@ export const useProjectCommands = (
       return;
     }
     if (running) return;
+    useTerminalPanelViewStore.getState().showOutput();
+    setRunOutput({
+      stdout: "",
+      stderr: "",
+      exitCode: 0,
+      executionMs: 0,
+      error: "",
+      timestamp: Date.now(),
+      status: "running",
+      language: activeTab.language,
+      filePath: activeTab.id,
+      fileName: activeTab.title,
+    });
     setRunning(true);
     try {
       const resp = await runCode({
         language: activeTab.language,
         code: activeTab.content,
         timeout_seconds: 15,
+        workspace_key: workspaceKey,
       });
       setRunOutput({
         stdout: resp.stdout,
@@ -419,6 +536,10 @@ export const useProjectCommands = (
         executionMs: resp.execution_ms,
         error: resp.error,
         timestamp: Date.now(),
+        status: "completed",
+        language: activeTab.language,
+        filePath: activeTab.id,
+        fileName: activeTab.title,
       });
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "未知错误";
@@ -429,11 +550,15 @@ export const useProjectCommands = (
         executionMs: 0,
         error: message,
         timestamp: Date.now(),
+        status: "completed",
+        language: activeTab.language,
+        filePath: activeTab.id,
+        fileName: activeTab.title,
       });
     } finally {
       setRunning(false);
     }
-  }, [activeTab, isRunnable, running, setRunOutput]);
+  }, [activeTab, isRunnable, running, setRunOutput, workspaceKey]);
 
   const toggleTerminalPanel =
     options.toggleTerminalPanel ?? soon("终端面板");

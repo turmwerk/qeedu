@@ -1,6 +1,6 @@
 COMPOSE := docker compose -f ./deploy/docker-compose.yml
 
-.PHONY: up down build logs restart proto tidy
+.PHONY: up down build logs restart proto tidy runtime-images pull-images
 
 # 启动全部服务（后台运行）
 up:
@@ -33,7 +33,7 @@ proto:
 		-c 'PATH="/go-plugins:$$PATH" && protoc --proto_path=proto \
 			--go_out=pkg/pb --go_opt=paths=source_relative \
 			--go-grpc_out=pkg/pb --go-grpc_opt=paths=source_relative \
-			sandbox/v1/runner.proto sandbox/v1/terminal.proto \
+			sandbox/v1/runner.proto sandbox/v1/terminal.proto sandbox/v1/lsp.proto \
 			user/v1/user.proto \
 			ai-chat/v1/ai-chat.proto \
 			ai-copilot/v1/ai-copilot.proto'
@@ -42,11 +42,9 @@ proto:
 tidy:
 	go mod tidy
 
-# 预拉取沙盒运行时镜像
-pull-images:
-	docker pull python:3.12-slim
-	docker pull node:22-slim
-	docker pull golang:1.23-alpine
-	docker pull eclipse-temurin:21-jdk-alpine
-	docker pull gcc:14
-	docker pull ubuntu:22.04
+# 构建沙盒运行时镜像
+runtime-images:
+	sh ./sandbox/runtime/build-runtime-images.sh
+
+# 兼容旧命令
+pull-images: runtime-images

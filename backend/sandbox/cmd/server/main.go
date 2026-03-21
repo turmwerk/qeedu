@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"os"
 
@@ -8,8 +9,10 @@ import (
 
 	"github.com/dieWehmut/nju-edu-ai-system/backend/sandbox/internal/rpc"
 	"github.com/dieWehmut/nju-edu-ai-system/backend/sandbox/internal/services/container"
+	"github.com/dieWehmut/nju-edu-ai-system/backend/sandbox/internal/services/lsp"
 	"github.com/dieWehmut/nju-edu-ai-system/backend/sandbox/internal/services/runner"
 	"github.com/dieWehmut/nju-edu-ai-system/backend/sandbox/internal/services/runner/langs"
+	"github.com/dieWehmut/nju-edu-ai-system/backend/sandbox/internal/services/runtimeimages"
 	"github.com/dieWehmut/nju-edu-ai-system/backend/sandbox/internal/services/terminal"
 )
 
@@ -36,7 +39,25 @@ func main() {
 
 	// Create managers
 	runnerMgr := runner.NewManager(dockerClient)
+	defer runnerMgr.Shutdown(context.Background())
 	terminalMgr := terminal.NewManager(dockerClient)
+	lspMgr := lsp.NewManager(dockerClient)
+	defer lspMgr.Shutdown(context.Background())
+
+	if err := dockerClient.EnsureRuntimeImages(context.Background(), []string{
+		runtimeimages.Python,
+		runtimeimages.JavaScript,
+		runtimeimages.TypeScript,
+		runtimeimages.Go,
+		runtimeimages.Java,
+		runtimeimages.C,
+		runtimeimages.Cpp,
+		runtimeimages.Rust,
+		runtimeimages.CSharp,
+		runtimeimages.TerminalBash,
+	}); err != nil {
+		log.Fatalf("[sandbox] prepare runtime images: %v", err)
+	}
 
 	// Start gRPC server
 	addr := os.Getenv("GRPC_ADDR")
@@ -46,7 +67,7 @@ func main() {
 
 	log.Printf("[sandbox] supported languages: %v", runner.SupportedLanguages())
 
-	if err := rpc.Serve(addr, runnerMgr, terminalMgr); err != nil {
+	if err := rpc.Serve(addr, runnerMgr, terminalMgr, lspMgr); err != nil {
 		log.Fatalf("[sandbox] grpc server: %v", err)
 	}
 }

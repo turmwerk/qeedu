@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/dieWehmut/nju-edu-ai-system/backend/sandbox/internal/services/runner"
+	"github.com/dieWehmut/nju-edu-ai-system/backend/sandbox/internal/services/runtimeimages"
 )
 
 type Python struct{}
@@ -11,7 +12,7 @@ type Python struct{}
 func (Python) Config() runner.LangConfig {
 	return runner.LangConfig{
 		Language:    "python",
-		Image:       "python:3.12-slim",
+		Image:       runtimeimages.Python,
 		Filename:    "main.py",
 		RunCmd:      []string{"python3", "main.py"},
 		Timeout:     10 * time.Second,

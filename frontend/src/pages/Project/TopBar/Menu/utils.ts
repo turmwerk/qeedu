@@ -8,6 +8,7 @@ export const commandItem = (
 ): ContextMenuItem => {
   const cmd = commands[id];
   return {
+    id,
     label: cmd.label,
     shortcut: cmd.shortcut,
     onClick: cmd.handler,

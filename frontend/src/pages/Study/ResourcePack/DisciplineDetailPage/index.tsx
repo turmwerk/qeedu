@@ -27,13 +27,14 @@ const DisciplineDetailPage: React.FC = () => {
   return (
     <ModuleHub
       headline={discipline.title}
-      subtitle={discipline.desc}
+      subtitle={`${discipline.desc} 先用专业说明和关键词筛选，再进入具体专业资源详情与相关入口。`}
       features={discipline.majors.map((major) => ({
         key: major.key,
         title: major.title,
-        desc: major.desc,
+        desc: `${major.desc} 适合从课程主线、能力要求和常见资源入口三个方向开始建立学习路线。`,
         to: `/study/resource-pack/disciplines/${discipline.slug}/${major.slug}`,
         icon: <ReadOutlinedIcon />,
+        details: [...(major.tags ?? []), ...(major.relatedLinks?.length ? ["相关入口"] : [])].slice(0, 4),
         subLinks: major.relatedLinks,
       }))}
       gridCols="grid-cols-1 md:grid-cols-2 xl:grid-cols-3"

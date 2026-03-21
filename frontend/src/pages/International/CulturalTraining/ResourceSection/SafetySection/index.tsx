@@ -31,6 +31,9 @@ const renderCard = (item: Feature) => {
   );
 };
 
+const gridCols =
+  SAFETY_CARDS.length === 4 ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3";
+
 const SafetySection: React.FC = () => (
   <div className="w-full min-w-0 overflow-x-hidden">
     <ModuleHub
@@ -38,7 +41,7 @@ const SafetySection: React.FC = () => (
       subtitle="法律须知 · 安全事项 · 应急联系"
       features={SAFETY_CARDS}
       renderFeature={renderCard}
-      gridCols="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+      gridCols={gridCols}
     />
   </div>
 );

@@ -7,11 +7,12 @@ const NJUSchoolsPage: React.FC = () => {
   return (
     <ModuleHub
       headline="按南京大学学院分类"
-      subtitle="本轮先保留学院入口与独立路由，后续逐步补齐学院页内容"
+      subtitle="每个学院都给出不同的学科特色与引导词，方便先按培养单位建立整体认知，再继续下钻"
       features={njuSchoolCatalog.map((school) => ({
         key: school.key,
         title: school.title,
         desc: school.desc,
+        details: school.details,
         to: `/study/resource-pack/nju-schools/${school.slug}`,
         icon: <BankOutlinedIcon />,
       }))}

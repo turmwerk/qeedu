@@ -39,6 +39,11 @@ func RegisterRoutes(r *gin.Engine) {
 			protected.POST("/sandbox/run", sandbox.RunCode)
 			protected.POST("/sandbox/exec", sandbox.ExecCommand)
 			protected.GET("/sandbox/terminal/ws", sandbox.TerminalWS)
+			protected.POST("/sandbox/lsp/session", sandbox.EnsureLSPSession)
+			protected.PATCH("/sandbox/lsp/session/:sessionId/file", sandbox.SyncLSPFile)
+			protected.GET("/sandbox/lsp/session/:sessionId/diagnostics", sandbox.GetLSPDiagnostics)
+			protected.POST("/sandbox/lsp/session/:sessionId/completion", sandbox.GetLSPCompletions)
+			protected.DELETE("/sandbox/lsp/session/:sessionId", sandbox.DestroyLSPSession)
 
 			// AI
 			protected.POST("/ai/chat", ai.Chat)

@@ -2,7 +2,6 @@ import React, { useCallback, useState } from "react";
 import {
   SplitCellsOutlined,
   EllipsisOutlined,
-  CaretRightOutlined,
   LoadingOutlined,
 } from "@ant-design/icons";
 import { runCode } from "@/api/sandbox";
@@ -10,10 +9,13 @@ import TabBar, { type TabBarProps } from "@/ui/TabBar";
 import { useContextMenu, type ContextMenuItem } from "@/ui/ContextMenu";
 import { getFileIcon } from "../../utils/filePresentation";
 import { useWorkspace } from "../../context";
+import { isRunnableLanguage } from "../../data/languageSupport";
+import { useTerminalPanelViewStore } from "../../TerminalPanel/viewStore";
 import { type TabItem } from "../types";
 
 const FileTabBar: React.FC = () => {
   const {
+    workspaceKey,
     tabs,
     activeTabId,
     closeTab,
@@ -28,10 +30,7 @@ const FileTabBar: React.FC = () => {
   const [running, setRunning] = useState(false);
 
   const activeTab = tabs.find((tab) => tab.id === activeTabId) ?? null;
-  const isRunnable =
-    !!activeTab?.language &&
-    activeTab.language !== "plaintext" &&
-    activeTab.language !== "markdown";
+  const isRunnable = isRunnableLanguage(activeTab?.language);
 
   const copyText = async (text: string) => {
     try {
@@ -78,12 +77,26 @@ const FileTabBar: React.FC = () => {
   const handleRun = useCallback(async () => {
     if (!activeTab || !isRunnable || running) return;
     if (!activeTab.content || !activeTab.language) return;
+    useTerminalPanelViewStore.getState().showOutput();
+    setRunOutput({
+      stdout: "",
+      stderr: "",
+      exitCode: 0,
+      executionMs: 0,
+      error: "",
+      timestamp: Date.now(),
+      status: "running",
+      language: activeTab.language,
+      filePath: activeTab.id,
+      fileName: activeTab.title,
+    });
     setRunning(true);
     try {
       const resp = await runCode({
         language: activeTab.language,
         code: activeTab.content,
         timeout_seconds: 15,
+        workspace_key: workspaceKey,
       });
       setRunOutput({
         stdout: resp.stdout,
@@ -92,6 +105,10 @@ const FileTabBar: React.FC = () => {
         executionMs: resp.execution_ms,
         error: resp.error,
         timestamp: Date.now(),
+        status: "completed",
+        language: activeTab.language,
+        filePath: activeTab.id,
+        fileName: activeTab.title,
       });
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "未知错误";
@@ -102,11 +119,15 @@ const FileTabBar: React.FC = () => {
         executionMs: 0,
         error: message,
         timestamp: Date.now(),
+        status: "completed",
+        language: activeTab.language,
+        filePath: activeTab.id,
+        fileName: activeTab.title,
       });
     } finally {
       setRunning(false);
     }
-  }, [activeTab, isRunnable, running, setRunOutput]);
+  }, [activeTab, isRunnable, running, setRunOutput, workspaceKey]);
 
   const tabBarProps: TabBarProps = {
     tabs: tabs.map((t: TabItem) => ({
@@ -126,19 +147,32 @@ const FileTabBar: React.FC = () => {
         ? [
             {
               icon: (
-                <span className="flex items-center gap-1 text-xs font-medium text-white">
+                <span className="flex items-center justify-center text-white">
                   {running ? (
-                    <LoadingOutlined className="text-[11px]" />
+                    <LoadingOutlined className="text-[18px]" />
                   ) : (
-                    <CaretRightOutlined className="text-[11px]" />
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M8 6.5L17 12L8 17.5V6.5Z"
+                        stroke="currentColor"
+                        strokeWidth="2.2"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
                   )}
-                  <span>{running ? "运行中..." : "运行"}</span>
                 </span>
               ),
               title: running ? "运行中" : "运行代码",
               onClick: handleRun,
               className:
-                "w-auto px-2 text-white bg-[#2ea043] hover:bg-[#3fb950] disabled:opacity-50",
+                "h-7 w-9 text-white bg-[#2ea043] hover:bg-[#3fb950] disabled:opacity-50",
               disabled: running,
             },
           ]

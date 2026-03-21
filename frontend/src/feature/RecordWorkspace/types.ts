@@ -18,6 +18,7 @@ export type WorkspaceMetric = {
   label: string;
   value: string;
   description?: string;
+  detail?: string;
   badge?: string;
   to?: string;
   tone?: "default" | "blue" | "green" | "orange";

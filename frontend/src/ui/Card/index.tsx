@@ -9,6 +9,8 @@ export type SubLink = {
   label: string;
   /** Navigate to this route when clicked (mutually exclusive with onClick). */
   to?: string;
+  /** Open an external URL in a new tab when clicked. */
+  href?: string;
   icon?: React.ReactNode;
   /** Custom click handler (used when `to` is absent). */
   onClick?: () => void;
@@ -51,6 +53,8 @@ export type CardProps = {
   // ── body ──────────────────────────────────────────────────────────────────
   /** Body description text. */
   desc?: string;
+  /** Short guide phrases rendered in a compact grid below the description. */
+  details?: string[];
 
   // ── card background ───────────────────────────────────────────────────────
   /**
@@ -119,6 +123,7 @@ const Card: React.FC<CardProps> = ({
   subTitle,
   subTitleLink,
   desc,
+  details,
   lightStyle,
   darkStyle,
   level,
@@ -154,6 +159,22 @@ const Card: React.FC<CardProps> = ({
   // ── shared link-button style (hover underline animation) ──────────────────
   const linkBtnBase =
     "relative inline-flex items-center gap-0 p-0 pb-0.5 bg-transparent border-0 text-[var(--brand-blue)] hover:text-[var(--brand-purple)] transition-colors duration-200 cursor-pointer select-none after:content-[''] after:absolute after:left-0 after:bottom-0 after:bg-current after:transition-all after:duration-200";
+
+  const handleSubLink = (link: SubLink) => {
+    if (link.onClick) {
+      link.onClick();
+      return;
+    }
+
+    if (link.to) {
+      navigate(link.to);
+      return;
+    }
+
+    if (link.href) {
+      window.open(link.href, "_blank", "noopener,noreferrer");
+    }
+  };
 
   // ── subTitle element ───────────────────────────────────────────────────────
   const subTitleEl = subTitle ? (
@@ -222,18 +243,40 @@ const Card: React.FC<CardProps> = ({
           </div>
         )}
 
+        {details && details.length > 0 && (
+          <div className="grid grid-cols-2 gap-2">
+            {details.map((detail, idx) => {
+              const gradients = [
+                "bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 border border-blue-200/30 dark:from-blue-400/10 dark:via-purple-400/10 dark:to-pink-400/10 dark:border-blue-400/20",
+                "bg-gradient-to-r from-green-500/20 via-teal-500/20 to-cyan-500/20 border border-green-200/30 dark:from-green-400/10 dark:via-teal-400/10 dark:to-cyan-400/10 dark:border-green-400/20",
+                "bg-gradient-to-r from-orange-500/20 via-red-500/20 to-rose-500/20 border border-orange-200/30 dark:from-orange-400/10 dark:via-red-400/10 dark:to-rose-400/10 dark:border-orange-400/20",
+                "bg-gradient-to-r from-violet-500/20 via-indigo-500/20 to-blue-500/20 border border-violet-200/30 dark:from-violet-400/10 dark:via-indigo-400/10 dark:to-blue-400/10 dark:border-violet-400/20"
+              ];
+              const gradientClass = gradients[idx % gradients.length];
+
+              return (
+                <div
+                  key={`${detail}-${idx}`}
+                  className={`rounded-xl px-3 py-2 text-[12px] font-semibold leading-5 text-gray-700 dark:text-gray-200 transition-all duration-200 hover:scale-105 hover:shadow-lg backdrop-blur-sm ${gradientClass}`}
+                >
+                  {detail}
+                </div>
+              );
+            })}
+          </div>
+        )}
+
         {/* sub-links */}
         {subLinks && subLinks.length > 0 && (
           <div className="flex flex-wrap gap-x-4 gap-y-1 pt-1">
             {subLinks.map((link, idx) => (
               <Button
-                key={link.to ?? idx}
+                key={link.to ?? link.href ?? idx}
                 type="button"
                 className={`${linkBtnBase} after:h-[1.5px] after:w-0 hover:after:w-full text-[14px] font-semibold gap-1.5`}
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (link.onClick) link.onClick();
-                  else if (link.to) navigate(link.to);
+                  handleSubLink(link);
                 }}
               >
                 {link.icon && link.icon}
@@ -304,18 +347,40 @@ const Card: React.FC<CardProps> = ({
         </div>
       )}
 
+      {details && details.length > 0 && (
+        <div className="mb-4 grid grid-cols-2 gap-2">
+          {details.map((detail, idx) => {
+            const gradients = [
+              "bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 border border-blue-200/30 dark:from-blue-400/10 dark:via-purple-400/10 dark:to-pink-400/10 dark:border-blue-400/20",
+              "bg-gradient-to-r from-green-500/20 via-teal-500/20 to-cyan-500/20 border border-green-200/30 dark:from-green-400/10 dark:via-teal-400/10 dark:to-cyan-400/10 dark:border-green-400/20",
+              "bg-gradient-to-r from-orange-500/20 via-red-500/20 to-rose-500/20 border border-orange-200/30 dark:from-orange-400/10 dark:via-red-400/10 dark:to-rose-400/10 dark:border-orange-400/20",
+              "bg-gradient-to-r from-violet-500/20 via-indigo-500/20 to-blue-500/20 border border-violet-200/30 dark:from-violet-400/10 dark:via-indigo-400/10 dark:to-blue-400/10 dark:border-violet-400/20"
+            ];
+            const gradientClass = gradients[idx % gradients.length];
+
+            return (
+              <div
+                key={`${detail}-${idx}`}
+                className={`rounded-xl px-3 py-2 text-[12px] font-semibold leading-5 text-gray-700 dark:text-gray-200 transition-all duration-200 hover:scale-105 hover:shadow-lg backdrop-blur-sm ${gradientClass}`}
+              >
+                {detail}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
       {/* sub-links */}
       {subLinks && subLinks.length > 0 && (
         <div className="flex flex-wrap gap-x-4 gap-y-1 mb-3">
           {subLinks.map((link, idx) => (
             <Button
-              key={link.to ?? idx}
+              key={link.to ?? link.href ?? idx}
               type="button"
               className={`${linkBtnBase} after:h-[1.5px] after:w-0 hover:after:w-full text-[14px] font-semibold gap-1.5`}
               onClick={(e) => {
                 e.stopPropagation();
-                if (link.onClick) link.onClick();
-                else if (link.to) navigate(link.to);
+                handleSubLink(link);
               }}
             >
               {link.icon && link.icon}

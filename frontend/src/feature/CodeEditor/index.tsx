@@ -16,6 +16,7 @@ interface Props {
 	minimap?: boolean;
 	className?: string;
 	showHeader?: boolean;
+	path?: string;
 }
 
 const CodeEditor: React.FC<Props> = ({
@@ -30,6 +31,7 @@ const CodeEditor: React.FC<Props> = ({
 	minimap = false,
 	className = "",
 	showHeader = true,
+	path,
 }) => {
 	const headerTitle = useMemo(() => title ?? "Editor", [title]);
 
@@ -70,6 +72,7 @@ const CodeEditor: React.FC<Props> = ({
 						readOnly={readOnly}
 						height={height}
 						minimap={minimap}
+						path={path}
 					/>
 				)}
 			</div>

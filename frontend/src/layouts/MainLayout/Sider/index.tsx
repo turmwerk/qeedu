@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "./Header";
 import List from "./List";
@@ -61,11 +61,15 @@ const Sider: React.FC<Props> = ({
 }) => {
 	const navigate = useNavigate();
 	const [items, setItems] = useState<SiderItem[]>([]);
-	const widthId = useId().replace(/[:]/g, "");
-	const widthClass = `sider-width-${widthId}`;
 	const [selectedId, setSelectedId] = useState<string | null>(null);
 	const [width, setWidth] = useState(300);
+	const [dragging, setDragging] = useState(false);
 	const isDragging = useRef(false);
+	const frameRef = useRef<number | null>(null);
+	const pendingWidthRef = useRef<number | null>(null);
+	const dragBodyStyleRef = useRef<{ cursor: string; userSelect: string } | null>(
+		null,
+	);
 	const [editingId, setEditingId] = useState<string | null>(null);
 	const [editingTitle, setEditingTitle] = useState("");
 	const [deleteConfirm, setDeleteConfirm] = useState<{ open: boolean; id: string | null; title: string }>({ open: false, id: null, title: "" });
@@ -139,55 +143,75 @@ const Sider: React.FC<Props> = ({
 		[storageKey, updatedEventName]
 	);
 
-	const startDrag = useCallback(() => {
+	const startDrag = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
+		event.preventDefault();
 		isDragging.current = true;
+		setDragging(true);
+		if (event.currentTarget.setPointerCapture) {
+			event.currentTarget.setPointerCapture(event.pointerId);
+		}
+		dragBodyStyleRef.current = {
+			cursor: document.body.style.cursor,
+			userSelect: document.body.style.userSelect,
+		};
+		document.body.style.cursor = "col-resize";
+		document.body.style.userSelect = "none";
 	}, []);
 
 	const stopDrag = useCallback(() => {
+		if (!isDragging.current) return;
 		isDragging.current = false;
+		setDragging(false);
+		if (frameRef.current !== null) {
+			window.cancelAnimationFrame(frameRef.current);
+			frameRef.current = null;
+		}
+		pendingWidthRef.current = null;
+		const previous = dragBodyStyleRef.current;
+		document.body.style.cursor = previous?.cursor ?? "";
+		document.body.style.userSelect = previous?.userSelect ?? "";
+		dragBodyStyleRef.current = null;
 	}, []);
 
 	const onDrag = useCallback((clientX: number) => {
 		if (!isDragging.current) return;
 		const clamped = Math.min(420, Math.max(220, clientX));
-		setWidth(clamped);
-		// 通知 MarkdownEditor 宽度变化
-		window.dispatchEvent(
-			new CustomEvent(widthEventName, {
-				detail: { width: clamped },
-			})
-		);
-	}, [widthEventName]);
+		pendingWidthRef.current = clamped;
+		if (frameRef.current !== null) return;
+		frameRef.current = window.requestAnimationFrame(() => {
+			frameRef.current = null;
+			if (pendingWidthRef.current !== null) {
+				setWidth(pendingWidthRef.current);
+			}
+		});
+	}, []);
 
 
 	useEffect(() => {
-		const onWindowMove = (event: MouseEvent) => {
+		const onWindowMove = (event: PointerEvent) => {
 			if (!isDragging.current) return;
 			onDrag(event.clientX);
 		};
 		const onWindowUp = () => stopDrag();
-		const onWindowTouchMove = (event: TouchEvent) => {
-			if (!isDragging.current) return;
-			const touch = event.touches[0];
-			if (touch) onDrag(touch.clientX);
-		};
-		const onWindowTouchEnd = () => stopDrag();
-		window.addEventListener("mousemove", onWindowMove);
-		window.addEventListener("mouseup", onWindowUp);
-		window.addEventListener("touchmove", onWindowTouchMove, { passive: true });
-		window.addEventListener("touchend", onWindowTouchEnd);
+		window.addEventListener("pointermove", onWindowMove);
+		window.addEventListener("pointerup", onWindowUp);
+		window.addEventListener("pointercancel", onWindowUp);
 		return () => {
-			window.removeEventListener("mousemove", onWindowMove);
-			window.removeEventListener("mouseup", onWindowUp);
-			window.removeEventListener("touchmove", onWindowTouchMove);
-			window.removeEventListener("touchend", onWindowTouchEnd);
+			window.removeEventListener("pointermove", onWindowMove);
+			window.removeEventListener("pointerup", onWindowUp);
+			window.removeEventListener("pointercancel", onWindowUp);
+			stopDrag();
 		};
 	}, [onDrag, stopDrag]);
 
 	const actualWidth = open ? width : 0;
-	const widthStyle = useMemo(
-		() => `.${widthClass} { width: ${actualWidth}px; min-width: ${actualWidth}px; }`,
-		[actualWidth, widthClass]
+	const siderStyle = useMemo(
+		() => ({
+			width: `${actualWidth}px`,
+			minWidth: `${actualWidth}px`,
+			flexBasis: `${actualWidth}px`,
+		}),
+		[actualWidth]
 	);
 
 	useEffect(() => {
@@ -321,11 +345,13 @@ const Sider: React.FC<Props> = ({
 
 	return (
 		<div
-			className={`relative h-full z-[10000] transition-all duration-200 ease-out overflow-hidden ${widthClass}`}
+			className={`relative z-[10000] h-full shrink-0 overflow-hidden ${
+				dragging ? "" : "transition-[width,min-width,flex-basis] duration-200 ease-out"
+			}`}
+			style={siderStyle}
 			data-oid="syllabus-sider"
 		>
-			<style data-oid="sider-width">{widthStyle}</style>
-			<div className="h-full flex flex-col bg-white/[0.58] dark:bg-white/[0.26] border-r-0 dark:border-r dark:border-r-white/[0.28] shadow-[0_8px_30px_rgba(120,90,200,0.14),inset_0_1px_0_rgba(255,255,255,0.74),inset_0_-1px_0_rgba(255,255,255,0.34)] dark:shadow-[0_10px_32px_rgba(0,0,0,0.42),inset_0_1px_0_rgba(255,255,255,0.22),inset_0_-1px_0_rgba(255,255,255,0.12)] backdrop-blur-[40px] backdrop-saturate-[210%]">
+			<div className="flex h-full min-w-0 flex-col bg-white/[0.58] dark:bg-white/[0.26] border-r-0 dark:border-r dark:border-r-white/[0.28] shadow-[0_8px_30px_rgba(120,90,200,0.14),inset_0_1px_0_rgba(255,255,255,0.74),inset_0_-1px_0_rgba(255,255,255,0.34)] dark:shadow-[0_10px_32px_rgba(0,0,0,0.42),inset_0_1px_0_rgba(255,255,255,0.22),inset_0_-1px_0_rgba(255,255,255,0.12)] backdrop-blur-[40px] backdrop-saturate-[210%]">
 				<Header
 					onSearch={() => setListModalOpen(true)}
 					onCreate={() => window.dispatchEvent(new Event(createEventName))}

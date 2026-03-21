@@ -185,8 +185,8 @@ const Dialog: React.FC<DialogProps> & {
   }, []);
 
   return (
-    <div className="flex flex-col gap-3 h-full min-h-0 overflow-visible" data-oid="zx6bwsx">
-      <div className="font-bold text-[var(--brand-text)]" data-oid="o.dphsl">
+    <div className="flex h-full min-h-0 min-w-0 flex-col gap-3 overflow-hidden" data-oid="zx6bwsx">
+      <div className="shrink-0 font-bold text-[var(--brand-text)]" data-oid="o.dphsl">
         {botName}
       </div>
       <MessageList
@@ -197,15 +197,17 @@ const Dialog: React.FC<DialogProps> & {
         onScrollToBottom={() => scrollToBottom("smooth")}
         onEditMessage={handleEditMessage}
       />
-      <InputArea
-        input={input}
-        onInputChange={setInput}
-        onSend={send}
-        onStop={stop}
-        pending={pending}
-        files={files}
-        onFilesChange={setFiles}
-      />
+      <div className="shrink-0">
+        <InputArea
+          input={input}
+          onInputChange={setInput}
+          onSend={send}
+          onStop={stop}
+          pending={pending}
+          files={files}
+          onFilesChange={setFiles}
+        />
+      </div>
     </div>
   );
 };

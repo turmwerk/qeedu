@@ -120,13 +120,16 @@ const ProjectPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const proId = Number(searchParams.get("proId") ?? "1");
   const projectName = PROJECT_NAMES[proId] ?? `项目 ${proId}`;
+  const workspaceKey = Number.isFinite(proId)
+    ? `project:${proId}`
+    : `project:${projectName}`;
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
   return (
-    <WorkspaceProvider projectName={projectName}>
+    <WorkspaceProvider workspaceKey={workspaceKey} projectName={projectName}>
       <ContextMenuProvider>
         <SidebarViewProvider>
           <ProjectPageInner />

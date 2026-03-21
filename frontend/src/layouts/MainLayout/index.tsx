@@ -25,6 +25,32 @@ import StarsLayer from "@/effects/StarsLayer";
 
 const { Content } = Layout;
 
+const scopedWorkbenchRouteBases = [
+  "/research/conference-list",
+  "/research/literature-search",
+  "/research/paper-reader",
+  "/research/paper-writing",
+  "/international/exchange-hub",
+  "/international/matching-lab",
+  "/international/process-flow",
+  "/international/writing-desk",
+  "/international/pre-departure",
+  "/international/cultural-training",
+  "/international/abroad-life",
+  "/international/return-service",
+  "/international/welcome-portal",
+  "/management/process-assistant",
+  "/management/announcement-generator",
+  "/management/materials-center",
+  "/management/student-qa",
+  "/management/dashboard",
+  "/management/timeline",
+] as const;
+
+const scopedWorkbenchRouteExclusions = [
+  "/international/cultural-training/resources",
+] as const;
+
 const MainLayout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -221,13 +247,31 @@ const MainLayout: React.FC = () => {
     });
   }, [workspaceSiders]);
 
+  const isAssignmentReviewDetail = /^\/teaching\/assignment-review\/tasks\/[^/]+(?:\/submissions\/[^/]+)?\/?$/.test(
+    location.pathname,
+  );
+  const isScopedWorkbenchExcluded = scopedWorkbenchRouteExclusions.some(
+    (routeBase) =>
+      location.pathname === routeBase || location.pathname.startsWith(`${routeBase}/`),
+  );
+  const isScopedWorkbenchDetail =
+    !isScopedWorkbenchExcluded &&
+    scopedWorkbenchRouteBases.some(
+      (routeBase) =>
+        location.pathname === routeBase || location.pathname.startsWith(`${routeBase}/`),
+    );
   // 只要路径包含 detail 视为 detail 页面
-  const isDetailPage = /\/detail(\/|$)/.test(location.pathname) || location.pathname.includes("/DetailPage");
+  const isDetailPage =
+    /\/detail(\/|$)/.test(location.pathname) ||
+    location.pathname.includes("/DetailPage") ||
+    isAssignmentReviewDetail ||
+    isScopedWorkbenchDetail;
   const isHomePage = location.pathname === "/";
   const isSyllabusDetail =
     location.pathname.startsWith("/teaching/syllabus") &&
     location.pathname !== "/teaching/syllabus/ListPage";
   const isExamDetail = location.pathname.startsWith("/teaching/exam/detail");
+  const shouldRenderFooterInScrollFlow = !isDetailPage && !isHomePage;
 
   useEffect(() => {
     if (location.pathname === "/teaching/syllabus/ListPage") {
@@ -255,9 +299,15 @@ const MainLayout: React.FC = () => {
       {/* 主题梯度背景 + header/footer 透明 */}
       <style>{`
         .app-root {
+          --main-header-height: 36px;
           background: var(--app-root-bg) !important;
           background-color: var(--app-root-bg-color) !important;
           color: var(--brand-text);
+        }
+        @media (min-width: 640px) {
+          .app-root {
+            --main-header-height: 46px;
+          }
         }
         .main-header, footer {
           background-color: transparent !important;
@@ -345,16 +395,30 @@ const MainLayout: React.FC = () => {
         {/* 右侧内容区域 */}
         <Layout style={{ minWidth: 0 }} className={`flex-1 relative flex flex-col min-h-0 min-w-0 h-full${isDetailPage ? ' bg-white/[0.45] dark:bg-white/[0.06] backdrop-blur-[18px] backdrop-saturate-[160%]' : ''}`}>
           <Content className="m-0 p-0 relative z-10 flex-1 min-h-0 min-w-0" data-oid="gzlcfm-">
-            <div
-              className={`h-full min-h-0 flex flex-col ${isDetailPage ? "overflow-hidden" : "overflow-y-auto overflow-x-hidden"}`}
-              data-oid="giq3cbp"
-              ref={scrollContainerRef}
-            >
-              <div className="flex-1 min-w-0 w-full">
-                <Outlet />
+            {shouldRenderFooterInScrollFlow ? (
+              <div
+                className="h-full min-h-0 overflow-y-auto overflow-x-hidden"
+                data-oid="giq3cbp"
+                ref={scrollContainerRef}
+              >
+                <div className="flex min-h-full flex-col">
+                  <div className="w-full min-w-0 flex-1">
+                    <Outlet />
+                  </div>
+                  <Footer />
+                </div>
               </div>
-              {!isDetailPage && !isHomePage && <Footer />}
-            </div>
+            ) : (
+              <div
+                className={`h-full min-h-0 ${isDetailPage ? "flex flex-col overflow-hidden" : "overflow-y-auto overflow-x-hidden"}`}
+                data-oid="giq3cbp"
+                ref={scrollContainerRef}
+              >
+                <div className={isDetailPage ? "flex-1 min-h-0 min-w-0 w-full" : "w-full min-w-0"}>
+                  <Outlet />
+                </div>
+              </div>
+            )}
             {/* 除了 detail 页面，所有页面都显示 FloatActions */}
             {!isDetailPage && <FloatActions />}
           </Content>

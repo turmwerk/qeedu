@@ -31,6 +31,9 @@ const renderCard = (item: Feature) => {
   );
 };
 
+const gridCols =
+  ADAPTATION_CARDS.length === 4 ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3";
+
 const AdaptationSection: React.FC = () => (
   <div className="w-full min-w-0 overflow-x-hidden">
     <ModuleHub
@@ -38,7 +41,7 @@ const AdaptationSection: React.FC = () => (
       subtitle="文化适应 · 生活 FAQ · 支持入口"
       features={ADAPTATION_CARDS}
       renderFeature={renderCard}
-      gridCols="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+      gridCols={gridCols}
     />
   </div>
 );

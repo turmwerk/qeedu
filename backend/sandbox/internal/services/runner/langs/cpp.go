@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/dieWehmut/nju-edu-ai-system/backend/sandbox/internal/services/runner"
+	"github.com/dieWehmut/nju-edu-ai-system/backend/sandbox/internal/services/runtimeimages"
 )
 
 type Cpp struct{}
@@ -11,7 +12,7 @@ type Cpp struct{}
 func (Cpp) Config() runner.LangConfig {
 	return runner.LangConfig{
 		Language:    "cpp",
-		Image:       "gcc:14",
+		Image:       runtimeimages.Cpp,
 		Filename:    "main.cpp",
 		CompileCmd:  []string{"g++", "-o", "main", "main.cpp", "-lm"},
 		RunCmd:      []string{"./main"},

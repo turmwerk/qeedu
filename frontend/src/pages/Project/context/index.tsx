@@ -1,27 +1,64 @@
 import React, { useEffect } from "react";
 import { create } from "zustand";
 import { type FileTreeNode, type TabItem } from "../EditorArea/types";
+import { inferLanguage } from "../data/languageSupport";
 import { buildMockFileTree } from "../data/mockFileTree";
 import { inferViewType } from "../utils/workspace";
+import { destroyWorkspaceLspSessions } from "@/feature/CodeEditor/CodeCompletion/LSPCompletion/client";
 
-interface RunOutput {
+export interface RunOutput {
   stdout: string;
   stderr: string;
   exitCode: number;
   executionMs: number;
   error: string;
   timestamp: number;
+  status: "running" | "completed";
+  language?: string;
+  filePath?: string;
+  fileName?: string;
+}
+
+export type WorkspaceDiagnosticSeverity =
+  | "error"
+  | "warning"
+  | "information"
+  | "hint";
+
+export interface WorkspaceDiagnostic {
+  id: string;
+  filePath: string;
+  startLine: number;
+  startColumn: number;
+  endLine: number;
+  endColumn: number;
+  severity: WorkspaceDiagnosticSeverity;
+  source?: string;
+  message: string;
+  code?: string;
+}
+
+export interface CreateNodeOptions {
+  anchorPath?: string;
 }
 
 interface WorkspaceState {
+  workspaceKey: string;
   projectName: string;
   fileTree: FileTreeNode;
   tabs: TabItem[];
   activeTabId: string | null;
   runOutput: RunOutput | null;
+  diagnostics: WorkspaceDiagnostic[];
+  diagnosticsByGroup: Record<string, WorkspaceDiagnostic[]>;
   quickOpenOpen: boolean;
   setQuickOpenOpen: (open: boolean) => void;
   setRunOutput: (output: RunOutput | null) => void;
+  setDiagnosticsForGroup: (
+    group: string,
+    diagnostics: WorkspaceDiagnostic[],
+  ) => void;
+  clearDiagnostics: () => void;
   openFileTab: (node: FileTreeNode) => void;
   closeTab: (id: string) => void;
   closeOtherTabs: (id: string) => void;
@@ -31,14 +68,24 @@ interface WorkspaceState {
   setActiveTabId: (id: string | null) => void;
   updateTabContent: (id: string, content: string) => void;
   saveActiveTab: () => void;
-  addFile: (parentPath: string, name: string, open?: boolean) => FileTreeNode | null;
+  addFile: (
+    parentPath: string,
+    name: string,
+    open?: boolean,
+    options?: CreateNodeOptions,
+  ) => FileTreeNode | null;
   addFileWithContent: (
     parentPath: string,
     name: string,
     content: string,
     open?: boolean,
+    options?: CreateNodeOptions,
   ) => FileTreeNode | null;
-  addFolder: (parentPath: string, name: string) => FileTreeNode | null;
+  addFolder: (
+    parentPath: string,
+    name: string,
+    options?: CreateNodeOptions,
+  ) => FileTreeNode | null;
   renameNode: (targetPath: string, newName: string) => void;
   deleteNode: (targetPath: string) => void;
   moveNode: (sourcePath: string, targetPath: string) => void;
@@ -69,19 +116,6 @@ const findNodeByPath = (node: FileTreeNode, path: string): FileTreeNode | null =
   return null;
 };
 
-const inferLanguage = (name: string): string => {
-  const ext = name.split(".").pop()?.toLowerCase() ?? "";
-  if (["ts", "tsx"].includes(ext)) return "typescript";
-  if (["js", "jsx"].includes(ext)) return "javascript";
-  if (["py"].includes(ext)) return "python";
-  if (["md", "markdown"].includes(ext)) return "markdown";
-  if (["json"].includes(ext)) return "json";
-  if (["yml", "yaml"].includes(ext)) return "yaml";
-  if (["html", "htm"].includes(ext)) return "html";
-  if (["css"].includes(ext)) return "css";
-  return "plaintext";
-};
-
 const ensureUniqueName = (name: string, existingNames: string[]): string => {
   if (!existingNames.includes(name)) return name;
   const dotIndex = name.lastIndexOf(".");
@@ -100,17 +134,36 @@ const insertNodeAtPath = (
   node: FileTreeNode,
   parentPath: string,
   newNode: FileTreeNode,
+  insertIndex?: number,
 ): FileTreeNode => {
   if (node.path === parentPath && node.type === "directory") {
-    const children = node.children ? [...node.children, newNode] : [newNode];
+    const children = node.children ? [...node.children] : [];
+    const nextIndex =
+      insertIndex === undefined ||
+      insertIndex < 0 ||
+      insertIndex > children.length
+        ? children.length
+        : insertIndex;
+    children.splice(nextIndex, 0, newNode);
     return { ...node, children };
   }
   if (!node.children) return node;
   const nextChildren = node.children.map((child) =>
-    insertNodeAtPath(child, parentPath, newNode),
+    insertNodeAtPath(child, parentPath, newNode, insertIndex),
   );
   const changed = nextChildren.some((child, idx) => child !== node.children?.[idx]);
   return changed ? { ...node, children: nextChildren } : node;
+};
+
+const resolveInsertIndex = (
+  parent: FileTreeNode,
+  anchorPath?: string,
+): number | undefined => {
+  if (!anchorPath) return undefined;
+  if (anchorPath === parent.path) return 0;
+  const children = parent.children ?? [];
+  const anchorIndex = children.findIndex((child) => child.path === anchorPath);
+  return anchorIndex === -1 ? undefined : anchorIndex + 1;
 };
 
 const removeNodeAtPath = (node: FileTreeNode, targetPath: string): FileTreeNode => {
@@ -159,14 +212,29 @@ const updateFileTreeContent = (
 };
 
 export const useWorkspace = create<WorkspaceState>((set, get) => ({
+  workspaceKey: "",
   projectName: "",
   fileTree: buildMockFileTree(""),
   tabs: [],
   activeTabId: null,
   runOutput: null,
+  diagnostics: [],
+  diagnosticsByGroup: {},
   quickOpenOpen: false,
   setQuickOpenOpen: (open) => set({ quickOpenOpen: open }),
   setRunOutput: (output) => set({ runOutput: output }),
+  setDiagnosticsForGroup: (group, diagnostics) =>
+    set((state) => {
+      const diagnosticsByGroup = {
+        ...state.diagnosticsByGroup,
+        [group]: diagnostics,
+      };
+      return {
+        diagnosticsByGroup,
+        diagnostics: Object.values(diagnosticsByGroup).flat(),
+      };
+    }),
+  clearDiagnostics: () => set({ diagnostics: [], diagnosticsByGroup: {} }),
   openFileTab: (node) => {
     if (node.type === "directory") return;
     set((state) => {
@@ -237,11 +305,12 @@ export const useWorkspace = create<WorkspaceState>((set, get) => ({
       tabs: state.tabs.map((t) => (t.id === activeTabId ? { ...t, isDirty: false } : t)),
     }));
   },
-  addFile: (parentPath, name, open = false) => {
+  addFile: (parentPath, name, open = false, options) => {
     if (!name.trim()) return null;
     const { fileTree, openFileTab } = get();
     const parent = findNodeByPath(fileTree, parentPath);
     if (!parent || parent.type !== "directory") return null;
+    const insertIndex = resolveInsertIndex(parent, options?.anchorPath);
     const uniqueName = ensureUniqueName(
       name.trim(),
       parent.children?.map((child) => child.name) ?? [],
@@ -254,15 +323,18 @@ export const useWorkspace = create<WorkspaceState>((set, get) => ({
       language: inferLanguage(uniqueName),
       content: "",
     };
-    set((state) => ({ fileTree: insertNodeAtPath(state.fileTree, parentPath, node) }));
+    set((state) => ({
+      fileTree: insertNodeAtPath(state.fileTree, parentPath, node, insertIndex),
+    }));
     if (open) openFileTab(node);
     return node;
   },
-  addFileWithContent: (parentPath, name, content, open = false) => {
+  addFileWithContent: (parentPath, name, content, open = false, options) => {
     if (!name.trim()) return null;
     const { fileTree, openFileTab } = get();
     const parent = findNodeByPath(fileTree, parentPath);
     if (!parent || parent.type !== "directory") return null;
+    const insertIndex = resolveInsertIndex(parent, options?.anchorPath);
     const uniqueName = ensureUniqueName(
       name.trim(),
       parent.children?.map((child) => child.name) ?? [],
@@ -275,15 +347,18 @@ export const useWorkspace = create<WorkspaceState>((set, get) => ({
       language: inferLanguage(uniqueName),
       content,
     };
-    set((state) => ({ fileTree: insertNodeAtPath(state.fileTree, parentPath, node) }));
+    set((state) => ({
+      fileTree: insertNodeAtPath(state.fileTree, parentPath, node, insertIndex),
+    }));
     if (open) openFileTab(node);
     return node;
   },
-  addFolder: (parentPath, name) => {
+  addFolder: (parentPath, name, options) => {
     if (!name.trim()) return null;
     const { fileTree } = get();
     const parent = findNodeByPath(fileTree, parentPath);
     if (!parent || parent.type !== "directory") return null;
+    const insertIndex = resolveInsertIndex(parent, options?.anchorPath);
     const uniqueName = ensureUniqueName(
       name.trim(),
       parent.children?.map((child) => child.name) ?? [],
@@ -295,7 +370,9 @@ export const useWorkspace = create<WorkspaceState>((set, get) => ({
       type: "directory",
       children: [],
     };
-    set((state) => ({ fileTree: insertNodeAtPath(state.fileTree, parentPath, node) }));
+    set((state) => ({
+      fileTree: insertNodeAtPath(state.fileTree, parentPath, node, insertIndex),
+    }));
     return node;
   },
   renameNode: (targetPath, newName) => {
@@ -407,7 +484,14 @@ export const useWorkspace = create<WorkspaceState>((set, get) => ({
     set({ fileTree: buildMockFileTree(projectName) });
   },
   loadFileTree: (nextTree) => {
-    set({ fileTree: nextTree, tabs: [], activeTabId: null, runOutput: null });
+    set({
+      fileTree: nextTree,
+      tabs: [],
+      activeTabId: null,
+      runOutput: null,
+      diagnostics: [],
+      diagnosticsByGroup: {},
+    });
   },
   updateFileContents: (updates) => {
     if (updates.length === 0) return;
@@ -430,19 +514,26 @@ export const useWorkspace = create<WorkspaceState>((set, get) => ({
 }));
 
 export const WorkspaceProvider: React.FC<{
+  workspaceKey: string;
   projectName: string;
   children: React.ReactNode;
-}> = ({ projectName, children }) => {
+}> = ({ workspaceKey, projectName, children }) => {
   useEffect(() => {
     useWorkspace.setState({
+      workspaceKey,
       projectName,
       fileTree: buildMockFileTree(projectName),
       tabs: [],
       activeTabId: null,
       runOutput: null,
+      diagnostics: [],
+      diagnosticsByGroup: {},
       quickOpenOpen: false,
     });
-  }, [projectName]);
+    return () => {
+      void destroyWorkspaceLspSessions(workspaceKey);
+    };
+  }, [projectName, workspaceKey]);
 
   return <>{children}</>;
 };

@@ -18,6 +18,7 @@ export interface ListProps<T = any> {
   renderItem: (item: T) => React.ReactNode;
   actions?: ListAction<T>[];
   emptyText?: React.ReactNode;
+  className?: string;
   /** 用于行内重命名时获取初始值 */
   editable?: EditableProps<T>;
   /** 可选：用于生成稳定的 key（默认为索引） */
@@ -41,6 +42,7 @@ function List<T = any>({
   renderItem,
   actions,
   emptyText,
+  className,
   editable,
   keyExtractor,
   onItemClick,
@@ -66,7 +68,7 @@ function List<T = any>({
 
   return (
     <div
-      className="flex flex-col gap-2 sm:gap-3 max-h-[420px] overflow-y-auto overflow-x-hidden"
+      className={`flex flex-col gap-2 sm:gap-3 max-h-[420px] overflow-y-auto overflow-x-hidden ${className || ""}`}
       data-oid="uhdlmu-"
     >
       {items.map((item, idx) => {

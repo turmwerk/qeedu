@@ -1,6 +1,7 @@
 import type { editor, languages, IDisposable, CancellationToken, Position } from "monaco-editor";
 import { CompletionMode } from "./types";
 import { useCompletionStore } from "./completionStore";
+import { createLspCompletionDisposable } from "./LSPCompletion/provider";
 
 const DEBOUNCE_MS = 500;
 
@@ -107,14 +108,20 @@ function createInlineProvider(
 export function setupCompletion(
 	editorInstance: editor.IStandaloneCodeEditor,
 	monaco: typeof import("monaco-editor"),
-	language: string,
+	options: {
+		language: string;
+		path?: string;
+	},
 ): IDisposable {
 	let inlineProviderDisposable: IDisposable | null = null;
+	let completionProviderDisposable: IDisposable | null = null;
 
 	function applyMode(mode: CompletionMode) {
 		// Dispose previous inline provider
 		inlineProviderDisposable?.dispose();
 		inlineProviderDisposable = null;
+		completionProviderDisposable?.dispose();
+		completionProviderDisposable = null;
 
 		const shouldEnableWordBased = mode !== CompletionMode.NONE;
 
@@ -127,9 +134,18 @@ export function setupCompletion(
 		});
 
 		if (mode === CompletionMode.AI) {
-			const provider = createInlineProvider(language);
+			const provider = createInlineProvider(options.language);
 			inlineProviderDisposable =
-				monaco.languages.registerInlineCompletionsProvider(language, provider);
+				monaco.languages.registerInlineCompletionsProvider(options.language, provider);
+		}
+
+		if (mode === CompletionMode.ADVANCED) {
+			completionProviderDisposable = createLspCompletionDisposable(
+				monaco,
+				editorInstance,
+				options.language,
+				options.path,
+			);
 		}
 	}
 
@@ -146,6 +162,8 @@ export function setupCompletion(
 			unsubscribe();
 			inlineProviderDisposable?.dispose();
 			inlineProviderDisposable = null;
+			completionProviderDisposable?.dispose();
+			completionProviderDisposable = null;
 		},
 	};
 }

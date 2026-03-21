@@ -1,4 +1,9 @@
-import React, { useId, useMemo, useRef, useState } from "react";
+import React from "react";
+import {
+  Group as PanelGroup,
+  Panel,
+  Separator as PanelResizeHandle,
+} from "react-resizable-panels";
 
 const SplitSiderLayout: React.FC<{
   left: React.ReactNode;
@@ -20,84 +25,47 @@ const SplitSiderLayout: React.FC<{
   rightClassName,
   ...rest
 }) => {
-  const [split, setSplit] = useState(initialSplit);
-  const isDragging = useRef(false);
-  const wrapRef = useRef<HTMLDivElement | null>(null);
-  const layoutId = useId().replace(/[:]/g, "");
-  const layoutClass = `split-layout-${layoutId}`;
-
-  const startDrag = () => {
-    isDragging.current = true;
-  };
-
-  const stopDrag = () => {
-    isDragging.current = false;
-  };
-
-  const onDrag = (clientX: number) => {
-    const wrap = wrapRef.current;
-    if (!wrap) return;
-    const rect = wrap.getBoundingClientRect();
-    const next = ((clientX - rect.left) / rect.width) * 100;
-    const clamped = Math.min(maxSplit, Math.max(minSplit, next));
-    setSplit(clamped);
-  };
-
-  const onMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (!isDragging.current) return;
-    onDrag(event.clientX);
-  };
-
-  const onTouchMove = (event: React.TouchEvent<HTMLDivElement>) => {
-    if (!isDragging.current) return;
-    onDrag(event.touches[0].clientX);
-  };
-
-  const columns = useMemo(() => `${split}% 6px ${100 - split}%`, [split]);
+  const leftDefaultSize = `${initialSplit}%`;
+  const leftMinSize = `${minSplit}%`;
+  const leftMaxSize = `${maxSplit}%`;
+  const rightDefaultSize = `${100 - initialSplit}%`;
+  const rightMinSize = `${100 - maxSplit}%`;
+  const rightMaxSize = `${100 - minSplit}%`;
 
   return (
-    <>
-      <style data-oid="split:cols">{`.${layoutClass} { grid-template-columns: ${columns}; }`}</style>
-      <div
-        ref={wrapRef}
-        className={`grid items-start gap-0 min-h-full ${layoutClass} ${className || ""}`}
-        onMouseMove={onMouseMove}
-        onMouseUp={stopDrag}
-        onMouseLeave={stopDrag}
-        onTouchMove={onTouchMove}
-        onTouchEnd={stopDrag}
-        {...rest}
+    <PanelGroup
+      orientation="horizontal"
+      resizeTargetMinimumSize={{ coarse: 24, fine: 12 }}
+      className={["min-w-0", className].filter(Boolean).join(" ")}
+      {...rest}
+    >
+      <Panel
+        defaultSize={leftDefaultSize}
+        minSize={leftMinSize}
+        maxSize={leftMaxSize}
+        className={leftClassName || "flex min-w-0 flex-col"}
       >
-        <div
-          className={
-            leftClassName || "flex min-w-0 flex-col"
-          }
-        >
-          {left}
-        </div>
+        {left}
+      </Panel>
 
-        <div
-          className="relative"
-          onMouseDown={startDrag}
-          onTouchStart={startDrag}
-          role="separator"
-          aria-label="Resize panes"
-          aria-orientation="vertical"
-          data-oid="g75ffu_"
-        >
-          <div className="absolute inset-y-6 left-1/2 -translate-x-1/2 w-[2px] rounded-full bg-purple-300/70" />
-          <div className="absolute inset-0 cursor-col-resize" />
+      <PanelResizeHandle
+        className="group relative z-10 w-0 shrink-0 touch-none overflow-visible"
+        data-oid="g75ffu_"
+      >
+        <div className="absolute inset-y-0 left-1/2 w-3 -translate-x-1/2 cursor-col-resize">
+          <div className="absolute inset-y-4 left-1/2 w-px -translate-x-1/2 rounded-full bg-slate-300/80 transition-colors group-hover:bg-[#007acc]/80 dark:bg-white/20 dark:group-hover:bg-[#007acc]/80" />
         </div>
+      </PanelResizeHandle>
 
-        <div
-          className={
-            rightClassName || "flex min-w-0 flex-col"
-          }
-        >
-          {right}
-        </div>
-      </div>
-    </>
+      <Panel
+        defaultSize={rightDefaultSize}
+        minSize={rightMinSize}
+        maxSize={rightMaxSize}
+        className={rightClassName || "flex min-w-0 flex-col"}
+      >
+        {right}
+      </Panel>
+    </PanelGroup>
   );
 };
 

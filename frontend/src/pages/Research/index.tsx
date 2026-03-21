@@ -20,7 +20,7 @@ const ResearchHub: React.FC = () => {
             desc={item.desc}
             to={item.to as string}
             icon={item.icon}
-            subLinks={item.subLinks}
+            details={item.details}
           />
         ))}
       </div>

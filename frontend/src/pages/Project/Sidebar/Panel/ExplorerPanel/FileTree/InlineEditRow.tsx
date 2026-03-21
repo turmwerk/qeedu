@@ -30,6 +30,10 @@ const InlineEditRow: React.FC<InlineEditRowProps> = ({
   }, [initialValue]);
 
   useEffect(() => {
+    resolvedRef.current = false;
+  }, [initialValue, variant]);
+
+  useEffect(() => {
     const input = inputRef.current;
     if (!input) return;
     input.focus();

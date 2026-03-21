@@ -6,6 +6,8 @@ import "monaco-editor/esm/vs/editor/editor.all";
 // @ts-ignore
 import "monaco-editor/esm/vs/basic-languages/markdown/markdown.contribution";
 import { setupCompletion } from "@/feature/CodeEditor/CodeCompletion/CompletionController";
+import { setupLspDiagnostics } from "@/feature/CodeEditor/CodeCompletion/LSPCompletion/diagnostics";
+import { useWorkspace } from "@/pages/Project/context";
 
 interface Props {
 	value: string;
@@ -32,13 +34,49 @@ const MonacoEditor: React.FC<Props> = ({
 	path,
 }) => {
 	const completionRef = useRef<IDisposable | null>(null);
+	const diagnosticsCleanupRef = useRef<(() => void) | null>(null);
+	const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
+	const monacoRef = useRef<typeof import("monaco-editor") | null>(null);
+	const workspaceKey = useWorkspace((state) => state.workspaceKey);
 
 	useEffect(() => {
 		return () => {
 			completionRef.current?.dispose();
 			completionRef.current = null;
+			diagnosticsCleanupRef.current?.();
+			diagnosticsCleanupRef.current = null;
 		};
 	}, []);
+
+	useEffect(() => {
+		if (!editorRef.current || !monacoRef.current) return;
+		completionRef.current?.dispose();
+		completionRef.current = setupCompletion(editorRef.current, monacoRef.current, {
+			language,
+			path,
+		});
+		return () => {
+			completionRef.current?.dispose();
+			completionRef.current = null;
+		};
+	}, [language, path]);
+
+	useEffect(() => {
+		if (!editorRef.current || !monacoRef.current) return;
+		diagnosticsCleanupRef.current?.();
+		diagnosticsCleanupRef.current = setupLspDiagnostics({
+			editorInstance: editorRef.current,
+			monaco: monacoRef.current,
+			language,
+			path,
+			readOnly,
+			workspaceKey,
+		});
+		return () => {
+			diagnosticsCleanupRef.current?.();
+			diagnosticsCleanupRef.current = null;
+		};
+	}, [language, path, readOnly, workspaceKey]);
 
 	const options: editor.IStandaloneEditorConstructionOptions = useMemo(
 		() => ({
@@ -85,6 +123,9 @@ const MonacoEditor: React.FC<Props> = ({
 	);
 
 	const handleMount = (editorInstance: editor.IStandaloneCodeEditor, monaco: typeof import("monaco-editor")) => {
+		editorRef.current = editorInstance;
+		monacoRef.current = monaco;
+
 		if (!themeDefined) {
 			themeDefined = true;
 			monaco.editor.defineTheme("vscode-dark-markdown", {
@@ -224,10 +265,6 @@ const MonacoEditor: React.FC<Props> = ({
 				},
 			});
 		}
-
-		// Set up code completion
-		completionRef.current?.dispose();
-		completionRef.current = setupCompletion(editorInstance, monaco, language);
 	};
 
 	return (

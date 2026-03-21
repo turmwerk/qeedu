@@ -31,11 +31,11 @@ const SearchBar: React.FC<SearchBarProps> = ({
 	const leftPad = leftSlot ? "pl-9" : "pl-3";
 	const rightPad = rightSlot ? "pr-9" : "pr-3";
 	const iconButtonClass =
-		"flex items-center justify-center w-9 h-9 border border-transparent dark:border-white/[0.45] bg-white dark:bg-white/10 text-[var(--brand-blue)] transition-[background,border-color,color] hover:text-[var(--brand-purple)] hover:bg-[var(--brand-accent-soft)] dark:hover:bg-white/18 hover:border-[var(--brand-purple)]";
+		"flex items-center justify-center w-12 h-12 border border-transparent dark:border-white/[0.45] bg-white dark:bg-white/10 text-[var(--brand-blue)] transition-[background,border-color,color] hover:text-[var(--brand-purple)] hover:bg-[var(--brand-accent-soft)] dark:hover:bg-white/18 hover:border-[var(--brand-purple)]";
 
 	const inputNode = (
 		<div
-			className={`relative flex items-center h-9 rounded-xl border border-transparent dark:border-white/[0.45] bg-white/90 shadow-[0_6px_16px_rgba(15,23,42,0.08)] transition-[border-color,box-shadow] hover:border-[var(--brand-accent)] focus-within:border-[var(--brand-accent)] focus-within:shadow-[0_8px_20px_rgba(59,130,246,0.16)] ${
+			className={`relative flex items-center h-12 rounded-xl border border-transparent dark:border-white/[0.45] bg-white/90 shadow-[0_6px_16px_rgba(15,23,42,0.08)] transition-[border-color,box-shadow] hover:border-[var(--brand-accent)] focus-within:border-[var(--brand-accent)] focus-within:shadow-[0_8px_20px_rgba(59,130,246,0.16)] ${
 				className || ""
 			}`}
 		>
@@ -73,9 +73,9 @@ const SearchBar: React.FC<SearchBarProps> = ({
 	const hintText = `${placeholder}（输入即搜索）`;
 
 	return (
-		<div className="relative flex items-center justify-end h-9">
+		<div className="relative flex items-center justify-end h-12">
 			<div
-				className={`absolute right-9 top-0 h-9 overflow-hidden transition-[width,opacity,transform] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+				className={`absolute right-12 top-0 h-12 overflow-hidden transition-[width,opacity,transform] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
 					expanded
 						? "w-[160px] sm:w-[260px] opacity-100 translate-x-0"
 						: "w-0 opacity-0 -translate-x-2"

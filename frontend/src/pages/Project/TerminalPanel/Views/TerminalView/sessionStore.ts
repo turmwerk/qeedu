@@ -1,12 +1,7 @@
 import { create } from "zustand";
 import bashProfile from "./Bash";
-import powershellProfile from "./Powershell";
-import cmdProfile from "./Cmd";
 
-export type TerminalProfile =
-  | typeof bashProfile
-  | typeof powershellProfile
-  | typeof cmdProfile;
+export type TerminalProfile = typeof bashProfile;
 
 export type TerminalSession = {
   id: string;
@@ -16,8 +11,6 @@ export type TerminalSession = {
 
 export const terminalProfiles: TerminalProfile[] = [
   bashProfile,
-  powershellProfile,
-  cmdProfile,
 ];
 
 const createSessionMeta = (
@@ -61,13 +54,14 @@ export const useTerminalSessionStore = create<TerminalSessionState>(
         1;
       const next = createSessionMeta(targetProfile, count);
       set((state) => ({
-        sessions: [...state.sessions, next],
+        sessions: [next, ...state.sessions],
         activeId: next.id,
       }));
       return next;
     },
     removeSession: (id) => {
       const current = get().sessions;
+      const removedIndex = current.findIndex((session) => session.id === id);
       const next = current.filter((s) => s.id !== id);
       if (next.length === 0) {
         const fallback = createSessionMeta(bashProfile, 1);
@@ -77,7 +71,9 @@ export const useTerminalSessionStore = create<TerminalSessionState>(
       const isActive = get().activeId === id;
       set({
         sessions: next,
-        activeId: isActive ? next[next.length - 1]?.id ?? null : get().activeId,
+        activeId: isActive
+          ? next[Math.min(removedIndex, next.length - 1)]?.id ?? null
+          : get().activeId,
       });
     },
   }),
