@@ -80,35 +80,77 @@ func isMissingImageError(err error) bool {
 	return err != nil && strings.Contains(err.Error(), "No such image")
 }
 
-func runtimeImageContext(image string) (string, bool) {
-	root := "/sandbox-runtime"
-	contexts := map[string]string{
-		"nju-sandbox-python:latest":         filepath.Join(root, "python"),
-		"nju-sandbox-javascript:latest":     filepath.Join(root, "javascript"),
-		"nju-sandbox-typescript:latest":     filepath.Join(root, "typescript"),
-		"nju-sandbox-go:latest":             filepath.Join(root, "go"),
-		"nju-sandbox-java:latest":           filepath.Join(root, "java"),
-		"nju-sandbox-c:latest":              filepath.Join(root, "c"),
-		"nju-sandbox-cpp:latest":            filepath.Join(root, "cpp"),
-		"nju-sandbox-rust:latest":           filepath.Join(root, "rust"),
-		"nju-sandbox-csharp:latest":         filepath.Join(root, "csharp"),
-		"nju-sandbox-terminal-bash:latest":  filepath.Join(root, "terminal-bash"),
-		"nju-sandbox-lsp-go:latest":         filepath.Join(root, "lsp", "go"),
-		"nju-sandbox-lsp-python:latest":     filepath.Join(root, "lsp", "python"),
-		"nju-sandbox-lsp-typescript:latest": filepath.Join(root, "lsp", "typescript"),
-		"nju-sandbox-lsp-java:latest":       filepath.Join(root, "lsp", "java"),
-		"nju-sandbox-lsp-cpp:latest":        filepath.Join(root, "lsp", "cpp"),
-		"nju-sandbox-lsp-rust:latest":       filepath.Join(root, "lsp", "rust"),
-		"nju-sandbox-lsp-csharp:latest":     filepath.Join(root, "lsp", "csharp"),
+func runtimeImageRoot() (string, bool) {
+	candidates := []string{}
+
+	if envRoot := strings.TrimSpace(os.Getenv("SANDBOX_RUNTIME_ROOT")); envRoot != "" {
+		candidates = append(candidates, envRoot)
 	}
-	contextDir, ok := contexts[image]
-	return contextDir, ok
+
+	candidates = append(candidates,
+		"/sandbox-runtime",
+		filepath.Join(".", "sandbox", "runtime"),
+		filepath.Join(".", "backend", "sandbox", "runtime"),
+		filepath.Join(".", "runtime"),
+	)
+
+	for _, candidate := range candidates {
+		info, err := os.Stat(candidate)
+		if err == nil && info.IsDir() {
+			absPath, absErr := filepath.Abs(candidate)
+			if absErr == nil {
+				return absPath, true
+			}
+			return candidate, true
+		}
+	}
+
+	return "", false
+}
+
+func runtimeImageSubdir(image string) (string, bool) {
+	subdirs := map[string]string{
+		"nju-sandbox-python:latest":         "python",
+		"nju-sandbox-javascript:latest":     "javascript",
+		"nju-sandbox-typescript:latest":     "typescript",
+		"nju-sandbox-go:latest":             "go",
+		"nju-sandbox-java:latest":           "java",
+		"nju-sandbox-c:latest":              "c",
+		"nju-sandbox-cpp:latest":            "cpp",
+		"nju-sandbox-rust:latest":           "rust",
+		"nju-sandbox-csharp:latest":         "csharp",
+		"nju-sandbox-terminal-bash:latest":  "terminal-bash",
+		"nju-sandbox-lsp-go:latest":         filepath.Join("lsp", "go"),
+		"nju-sandbox-lsp-python:latest":     filepath.Join("lsp", "python"),
+		"nju-sandbox-lsp-typescript:latest": filepath.Join("lsp", "typescript"),
+		"nju-sandbox-lsp-java:latest":       filepath.Join("lsp", "java"),
+		"nju-sandbox-lsp-cpp:latest":        filepath.Join("lsp", "cpp"),
+		"nju-sandbox-lsp-rust:latest":       filepath.Join("lsp", "rust"),
+		"nju-sandbox-lsp-csharp:latest":     filepath.Join("lsp", "csharp"),
+	}
+	subdir, ok := subdirs[image]
+	return subdir, ok
+}
+
+func runtimeImageContext(image string) (string, bool) {
+	root, ok := runtimeImageRoot()
+	if !ok {
+		return "", false
+	}
+	subdir, ok := runtimeImageSubdir(image)
+	if !ok {
+		return "", false
+	}
+	return filepath.Join(root, subdir), true
 }
 
 func buildRuntimeImage(ctx context.Context, image string) error {
+	if _, ok := runtimeImageSubdir(image); !ok {
+		return fmt.Errorf("unknown runtime image %s", image)
+	}
 	contextDir, ok := runtimeImageContext(image)
 	if !ok {
-		return fmt.Errorf("unknown runtime image %s", image)
+		return fmt.Errorf("sandbox runtime root not found for %s; set SANDBOX_RUNTIME_ROOT or run the sandbox service from the repository root/backend directory", image)
 	}
 
 	cmd := exec.CommandContext(ctx, "docker", "build", "-t", image, contextDir)
@@ -125,7 +167,7 @@ func (c *Client) EnsureImage(ctx context.Context, image string) error {
 		return nil
 	}
 
-	if _, ok := runtimeImageContext(image); ok {
+	if _, ok := runtimeImageSubdir(image); ok {
 		return buildRuntimeImage(ctx, image)
 	}
 
