@@ -176,6 +176,31 @@ const Card: React.FC<CardProps> = ({
     }
   };
 
+  const handleTitleClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (!titleLink) return;
+    event.stopPropagation();
+    if (onClick) {
+      onClick();
+      return;
+    }
+    navigate(titleLink);
+  };
+
+  const handleTitleKeyDown = (
+    event: React.KeyboardEvent<HTMLDivElement>,
+  ) => {
+    if (!titleLink) return;
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      event.stopPropagation();
+      if (onClick) {
+        onClick();
+        return;
+      }
+      navigate(titleLink);
+    }
+  };
+
   // ── subTitle element ───────────────────────────────────────────────────────
   const subTitleEl = subTitle ? (
     subTitleLink ? (
@@ -216,10 +241,10 @@ const Card: React.FC<CardProps> = ({
               : ""
           }`}
           style={titleLink && icon ? { paddingLeft: 0 } : undefined}
-          onClick={titleLink ? (e) => { e.stopPropagation(); navigate(titleLink); } : undefined}
+          onClick={titleLink ? handleTitleClick : undefined}
           role={titleLink ? "button" : undefined}
           tabIndex={titleLink ? 0 : undefined}
-          onKeyDown={titleLink ? (e) => { if (e.key === "Enter" || e.key === " ") navigate(titleLink!); } : undefined}
+          onKeyDown={titleLink ? handleTitleKeyDown : undefined}
         >
           {icon && (
             <span className="shrink-0 text-[16px] sm:text-[22px] leading-none transition-colors duration-200">
