@@ -392,11 +392,11 @@ export const homeSearchEntries: GlobalSearchEntry[] = [
   {
     key: "home-page",
     title: "首页",
-    desc: "南京大学教育 AI 首页功能总览。",
+    desc: "面向高校全角色、全场景的 AI 原生智能体平台首页功能总览。",
     to: "/",
     kind: "page",
     scope: "全局",
-    keywords: ["功能总览", "模块入口", "南京大学教育AI"],
+    keywords: ["功能总览", "模块入口", "Qeedu", "启育"],
   },
 ];
 

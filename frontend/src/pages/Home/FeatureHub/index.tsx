@@ -70,8 +70,8 @@ const FeatureHub: React.FC = () => {
 
   return (
     <ModuleHub
-      headline="nju-edu-ai-system"
-      subtitle="南京大学教育AI"
+      headline="Qeedu"
+      subtitle="面向高校全角色、全场景的 AI 原生智能体平台"
       features={features}
       gridCols="grid-cols-2 xl:grid-cols-3"
     />

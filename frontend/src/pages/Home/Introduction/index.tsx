@@ -64,10 +64,10 @@ const Introduction: React.FC<IntroductionProps> = ({ onScrollToNext }) => {
       <div className="flex-1 flex flex-col items-center justify-center w-full h-full gap-6 px-4">
         <div className="-mt-8 flex flex-col items-center">
           <h1 className="text-[48px] font-black text-[var(--brand-blue)] text-center mb-2 select-none">
-            南京大学教育AI应用
+            Qeedu · 启育
           </h1>
           <div className="text-[20px] text-[#666] text-center select-none">
-            AI 赋能学习、教学、科研与管理
+            面向高校全角色、全场景的 AI 原生智能体平台
           </div>
         </div>
         <div className="mt-2 grid w-full max-w-[1120px] grid-cols-1 justify-items-center gap-3 sm:grid-cols-[minmax(0,500px)_minmax(0,500px)] sm:justify-center">

@@ -23,7 +23,7 @@ export const getRepoLastCommitTime = async (): Promise<string | null> => {
 
     const response = await octokit.repos.listCommits({
       owner: "dieWehmut",
-      repo: "nju-edu-ai-system",
+      repo: "edu-ai",
       per_page: 1,
     });
 
