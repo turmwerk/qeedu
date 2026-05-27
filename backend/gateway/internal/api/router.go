@@ -17,6 +17,7 @@ func RegisterRoutes(r *gin.Engine) {
 	r.HEAD("/health", func(c *gin.Context) { c.Status(200) })
 	r.GET("/ready", func(c *gin.Context) { c.String(200, "Ready") })
 	r.HEAD("/ready", func(c *gin.Context) { c.Status(200) })
+	registerDocsRoutes(r)
 
 	// 业务 API
 	v1 := r.Group("/api/v1")
