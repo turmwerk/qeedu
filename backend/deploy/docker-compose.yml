@@ -1,7 +1,7 @@
 services:
   mysql:
     image: mysql:8
-    container_name: nju-mysql
+    container_name: edu-ai-mysql
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: "123456"
@@ -22,7 +22,7 @@ services:
       context: ../
       dockerfile: user-services/Dockerfile
       network: host
-    container_name: nju-user-services
+    container_name: edu-ai-user-services
     restart: unless-stopped
     expose:
       - "50051"
@@ -38,7 +38,7 @@ services:
       context: ../
       dockerfile: sandbox/Dockerfile
       network: host
-    container_name: nju-sandbox
+    container_name: edu-ai-sandbox
     restart: unless-stopped
     expose:
       - "50052"
@@ -52,7 +52,7 @@ services:
     build:
       context: ../
       dockerfile: ai-copilot/Dockerfile
-    container_name: nju-ai-copilot
+    container_name: edu-ai-copilot
     restart: unless-stopped
     expose:
       - "50053"
@@ -65,7 +65,7 @@ services:
     build:
       context: ../
       dockerfile: ai-chat/Dockerfile
-    container_name: nju-ai-chat
+    container_name: edu-ai-chat
     restart: unless-stopped
     expose:
       - "50054"
@@ -79,7 +79,7 @@ services:
       context: ../
       dockerfile: gateway/Dockerfile
       network: host
-    container_name: nju-gateway
+    container_name: edu-ai-gateway
     restart: unless-stopped
     ports:
       - "8080:8080"

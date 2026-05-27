@@ -64,7 +64,7 @@ func TestRuntimeImageContextFallsBackToRepoLayout(t *testing.T) {
 	}
 	t.Setenv("SANDBOX_RUNTIME_ROOT", "")
 
-	contextDir, ok := runtimeImageContext("nju-sandbox-python:latest")
+	contextDir, ok := runtimeImageContext("edu-ai-sandbox-python:latest")
 	if !ok {
 		t.Fatal("expected runtime image context to resolve from repo layout")
 	}
