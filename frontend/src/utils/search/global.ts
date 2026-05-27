@@ -396,7 +396,7 @@ export const homeSearchEntries: GlobalSearchEntry[] = [
     to: "/",
     kind: "page",
     scope: "全局",
-    keywords: ["功能总览", "模块入口", "Qeedu", "启育"],
+    keywords: ["功能总览", "模块入口", "启育·QeEdu"],
   },
 ];
 

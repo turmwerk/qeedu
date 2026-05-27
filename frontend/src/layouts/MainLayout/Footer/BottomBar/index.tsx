@@ -37,7 +37,7 @@ const BottomBar: React.FC = () => {
           <div className="font-mono">Uptime: {uptime}</div>
         </div>
         <div className="font-medium opacity-80 tracking-wide">
-          © 2026 Qeedu. All Rights Reserved.
+          © 2026 启育·QeEdu. All Rights Reserved.
         </div>
       </div>
     </div>

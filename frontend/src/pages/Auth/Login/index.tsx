@@ -13,6 +13,7 @@ import GoogleIcon from "@/ui/Icon/GoogleIcon";
 import MailIcon from "@/ui/Icon/MailIcon";
 import UserIcon from "@/ui/Icon/UserIcon";
 import EnterIcon from "@/ui/Icon/EnterIcon";
+import { apiUrl } from "@/api/config";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -116,7 +117,7 @@ export default function Login() {
               type="button"
               className={primaryButtonClass}
               onClick={() => {
-                window.location.href = "/api/v1/auth/github";
+                window.location.href = apiUrl("/auth/github");
               }}
             >
               <GitHubIcon />
@@ -126,7 +127,7 @@ export default function Login() {
               type="button"
               className={primaryButtonClass}
               onClick={() => {
-                window.location.href = "/api/v1/auth/google";
+                window.location.href = apiUrl("/auth/google");
               }}
             >
               <GoogleIcon />

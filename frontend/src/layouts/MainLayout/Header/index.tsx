@@ -297,7 +297,7 @@ const MainHeader: React.FC = () => {
         {isHomePage && (
           <span className="inline-flex items-center gap-2 text-[var(--brand-blue)] select-none">
             <HomeOutlinedIcon style={{ fontSize: 20 }} />
-            <span className="text-[16px] sm:text-[18px] font-bold tracking-wide">Qeedu · 启育</span>
+            <span className="text-[16px] sm:text-[18px] font-bold tracking-wide">启育·QeEdu</span>
           </span>
         )}
       </div>

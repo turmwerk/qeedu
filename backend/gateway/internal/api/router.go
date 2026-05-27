@@ -11,8 +11,12 @@ import (
 
 func RegisterRoutes(r *gin.Engine) {
 	// 基础探针 (K8s / Docker / Nginx health check)
+	r.GET("/", func(c *gin.Context) { c.String(200, "OK") })
+	r.HEAD("/", func(c *gin.Context) { c.Status(200) })
 	r.GET("/health", func(c *gin.Context) { c.String(200, "OK") })
+	r.HEAD("/health", func(c *gin.Context) { c.Status(200) })
 	r.GET("/ready", func(c *gin.Context) { c.String(200, "Ready") })
+	r.HEAD("/ready", func(c *gin.Context) { c.Status(200) })
 
 	// 业务 API
 	v1 := r.Group("/api/v1")

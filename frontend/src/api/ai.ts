@@ -1,3 +1,5 @@
+import { apiUrl } from "./config";
+
 export interface ChatMessage {
 	role: "user" | "assistant";
 	content: string;
@@ -51,7 +53,7 @@ function createStreamRequest(
 
 	(async () => {
 		try {
-			const res = await fetch(endpoint, {
+			const res = await fetch(apiUrl(endpoint), {
 				method: "POST",
 				headers: getAuthHeaders(),
 				body: JSON.stringify(body),
@@ -102,7 +104,7 @@ function createStreamRequest(
 export function chatStream(options: ChatStreamOptions): AbortController {
 	const { messages, file_context, language, onDelta, onDone, onError } = options;
 	return createStreamRequest(
-		"/api/v1/ai/chat",
+		"/ai/chat",
 		{ messages, file_context, language },
 		onDelta,
 		onDone,
@@ -125,7 +127,7 @@ export function customChatStream(options: CustomChatStreamOptions): AbortControl
  * Request code completion (non-streaming).
  */
 export async function complete(req: CompleteRequest): Promise<CompleteResponse> {
-	const res = await fetch("/api/v1/ai/complete", {
+	const res = await fetch(apiUrl("/ai/complete"), {
 		method: "POST",
 		headers: getAuthHeaders(),
 		body: JSON.stringify(req),
@@ -153,7 +155,7 @@ export function fixBugStream(options: FixBugStreamOptions): AbortController {
 
 	(async () => {
 		try {
-			const res = await fetch("/api/v1/ai/fix", {
+			const res = await fetch(apiUrl("/ai/fix"), {
 				method: "POST",
 				headers: getAuthHeaders(),
 				body: JSON.stringify({ code, error_message, language }),

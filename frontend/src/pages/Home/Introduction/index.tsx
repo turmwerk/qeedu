@@ -64,7 +64,7 @@ const Introduction: React.FC<IntroductionProps> = ({ onScrollToNext }) => {
       <div className="flex-1 flex flex-col items-center justify-center w-full h-full gap-6 px-4">
         <div className="-mt-8 flex flex-col items-center">
           <h1 className="text-[48px] font-black text-[var(--brand-blue)] text-center mb-2 select-none">
-            Qeedu · 启育
+            启育·QeEdu
           </h1>
           <div className="text-[20px] text-[#666] text-center select-none">
             面向高校全角色、全场景的 AI 原生智能体平台

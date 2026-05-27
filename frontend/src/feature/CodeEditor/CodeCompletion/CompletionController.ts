@@ -2,6 +2,7 @@ import type { editor, languages, IDisposable, CancellationToken, Position } from
 import { CompletionMode } from "./types";
 import { useCompletionStore } from "./completionStore";
 import { createLspCompletionDisposable } from "./LSPCompletion/provider";
+import { apiUrl } from "@/api/config";
 
 const DEBOUNCE_MS = 500;
 
@@ -13,7 +14,7 @@ async function fetchCompletion(
 	signal: AbortSignal,
 ): Promise<string> {
 	const token = localStorage.getItem("token") ?? "";
-	const res = await fetch("/api/v1/ai/complete", {
+	const res = await fetch(apiUrl("/ai/complete"), {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
