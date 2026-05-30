@@ -19,8 +19,10 @@ class AIChatServicer(ai_chat_pb2_grpc.AIChatServiceServicer):
                 yield ai_chat_pb2.ChatResponse(delta=delta, done=False)
             yield ai_chat_pb2.ChatResponse(delta="", done=True)
         except Exception as e:
-            logger.error("Chat error: %s", e)
-            yield ai_chat_pb2.ChatResponse(delta=f"\n\n[Error: {e}]", done=True)
+            logger.exception("Chat error")
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details(str(e))
+            return
 
     def FixBug(self, request, context):
         try:
@@ -28,8 +30,10 @@ class AIChatServicer(ai_chat_pb2_grpc.AIChatServiceServicer):
                 yield ai_chat_pb2.FixBugResponse(delta=delta, done=False)
             yield ai_chat_pb2.FixBugResponse(delta="", done=True)
         except Exception as e:
-            logger.error("FixBug error: %s", e)
-            yield ai_chat_pb2.FixBugResponse(delta=f"\n\n[Error: {e}]", done=True)
+            logger.exception("FixBug error")
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details(str(e))
+            return
 
 
 def create_server(port: int) -> grpc.Server:

@@ -1,12 +1,11 @@
 package ai
 
 import (
-	"fmt"
 	"io"
 	"net/http"
 
-	aichatv1 "github.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/ai-chat/v1"
 	aiChatRPC "github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/rpc/ai-chat"
+	aichatv1 "github.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/ai-chat/v1"
 	"github.com/gin-gonic/gin"
 )
 
@@ -41,14 +40,23 @@ func FixBug(c *gin.Context) {
 		select {
 		case resp, ok := <-dataCh:
 			if !ok {
-				fmt.Fprintf(w, "data: [DONE]\n\n")
+				writeSSEDone(w)
 				return false
 			}
-			fmt.Fprintf(w, "data: %s\n\n", resp.Delta)
+			if resp.Done {
+				if resp.Delta != "" {
+					writeSSEPayload(w, gin.H{"delta": resp.Delta})
+				}
+				writeSSEDone(w)
+				return false
+			}
+			if resp.Delta != "" {
+				writeSSEPayload(w, gin.H{"delta": resp.Delta})
+			}
 			return true
 		case err, ok := <-errCh:
 			if ok && err != nil {
-				fmt.Fprintf(w, "data: [ERROR] %s\n\n", err.Error())
+				writeSSEError(w, err)
 			}
 			return false
 		}

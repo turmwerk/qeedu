@@ -3,7 +3,7 @@
 import logging
 from typing import Generator
 
-from app.llm.client import create_client
+from app.llm.client import stream_chat_completion
 from app.llm.prompt import CHAT_SYSTEM
 from configs.llm import LLM_MODEL, LLM_TEMPERATURE, LLM_MAX_TOKENS
 
@@ -15,18 +15,6 @@ def chat_stream(
     file_context: str = "",
     language: str = "",
 ) -> Generator[str, None, None]:
-    """Yield streaming deltas for a chat conversation.
-
-    Args:
-        messages: Conversation history [{"role": ..., "content": ...}].
-        file_context: Optional current file content for context.
-        language: Programming language of the file context.
-
-    Yields:
-        Text delta strings.
-    """
-    client = create_client()
-
     llm_messages: list[dict[str, str]] = [{"role": "system", "content": CHAT_SYSTEM}]
 
     if file_context:
@@ -35,15 +23,15 @@ def chat_stream(
 
     llm_messages.extend(messages)
 
-    stream = client.chat.completions.create(
-        model=LLM_MODEL,
-        messages=llm_messages,
-        max_tokens=LLM_MAX_TOKENS,
-        temperature=LLM_TEMPERATURE,
-        stream=True,
+    logger.info(
+        "Chat stream requested: model=%s, messages=%d, has_file_context=%s",
+        LLM_MODEL,
+        len(messages),
+        bool(file_context),
     )
 
-    for chunk in stream:
-        delta = chunk.choices[0].delta
-        if delta.content:
-            yield delta.content
+    yield from stream_chat_completion(
+        llm_messages,
+        temperature=LLM_TEMPERATURE,
+        max_tokens=LLM_MAX_TOKENS,
+    )

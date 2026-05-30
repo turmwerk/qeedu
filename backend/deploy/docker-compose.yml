@@ -56,8 +56,8 @@ services:
     restart: unless-stopped
     expose:
       - "50053"
-    env_file:
-      - ../.env
+    volumes:
+      - ../configs/llm.json:/app/configs/llm.json:ro
     environment:
       GRPC_PORT: "50053"
 
@@ -69,10 +69,20 @@ services:
     restart: unless-stopped
     expose:
       - "50054"
-    env_file:
-      - ../.env
+    volumes:
+      - ../configs/llm.json:/app/configs/llm.json:ro
+      - /root/.codex:/root/.codex
+      - /usr/lib/node_modules/@openai/codex:/usr/lib/node_modules/@openai/codex:ro
     environment:
       GRPC_PORT: "50054"
+      LLM_FALLBACK_PROVIDER: "${LLM_FALLBACK_PROVIDER:-codex}"
+      CODEX_BIN: "/usr/lib/node_modules/@openai/codex/bin/codex.js"
+      CODEX_HOME: "/root/.codex"
+      CODEX_WORKDIR: "/tmp"
+      CODEX_REASONING_EFFORT: "${CODEX_REASONING_EFFORT:-low}"
+      CODEX_REASONING_SUMMARY: "${CODEX_REASONING_SUMMARY:-none}"
+      CODEX_VERBOSITY: "${CODEX_VERBOSITY:-low}"
+      LLM_CLI_TIMEOUT_SECONDS: "${LLM_CLI_TIMEOUT_SECONDS:-240}"
 
   gateway:
     build:

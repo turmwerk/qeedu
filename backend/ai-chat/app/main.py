@@ -1,12 +1,18 @@
 """AI Chat gRPC service entry point."""
 
 import logging
+import os
 import signal
 import sys
+from pathlib import Path
 
 from dotenv import load_dotenv
 
 load_dotenv()
+
+_local_config = Path(__file__).resolve().parent.parent.parent / "configs" / "llm.json"
+if _local_config.exists() and not os.getenv("LLM_CONFIG_PATH"):
+    os.environ["LLM_CONFIG_PATH"] = str(_local_config)
 
 from configs.env import GRPC_PORT, LOG_LEVEL
 

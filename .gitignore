@@ -33,3 +33,6 @@ __pycache__/
 .venv/
 .mypy_cache/
 .pytest_cache/
+
+# LLM config (contains API keys)
+backend/configs/llm.json

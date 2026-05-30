@@ -19,6 +19,47 @@ export interface CustomChatStreamOptions extends ChatStreamOptions {
 	extraBody?: Record<string, unknown>;
 }
 
+type StreamPayload =
+	| { kind: "delta"; text: string }
+	| { kind: "done" }
+	| { kind: "error"; error: string };
+
+function parseStreamPayload(payload: string): StreamPayload {
+	if (payload === "[DONE]") return { kind: "done" };
+	if (payload.startsWith("[ERROR]")) return { kind: "error", error: payload.slice(8).trim() };
+
+	try {
+		const parsed = JSON.parse(payload) as unknown;
+		if (parsed && typeof parsed === "object") {
+			const record = parsed as Record<string, unknown>;
+			if (record.done === true) return { kind: "done" };
+			if (typeof record.error === "string") return { kind: "error", error: record.error };
+			if (typeof record.delta === "string") return { kind: "delta", text: record.delta };
+		}
+	} catch {}
+
+	return { kind: "delta", text: payload };
+}
+
+function handleStreamPayload(
+	payload: string,
+	onDelta: (text: string) => void,
+	onDone: () => void,
+	onError: (err: string) => void,
+): boolean {
+	const parsed = parseStreamPayload(payload);
+	if (parsed.kind === "done") {
+		onDone();
+		return true;
+	}
+	if (parsed.kind === "error") {
+		onError(parsed.error);
+		return true;
+	}
+	onDelta(parsed.text);
+	return false;
+}
+
 export interface CompleteRequest {
 	language: string;
 	file_content: string;
@@ -79,16 +120,8 @@ function createStreamRequest(
 
 				for (const line of lines) {
 					if (!line.startsWith("data: ")) continue;
-					const payload = line.slice(6);
-					if (payload === "[DONE]") {
-						onDone();
-						return;
-					}
-					if (payload.startsWith("[ERROR]")) {
-						onError(payload.slice(8));
-						return;
-					}
-					onDelta(payload);
+					const payload = line.slice(6).replace(/\r$/, "");
+					if (handleStreamPayload(payload, onDelta, onDone, onError)) return;
 				}
 			}
 			onDone();
@@ -151,54 +184,11 @@ export interface FixBugStreamOptions {
  */
 export function fixBugStream(options: FixBugStreamOptions): AbortController {
 	const { code, error_message, language, onDelta, onDone, onError } = options;
-	const controller = new AbortController();
-
-	(async () => {
-		try {
-			const res = await fetch(apiUrl("/ai/fix"), {
-				method: "POST",
-				headers: getAuthHeaders(),
-				body: JSON.stringify({ code, error_message, language }),
-				signal: controller.signal,
-			});
-
-			if (!res.ok || !res.body) {
-				onError(`HTTP ${res.status}`);
-				return;
-			}
-
-			const reader = res.body.getReader();
-			const decoder = new TextDecoder();
-			let buffer = "";
-
-			while (true) {
-				const { done, value } = await reader.read();
-				if (done) break;
-
-				buffer += decoder.decode(value, { stream: true });
-				const lines = buffer.split("\n");
-				buffer = lines.pop() ?? "";
-
-				for (const line of lines) {
-					if (!line.startsWith("data: ")) continue;
-					const payload = line.slice(6);
-					if (payload === "[DONE]") {
-						onDone();
-						return;
-					}
-					if (payload.startsWith("[ERROR]")) {
-						onError(payload.slice(8));
-						return;
-					}
-					onDelta(payload);
-				}
-			}
-			onDone();
-		} catch (err: unknown) {
-			if (err instanceof DOMException && err.name === "AbortError") return;
-			onError(String(err));
-		}
-	})();
-
-	return controller;
+	return createStreamRequest(
+		"/ai/fix",
+		{ code, error_message, language },
+		onDelta,
+		onDone,
+		onError,
+	);
 }
