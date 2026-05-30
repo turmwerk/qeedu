@@ -9,9 +9,14 @@ interface MarkdownMessageProps {
 }
 
 const MarkdownMessage: React.FC<MarkdownMessageProps> = ({ text }) => {
-  const sanitized = useMemo(() => {
-    // Fallback sanitization: strip raw HTML tags. ReactMarkdown also skips HTML.
-    return text.replace(/<[^>]*>/g, "");
+  // Normalize: strip leading/trailing whitespace from code-fence content
+  // that the model sometimes prepends with a stray newline.
+  const normalized = useMemo(() => {
+    return text
+      // Remove leading newline immediately after code-fence open.
+      .replace(/(```\w*)\n+/g, "$1\n")
+      // Remove trailing newline before code-fence close.
+      .replace(/\n+(```)/g, "\n$1");
   }, [text]);
 
   const components: Components = {
@@ -76,7 +81,7 @@ const MarkdownMessage: React.FC<MarkdownMessageProps> = ({ text }) => {
       skipHtml
       components={components}
     >
-      {sanitized}
+      {normalized}
     </ReactMarkdown>
   );
 };

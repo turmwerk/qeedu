@@ -21,6 +21,7 @@ type ChatTransportArgs = {
   messages: ChatMessage[];
   input: string;
   files: File[];
+  onModel?: (model: string) => void;
   onDelta: (text: string) => void;
   onDone: () => void;
   onError: (err: string) => void;

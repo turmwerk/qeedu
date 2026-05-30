@@ -13,6 +13,8 @@ type fixBugReqBody struct {
 	Code         string `json:"code"`
 	ErrorMessage string `json:"error_message"`
 	Language     string `json:"language"`
+	Model        string `json:"model"`
+	APIKey       string `json:"api_key"`
 }
 
 // FixBug handles POST /api/v1/ai/fix with SSE streaming.
@@ -29,7 +31,12 @@ func FixBug(c *gin.Context) {
 		Language:     body.Language,
 	}
 
-	dataCh, errCh := aiChatRPC.FixBugStream(c.Request.Context(), req)
+	model := body.Model
+	if model == "" {
+		model = currentFixModel()
+	}
+
+	dataCh, errCh := aiChatRPC.FixBugStream(c.Request.Context(), req, model, body.APIKey)
 
 	c.Header("Content-Type", "text/event-stream")
 	c.Header("Cache-Control", "no-cache")

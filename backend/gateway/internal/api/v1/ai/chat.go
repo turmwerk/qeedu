@@ -13,6 +13,8 @@ type chatReqBody struct {
 	Messages    []chatMsg `json:"messages"`
 	FileContext string    `json:"file_context"`
 	Language    string    `json:"language"`
+	Model       string    `json:"model"`
+	APIKey      string    `json:"api_key"`
 }
 
 type chatMsg struct {
@@ -39,7 +41,12 @@ func Chat(c *gin.Context) {
 		Language:    body.Language,
 	}
 
-	dataCh, errCh := aiChatRPC.ChatStream(c.Request.Context(), req)
+	model := body.Model
+	if model == "" {
+		model = currentChatModel()
+	}
+
+	dataCh, errCh := aiChatRPC.ChatStream(c.Request.Context(), req, model, body.APIKey)
 
 	c.Header("Content-Type", "text/event-stream")
 	c.Header("Cache-Control", "no-cache")

@@ -14,14 +14,17 @@ def fixbug_stream(
     code: str,
     error_message: str,
     language: str,
+    model: str = "",
+    api_key: str = "",
 ) -> Generator[str, None, None]:
+    resolved_model = model or FIXBUG_MODEL
     user_msg = (
         f"Language: {language}\n\n"
         f"Code:\n```\n{code}\n```\n\n"
         f"Error:\n```\n{error_message}\n```"
     )
 
-    logger.info("FixBug stream requested: model=%s, language=%s", FIXBUG_MODEL, language)
+    logger.info("FixBug stream requested: model=%s, language=%s", resolved_model, language)
 
     yield from stream_chat_completion(
         [
@@ -30,5 +33,6 @@ def fixbug_stream(
         ],
         temperature=FIXBUG_TEMPERATURE,
         max_tokens=FIXBUG_MAX_TOKENS,
-        model=FIXBUG_MODEL,
+        model=resolved_model,
+        api_key=api_key,
     )

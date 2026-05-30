@@ -9,6 +9,8 @@ export interface ChatStreamOptions {
 	messages: ChatMessage[];
 	file_context?: string;
 	language?: string;
+	model?: string;
+	api_key?: string;
 	onDelta: (text: string) => void;
 	onDone: () => void;
 	onError: (err: string) => void;
@@ -79,10 +81,6 @@ function getAuthHeaders(): Record<string, string> {
 	};
 }
 
-/**
- * Stream a chat response from the backend using SSE (Server-Sent Events).
- * Returns an AbortController so the caller can cancel the request.
- */
 function createStreamRequest(
 	endpoint: string,
 	body: Record<string, unknown>,
@@ -135,10 +133,10 @@ function createStreamRequest(
 }
 
 export function chatStream(options: ChatStreamOptions): AbortController {
-	const { messages, file_context, language, onDelta, onDone, onError } = options;
+	const { messages, file_context, language, model, api_key, onDelta, onDone, onError } = options;
 	return createStreamRequest(
 		"/ai/chat",
-		{ messages, file_context, language },
+		{ messages, file_context, language, model: model || undefined, api_key: api_key || undefined },
 		onDelta,
 		onDone,
 		onError,
@@ -146,19 +144,16 @@ export function chatStream(options: ChatStreamOptions): AbortController {
 }
 
 export function customChatStream(options: CustomChatStreamOptions): AbortController {
-	const { endpoint, messages, file_context, language, extraBody, onDelta, onDone, onError } = options;
+	const { endpoint, messages, file_context, language, model, api_key, extraBody, onDelta, onDone, onError } = options;
 	return createStreamRequest(
 		endpoint,
-		{ messages, file_context, language, ...(extraBody ?? {}) },
+		{ messages, file_context, language, model: model || undefined, api_key: api_key || undefined, ...(extraBody ?? {}) },
 		onDelta,
 		onDone,
 		onError,
 	);
 }
 
-/**
- * Request code completion (non-streaming).
- */
 export async function complete(req: CompleteRequest): Promise<CompleteResponse> {
 	const res = await fetch(apiUrl("/ai/complete"), {
 		method: "POST",
@@ -173,22 +168,46 @@ export interface FixBugStreamOptions {
 	code: string;
 	error_message: string;
 	language: string;
+	model?: string;
+	api_key?: string;
 	onDelta: (text: string) => void;
 	onDone: () => void;
 	onError: (err: string) => void;
 }
 
-/**
- * Stream a bug fix response from the backend using SSE.
- * Returns an AbortController for cancellation.
- */
 export function fixBugStream(options: FixBugStreamOptions): AbortController {
-	const { code, error_message, language, onDelta, onDone, onError } = options;
+	const { code, error_message, language, model, api_key, onDelta, onDone, onError } = options;
 	return createStreamRequest(
 		"/ai/fix",
-		{ code, error_message, language },
+		{ code, error_message, language, model: model || undefined, api_key: api_key || undefined },
 		onDelta,
 		onDone,
 		onError,
 	);
+}
+
+/** Available model metadata. */
+export interface ModelInfo {
+	id: string;
+	name: string;
+	provider: string;
+}
+
+/** GET /api/v1/ai/models response. */
+export interface ModelsResponse {
+	models: ModelInfo[];
+	current: {
+		chat: string;
+		fix: string;
+		copilot: string;
+	};
+}
+
+/** Fetch available models and current selection. */
+export async function getModels(): Promise<ModelsResponse> {
+	const res = await fetch(apiUrl("/ai/models"), {
+		headers: getAuthHeaders(),
+	});
+	if (!res.ok) throw new Error(`HTTP ${res.status}`);
+	return res.json();
 }

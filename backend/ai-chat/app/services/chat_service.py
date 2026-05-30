@@ -14,7 +14,10 @@ def chat_stream(
     messages: list[dict[str, str]],
     file_context: str = "",
     language: str = "",
+    model: str = "",
+    api_key: str = "",
 ) -> Generator[str, None, None]:
+    resolved_model = model or LLM_MODEL
     llm_messages: list[dict[str, str]] = [{"role": "system", "content": CHAT_SYSTEM}]
 
     if file_context:
@@ -25,7 +28,7 @@ def chat_stream(
 
     logger.info(
         "Chat stream requested: model=%s, messages=%d, has_file_context=%s",
-        LLM_MODEL,
+        resolved_model,
         len(messages),
         bool(file_context),
     )
@@ -34,4 +37,6 @@ def chat_stream(
         llm_messages,
         temperature=LLM_TEMPERATURE,
         max_tokens=LLM_MAX_TOKENS,
+        model=resolved_model,
+        api_key=api_key,
     )

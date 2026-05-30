@@ -11,11 +11,24 @@ from configs.env import GRPC_MAX_WORKERS
 logger = logging.getLogger(__name__)
 
 
+def _read_metadata(context) -> tuple[str, str]:
+    """Read x-model and x-api-key from gRPC request metadata."""
+    model = ""
+    api_key = ""
+    for key, value in context.invocation_metadata():
+        if key == "x-model":
+            model = value
+        elif key == "x-api-key":
+            api_key = value
+    return model, api_key
+
+
 class AIChatServicer(ai_chat_pb2_grpc.AIChatServiceServicer):
     def Chat(self, request, context):
         try:
+            model, api_key = _read_metadata(context)
             messages = [{"role": m.role, "content": m.content} for m in request.messages]
-            for delta in chat_stream(messages, request.file_context, request.language):
+            for delta in chat_stream(messages, request.file_context, request.language, model=model, api_key=api_key):
                 yield ai_chat_pb2.ChatResponse(delta=delta, done=False)
             yield ai_chat_pb2.ChatResponse(delta="", done=True)
         except Exception as e:
@@ -26,7 +39,8 @@ class AIChatServicer(ai_chat_pb2_grpc.AIChatServiceServicer):
 
     def FixBug(self, request, context):
         try:
-            for delta in fixbug_stream(request.code, request.error_message, request.language):
+            model, api_key = _read_metadata(context)
+            for delta in fixbug_stream(request.code, request.error_message, request.language, model=model, api_key=api_key):
                 yield ai_chat_pb2.FixBugResponse(delta=delta, done=False)
             yield ai_chat_pb2.FixBugResponse(delta="", done=True)
         except Exception as e:

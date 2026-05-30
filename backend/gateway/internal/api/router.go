@@ -54,6 +54,7 @@ func RegisterRoutes(r *gin.Engine) {
 			protected.POST("/ai/chat", ai.Chat)
 			protected.POST("/ai/complete", ai.Complete)
 			protected.POST("/ai/fix", ai.FixBug)
+			protected.GET("/ai/models", ai.ListModels)
 		}
 	}
 }

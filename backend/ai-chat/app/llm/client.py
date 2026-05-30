@@ -68,14 +68,15 @@ def stream_chat_completion(
     temperature: float,
     max_tokens: int = LLM_MAX_TOKENS,
     model: str = "",
+    api_key: str = "",
 ) -> Generator[str, None, None]:
     """Yield text deltas from the configured LLM provider."""
     provider = _select_provider()
     resolved_model = model or LLM_MODEL
-    logger.info("Using LLM provider: %s, model: %s", provider, resolved_model)
+    logger.info("Using LLM provider: %s, model: %s, custom_key: %s", provider, resolved_model, bool(api_key))
 
     if provider == "openai":
-        yield from _stream_openai(messages, temperature, max_tokens, resolved_model)
+        yield from _stream_openai(messages, temperature, max_tokens, resolved_model, api_key)
         return
 
     yield from _stream_cli(provider, messages)
@@ -110,7 +111,27 @@ def _stream_openai(
     temperature: float,
     max_tokens: int,
     model: str,
+    api_key: str = "",
 ) -> Generator[str, None, None]:
+    # If a custom API key is provided, use it directly (no rotation).
+    if api_key:
+        client = create_client(key=api_key)
+        stream = client.chat.completions.create(
+            model=model,
+            messages=messages,
+            max_tokens=max_tokens,
+            temperature=temperature,
+            stream=True,
+        )
+        for chunk in stream:
+            if not chunk.choices:
+                continue
+            delta = chunk.choices[0].delta
+            if delta.content:
+                yield delta.content
+        return
+
+    # Otherwise use key rotation.
     total_keys = max(key_count(), 1)
     for attempt in range(total_keys):
         client = create_client()
@@ -128,7 +149,7 @@ def _stream_openai(
                 delta = chunk.choices[0].delta
                 if delta.content:
                     yield delta.content
-            return  # success
+            return
         except Exception as e:
             if _is_rate_limit(e) and rotate_api_key():
                 logger.warning(

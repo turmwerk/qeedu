@@ -8,6 +8,7 @@ import (
 	aichatv1 "github.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/ai-chat/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/metadata"
 )
 
 var client aichatv1.AIChatServiceClient
@@ -21,8 +22,23 @@ func Init(addr string) {
 	log.Printf("[rpc/ai-chat] connected to %s", addr)
 }
 
+// requestCtx attaches model + api_key as gRPC metadata.
+func requestCtx(ctx context.Context, model, apiKey string) context.Context {
+	md := metadata.New(nil)
+	if model != "" {
+		md.Set("x-model", model)
+	}
+	if apiKey != "" {
+		md.Set("x-api-key", apiKey)
+	}
+	if md.Len() == 0 {
+		return ctx
+	}
+	return metadata.NewOutgoingContext(ctx, md)
+}
+
 // ChatStream opens a streaming Chat RPC and returns a channel of deltas.
-func ChatStream(ctx context.Context, req *aichatv1.ChatRequest) (<-chan *aichatv1.ChatResponse, <-chan error) {
+func ChatStream(ctx context.Context, req *aichatv1.ChatRequest, model, apiKey string) (<-chan *aichatv1.ChatResponse, <-chan error) {
 	ch := make(chan *aichatv1.ChatResponse, 64)
 	errCh := make(chan error, 1)
 
@@ -30,7 +46,7 @@ func ChatStream(ctx context.Context, req *aichatv1.ChatRequest) (<-chan *aichatv
 		defer close(ch)
 		defer close(errCh)
 
-		stream, err := client.Chat(ctx, req)
+		stream, err := client.Chat(requestCtx(ctx, model, apiKey), req)
 		if err != nil {
 			errCh <- err
 			return
@@ -51,7 +67,7 @@ func ChatStream(ctx context.Context, req *aichatv1.ChatRequest) (<-chan *aichatv
 }
 
 // FixBugStream opens a streaming FixBug RPC.
-func FixBugStream(ctx context.Context, req *aichatv1.FixBugRequest) (<-chan *aichatv1.FixBugResponse, <-chan error) {
+func FixBugStream(ctx context.Context, req *aichatv1.FixBugRequest, model, apiKey string) (<-chan *aichatv1.FixBugResponse, <-chan error) {
 	ch := make(chan *aichatv1.FixBugResponse, 64)
 	errCh := make(chan error, 1)
 
@@ -59,7 +75,7 @@ func FixBugStream(ctx context.Context, req *aichatv1.FixBugRequest) (<-chan *aic
 		defer close(ch)
 		defer close(errCh)
 
-		stream, err := client.FixBug(ctx, req)
+		stream, err := client.FixBug(requestCtx(ctx, model, apiKey), req)
 		if err != nil {
 			errCh <- err
 			return
