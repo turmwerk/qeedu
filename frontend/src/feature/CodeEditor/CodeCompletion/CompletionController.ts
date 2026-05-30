@@ -13,19 +13,16 @@ async function fetchCompletion(
 	filePath: string,
 	signal: AbortSignal,
 ): Promise<string> {
-	const token = localStorage.getItem("token") ?? "";
 	const res = await fetch(apiUrl("/ai/complete"), {
 		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-			Authorization: `Bearer ${token}`,
-		},
+		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify({
 			language,
 			file_content: fileContent,
 			cursor_offset: cursorOffset,
 			file_path: filePath,
 		}),
+		credentials: "include",
 		signal,
 	});
 	if (!res.ok) return "";

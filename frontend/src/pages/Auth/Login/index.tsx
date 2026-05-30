@@ -3,7 +3,6 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import Form from "@/ui/Form";
 import { showToast } from "@/ui/Toast";
 import type { FormField } from "@/ui/Form";
-import { setToken } from "@/hooks/useAuth";
 import Tabs from "../Tabs";
 import buildFields from "../FieldsForm";
 import createNavAgreeFields from "../NavAgree";
@@ -22,37 +21,39 @@ export default function Login() {
   const [mode, setMode] = useState<"password" | "sms" | "quick">("quick");
 
   const goGuest = () => {
-    showToast(`\u4f7f\u7528\u201c\u6e38\u5ba2\u6a21\u5f0f\u201d\u8fdb\u5165\u9996\u9875`);
+    showToast("使用\"游客模式\"进入首页");
     navigate("/");
   };
 
-  /* ── Handle OAuth result from backend redirect ── */
+  /* Handle OAuth result from backend redirect — JWT is now httpOnly cookie. */
   useEffect(() => {
     const provider = searchParams.get("oauth_provider");
     const error = searchParams.get("oauth_error");
     const name = searchParams.get("oauth_name");
-    const token = searchParams.get("oauth_token");
 
     if (!provider && !error) return;
 
-    // Clean URL
     setSearchParams({}, { replace: true });
 
     if (error) {
-      showToast(`OAuth \u767b\u5f55\u5931\u8d25: ${error}`);
+      showToast(`OAuth 登录失败: ${error}`);
       return;
     }
 
-    // Persist JWT
-    if (token) {
-      setToken(token);
-    }
-    const label = provider === "github" ? "GitHub" : "Google";
-    showToast(`${label} \u767b\u5f55\u6210\u529f\uff0c\u6b22\u8fce ${name || "\u7528\u6237"}`);
-    navigate("/");
+    // Cookie is set by the backend. Verify via /me then redirect.
+    fetch(apiUrl("/me"), { credentials: "include" })
+      .then((res) => (res.ok ? res.json() : Promise.reject(res)))
+      .then(() => {
+        const label = provider === "github" ? "GitHub" : "Google";
+        showToast(`${label} 登录成功，欢迎 ${name || "用户"}`);
+        navigate("/");
+      })
+      .catch(() => {
+        showToast("OAuth 登录失败：身份验证失败");
+      });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  /* ── Form fields ── */
+  /* Form fields */
   const primaryButtonClass =
     "w-full h-[56px] flex items-center justify-center gap-1.5 text-[18px] font-extrabold rounded-xl bg-[var(--brand-blue)] text-white border-0 shadow-[var(--brand-shadow)] transition-[background,border-color,box-shadow,transform] hover:bg-[var(--brand-purple)] hover:shadow-[var(--brand-shadow)] active:scale-95";
 
@@ -81,9 +82,9 @@ export default function Login() {
   const handleSubmit = (values: Record<string, unknown>) => {
     console.log("login", values, "mode", mode);
     if (mode === "password") {
-      showToast(`账密登录未接入，使用\u201c游客模式\u201d进入首页`);
+      showToast("账密登录未接入，使用\"游客模式\"进入首页");
     } else {
-      showToast(`验证码登录未接入，使用\u201c游客模式\u201d进入首页`);
+      showToast("验证码登录未接入，使用\"游客模式\"进入首页");
     }
   };
 
@@ -121,7 +122,7 @@ export default function Login() {
               }}
             >
               <GitHubIcon />
-              <span>{"\u4f7f\u7528GitHub\u767b\u5f55"}</span>
+              <span>使用GitHub登录</span>
             </button>
             <button
               type="button"
@@ -131,7 +132,7 @@ export default function Login() {
               }}
             >
               <GoogleIcon />
-              <span>{"\u4f7f\u7528Google\u767b\u5f55"}</span>
+              <span>使用Google登录</span>
             </button>
 
             <div className="flex items-center gap-4 my-1">

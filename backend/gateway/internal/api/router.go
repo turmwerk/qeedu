@@ -34,6 +34,9 @@ func RegisterRoutes(r *gin.Engine) {
 			authGroup.GET("/google/callback", oauth.GoogleCallback)
 		}
 
+		// 公开 AI 端点（无需登录）
+		v1.GET("/ai/models", ai.ListModels)
+
 		// 需要登录的路由
 		protected := v1.Group("")
 		protected.Use(middleware.AuthRequired())
@@ -54,7 +57,6 @@ func RegisterRoutes(r *gin.Engine) {
 			protected.POST("/ai/chat", ai.Chat)
 			protected.POST("/ai/complete", ai.Complete)
 			protected.POST("/ai/fix", ai.FixBug)
-			protected.GET("/ai/models", ai.ListModels)
 		}
 	}
 }

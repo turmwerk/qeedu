@@ -7,18 +7,29 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// AuthRequired validates the JWT in the Authorization header
-// and injects user_id / name into the context.
+// AuthRequired validates the JWT from cookie (preferred) or Authorization header.
 func AuthRequired() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token := ""
-		h := c.GetHeader("Authorization")
-		if h != "" && strings.HasPrefix(h, "Bearer ") {
-			token = strings.TrimPrefix(h, "Bearer ")
+
+		// 1) httpOnly cookie (set during OAuth login).
+		if tok, err := c.Cookie("edu_token"); err == nil && tok != "" {
+			token = tok
 		}
+
+		// 2) Authorization: Bearer <token> header (legacy / dev).
+		if token == "" {
+			h := c.GetHeader("Authorization")
+			if h != "" && strings.HasPrefix(h, "Bearer ") {
+				token = strings.TrimPrefix(h, "Bearer ")
+			}
+		}
+
+		// 3) WebSocket token via query param.
 		if token == "" && strings.EqualFold(c.GetHeader("Upgrade"), "websocket") {
 			token = strings.TrimSpace(c.Query("token"))
 		}
+
 		if token == "" {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "missing or invalid token"})
 			return

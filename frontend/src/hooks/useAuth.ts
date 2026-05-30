@@ -1,68 +1,66 @@
-import { useSyncExternalStore, useCallback } from "react";
+import { useSyncExternalStore, useCallback, useEffect, useState } from "react";
+import { apiUrl } from "@/api/config";
 
-const TOKEN_KEY = "token";
-
-// Minimal JWT payload decode (no verification — that's the backend's job)
-function decodePayload(token: string): Record<string, unknown> | null {
-  try {
-    const base64 = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
-    return JSON.parse(atob(base64));
-  } catch {
-    return null;
-  }
-}
-
-// ── External store so every component re-renders on login/logout ──
-
-let snapshot = localStorage.getItem(TOKEN_KEY);
+// Auth state: fetched from /me via httpOnly cookie.
+let snapshot: { user: { id: number; name: string } | null } = { user: null };
+let fetchPromise: Promise<void> | null = null;
 
 function subscribe(cb: () => void) {
-  const onStorage = (e: StorageEvent) => {
-    if (e.key === TOKEN_KEY) {
-      snapshot = e.newValue;
-      cb();
-    }
-  };
-  const onAuth = () => {
-    snapshot = localStorage.getItem(TOKEN_KEY);
-    cb();
-  };
-  window.addEventListener("storage", onStorage);
-  window.addEventListener("auth-change", onAuth);
-  return () => {
-    window.removeEventListener("storage", onStorage);
-    window.removeEventListener("auth-change", onAuth);
-  };
+	const onAuth = () => {
+		fetchPromise = null;
+		cb();
+	};
+	window.addEventListener("auth-change", onAuth);
+	return () => window.removeEventListener("auth-change", onAuth);
 }
 
 function getSnapshot() {
-  return snapshot;
+	return snapshot;
 }
 
-export function setToken(token: string) {
-  localStorage.setItem(TOKEN_KEY, token);
-  snapshot = token;
-  window.dispatchEvent(new Event("auth-change"));
-}
-
-export function clearToken() {
-  localStorage.removeItem(TOKEN_KEY);
-  snapshot = null;
-  window.dispatchEvent(new Event("auth-change"));
+async function refreshAuth(): Promise<void> {
+	if (fetchPromise) return fetchPromise;
+	fetchPromise = fetch(apiUrl("/me"), { credentials: "include" })
+		.then((res) => {
+			if (res.ok) return res.json();
+			throw new Error("not authenticated");
+		})
+		.then((data: Record<string, unknown>) => {
+			snapshot = {
+				user: {
+					id: (data.id as number) || (data.user_id as number) || 0,
+					name: (data.name as string) || "",
+				},
+			};
+		})
+		.catch(() => {
+			snapshot = { user: null };
+		})
+		.finally(() => {
+			window.dispatchEvent(new Event("auth-change"));
+		});
+	return fetchPromise;
 }
 
 export function useAuth() {
-  const token = useSyncExternalStore(subscribe, getSnapshot);
+	const state = useSyncExternalStore(subscribe, getSnapshot);
+	const [loading, setLoading] = useState(!state.user);
 
-  const payload = token ? decodePayload(token) : null;
-  const isAuthenticated = !!payload;
-  const user = payload
-    ? { id: payload.user_id as number, name: payload.name as string }
-    : null;
+	useEffect(() => {
+		refreshAuth().then(() => setLoading(false));
+	}, []);
 
-  const logout = useCallback(() => {
-    clearToken();
-  }, []);
-
-  return { isAuthenticated, user, token, logout };
+	return {
+		isAuthenticated: !!state.user,
+		user: state.user,
+		loading,
+		logout: useCallback(async () => {
+			// Server-side: cookie is httpOnly; can't clear from JS.
+			// The server should provide a /logout endpoint, but for now
+			// just clear local state.
+			snapshot = { user: null };
+			window.dispatchEvent(new Event("auth-change"));
+		}, []),
+		refresh: refreshAuth,
+	};
 }

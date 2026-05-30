@@ -73,12 +73,8 @@ export interface CompleteResponse {
 	suggestion: string;
 }
 
-function getAuthHeaders(): Record<string, string> {
-	const token = localStorage.getItem("token") ?? "";
-	return {
-		"Content-Type": "application/json",
-		Authorization: `Bearer ${token}`,
-	};
+function jsonHeaders(): Record<string, string> {
+	return { "Content-Type": "application/json" };
 }
 
 function createStreamRequest(
@@ -94,9 +90,10 @@ function createStreamRequest(
 		try {
 			const res = await fetch(apiUrl(endpoint), {
 				method: "POST",
-				headers: getAuthHeaders(),
+				headers: jsonHeaders(),
 				body: JSON.stringify(body),
 				signal: controller.signal,
+				credentials: "include",
 			});
 
 			if (!res.ok || !res.body) {
@@ -157,8 +154,9 @@ export function customChatStream(options: CustomChatStreamOptions): AbortControl
 export async function complete(req: CompleteRequest): Promise<CompleteResponse> {
 	const res = await fetch(apiUrl("/ai/complete"), {
 		method: "POST",
-		headers: getAuthHeaders(),
+		headers: jsonHeaders(),
 		body: JSON.stringify(req),
+		credentials: "include",
 	});
 	if (!res.ok) throw new Error(`HTTP ${res.status}`);
 	return res.json();
@@ -205,9 +203,7 @@ export interface ModelsResponse {
 
 /** Fetch available models and current selection. */
 export async function getModels(): Promise<ModelsResponse> {
-	const res = await fetch(apiUrl("/ai/models"), {
-		headers: getAuthHeaders(),
-	});
+	const res = await fetch(apiUrl("/ai/models"), { credentials: "include" });
 	if (!res.ok) throw new Error(`HTTP ${res.status}`);
 	return res.json();
 }

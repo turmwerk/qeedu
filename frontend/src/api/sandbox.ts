@@ -151,9 +151,8 @@ export async function destroyLspSession(sessionId: string): Promise<void> {
  * Reuses the JWT token from localStorage for auth.
  */
 export function buildTerminalWsUrl(shell = "bash"): string {
-  const token = localStorage.getItem("token") ?? "";
   const base = new URL(http.defaults.baseURL ?? "/api/v1", window.location.origin);
   const protocol = base.protocol === "https:" ? "wss:" : "ws:";
   const basePath = base.pathname.replace(/\/+$/, "");
-  return `${protocol}//${base.host}${basePath}/sandbox/terminal/ws?shell=${encodeURIComponent(shell)}&token=${encodeURIComponent(token)}`;
+  return `${protocol}//${base.host}${basePath}/sandbox/terminal/ws?shell=${encodeURIComponent(shell)}`;
 }

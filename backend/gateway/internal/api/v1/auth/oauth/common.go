@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/configs"
 	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/middleware"
@@ -57,7 +58,8 @@ func ensureOAuthConfig(c *gin.Context, providerLabel string, cfg *oauth2.Config,
 	return true
 }
 
-// FinishOAuth upserts the user via gRPC, generates a JWT, and redirects to the frontend.
+// FinishOAuth upserts the user via gRPC, generates a JWT, sets an httpOnly cookie,
+// and redirects to the frontend.
 func FinishOAuth(c *gin.Context, profile *userv1.OAuthProfile) {
 	u, err := userRPC.FindOrCreateOAuthUser(c.Request.Context(), profile)
 	if err != nil {
@@ -71,9 +73,19 @@ func FinishOAuth(c *gin.Context, profile *userv1.OAuthProfile) {
 		return
 	}
 
+	// Set httpOnly cookie on the API domain (works cross-origin with credentials:include).
+	c.SetCookie(
+		"edu_token",                     // name
+		token,                           // value
+		int((7*24*time.Hour).Seconds()), // max age (7 days)
+		"/",                             // path
+		"",                              // domain (current host only: api.qeedu.tech)
+		configs.IsProd(),                // secure (HTTPS only in production)
+		true,                            // httpOnly
+	)
+
 	redirectToFrontend(c, url.Values{
 		"oauth_provider": {profile.Provider},
 		"oauth_name":     {u.Name},
-		"oauth_token":    {token},
 	})
 }
