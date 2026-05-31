@@ -1,14 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import MessageList, {
-  type DialogMessage,
-} from "./MessageList";
+import MessageList, { type DialogMessage } from "./MessageList";
 import InputArea from "./InputArea";
 import { chatStream, getModels, type ChatMessage, type ModelInfo } from "@/api/ai";
 
 interface DialogProps {
   dialogId: string;
   botName?: string;
-  initMessage?: string; // 初始消息
+  initMessage?: string;
   seedMessages?: DialogMessage[];
   transport?: (args: {
     messages: ChatMessage[];
@@ -18,12 +16,6 @@ interface DialogProps {
     onDone: () => void;
     onError: (err: string) => void;
   }) => AbortController;
-}
-
-/** Resolve a human-readable model label from an ID. */
-function modelLabel(id: string, models: ModelInfo[]): string {
-  const found = models.find((m) => m.id === id);
-  return found ? found.name : id;
 }
 
 const getStorageKey = (dialogId: string) => `dialog_messages_${dialogId}`;
@@ -51,7 +43,6 @@ const Dialog: React.FC<DialogProps> & {
   const [pending, setPending] = useState(false);
   const [selectedModel, setSelectedModel] = useState("");
   const [models, setModels] = useState<ModelInfo[]>([]);
-  const [showModelPicker, setShowModelPicker] = useState(false);
   const [showCustomModal, setShowCustomModal] = useState(false);
   const [customModelId, setCustomModelId] = useState("");
   const [customApiKey, setCustomApiKey] = useState("");
@@ -216,89 +207,39 @@ const Dialog: React.FC<DialogProps> & {
     <div className="flex h-full min-h-0 min-w-0 flex-col gap-3 overflow-hidden" data-oid="zx6bwsx">
       <div className="shrink-0 flex items-center gap-2" data-oid="o.dphsl">
         <span className="font-bold text-[var(--brand-text)]">{botName}</span>
-        {models.length > 0 && (
-          <div className="relative">
-            <button
-              className="text-xs text-gray-500 bg-gray-100 hover:bg-gray-200 px-2 py-0.5 rounded-full cursor-pointer transition-colors"
-              onClick={() => setShowModelPicker((v) => !v)}
-              onBlur={() => setTimeout(() => setShowModelPicker(false), 150)}
-              title="选择模型"
-            >
-              {selectedModel === "__custom__" ? customModelId || "自定义模型" : modelLabel(selectedModel, models)} ▾
-            </button>
-            {showModelPicker && (
-              <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[180px] max-h-[280px] overflow-auto">
-                {models.map((m) => (
-                  <button
-                    key={m.id}
-                    className={`block w-full text-left px-3 py-1.5 text-xs hover:bg-gray-50 transition-colors ${
-                      selectedModel === m.id ? "text-blue-600 font-medium" : "text-gray-600"
-                    }`}
-                    onMouseDown={() => {
-                      setSelectedModel(m.id);
-                      setShowModelPicker(false);
-                    }}
-                  >
-                    <span className="font-medium">{m.name}</span>
-                    <span className="ml-1.5 text-gray-400">{m.provider}</span>
-                  </button>
-                ))}
-                <div className="border-t border-gray-100 my-1" />
-                <button
-                  className={`block w-full text-left px-3 py-1.5 text-xs hover:bg-gray-50 transition-colors ${
-                    selectedModel === "__custom__" ? "text-blue-600 font-medium" : "text-gray-500"
-                  }`}
-                  onMouseDown={() => {
-                    setSelectedModel("__custom__");
-                    setShowModelPicker(false);
-                    setShowCustomModal(true);
-                  }}
-                >
-                  ⚙ 自定义模型…
-                </button>
-              </div>
-            )}
-            {/* Custom model modal */}
-            {showCustomModal && (
-              <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/30" onMouseDown={() => setShowCustomModal(false)}>
-                <div className="bg-white rounded-xl shadow-2xl p-6 w-[400px] max-w-[90vw]" onMouseDown={(e) => e.stopPropagation()}>
-                  <h3 className="text-base font-bold text-gray-800 mb-4">自定义模型</h3>
-                  <label className="block text-xs text-gray-500 mb-1">API Key</label>
-                  <input
-                    type="password"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm mb-3 focus:outline-none focus:border-blue-400"
-                    placeholder="sk-or-v1-..."
-                    value={customApiKey}
-                    onChange={(e) => setCustomApiKey(e.target.value)}
-                  />
-                  <label className="block text-xs text-gray-500 mb-1">模型 ID</label>
-                  <input
-                    type="text"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm mb-4 focus:outline-none focus:border-blue-400"
-                    placeholder="openai/gpt-4o 或 deepseek/deepseek-chat"
-                    value={customModelId}
-                    onChange={(e) => setCustomModelId(e.target.value)}
-                  />
-                  <div className="flex justify-end gap-2">
-                    <button
-                      className="px-4 py-1.5 text-xs text-gray-500 hover:text-gray-700 transition-colors"
-                      onMouseDown={() => setShowCustomModal(false)}
-                    >
-                      取消
-                    </button>
-                    <button
-                      className="px-4 py-1.5 text-xs bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-                      onMouseDown={() => setShowCustomModal(false)}
-                    >
-                      确定
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
       </div>
+      {/* Custom model modal */}
+      {showCustomModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/30" onMouseDown={() => setShowCustomModal(false)}>
+          <div className="bg-white rounded-xl shadow-2xl p-6 w-[400px] max-w-[90vw]" onMouseDown={(e) => e.stopPropagation()}>
+            <h3 className="text-base font-bold text-gray-800 mb-4">自定义模型</h3>
+            <label className="block text-xs text-gray-500 mb-1">API Key</label>
+            <input
+              type="password"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm mb-3 focus:outline-none focus:border-blue-400"
+              placeholder="sk-or-v1-..."
+              value={customApiKey}
+              onChange={(e) => setCustomApiKey(e.target.value)}
+            />
+            <label className="block text-xs text-gray-500 mb-1">模型 ID</label>
+            <input
+              type="text"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm mb-4 focus:outline-none focus:border-blue-400"
+              placeholder="openai/gpt-4o 或 deepseek/deepseek-chat"
+              value={customModelId}
+              onChange={(e) => setCustomModelId(e.target.value)}
+            />
+            <div className="flex justify-end gap-2">
+              <button className="px-4 py-1.5 text-xs text-gray-500 hover:text-gray-700 transition-colors" onMouseDown={() => setShowCustomModal(false)}>
+                取消
+              </button>
+              <button className="px-4 py-1.5 text-xs bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors" onMouseDown={() => setShowCustomModal(false)}>
+                确定
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <MessageList
         messages={messages}
         pending={pending}
@@ -316,6 +257,13 @@ const Dialog: React.FC<DialogProps> & {
           pending={pending}
           files={files}
           onFilesChange={setFiles}
+          models={models}
+          selectedModel={selectedModel}
+          onSelectModel={setSelectedModel}
+          onAddCustom={() => {
+            setSelectedModel("__custom__");
+            setShowCustomModal(true);
+          }}
         />
       </div>
     </div>
