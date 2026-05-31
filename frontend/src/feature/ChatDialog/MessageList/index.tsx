@@ -10,6 +10,8 @@ export interface DialogMessage {
   from: "user" | "bot";
   text: string;
   files?: File[];
+  versions?: string[];
+  versionIndex?: number;
 }
 
 interface MessageListProps {
@@ -19,6 +21,9 @@ interface MessageListProps {
   onAtBottomChange?: (isAtBottom: boolean) => void;
   onScrollToBottom?: () => void;
   onEditMessage?: (index: number, newText: string) => void;
+  onRetry?: (index: number) => void;
+  onSwitchVersion?: (index: number, versionIndex: number) => void;
+  onDeleteMessage?: (index: number) => void;
 }
 
 const MessageList: React.FC<MessageListProps> = ({
@@ -28,6 +33,9 @@ const MessageList: React.FC<MessageListProps> = ({
   onAtBottomChange,
   onScrollToBottom,
   onEditMessage,
+  onRetry,
+  onSwitchVersion,
+  onDeleteMessage,
 }) => {
   const userMessageRefs = useRef<Record<number, HTMLDivElement | null>>({});
   const pinnedActionsRef = useRef<HTMLDivElement | null>(null);
@@ -138,9 +146,29 @@ const MessageList: React.FC<MessageListProps> = ({
               data-oid="jbj51yo"
             >
               {m.from === "user" ? (
-                <UserBubble text={m.text} messageIndex={i} onEditMessage={onEditMessage} />
+                <UserBubble
+                  text={m.text}
+                  messageIndex={i}
+                  onEditMessage={onEditMessage}
+                  onRetry={onRetry ? () => onRetry(i) : undefined}
+                  onDelete={onDeleteMessage ? () => onDeleteMessage(i) : undefined}
+                  versions={m.versions}
+                  versionIndex={m.versionIndex}
+                  onSwitchVersion={onSwitchVersion ? (vi) => onSwitchVersion(i, vi) : undefined}
+                />
               ) : (
-                <BotBubble text={m.text} bodyRef={bodyRef} actionsPortalRef={pinnedActionsRef} messageIndex={i} onEditMessage={onEditMessage} />
+                <BotBubble
+                  text={m.text}
+                  bodyRef={bodyRef}
+                  actionsPortalRef={pinnedActionsRef}
+                  messageIndex={i}
+                  onEditMessage={onEditMessage}
+                  onRetry={onRetry ? () => onRetry(i) : undefined}
+                  onDelete={onDeleteMessage ? () => onDeleteMessage(i) : undefined}
+                  versions={m.versions}
+                  versionIndex={m.versionIndex}
+                  onSwitchVersion={onSwitchVersion ? (vi) => onSwitchVersion(i, vi) : undefined}
+                />
               )}
               {m.files && m.files.length > 0 && (
                 <FileChips

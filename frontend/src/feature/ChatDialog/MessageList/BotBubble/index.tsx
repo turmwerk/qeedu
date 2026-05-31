@@ -9,6 +9,11 @@ interface BotBubbleProps {
   actionsPortalRef: React.RefObject<HTMLDivElement | null>;
   messageIndex?: number;
   onEditMessage?: (index: number, newText: string) => void;
+  onRetry?: () => void;
+  onDelete?: () => void;
+  versions?: string[];
+  versionIndex?: number;
+  onSwitchVersion?: (versionIndex: number) => void;
 }
 
 const BotBubble: React.FC<BotBubbleProps> = ({
@@ -17,6 +22,11 @@ const BotBubble: React.FC<BotBubbleProps> = ({
   actionsPortalRef,
   messageIndex,
   onEditMessage,
+  onRetry,
+  onDelete,
+  versions,
+  versionIndex,
+  onSwitchVersion,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isPinned, setIsPinned] = useState(false);
@@ -48,16 +58,16 @@ const BotBubble: React.FC<BotBubbleProps> = ({
     setIsEditing(false);
   };
 
-  const handleRetry = () => {
-    console.log("Retry:", text);
-  };
-
-  const handleDelete = () => {
-    console.log("Delete:", text);
-  };
-
   const handleCopyText = () => {
-    navigator.clipboard.writeText(text);
+    const plain = text
+      .replace(/```[\s\S]*?```/g, (m) => m.replace(/```\w*\n?/g, "").replace(/```$/g, ""))
+      .replace(/\*\*(.*?)\*\*/g, "$1")
+      .replace(/\*(.*?)\*/g, "$1")
+      .replace(/`(.*?)`/g, "$1")
+      .replace(/^#{1,6}\s+/gm, "")
+      .replace(/^\s*[-*+]\s+/gm, "- ")
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1");
+    navigator.clipboard.writeText(plain);
   };
 
   const handleCopyMarkdown = () => {
@@ -75,9 +85,7 @@ const BotBubble: React.FC<BotBubbleProps> = ({
   }, [renderText, text]);
 
   useLayoutEffect(() => {
-    if (isEditing) {
-      resizeTextarea();
-    }
+    if (isEditing) resizeTextarea();
   }, [editText, isEditing]);
 
   useEffect(() => {
@@ -86,7 +94,6 @@ const BotBubble: React.FC<BotBubbleProps> = ({
       setIsPinned(false);
       return;
     }
-
     const updatePinned = () => {
       const bubble = containerRef.current;
       const container = bodyRef.current;
@@ -95,7 +102,6 @@ const BotBubble: React.FC<BotBubbleProps> = ({
       const containerRect = container.getBoundingClientRect();
       setIsPinned(bubbleRect.top < containerRect.top);
     };
-
     updatePinned();
     body.addEventListener("scroll", updatePinned, { passive: true });
     window.addEventListener("resize", updatePinned);
@@ -105,13 +111,17 @@ const BotBubble: React.FC<BotBubbleProps> = ({
     };
   }, [bodyRef, isHovered]);
 
+  const hasVersions = versions && versions.length > 1;
+  const currentVi = versionIndex ?? 0;
+  const totalVersions = versions?.length ?? 1;
+
   const actionsContent = (
     <BotMessageActions
       onEdit={handleEdit}
       onSave={handleSaveEdit}
       editMode={isEditing}
-      onRetry={handleRetry}
-      onDelete={handleDelete}
+      onRetry={onRetry ?? (() => {})}
+      onDelete={onDelete ?? (() => {})}
       onCopyText={handleCopyText}
       onCopyMarkdown={handleCopyMarkdown}
     />
@@ -126,19 +136,13 @@ const BotBubble: React.FC<BotBubbleProps> = ({
     >
       <div
         className="w-full rounded-md bg-[#f7f7f8] px-4 py-3 text-[#111827] shadow-sm"
-        style={{
-          wordBreak: "break-word",
-          overflowWrap: "anywhere",
-        }}
+        style={{ wordBreak: "break-word", overflowWrap: "anywhere" }}
       >
         {isEditing ? (
           <textarea
             ref={textareaRef}
             value={editText}
-            onChange={(e) => {
-              setEditText(e.target.value);
-              resizeTextarea();
-            }}
+            onChange={(e) => { setEditText(e.target.value); resizeTextarea(); }}
             className="w-full resize-none bg-transparent text-[#111827] leading-relaxed outline-none"
             style={{ wordBreak: "break-word", overflowWrap: "anywhere", overflow: "hidden" }}
           />
@@ -146,6 +150,27 @@ const BotBubble: React.FC<BotBubbleProps> = ({
           <MarkdownMessage text={deferredText} />
         )}
       </div>
+
+      {/* Version navigation */}
+      {hasVersions && (
+        <div className="flex items-center gap-1 mt-1 text-[11px] text-gray-400">
+          <button
+            className="px-1 hover:text-gray-600 disabled:opacity-30"
+            disabled={currentVi <= 0}
+            onClick={() => onSwitchVersion?.(currentVi - 1)}
+          >
+            ◀
+          </button>
+          <span>{currentVi + 1}/{totalVersions}</span>
+          <button
+            className="px-1 hover:text-gray-600 disabled:opacity-30"
+            disabled={currentVi >= totalVersions - 1}
+            onClick={() => onSwitchVersion?.(currentVi + 1)}
+          >
+            ▶
+          </button>
+        </div>
+      )}
 
       {!isPinned && (
         <div

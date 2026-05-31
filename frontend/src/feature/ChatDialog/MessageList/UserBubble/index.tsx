@@ -5,9 +5,23 @@ interface UserBubbleProps {
   text: string;
   messageIndex?: number;
   onEditMessage?: (index: number, newText: string) => void;
+  onRetry?: () => void;
+  onDelete?: () => void;
+  versions?: string[];
+  versionIndex?: number;
+  onSwitchVersion?: (versionIndex: number) => void;
 }
 
-const UserBubble: React.FC<UserBubbleProps> = ({ text, messageIndex, onEditMessage }) => {
+const UserBubble: React.FC<UserBubbleProps> = ({
+  text,
+  messageIndex,
+  onEditMessage,
+  onRetry,
+  onDelete,
+  versions,
+  versionIndex,
+  onSwitchVersion,
+}) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(text);
@@ -24,15 +38,12 @@ const UserBubble: React.FC<UserBubbleProps> = ({ text, messageIndex, onEditMessa
   };
 
   useLayoutEffect(() => {
-    if (isEditing) {
-      resizeTextarea();
-    }
+    if (isEditing) resizeTextarea();
   }, [editText, isEditing]);
 
   const handleEdit = () => {
     if (bubbleRef.current) {
-      const rect = bubbleRef.current.getBoundingClientRect();
-      setBaseWidth(rect.width);
+      setBaseWidth(bubbleRef.current.getBoundingClientRect().width);
     }
     setIsEditing(true);
     setEditText(text);
@@ -54,14 +65,9 @@ const UserBubble: React.FC<UserBubbleProps> = ({ text, messageIndex, onEditMessa
     navigator.clipboard.writeText(text);
   };
 
-  const handleDelete = () => {
-    // 用户侧删除行为按需实现；这里预留
-    console.log("Delete user message:", text);
-  };
-
-  const handleRetry = () => {
-    console.log("Retry user message:", text);
-  };
+  const hasVersions = versions && versions.length > 1;
+  const currentVi = versionIndex ?? 0;
+  const totalVersions = versions?.length ?? 1;
 
   return (
     <div
@@ -79,25 +85,15 @@ const UserBubble: React.FC<UserBubbleProps> = ({ text, messageIndex, onEditMessa
         className={`bg-[#e0f2f1] text-[#0f3f3b] px-3 py-2 rounded-xl border transition-[border-color] ${
           isEditing ? "border-[#14b8a6]" : "border-transparent hover:border-[#14b8a6]"
         }`}
-        style={{
-          wordBreak: "break-word",
-          overflowWrap: "anywhere",
-          boxSizing: "border-box",
-        }}
+        style={{ wordBreak: "break-word", overflowWrap: "anywhere", boxSizing: "border-box" }}
       >
         {isEditing ? (
           <textarea
             ref={textareaRef}
             value={editText}
-            onChange={(e) => {
-              setEditText(e.target.value);
-              resizeTextarea();
-            }}
+            onChange={(e) => { setEditText(e.target.value); resizeTextarea(); }}
             onKeyDown={(e) => {
-              if (e.key === "Escape") {
-                setIsEditing(false);
-                setEditText(text);
-              }
+              if (e.key === "Escape") { setIsEditing(false); setEditText(text); }
             }}
             className="w-full bg-transparent text-[#0f3f3b] leading-relaxed outline-none resize-none"
             style={{ wordBreak: "break-word", overflowWrap: "anywhere", overflow: "hidden" }}
@@ -106,6 +102,27 @@ const UserBubble: React.FC<UserBubbleProps> = ({ text, messageIndex, onEditMessa
           text
         )}
       </div>
+
+      {/* Version navigation */}
+      {hasVersions && (
+        <div className="flex items-center justify-end gap-1 mt-1 text-[11px] text-gray-400">
+          <button
+            className="px-1 hover:text-gray-600 disabled:opacity-30"
+            disabled={currentVi <= 0}
+            onClick={() => onSwitchVersion?.(currentVi - 1)}
+          >
+            ◀
+          </button>
+          <span>{currentVi + 1}/{totalVersions}</span>
+          <button
+            className="px-1 hover:text-gray-600 disabled:opacity-30"
+            disabled={currentVi >= totalVersions - 1}
+            onClick={() => onSwitchVersion?.(currentVi + 1)}
+          >
+            ▶
+          </button>
+        </div>
+      )}
 
       <div
         className={`absolute -top-6 right-0 z-10 transition-[opacity,transform] duration-200 ease-out ${
@@ -116,8 +133,8 @@ const UserBubble: React.FC<UserBubbleProps> = ({ text, messageIndex, onEditMessa
           onEdit={handleEdit}
           onSave={handleSave}
           editMode={isEditing}
-          onRetry={handleRetry}
-          onDelete={handleDelete}
+          onRetry={onRetry ?? (() => {})}
+          onDelete={onDelete ?? (() => {})}
           onCopyText={handleCopyText}
           onCopyMarkdown={handleCopyMarkdown}
         />

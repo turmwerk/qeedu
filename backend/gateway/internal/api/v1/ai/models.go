@@ -15,16 +15,16 @@ type ModelInfo struct {
 }
 
 var availableModels = []ModelInfo{
+	{ID: "google/gemma-4-26b-a4b-it:free", Name: "Gemma 4 26B A4B (快)", Provider: "Google"},
 	{ID: "google/gemma-4-31b-it:free", Name: "Gemma 4 31B", Provider: "Google"},
-	{ID: "google/gemma-4-26b-a4b-it:free", Name: "Gemma 4 26B A4B", Provider: "Google"},
-	{ID: "moonshotai/kimi-k2.6:free", Name: "Kimi K2.6", Provider: "MoonshotAI"},
 	{ID: "deepseek/deepseek-v4-flash:free", Name: "DeepSeek V4 Flash", Provider: "DeepSeek"},
+	{ID: "moonshotai/kimi-k2.6:free", Name: "Kimi K2.6", Provider: "MoonshotAI"},
 	{ID: "qwen/qwen3-coder:free", Name: "Qwen3 Coder 480B", Provider: "Qwen"},
-	{ID: "meta-llama/llama-3.3-70b-instruct:free", Name: "Llama 3.3 70B", Provider: "Meta"},
+	{ID: "openai/gpt-oss-120b:free", Name: "GPT-OSS 120B", Provider: "OpenAI"},
 	{ID: "nvidia/nemotron-3-super-120b-a12b:free", Name: "Nemotron 3 Super", Provider: "NVIDIA"},
-	{ID: "nvidia/nemotron-3-nano-30b-a3b:free", Name: "Nemotron 3 Nano 30B", Provider: "NVIDIA"},
-	{ID: "openrouter/owl-alpha", Name: "Owl Alpha 1.6T", Provider: "OpenRouter"},
-	{ID: "minimax/minimax-m2.5:free", Name: "MiniMax M2.5", Provider: "MiniMax"},
+	{ID: "meta-llama/llama-3.3-70b-instruct:free", Name: "Llama 3.3 70B", Provider: "Meta"},
+	{ID: "openrouter/owl-alpha", Name: "Owl Alpha 1.7T", Provider: "OpenRouter"},
+	{ID: "z-ai/glm-4.5-air:free", Name: "GLM 4.5 Air", Provider: "Z.ai"},
 }
 
 // currentChatModel returns the active chat model ID (env-overridable).

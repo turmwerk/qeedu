@@ -211,6 +211,9 @@ const CustomModelModal: React.FC<Props> = ({ initial, onSave, onClose }) => {
                 {showKey ? "隐藏" : "显示"}
               </button>
             </div>
+            <p className="text-[10px] text-amber-500 mt-1">
+              API Key 存储在浏览器本地，不会发送到 QeEdu 服务器。请勿在公共设备上保存。
+            </p>
           </div>
 
           {/* Model ID */}

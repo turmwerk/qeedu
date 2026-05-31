@@ -160,6 +160,18 @@ const Dialog: React.FC<DialogProps> & {
     // Add empty bot message that will be filled by streaming
     setMessages((m) => [...m, { from: "bot", text: "" }]);
 
+    // Read file contents for context
+    const readFiles = async (): Promise<string> => {
+      if (sentFiles.length === 0) return "";
+      const chunks = await Promise.all(
+        sentFiles.map(async (file) => {
+          const content = await file.text();
+          return `File: ${file.name}\n\`\`\`\n${content.slice(0, 8000)}\n\`\`\``;
+        }),
+      );
+      return chunks.join("\n\n").slice(0, 24000);
+    };
+
     const handlers = {
       onDelta: (delta: string) => {
         pendingDeltaRef.current += delta;
@@ -217,20 +229,28 @@ const Dialog: React.FC<DialogProps> & {
       ? customConfigs.find((c) => `__cfg_${c.name}` === selectedModel)
       : null;
 
-    abortRef.current = transport
-      ? transport({
-          messages: chatHistory,
-          input: text,
-          files: sentFiles,
-          ...handlers,
-        })
-      : chatStream({
-          messages: chatHistory,
-          model: activeCustom ? activeCustom.modelId : selectedModel || undefined,
-          api_key: activeCustom?.apiKey || undefined,
-          base_url: activeCustom?.baseUrl || undefined,
-          ...handlers,
-        });
+    const outerController = new AbortController();
+    abortRef.current = outerController;
+
+    readFiles().then((fileContext) => {
+      if (outerController.signal.aborted) return;
+      const streamCtrl = transport
+        ? transport({
+            messages: chatHistory,
+            input: text,
+            files: sentFiles,
+            ...handlers,
+          })
+        : chatStream({
+            messages: chatHistory,
+            file_context: fileContext || undefined,
+            model: activeCustom ? activeCustom.modelId : selectedModel || undefined,
+            api_key: activeCustom?.apiKey || undefined,
+            base_url: activeCustom?.baseUrl || undefined,
+            ...handlers,
+          });
+      outerController.signal.addEventListener("abort", () => streamCtrl.abort(), { once: true });
+    });
   };
 
   const stop = () => {
@@ -245,13 +265,150 @@ const Dialog: React.FC<DialogProps> & {
   };
 
   const handleEditMessage = useCallback((index: number, newText: string) => {
-    setMessages((prevMessages) => {
-      const updated = [...prevMessages];
-      if (updated[index]) {
-        updated[index] = { ...updated[index], text: newText };
-      }
+    setMessages((prev) => {
+      const updated = [...prev];
+      const msg = updated[index];
+      if (!msg) return prev;
+      const versions = msg.versions ? [...msg.versions] : [msg.text];
+      versions.push(newText);
+      updated[index] = { ...msg, text: newText, versions, versionIndex: versions.length - 1 };
       return updated;
     });
+  }, []);
+
+  const handleRetry = useCallback((index: number) => {
+    if (pending) return;
+    setMessages((prev) => {
+      const msg = prev[index];
+      if (!msg) return prev;
+
+      if (msg.from === "bot") {
+        // Re-generate bot response: keep messages up to index, add empty bot bubble
+        const history = prev.slice(0, index);
+        const oldVersions = msg.versions ? [...msg.versions] : [msg.text];
+        const newBot: DialogMessage = { from: "bot", text: "", versions: oldVersions, versionIndex: oldVersions.length };
+        return [...history, newBot];
+      }
+      // User retry: re-send the same user message
+      const history = prev.slice(0, index + 1);
+      const newBot: DialogMessage = { from: "bot", text: "" };
+      return [...history, newBot];
+    });
+
+    // Trigger streaming for the new bot response
+    setPending(true);
+    scrollToBottom("smooth");
+
+    setTimeout(() => {
+      setMessages((current) => {
+        const chatHistory: ChatMessage[] = current
+          .slice(0, -1)
+          .filter((m) => m.text)
+          .map((m) => ({
+            role: m.from === "user" ? "user" as const : "assistant" as const,
+            content: m.text,
+          }));
+
+        const activeCustom = selectedModel.startsWith("__cfg_")
+          ? customConfigs.find((c) => `__cfg_${c.name}` === selectedModel)
+          : null;
+
+        const outerController = new AbortController();
+        abortRef.current = outerController;
+
+        const handlers = {
+          onDelta: (delta: string) => {
+            pendingDeltaRef.current += delta;
+            if (!rafRef.current) {
+              rafRef.current = requestAnimationFrame(() => {
+                const batch = pendingDeltaRef.current;
+                pendingDeltaRef.current = "";
+                rafRef.current = 0;
+                setMessages((m) => {
+                  const updated = [...m];
+                  const last = updated[updated.length - 1];
+                  if (last && last.from === "bot") {
+                    updated[updated.length - 1] = { ...last, text: last.text + batch };
+                  }
+                  return updated;
+                });
+              });
+            }
+          },
+          onDone: () => {
+            if (pendingDeltaRef.current) {
+              const remaining = pendingDeltaRef.current;
+              pendingDeltaRef.current = "";
+              if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = 0; }
+              setMessages((m) => {
+                const updated = [...m];
+                const last = updated[updated.length - 1];
+                if (last && last.from === "bot") {
+                  const finalText = last.text + remaining;
+                  const versions = last.versions ? [...last.versions, finalText] : undefined;
+                  const versionIndex = versions ? versions.length - 1 : undefined;
+                  updated[updated.length - 1] = { ...last, text: finalText, versions, versionIndex };
+                }
+                return updated;
+              });
+            } else {
+              setMessages((m) => {
+                const updated = [...m];
+                const last = updated[updated.length - 1];
+                if (last && last.from === "bot" && last.versions) {
+                  const versions = [...last.versions, last.text];
+                  updated[updated.length - 1] = { ...last, versions, versionIndex: versions.length - 1 };
+                }
+                return updated;
+              });
+            }
+            setPending(false);
+            abortRef.current = null;
+          },
+          onError: (err: string) => {
+            if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = 0; }
+            pendingDeltaRef.current = "";
+            setMessages((m) => {
+              const updated = [...m];
+              const last = updated[updated.length - 1];
+              if (last && last.from === "bot") {
+                updated[updated.length - 1] = { ...last, text: last.text || `Error: ${err}` };
+              }
+              return updated;
+            });
+            setPending(false);
+            abortRef.current = null;
+          },
+        };
+
+        const streamCtrl = transport
+          ? transport({ messages: chatHistory, input: "", files: [], ...handlers })
+          : chatStream({
+              messages: chatHistory,
+              model: activeCustom ? activeCustom.modelId : selectedModel || undefined,
+              api_key: activeCustom?.apiKey || undefined,
+              base_url: activeCustom?.baseUrl || undefined,
+              ...handlers,
+            });
+        outerController.signal.addEventListener("abort", () => streamCtrl.abort(), { once: true });
+
+        return current;
+      });
+    }, 0);
+  }, [pending, scrollToBottom, selectedModel, customConfigs, transport]);
+
+  const handleSwitchVersion = useCallback((index: number, vi: number) => {
+    setMessages((prev) => {
+      const updated = [...prev];
+      const msg = updated[index];
+      if (!msg?.versions || vi < 0 || vi >= msg.versions.length) return prev;
+      updated[index] = { ...msg, text: msg.versions[vi], versionIndex: vi };
+      return updated;
+    });
+  }, []);
+
+  const handleDeleteMessage = useCallback((index: number) => {
+    setMessages((prev) => prev.filter((_, i) => i !== index));
   }, []);
 
   return (
@@ -266,6 +423,9 @@ const Dialog: React.FC<DialogProps> & {
         onAtBottomChange={handleAtBottomChange}
         onScrollToBottom={() => scrollToBottom("smooth")}
         onEditMessage={handleEditMessage}
+        onRetry={handleRetry}
+        onSwitchVersion={handleSwitchVersion}
+        onDeleteMessage={handleDeleteMessage}
       />
       <div className="shrink-0">
         <InputArea
