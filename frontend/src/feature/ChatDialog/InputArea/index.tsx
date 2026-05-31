@@ -18,6 +18,7 @@ interface InputAreaProps {
   selectedModel: string;
   onSelectModel: (id: string) => void;
   onAddCustom: () => void;
+  onEditCustom?: (id: string) => void;
 }
 
 const InputArea: React.FC<InputAreaProps> = ({
@@ -33,6 +34,7 @@ const InputArea: React.FC<InputAreaProps> = ({
   selectedModel,
   onSelectModel,
   onAddCustom,
+  onEditCustom,
 }) => {
   const [selectedMode, setSelectedMode] = useState<string>("Agent");
 
@@ -46,16 +48,32 @@ const InputArea: React.FC<InputAreaProps> = ({
 
   // AI模型选项 — 从后端真实模型列表生成
   const aiItems: DropdownItem[] = useMemo(() => {
-    const items: DropdownItem[] = models.map((m) => ({
-      label: (
-        <span>
-          <span className="font-medium">{m.name}</span>
-          <span className="ml-1.5 text-gray-400 text-xs">{m.provider}</span>
-        </span>
-      ),
-      active: selectedModel === m.id,
-      onClick: () => onSelectModel(m.id),
-    }));
+    const items: DropdownItem[] = models.map((m) => {
+      const isCustom = m.id.startsWith("__cfg_");
+      return {
+        label: (
+          <span className="flex items-center gap-1">
+            <span>
+              <span className="font-medium">{m.name}</span>
+              <span className="ml-1.5 text-gray-400 text-xs">{m.provider}</span>
+            </span>
+            {isCustom && onEditCustom && (
+              <span
+                className="ml-auto pl-2 text-gray-400 hover:text-blue-500 cursor-pointer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEditCustom(m.id);
+                }}
+              >
+                ✎
+              </span>
+            )}
+          </span>
+        ),
+        active: selectedModel === m.id,
+        onClick: () => onSelectModel(m.id),
+      };
+    });
     // 自定义模型
     items.push({
       label: (
@@ -63,11 +81,11 @@ const InputArea: React.FC<InputAreaProps> = ({
           ⚙ 添加自定义模型…
         </span>
       ),
-      active: selectedModel === "__custom__",
+      active: false,
       onClick: onAddCustom,
     });
     return items;
-  }, [models, selectedModel, onSelectModel, onAddCustom]);
+  }, [models, selectedModel, onSelectModel, onAddCustom, onEditCustom]);
 
   return (
     <div className="flex flex-col border border-[var(--brand-border)] rounded-xl bg-white overflow-visible transition-[border-color,box-shadow] hover:border-[var(--brand-accent)] hover:shadow-[0_4px_12px_rgba(59,130,246,0.15)]">

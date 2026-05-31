@@ -16,6 +16,7 @@ def chat_stream(
     language: str = "",
     model: str = "",
     api_key: str = "",
+    base_url: str = "",
 ) -> Generator[str, None, None]:
     resolved_model = model or LLM_MODEL
     llm_messages: list[dict[str, str]] = [{"role": "system", "content": CHAT_SYSTEM}]
@@ -39,4 +40,5 @@ def chat_stream(
         max_tokens=LLM_MAX_TOKENS,
         model=resolved_model,
         api_key=api_key,
+        base_url=base_url,
     )

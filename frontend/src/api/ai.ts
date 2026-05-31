@@ -11,6 +11,7 @@ export interface ChatStreamOptions {
 	language?: string;
 	model?: string;
 	api_key?: string;
+	base_url?: string;
 	onDelta: (text: string) => void;
 	onDone: () => void;
 	onError: (err: string) => void;
@@ -130,10 +131,10 @@ function createStreamRequest(
 }
 
 export function chatStream(options: ChatStreamOptions): AbortController {
-	const { messages, file_context, language, model, api_key, onDelta, onDone, onError } = options;
+	const { messages, file_context, language, model, api_key, base_url, onDelta, onDone, onError } = options;
 	return createStreamRequest(
 		"/ai/chat",
-		{ messages, file_context, language, model: model || undefined, api_key: api_key || undefined },
+		{ messages, file_context, language, model: model || undefined, api_key: api_key || undefined, base_url: base_url || undefined },
 		onDelta,
 		onDone,
 		onError,
@@ -141,10 +142,10 @@ export function chatStream(options: ChatStreamOptions): AbortController {
 }
 
 export function customChatStream(options: CustomChatStreamOptions): AbortController {
-	const { endpoint, messages, file_context, language, model, api_key, extraBody, onDelta, onDone, onError } = options;
+	const { endpoint, messages, file_context, language, model, api_key, base_url, extraBody, onDelta, onDone, onError } = options;
 	return createStreamRequest(
 		endpoint,
-		{ messages, file_context, language, model: model || undefined, api_key: api_key || undefined, ...(extraBody ?? {}) },
+		{ messages, file_context, language, model: model || undefined, api_key: api_key || undefined, base_url: base_url || undefined, ...(extraBody ?? {}) },
 		onDelta,
 		onDone,
 		onError,
@@ -168,16 +169,17 @@ export interface FixBugStreamOptions {
 	language: string;
 	model?: string;
 	api_key?: string;
+	base_url?: string;
 	onDelta: (text: string) => void;
 	onDone: () => void;
 	onError: (err: string) => void;
 }
 
 export function fixBugStream(options: FixBugStreamOptions): AbortController {
-	const { code, error_message, language, model, api_key, onDelta, onDone, onError } = options;
+	const { code, error_message, language, model, api_key, base_url, onDelta, onDone, onError } = options;
 	return createStreamRequest(
 		"/ai/fix",
-		{ code, error_message, language, model: model || undefined, api_key: api_key || undefined },
+		{ code, error_message, language, model: model || undefined, api_key: api_key || undefined, base_url: base_url || undefined },
 		onDelta,
 		onDone,
 		onError,

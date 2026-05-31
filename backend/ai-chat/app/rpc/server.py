@@ -11,24 +11,27 @@ from configs.env import GRPC_MAX_WORKERS
 logger = logging.getLogger(__name__)
 
 
-def _read_metadata(context) -> tuple[str, str]:
-    """Read x-model and x-api-key from gRPC request metadata."""
+def _read_metadata(context) -> tuple[str, str, str]:
+    """Read x-model, x-api-key, x-base-url from gRPC request metadata."""
     model = ""
     api_key = ""
+    base_url = ""
     for key, value in context.invocation_metadata():
         if key == "x-model":
             model = value
         elif key == "x-api-key":
             api_key = value
-    return model, api_key
+        elif key == "x-base-url":
+            base_url = value
+    return model, api_key, base_url
 
 
 class AIChatServicer(ai_chat_pb2_grpc.AIChatServiceServicer):
     def Chat(self, request, context):
         try:
-            model, api_key = _read_metadata(context)
+            model, api_key, base_url = _read_metadata(context)
             messages = [{"role": m.role, "content": m.content} for m in request.messages]
-            for delta in chat_stream(messages, request.file_context, request.language, model=model, api_key=api_key):
+            for delta in chat_stream(messages, request.file_context, request.language, model=model, api_key=api_key, base_url=base_url):
                 yield ai_chat_pb2.ChatResponse(delta=delta, done=False)
             yield ai_chat_pb2.ChatResponse(delta="", done=True)
         except Exception as e:
@@ -39,8 +42,8 @@ class AIChatServicer(ai_chat_pb2_grpc.AIChatServiceServicer):
 
     def FixBug(self, request, context):
         try:
-            model, api_key = _read_metadata(context)
-            for delta in fixbug_stream(request.code, request.error_message, request.language, model=model, api_key=api_key):
+            model, api_key, base_url = _read_metadata(context)
+            for delta in fixbug_stream(request.code, request.error_message, request.language, model=model, api_key=api_key, base_url=base_url):
                 yield ai_chat_pb2.FixBugResponse(delta=delta, done=False)
             yield ai_chat_pb2.FixBugResponse(delta="", done=True)
         except Exception as e:

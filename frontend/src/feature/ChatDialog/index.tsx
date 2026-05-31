@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import MessageList, { type DialogMessage } from "./MessageList";
 import InputArea from "./InputArea";
+import CustomModelModal, { type CustomModelConfig } from "./CustomModelModal";
 import { chatStream, getModels, type ChatMessage, type ModelInfo } from "@/api/ai";
 
 interface DialogProps {
@@ -44,11 +45,20 @@ const Dialog: React.FC<DialogProps> & {
   const [selectedModel, setSelectedModel] = useState("");
   const [models, setModels] = useState<ModelInfo[]>([]);
   const [showCustomModal, setShowCustomModal] = useState(false);
-  const [customModelId, setCustomModelId] = useState("");
-  const [customApiKey, setCustomApiKey] = useState("");
+  const [customConfigs, setCustomConfigs] = useState<CustomModelConfig[]>(() => {
+    try {
+      const raw = localStorage.getItem("custom_model_configs");
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [editingConfig, setEditingConfig] = useState<CustomModelConfig | null>(null);
   const bodyRef = useRef<HTMLDivElement | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const isAtBottomRef = useRef(true);
+  const pendingDeltaRef = useRef("");
+  const rafRef = useRef(0);
 
   // Fetch available models on mount
   useEffect(() => {
@@ -64,6 +74,17 @@ const Dialog: React.FC<DialogProps> & {
     return () => { cancelled = true; };
   }, []);
 
+  // Merge custom configs into models list
+  const allModels = useMemo(() => {
+    const customModels: ModelInfo[] = customConfigs.map((cfg) => ({
+      id: `__cfg_${cfg.name}`,
+      name: cfg.name,
+      provider: new URL(cfg.baseUrl).hostname,
+    }));
+    // If selectedModel is a custom config, ensure it shows correctly
+    return [...models, ...customModels];
+  }, [models, customConfigs]);
+
   // 持久化消息
   React.useEffect(() => {
     try {
@@ -75,6 +96,7 @@ const Dialog: React.FC<DialogProps> & {
     return () => {
       abortRef.current?.abort();
       abortRef.current = null;
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
   }, []);
 
@@ -140,20 +162,43 @@ const Dialog: React.FC<DialogProps> & {
 
     const handlers = {
       onDelta: (delta: string) => {
-        setMessages((m) => {
-          const updated = [...m];
-          const last = updated[updated.length - 1];
-          if (last && last.from === "bot") {
-            updated[updated.length - 1] = { ...last, text: last.text + delta };
-          }
-          return updated;
-        });
+        pendingDeltaRef.current += delta;
+        if (!rafRef.current) {
+          rafRef.current = requestAnimationFrame(() => {
+            const batch = pendingDeltaRef.current;
+            pendingDeltaRef.current = "";
+            rafRef.current = 0;
+            setMessages((m) => {
+              const updated = [...m];
+              const last = updated[updated.length - 1];
+              if (last && last.from === "bot") {
+                updated[updated.length - 1] = { ...last, text: last.text + batch };
+              }
+              return updated;
+            });
+          });
+        }
       },
       onDone: () => {
+        if (pendingDeltaRef.current) {
+          const remaining = pendingDeltaRef.current;
+          pendingDeltaRef.current = "";
+          if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = 0; }
+          setMessages((m) => {
+            const updated = [...m];
+            const last = updated[updated.length - 1];
+            if (last && last.from === "bot") {
+              updated[updated.length - 1] = { ...last, text: last.text + remaining };
+            }
+            return updated;
+          });
+        }
         setPending(false);
         abortRef.current = null;
       },
       onError: (err: string) => {
+        if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = 0; }
+        pendingDeltaRef.current = "";
         setMessages((m) => {
           const updated = [...m];
           const last = updated[updated.length - 1];
@@ -167,6 +212,11 @@ const Dialog: React.FC<DialogProps> & {
       },
     };
 
+    // Resolve custom config if selected
+    const activeCustom = selectedModel.startsWith("__cfg_")
+      ? customConfigs.find((c) => `__cfg_${c.name}` === selectedModel)
+      : null;
+
     abortRef.current = transport
       ? transport({
           messages: chatHistory,
@@ -176,8 +226,9 @@ const Dialog: React.FC<DialogProps> & {
         })
       : chatStream({
           messages: chatHistory,
-          model: selectedModel === "__custom__" ? customModelId || undefined : selectedModel || undefined,
-          api_key: selectedModel === "__custom__" ? customApiKey || undefined : undefined,
+          model: activeCustom ? activeCustom.modelId : selectedModel || undefined,
+          api_key: activeCustom?.apiKey || undefined,
+          base_url: activeCustom?.baseUrl || undefined,
           ...handlers,
         });
   };
@@ -208,38 +259,6 @@ const Dialog: React.FC<DialogProps> & {
       <div className="shrink-0 flex items-center gap-2" data-oid="o.dphsl">
         <span className="font-bold text-[var(--brand-text)]">{botName}</span>
       </div>
-      {/* Custom model modal */}
-      {showCustomModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/30" onMouseDown={() => setShowCustomModal(false)}>
-          <div className="bg-white rounded-xl shadow-2xl p-6 w-[400px] max-w-[90vw]" onMouseDown={(e) => e.stopPropagation()}>
-            <h3 className="text-base font-bold text-gray-800 mb-4">自定义模型</h3>
-            <label className="block text-xs text-gray-500 mb-1">API Key</label>
-            <input
-              type="password"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm mb-3 focus:outline-none focus:border-blue-400"
-              placeholder="sk-or-v1-..."
-              value={customApiKey}
-              onChange={(e) => setCustomApiKey(e.target.value)}
-            />
-            <label className="block text-xs text-gray-500 mb-1">模型 ID</label>
-            <input
-              type="text"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm mb-4 focus:outline-none focus:border-blue-400"
-              placeholder="openai/gpt-4o 或 deepseek/deepseek-chat"
-              value={customModelId}
-              onChange={(e) => setCustomModelId(e.target.value)}
-            />
-            <div className="flex justify-end gap-2">
-              <button className="px-4 py-1.5 text-xs text-gray-500 hover:text-gray-700 transition-colors" onMouseDown={() => setShowCustomModal(false)}>
-                取消
-              </button>
-              <button className="px-4 py-1.5 text-xs bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors" onMouseDown={() => setShowCustomModal(false)}>
-                确定
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
       <MessageList
         messages={messages}
         pending={pending}
@@ -257,15 +276,38 @@ const Dialog: React.FC<DialogProps> & {
           pending={pending}
           files={files}
           onFilesChange={setFiles}
-          models={models}
+          models={allModels}
           selectedModel={selectedModel}
           onSelectModel={setSelectedModel}
           onAddCustom={() => {
-            setSelectedModel("__custom__");
+            setEditingConfig(null);
             setShowCustomModal(true);
+          }}
+          onEditCustom={(id) => {
+            const cfg = customConfigs.find((c) => `__cfg_${c.name}` === id);
+            if (cfg) {
+              setEditingConfig(cfg);
+              setShowCustomModal(true);
+            }
           }}
         />
       </div>
+
+      {/* Custom model modal — portal to body, highest z-index */}
+      {showCustomModal && (
+        <CustomModelModal
+          initial={editingConfig}
+          onSave={(cfg) => {
+            const updated = editingConfig
+              ? customConfigs.map((c) => (c.name === editingConfig.name ? cfg : c))
+              : [...customConfigs, cfg];
+            setCustomConfigs(updated);
+            localStorage.setItem("custom_model_configs", JSON.stringify(updated));
+            setSelectedModel(`__cfg_${cfg.name}`);
+          }}
+          onClose={() => setShowCustomModal(false)}
+        />
+      )}
     </div>
   );
 };

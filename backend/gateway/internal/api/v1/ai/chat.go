@@ -15,6 +15,7 @@ type chatReqBody struct {
 	Language    string    `json:"language"`
 	Model       string    `json:"model"`
 	APIKey      string    `json:"api_key"`
+	BaseURL     string    `json:"base_url"`
 }
 
 type chatMsg struct {
@@ -46,7 +47,7 @@ func Chat(c *gin.Context) {
 		model = currentChatModel()
 	}
 
-	dataCh, errCh := aiChatRPC.ChatStream(c.Request.Context(), req, model, body.APIKey)
+	dataCh, errCh := aiChatRPC.ChatStream(c.Request.Context(), req, model, body.APIKey, body.BaseURL)
 
 	c.Header("Content-Type", "text/event-stream")
 	c.Header("Cache-Control", "no-cache")

@@ -22,14 +22,17 @@ func Init(addr string) {
 	log.Printf("[rpc/ai-chat] connected to %s", addr)
 }
 
-// requestCtx attaches model + api_key as gRPC metadata.
-func requestCtx(ctx context.Context, model, apiKey string) context.Context {
+// requestCtx attaches model + api_key + base_url as gRPC metadata.
+func requestCtx(ctx context.Context, model, apiKey, baseURL string) context.Context {
 	md := metadata.New(nil)
 	if model != "" {
 		md.Set("x-model", model)
 	}
 	if apiKey != "" {
 		md.Set("x-api-key", apiKey)
+	}
+	if baseURL != "" {
+		md.Set("x-base-url", baseURL)
 	}
 	if md.Len() == 0 {
 		return ctx
@@ -38,7 +41,7 @@ func requestCtx(ctx context.Context, model, apiKey string) context.Context {
 }
 
 // ChatStream opens a streaming Chat RPC and returns a channel of deltas.
-func ChatStream(ctx context.Context, req *aichatv1.ChatRequest, model, apiKey string) (<-chan *aichatv1.ChatResponse, <-chan error) {
+func ChatStream(ctx context.Context, req *aichatv1.ChatRequest, model, apiKey, baseURL string) (<-chan *aichatv1.ChatResponse, <-chan error) {
 	ch := make(chan *aichatv1.ChatResponse, 64)
 	errCh := make(chan error, 1)
 
@@ -46,7 +49,7 @@ func ChatStream(ctx context.Context, req *aichatv1.ChatRequest, model, apiKey st
 		defer close(ch)
 		defer close(errCh)
 
-		stream, err := client.Chat(requestCtx(ctx, model, apiKey), req)
+		stream, err := client.Chat(requestCtx(ctx, model, apiKey, baseURL), req)
 		if err != nil {
 			errCh <- err
 			return
@@ -67,7 +70,7 @@ func ChatStream(ctx context.Context, req *aichatv1.ChatRequest, model, apiKey st
 }
 
 // FixBugStream opens a streaming FixBug RPC.
-func FixBugStream(ctx context.Context, req *aichatv1.FixBugRequest, model, apiKey string) (<-chan *aichatv1.FixBugResponse, <-chan error) {
+func FixBugStream(ctx context.Context, req *aichatv1.FixBugRequest, model, apiKey, baseURL string) (<-chan *aichatv1.FixBugResponse, <-chan error) {
 	ch := make(chan *aichatv1.FixBugResponse, 64)
 	errCh := make(chan error, 1)
 
@@ -75,7 +78,7 @@ func FixBugStream(ctx context.Context, req *aichatv1.FixBugRequest, model, apiKe
 		defer close(ch)
 		defer close(errCh)
 
-		stream, err := client.FixBug(requestCtx(ctx, model, apiKey), req)
+		stream, err := client.FixBug(requestCtx(ctx, model, apiKey, baseURL), req)
 		if err != nil {
 			errCh <- err
 			return

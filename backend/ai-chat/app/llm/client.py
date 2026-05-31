@@ -54,11 +54,11 @@ def _is_rate_limit(exc: Exception) -> bool:
     return "429" in str(exc) or "rate" in str(exc).lower()
 
 
-def create_client(key: str = "") -> OpenAI:
+def create_client(key: str = "", base_url: str = "") -> OpenAI:
     """Create an OpenAI-compatible client. Uses the current rotation key if none given."""
     return OpenAI(
         api_key=key or get_api_key(),
-        base_url=LLM_BASE_URL,
+        base_url=base_url or LLM_BASE_URL,
         default_headers=LLM_EXTRA_HEADERS or None,
     )
 
@@ -69,14 +69,16 @@ def stream_chat_completion(
     max_tokens: int = LLM_MAX_TOKENS,
     model: str = "",
     api_key: str = "",
+    base_url: str = "",
 ) -> Generator[str, None, None]:
     """Yield text deltas from the configured LLM provider."""
     provider = _select_provider()
     resolved_model = model or LLM_MODEL
-    logger.info("Using LLM provider: %s, model: %s, custom_key: %s", provider, resolved_model, bool(api_key))
+    logger.info("Using LLM provider: %s, model: %s, custom_key: %s, custom_url: %s",
+                provider, resolved_model, bool(api_key), bool(base_url))
 
     if provider == "openai":
-        yield from _stream_openai(messages, temperature, max_tokens, resolved_model, api_key)
+        yield from _stream_openai(messages, temperature, max_tokens, resolved_model, api_key, base_url)
         return
 
     yield from _stream_cli(provider, messages)
@@ -112,10 +114,11 @@ def _stream_openai(
     max_tokens: int,
     model: str,
     api_key: str = "",
+    base_url: str = "",
 ) -> Generator[str, None, None]:
-    # If a custom API key is provided, use it directly (no rotation).
+    # If a custom API key + base_url is provided, use them directly (no rotation).
     if api_key:
-        client = create_client(key=api_key)
+        client = create_client(key=api_key, base_url=base_url or LLM_BASE_URL)
         stream = client.chat.completions.create(
             model=model,
             messages=messages,

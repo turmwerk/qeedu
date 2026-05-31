@@ -16,6 +16,7 @@ def fixbug_stream(
     language: str,
     model: str = "",
     api_key: str = "",
+    base_url: str = "",
 ) -> Generator[str, None, None]:
     resolved_model = model or FIXBUG_MODEL
     user_msg = (
@@ -35,4 +36,5 @@ def fixbug_stream(
         max_tokens=FIXBUG_MAX_TOKENS,
         model=resolved_model,
         api_key=api_key,
+        base_url=base_url,
     )
