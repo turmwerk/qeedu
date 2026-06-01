@@ -12,11 +12,20 @@ export interface CustomModelSelection {
 
 const CUSTOM_CONFIGS_KEY = "custom_model_configs";
 const SELECTED_MODEL_KEY = "selected_ai_model";
+const DEPRECATED_MODEL_IDS = new Set([
+  "google/gemini-2.5-flash-lite:nitro",
+]);
 
 function loadSelectedModel(): string {
   try {
     const raw = localStorage.getItem(SELECTED_MODEL_KEY);
-    if (raw) return raw;
+    if (raw) {
+      if (DEPRECATED_MODEL_IDS.has(raw)) {
+        localStorage.removeItem(SELECTED_MODEL_KEY);
+        return "";
+      }
+      return raw;
+    }
   } catch {}
   return "";
 }

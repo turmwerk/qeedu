@@ -27,6 +27,9 @@ interface DialogProps {
 }
 
 const getStorageKey = (dialogId: string) => `dialog_messages_${dialogId}`;
+const DEPRECATED_MODEL_IDS = new Set([
+  "google/gemini-2.5-flash-lite:nitro",
+]);
 
 const Dialog: React.FC<DialogProps> & {
   clearDialog: (dialogId: string) => void;
@@ -74,7 +77,12 @@ const Dialog: React.FC<DialogProps> & {
       .then((res) => {
         if (!cancelled) {
           setModels(res.models);
-          if (!selectedModel) {
+          const knownModelIds = new Set(res.models.map((model) => model.id));
+          const isCustomSelection = selectedModel.startsWith("__cfg_");
+          const isDeprecated = DEPRECATED_MODEL_IDS.has(selectedModel);
+          const isUnknownBuiltin = selectedModel && !isCustomSelection && !knownModelIds.has(selectedModel);
+
+          if (!selectedModel || isDeprecated || isUnknownBuiltin) {
             handleSelectModel(res.current.chat);
           }
         }

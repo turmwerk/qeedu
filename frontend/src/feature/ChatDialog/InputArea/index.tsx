@@ -55,7 +55,6 @@ const InputArea: React.FC<InputAreaProps> = ({
           <span className="flex items-center gap-1">
             <span>
               <span className="font-medium">{m.name}</span>
-              <span className="ml-1.5 text-gray-400 text-xs">{m.provider}</span>
             </span>
             {isCustom && onEditCustom && (
               <span

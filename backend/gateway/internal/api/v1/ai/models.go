@@ -15,8 +15,8 @@ type ModelInfo struct {
 }
 
 var availableModels = []ModelInfo{
-	{ID: "deepseek-v4-flash", Name: "DeepSeek V4 Flash", Provider: "DeepSeek"},
-	{ID: "google/gemini-2.5-flash-lite:nitro", Name: "Gemini 2.5 Flash Lite (OpenRouter 快)", Provider: "OpenRouter"},
+	{ID: "deepseek-v4-flash", Name: "deepseek-v4-flash", Provider: "DeepSeek"},
+	{ID: "liquid/lfm-2.5-1.2b-instruct:free", Name: "LFM2.5 1.2B Instruct (free)", Provider: "OpenRouter"},
 }
 
 // currentChatModel returns the active chat model ID (env-overridable).

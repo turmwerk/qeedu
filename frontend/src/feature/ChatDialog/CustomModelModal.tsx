@@ -21,7 +21,7 @@ const PRESETS: Preset[] = [
   {
     name: "OpenRouter",
     baseUrl: "https://openrouter.ai/api/v1",
-    models: ["google/gemini-2.5-flash-lite:nitro"],
+    models: ["liquid/lfm-2.5-1.2b-instruct:free"],
   },
   {
     name: "DeepSeek",
