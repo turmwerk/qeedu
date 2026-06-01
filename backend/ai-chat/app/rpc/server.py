@@ -31,7 +31,16 @@ class AIChatServicer(ai_chat_pb2_grpc.AIChatServiceServicer):
         try:
             model, api_key, base_url = _read_metadata(context)
             messages = [{"role": m.role, "content": m.content} for m in request.messages]
-            for delta in chat_stream(messages, request.file_context, request.language, model=model, api_key=api_key, base_url=base_url):
+            for delta in chat_stream(
+                messages,
+                request.file_context,
+                request.language,
+                model=model,
+                api_key=api_key,
+                base_url=base_url,
+                temperature=request.temperature if request.temperature > 0 else None,
+                max_tokens=request.max_tokens if request.max_tokens > 0 else None,
+            ):
                 yield ai_chat_pb2.ChatResponse(delta=delta, done=False)
             yield ai_chat_pb2.ChatResponse(delta="", done=True)
         except Exception as e:
@@ -43,7 +52,16 @@ class AIChatServicer(ai_chat_pb2_grpc.AIChatServiceServicer):
     def FixBug(self, request, context):
         try:
             model, api_key, base_url = _read_metadata(context)
-            for delta in fixbug_stream(request.code, request.error_message, request.language, model=model, api_key=api_key, base_url=base_url):
+            for delta in fixbug_stream(
+                request.code,
+                request.error_message,
+                request.language,
+                model=model,
+                api_key=api_key,
+                base_url=base_url,
+                temperature=request.temperature if request.temperature > 0 else None,
+                max_tokens=request.max_tokens if request.max_tokens > 0 else None,
+            ):
                 yield ai_chat_pb2.FixBugResponse(delta=delta, done=False)
             yield ai_chat_pb2.FixBugResponse(delta="", done=True)
         except Exception as e:

@@ -13,6 +13,11 @@ type completeReqBody struct {
 	FileContent  string `json:"file_content"`
 	CursorOffset int32  `json:"cursor_offset"`
 	FilePath     string `json:"file_path"`
+	Model        string `json:"model"`
+	APIKey       string `json:"api_key"`
+	BaseURL      string `json:"base_url"`
+	Temperature  float64 `json:"temperature"`
+	MaxTokens    int32   `json:"max_tokens"`
 }
 
 // Complete handles POST /api/v1/ai/complete.
@@ -28,6 +33,11 @@ func Complete(c *gin.Context) {
 		FileContent:  body.FileContent,
 		CursorOffset: body.CursorOffset,
 		FilePath:     body.FilePath,
+		Model:        body.Model,
+		ApiKey:       body.APIKey,
+		BaseUrl:      body.BaseURL,
+		Temperature:  body.Temperature,
+		MaxTokens:    body.MaxTokens,
 	})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

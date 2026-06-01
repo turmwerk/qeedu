@@ -2,23 +2,19 @@
 
 from openai import OpenAI
 from configs.llm import (
-    LLM_BASE_URL,
-    LLM_EXTRA_HEADERS,
-    get_api_key,
-    key_count,
-    rotate_api_key,
+    resolve_provider,
 )
 import logging
 
 logger = logging.getLogger(__name__)
 
 
-def create_client(key: str = "") -> OpenAI:
-    """Create an OpenAI-compatible client. Uses the current rotation key if none given."""
+def create_client(key: str, base_url: str, headers: dict[str, str] | None = None) -> OpenAI:
+    """Create an OpenAI-compatible client."""
     return OpenAI(
-        api_key=key or get_api_key(),
-        base_url=LLM_BASE_URL,
-        default_headers=LLM_EXTRA_HEADERS or None,
+        api_key=key,
+        base_url=base_url,
+        default_headers=headers or None,
     )
 
 
@@ -34,25 +30,20 @@ def _is_rate_limit(exc: Exception) -> bool:
 
 
 def create_with_retry(model: str, messages: list, **kwargs):
-    """Call chat.completions.create with automatic key rotation on 429.
+    """Call chat.completions.create using the provider resolved for the model."""
+    api_key = str(kwargs.pop("api_key", "") or "")
+    base_url = str(kwargs.pop("base_url", "") or "")
+    provider_cfg = resolve_provider(model=model, api_key=api_key, base_url=base_url)
+    if not provider_cfg.api_key or not provider_cfg.base_url:
+        raise RuntimeError("No provider credentials configured for copilot model.")
 
-    Returns the completion response.
-    """
-    total_keys = max(key_count(), 1)
-    for attempt in range(total_keys):
-        client = create_client()
-        try:
-            return client.chat.completions.create(
-                model=model,
-                messages=messages,
-                **kwargs,
-            )
-        except Exception as e:
-            if _is_rate_limit(e) and rotate_api_key():
-                logger.warning(
-                    "Rate limited (attempt %d/%d), rotating API key...",
-                    attempt + 1, total_keys,
-                )
-                continue
-            raise
-    raise RuntimeError(f"All {total_keys} API keys are rate-limited.")
+    client = create_client(
+        key=provider_cfg.api_key,
+        base_url=provider_cfg.base_url,
+        headers=provider_cfg.headers,
+    )
+    return client.chat.completions.create(
+        model=model,
+        messages=messages,
+        **kwargs,
+    )

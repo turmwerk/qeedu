@@ -16,6 +16,8 @@ type chatReqBody struct {
 	Model       string    `json:"model"`
 	APIKey      string    `json:"api_key"`
 	BaseURL     string    `json:"base_url"`
+	Temperature float64   `json:"temperature"`
+	MaxTokens   int32     `json:"max_tokens"`
 }
 
 type chatMsg struct {
@@ -40,6 +42,8 @@ func Chat(c *gin.Context) {
 		Messages:    msgs,
 		FileContext: body.FileContext,
 		Language:    body.Language,
+		Temperature: body.Temperature,
+		MaxTokens:   body.MaxTokens,
 	}
 
 	model := body.Model
@@ -47,7 +51,13 @@ func Chat(c *gin.Context) {
 		model = currentChatModel()
 	}
 
-	dataCh, errCh := aiChatRPC.ChatStream(c.Request.Context(), req, model, body.APIKey, body.BaseURL)
+	dataCh, errCh := aiChatRPC.ChatStream(
+		c.Request.Context(),
+		req,
+		model,
+		body.APIKey,
+		body.BaseURL,
+	)
 
 	c.Header("Content-Type", "text/event-stream")
 	c.Header("Cache-Control", "no-cache")

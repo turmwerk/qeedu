@@ -18,6 +18,8 @@ message ChatRequest {
   repeated ChatMessage messages = 1;
   string file_context           = 2;
   string language               = 3;
+  double temperature            = 4;
+  int32 max_tokens              = 5;
 }
 
 message ChatResponse {
@@ -30,6 +32,8 @@ message FixBugRequest {
   string code          = 1;
   string error_message = 2;
   string language      = 3;
+  double temperature   = 4;
+  int32 max_tokens     = 5;
 }
 
 message FixBugResponse {

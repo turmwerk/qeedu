@@ -16,6 +16,8 @@ type fixBugReqBody struct {
 	Model        string `json:"model"`
 	APIKey       string `json:"api_key"`
 	BaseURL      string `json:"base_url"`
+	Temperature  float64 `json:"temperature"`
+	MaxTokens    int32   `json:"max_tokens"`
 }
 
 // FixBug handles POST /api/v1/ai/fix with SSE streaming.
@@ -30,6 +32,8 @@ func FixBug(c *gin.Context) {
 		Code:         body.Code,
 		ErrorMessage: body.ErrorMessage,
 		Language:     body.Language,
+		Temperature:  body.Temperature,
+		MaxTokens:    body.MaxTokens,
 	}
 
 	model := body.Model

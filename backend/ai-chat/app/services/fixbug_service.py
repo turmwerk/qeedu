@@ -17,6 +17,8 @@ def fixbug_stream(
     model: str = "",
     api_key: str = "",
     base_url: str = "",
+    temperature: float | None = None,
+    max_tokens: int | None = None,
 ) -> Generator[str, None, None]:
     resolved_model = model or FIXBUG_MODEL
     user_msg = (
@@ -32,8 +34,8 @@ def fixbug_stream(
             {"role": "system", "content": FIXBUG_SYSTEM},
             {"role": "user", "content": user_msg},
         ],
-        temperature=FIXBUG_TEMPERATURE,
-        max_tokens=FIXBUG_MAX_TOKENS,
+        temperature=temperature if temperature is not None else FIXBUG_TEMPERATURE,
+        max_tokens=max_tokens if max_tokens is not None and max_tokens > 0 else FIXBUG_MAX_TOKENS,
         model=resolved_model,
         api_key=api_key,
         base_url=base_url,

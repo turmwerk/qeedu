@@ -25,7 +25,7 @@ dist-ssr
 *.sln
 *.sw?
 *.exe
-
+sample
 # Python
 __pycache__/
 *.pyc
@@ -33,6 +33,6 @@ __pycache__/
 .venv/
 .mypy_cache/
 .pytest_cache/
-
+.cache
 # LLM config (contains API keys)
 backend/configs/llm.json

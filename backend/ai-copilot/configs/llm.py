@@ -1,15 +1,7 @@
-"""LLM provider configuration for AI Copilot with API key rotation.
-
-Loads settings from a centralized JSON config file (configs/llm.json at the
-backend root).  Environment variables can still override individual fields.
-
-Supports multiple API keys via the ``api_keys`` array — when the current key
-hits a rate limit the client rotates to the next key.
-"""
+"""LLM provider configuration for AI Copilot with per-provider credentials."""
 
 import json
 import os
-import threading
 from pathlib import Path
 
 _CONFIG_PATH = Path(os.getenv("LLM_CONFIG_PATH", "/app/configs/llm.json"))
@@ -21,58 +13,50 @@ if _CONFIG_PATH.exists():
 
 _copilot_cfg: dict = (_cfg.get("models") or {}).get("copilot", {})
 _extra_headers: dict = _cfg.get("extra_headers", {})
+_providers_cfg: dict = _cfg.get("providers", {})
+_deepseek_cfg: dict = _providers_cfg.get("deepseek", {})
+_openrouter_cfg: dict = _providers_cfg.get("openrouter", {})
 
-# ── Provider identity ───────────────────────────────
-LLM_PROVIDER: str = os.getenv("LLM_PROVIDER", _cfg.get("provider", "openrouter")).strip().lower()
 
-# ── Connection ──────────────────────────────────────
-LLM_API_KEY: str = (
-    os.getenv("LLM_API_KEY") or os.getenv("OPENAI_API_KEY") or ""
+def _env_or_cfg(env_names: tuple[str, ...], cfg: dict, key: str, default: str = "") -> str:
+    for env_name in env_names:
+        value = os.getenv(env_name)
+        if value and value.strip():
+            return value.strip()
+    value = cfg.get(key, default)
+    return value.strip() if isinstance(value, str) else default
+
+
+DEEPSEEK_API_KEY: str = _env_or_cfg(("DEEPSEEK_API_KEY",), _deepseek_cfg, "api_key")
+DEEPSEEK_BASE_URL: str = _env_or_cfg(
+    ("DEEPSEEK_BASE_URL",),
+    _deepseek_cfg,
+    "base_url",
+    "https://api.deepseek.com",
+)
+
+OPENROUTER_API_KEY: str = _env_or_cfg(
+    ("OPENROUTER_API_KEY", "LLM_API_KEY", "OPENAI_API_KEY"),
+    _openrouter_cfg,
+    "api_key",
+)
+if not OPENROUTER_API_KEY:
+    api_keys = _cfg.get("api_keys", [])
+    if api_keys:
+        OPENROUTER_API_KEY = str(api_keys[0]).strip()
+OPENROUTER_BASE_URL: str = _env_or_cfg(
+    ("OPENROUTER_BASE_URL", "LLM_BASE_URL", "OPENAI_BASE_URL"),
+    _openrouter_cfg,
+    "base_url",
+    "https://openrouter.ai/api/v1",
+)
+if OPENROUTER_BASE_URL == "https://openrouter.ai/api/v1":
+    OPENROUTER_BASE_URL = os.getenv("LLM_BASE_URL") or os.getenv("OPENAI_BASE_URL") or _cfg.get("base_url", "https://openrouter.ai/api/v1")
+
+DEFAULT_COPILOT_MODEL: str = os.getenv(
+    "LLM_COPILOT_MODEL", _copilot_cfg.get("model", "deepseek-v4-flash")
 ).strip()
 
-LLM_API_KEYS: list[str] = _cfg.get("api_keys", [])
-if LLM_API_KEY and LLM_API_KEY not in LLM_API_KEYS:
-    LLM_API_KEYS.insert(0, LLM_API_KEY)
-LLM_API_KEYS = [k.strip() for k in LLM_API_KEYS if k and k.strip()]
-
-LLM_BASE_URL: str = (
-    os.getenv("LLM_BASE_URL")
-    or os.getenv("OPENAI_BASE_URL")
-    or _cfg.get("base_url", "https://openrouter.ai/api/v1")
-).strip()
-
-# ── API key rotation ────────────────────────────────
-_key_index: int = 0
-_key_lock = threading.Lock()
-
-
-def get_api_key() -> str:
-    if not LLM_API_KEYS:
-        return ""
-    with _key_lock:
-        idx = _key_index % len(LLM_API_KEYS)
-    return LLM_API_KEYS[idx]
-
-
-def rotate_api_key() -> bool:
-    global _key_index
-    if len(LLM_API_KEYS) <= 1:
-        return False
-    with _key_lock:
-        _key_index = (_key_index + 1) % len(LLM_API_KEYS)
-    return True
-
-
-def key_count() -> int:
-    return len(LLM_API_KEYS)
-
-
-# ── Model selection ─────────────────────────────────
-LLM_MODEL: str = os.getenv(
-    "LLM_MODEL", _copilot_cfg.get("model", "deepseek/deepseek-v4-flash:free")
-).strip()
-
-# ── Generation parameters (low temp for code completion) ─
 LLM_TEMPERATURE: float = float(
     os.getenv("LLM_TEMPERATURE", str(_copilot_cfg.get("temperature", 0.2)))
 )
@@ -80,8 +64,46 @@ LLM_MAX_TOKENS: int = int(
     os.getenv("LLM_MAX_TOKENS", str(_copilot_cfg.get("max_tokens", 512)))
 )
 
-# ── Extra headers for OpenRouter ────────────────────
 LLM_EXTRA_HEADERS: dict[str, str] = {
     k: os.getenv(k.replace("-", "_").upper(), v)
     for k, v in _extra_headers.items()
 }
+
+
+class ProviderConfig(dict):
+    @property
+    def api_key(self) -> str:
+        return self.get("api_key", "")
+
+    @property
+    def base_url(self) -> str:
+        return self.get("base_url", "")
+
+    @property
+    def headers(self) -> dict[str, str]:
+        return self.get("headers", {})
+
+
+def resolve_provider(model: str = "", api_key: str = "", base_url: str = "") -> ProviderConfig:
+    chosen_model = (model or DEFAULT_COPILOT_MODEL).strip()
+
+    if api_key:
+        custom_url = (base_url or OPENROUTER_BASE_URL).strip()
+        return ProviderConfig(
+            api_key=api_key.strip(),
+            base_url=custom_url,
+            headers=LLM_EXTRA_HEADERS if "openrouter.ai" in custom_url.lower() else {},
+        )
+
+    if chosen_model == "deepseek-v4-flash":
+        return ProviderConfig(
+            api_key=DEEPSEEK_API_KEY,
+            base_url=DEEPSEEK_BASE_URL,
+            headers={},
+        )
+
+    return ProviderConfig(
+        api_key=OPENROUTER_API_KEY,
+        base_url=OPENROUTER_BASE_URL,
+        headers=LLM_EXTRA_HEADERS,
+    )

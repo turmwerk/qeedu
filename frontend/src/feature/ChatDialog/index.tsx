@@ -3,6 +3,7 @@ import MessageList, { type DialogMessage } from "./MessageList";
 import InputArea from "./InputArea";
 import CustomModelModal, { type CustomModelConfig } from "./CustomModelModal";
 import { chatStream, getModels, type ChatMessage, type ModelInfo } from "@/api/ai";
+import { useModelSelectionStore } from "./modelSelectionStore";
 
 interface DialogProps {
   dialogId: string;
@@ -13,6 +14,12 @@ interface DialogProps {
     messages: ChatMessage[];
     input: string;
     files: File[];
+    fileContext?: string;
+    model?: string;
+    apiKey?: string;
+    baseUrl?: string;
+    temperature?: number;
+    maxTokens?: number;
     onDelta: (text: string) => void;
     onDone: () => void;
     onError: (err: string) => void;
@@ -42,23 +49,23 @@ const Dialog: React.FC<DialogProps> & {
   const [input, setInput] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const [pending, setPending] = useState(false);
-  const [selectedModel, setSelectedModel] = useState("");
   const [models, setModels] = useState<ModelInfo[]>([]);
   const [showCustomModal, setShowCustomModal] = useState(false);
-  const [customConfigs, setCustomConfigs] = useState<CustomModelConfig[]>(() => {
-    try {
-      const raw = localStorage.getItem("custom_model_configs");
-      return raw ? JSON.parse(raw) : [];
-    } catch {
-      return [];
-    }
-  });
   const [editingConfig, setEditingConfig] = useState<CustomModelConfig | null>(null);
   const bodyRef = useRef<HTMLDivElement | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const isAtBottomRef = useRef(true);
   const pendingDeltaRef = useRef("");
   const rafRef = useRef(0);
+
+  const selectedModel = useModelSelectionStore((state) => state.selectedModel);
+  const customConfigs = useModelSelectionStore((state) => state.customConfigs);
+  const setSelectedModel = useModelSelectionStore((state) => state.setSelectedModel);
+  const setCustomConfigs = useModelSelectionStore((state) => state.setCustomConfigs);
+
+  const handleSelectModel = useCallback((id: string) => {
+    setSelectedModel(id);
+  }, [setSelectedModel]);
 
   // Fetch available models on mount
   useEffect(() => {
@@ -67,23 +74,36 @@ const Dialog: React.FC<DialogProps> & {
       .then((res) => {
         if (!cancelled) {
           setModels(res.models);
-          setSelectedModel(res.current.chat);
+          if (!selectedModel) {
+            handleSelectModel(res.current.chat);
+          }
         }
       })
       .catch(() => {});
     return () => { cancelled = true; };
-  }, []);
+  }, [handleSelectModel, selectedModel]);
 
   // Merge custom configs into models list
   const allModels = useMemo(() => {
     const customModels: ModelInfo[] = customConfigs.map((cfg) => ({
-      id: `__cfg_${cfg.name}`,
+      id: `__cfg_${cfg.id}`,
       name: cfg.name,
-      provider: new URL(cfg.baseUrl).hostname,
+      provider: (() => {
+        try {
+          return new URL(cfg.baseUrl).hostname || "Custom";
+        } catch {
+          return "Custom";
+        }
+      })(),
     }));
     // If selectedModel is a custom config, ensure it shows correctly
     return [...models, ...customModels];
   }, [models, customConfigs]);
+
+  const activeCustom = useMemo(
+    () => customConfigs.find((cfg) => `__cfg_${cfg.id}` === selectedModel) ?? null,
+    [customConfigs, selectedModel],
+  );
 
   // 持久化消息
   React.useEffect(() => {
@@ -225,10 +245,6 @@ const Dialog: React.FC<DialogProps> & {
     };
 
     // Resolve custom config if selected
-    const activeCustom = selectedModel.startsWith("__cfg_")
-      ? customConfigs.find((c) => `__cfg_${c.name}` === selectedModel)
-      : null;
-
     const outerController = new AbortController();
     abortRef.current = outerController;
 
@@ -239,14 +255,22 @@ const Dialog: React.FC<DialogProps> & {
             messages: chatHistory,
             input: text,
             files: sentFiles,
+            fileContext,
+            model: activeCustom?.modelId || selectedModel || undefined,
+            apiKey: activeCustom?.apiKey || undefined,
+            baseUrl: activeCustom?.baseUrl || undefined,
+            temperature: activeCustom?.temperature,
+            maxTokens: activeCustom?.maxTokens,
             ...handlers,
           })
         : chatStream({
             messages: chatHistory,
             file_context: fileContext || undefined,
-            model: activeCustom ? activeCustom.modelId : selectedModel || undefined,
+            model: activeCustom?.modelId || selectedModel || undefined,
             api_key: activeCustom?.apiKey || undefined,
             base_url: activeCustom?.baseUrl || undefined,
+            temperature: activeCustom?.temperature,
+            max_tokens: activeCustom?.maxTokens,
             ...handlers,
           });
       outerController.signal.addEventListener("abort", () => streamCtrl.abort(), { once: true });
@@ -270,7 +294,9 @@ const Dialog: React.FC<DialogProps> & {
       const msg = updated[index];
       if (!msg) return prev;
       const versions = msg.versions ? [...msg.versions] : [msg.text];
-      versions.push(newText);
+      if (newText !== msg.text) {
+        versions.push(newText);
+      }
       updated[index] = { ...msg, text: newText, versions, versionIndex: versions.length - 1 };
       return updated;
     });
@@ -283,15 +309,16 @@ const Dialog: React.FC<DialogProps> & {
       if (!msg) return prev;
 
       if (msg.from === "bot") {
-        // Re-generate bot response: keep messages up to index, add empty bot bubble
         const history = prev.slice(0, index);
-        const oldVersions = msg.versions ? [...msg.versions] : [msg.text];
+        const oldVersions = msg.versions ? [...msg.versions] : (msg.text ? [msg.text] : []);
         const newBot: DialogMessage = { from: "bot", text: "", versions: oldVersions, versionIndex: oldVersions.length };
         return [...history, newBot];
       }
-      // User retry: re-send the same user message
+      // User retry: keep user msg versions, truncate after it, add new bot
       const history = prev.slice(0, index + 1);
-      const newBot: DialogMessage = { from: "bot", text: "" };
+      const nextBot = prev[index + 1];
+      const botVersions = nextBot?.from === "bot" && nextBot.versions ? [...nextBot.versions] : (nextBot?.from === "bot" && nextBot.text ? [nextBot.text] : []);
+      const newBot: DialogMessage = { from: "bot", text: "", versions: botVersions.length > 0 ? botVersions : undefined, versionIndex: botVersions.length > 0 ? botVersions.length : undefined };
       return [...history, newBot];
     });
 
@@ -308,10 +335,6 @@ const Dialog: React.FC<DialogProps> & {
             role: m.from === "user" ? "user" as const : "assistant" as const,
             content: m.text,
           }));
-
-        const activeCustom = selectedModel.startsWith("__cfg_")
-          ? customConfigs.find((c) => `__cfg_${c.name}` === selectedModel)
-          : null;
 
         const outerController = new AbortController();
         abortRef.current = outerController;
@@ -382,14 +405,27 @@ const Dialog: React.FC<DialogProps> & {
         };
 
         const streamCtrl = transport
-          ? transport({ messages: chatHistory, input: "", files: [], ...handlers })
+          ? transport({
+            messages: chatHistory,
+            input: "",
+            files: [],
+            fileContext: undefined,
+            model: activeCustom?.modelId || selectedModel || undefined,
+            apiKey: activeCustom?.apiKey || undefined,
+            baseUrl: activeCustom?.baseUrl || undefined,
+            temperature: activeCustom?.temperature,
+            maxTokens: activeCustom?.maxTokens,
+            ...handlers
+          })
           : chatStream({
-              messages: chatHistory,
-              model: activeCustom ? activeCustom.modelId : selectedModel || undefined,
-              api_key: activeCustom?.apiKey || undefined,
-              base_url: activeCustom?.baseUrl || undefined,
-              ...handlers,
-            });
+            messages: chatHistory,
+            model: activeCustom?.modelId || selectedModel || undefined,
+            api_key: activeCustom?.apiKey || undefined,
+            base_url: activeCustom?.baseUrl || undefined,
+            temperature: activeCustom?.temperature,
+            max_tokens: activeCustom?.maxTokens,
+            ...handlers,
+          });
         outerController.signal.addEventListener("abort", () => streamCtrl.abort(), { once: true });
 
         return current;
@@ -438,13 +474,13 @@ const Dialog: React.FC<DialogProps> & {
           onFilesChange={setFiles}
           models={allModels}
           selectedModel={selectedModel}
-          onSelectModel={setSelectedModel}
+          onSelectModel={handleSelectModel}
           onAddCustom={() => {
             setEditingConfig(null);
             setShowCustomModal(true);
           }}
           onEditCustom={(id) => {
-            const cfg = customConfigs.find((c) => `__cfg_${c.name}` === id);
+            const cfg = customConfigs.find((c) => `__cfg_${c.id}` === id);
             if (cfg) {
               setEditingConfig(cfg);
               setShowCustomModal(true);
@@ -459,11 +495,12 @@ const Dialog: React.FC<DialogProps> & {
           initial={editingConfig}
           onSave={(cfg) => {
             const updated = editingConfig
-              ? customConfigs.map((c) => (c.name === editingConfig.name ? cfg : c))
+              ? customConfigs.map((c) => (c.id === editingConfig.id ? cfg : c))
               : [...customConfigs, cfg];
             setCustomConfigs(updated);
-            localStorage.setItem("custom_model_configs", JSON.stringify(updated));
-            setSelectedModel(`__cfg_${cfg.name}`);
+            handleSelectModel(`__cfg_${cfg.id}`);
+            setEditingConfig(null);
+            setShowCustomModal(false);
           }}
           onClose={() => setShowCustomModal(false)}
         />

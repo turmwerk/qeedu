@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { createPortal } from "react-dom";
 
 export interface CustomModelConfig {
+  id: string;
   name: string;
   apiKey: string;
   baseUrl: string;
@@ -20,62 +21,12 @@ const PRESETS: Preset[] = [
   {
     name: "OpenRouter",
     baseUrl: "https://openrouter.ai/api/v1",
-    models: ["deepseek/deepseek-chat", "deepseek/deepseek-v4-flash:free", "openai/gpt-4o", "google/gemini-2.5-flash", "anthropic/claude-sonnet-4", "qwen/qwen3-coder:free"],
-  },
-  {
-    name: "AgentRouter",
-    baseUrl: "https://agentrouter.org/v1",
-    models: ["claude-opus-4-6", "claude-sonnet-4-6", "claude-haiku-4-5"],
-  },
-  {
-    name: "OpenAI",
-    baseUrl: "https://api.openai.com/v1",
-    models: ["gpt-4o", "gpt-4o-mini", "o3-mini", "gpt-4.1-mini"],
+    models: ["google/gemini-2.5-flash-lite:nitro"],
   },
   {
     name: "DeepSeek",
-    baseUrl: "https://api.deepseek.com/v1",
-    models: ["deepseek-chat", "deepseek-reasoner", "deepseek-v4-pro"],
-  },
-  {
-    name: "DeepSeek (Anthropic)",
-    baseUrl: "https://api.deepseek.com/anthropic",
-    models: ["deepseek-v4-pro", "deepseek-v4-pro[1m]"],
-  },
-  {
-    name: "Google AI Studio",
-    baseUrl: "https://generativelanguage.googleapis.com/v1beta/openai",
-    models: ["gemini-2.5-flash", "gemini-2.5-pro", "gemini-2.0-flash"],
-  },
-  {
-    name: "Anthropic",
-    baseUrl: "https://api.anthropic.com/v1",
-    models: ["claude-sonnet-4-20250514", "claude-haiku-4-5-20251001", "claude-opus-4-20250514"],
-  },
-  {
-    name: "Groq",
-    baseUrl: "https://api.groq.com/openai/v1",
-    models: ["llama-3.3-70b-versatile", "mixtral-8x7b-32768", "gemma2-9b-it"],
-  },
-  {
-    name: "Together AI",
-    baseUrl: "https://api.together.xyz/v1",
-    models: ["meta-llama/Llama-3.3-70B-Instruct-Turbo", "deepseek-ai/DeepSeek-R1"],
-  },
-  {
-    name: "硅基流动",
-    baseUrl: "https://api.siliconflow.cn/v1",
-    models: ["deepseek-ai/DeepSeek-V3", "Qwen/Qwen2.5-72B-Instruct", "deepseek-ai/DeepSeek-R1"],
-  },
-  {
-    name: "火山引擎",
-    baseUrl: "https://ark.cn-beijing.volces.com/api/v3",
-    models: [],
-  },
-  {
-    name: "Ollama (本地)",
-    baseUrl: "http://localhost:11434/v1",
-    models: ["llama3.2", "codellama", "mistral", "qwen2.5"],
+    baseUrl: "https://api.deepseek.com",
+    models: ["deepseek-v4-flash"],
   },
   {
     name: "自定义 (OpenAI 兼容)",
@@ -116,6 +67,7 @@ const CustomModelModal: React.FC<Props> = ({ initial, onSave, onClose }) => {
 
   const handleSave = () => {
     onSave({
+      id: initial?.id || `custom_${Date.now().toString(36)}`,
       name: name || preset.name || "自定义",
       apiKey: apiKey.trim(),
       baseUrl: baseUrl.trim(),
@@ -212,7 +164,7 @@ const CustomModelModal: React.FC<Props> = ({ initial, onSave, onClose }) => {
               </button>
             </div>
             <p className="text-[10px] text-amber-500 mt-1">
-              API Key 存储在浏览器本地，不会发送到 QeEdu 服务器。请勿在公共设备上保存。
+              API Key 会随本次请求发送到后端网关，用于调用你选择的模型服务。请勿在公共设备上保存。
             </p>
           </div>
 

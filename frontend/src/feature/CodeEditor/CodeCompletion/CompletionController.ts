@@ -3,6 +3,7 @@ import { CompletionMode } from "./types";
 import { useCompletionStore } from "./completionStore";
 import { createLspCompletionDisposable } from "./LSPCompletion/provider";
 import { apiUrl } from "@/api/config";
+import { resolveSelectedModelConfig } from "@/feature/ChatDialog/modelSelectionStore";
 
 const DEBOUNCE_MS = 500;
 
@@ -13,6 +14,7 @@ async function fetchCompletion(
 	filePath: string,
 	signal: AbortSignal,
 ): Promise<string> {
+	const modelConfig = resolveSelectedModelConfig();
 	const res = await fetch(apiUrl("/ai/complete"), {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
@@ -21,6 +23,11 @@ async function fetchCompletion(
 			file_content: fileContent,
 			cursor_offset: cursorOffset,
 			file_path: filePath,
+			model: modelConfig.model,
+			api_key: modelConfig.apiKey,
+			base_url: modelConfig.baseUrl,
+			temperature: modelConfig.temperature,
+			max_tokens: modelConfig.maxTokens,
 		}),
 		credentials: "include",
 		signal,

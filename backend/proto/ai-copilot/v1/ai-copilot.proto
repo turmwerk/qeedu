@@ -13,6 +13,11 @@ message CompleteRequest {
   string file_content  = 2;
   int32  cursor_offset = 3;
   string file_path     = 4;
+  double temperature   = 5;
+  int32  max_tokens    = 6;
+  string model         = 7;
+  string api_key       = 8;
+  string base_url      = 9;
 }
 
 message CompleteResponse {

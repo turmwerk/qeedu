@@ -12,6 +12,8 @@ export interface ChatStreamOptions {
 	model?: string;
 	api_key?: string;
 	base_url?: string;
+	temperature?: number;
+	max_tokens?: number;
 	onDelta: (text: string) => void;
 	onDone: () => void;
 	onError: (err: string) => void;
@@ -68,6 +70,11 @@ export interface CompleteRequest {
 	file_content: string;
 	cursor_offset: number;
 	file_path: string;
+	model?: string;
+	api_key?: string;
+	base_url?: string;
+	temperature?: number;
+	max_tokens?: number;
 }
 
 export interface CompleteResponse {
@@ -86,44 +93,56 @@ function createStreamRequest(
 	onError: (err: string) => void,
 ): AbortController {
 	const controller = new AbortController();
+	const MAX_RETRIES = 2;
 
 	(async () => {
-		try {
-			const res = await fetch(apiUrl(endpoint), {
-				method: "POST",
-				headers: jsonHeaders(),
-				body: JSON.stringify(body),
-				signal: controller.signal,
-				credentials: "include",
-			});
+		for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+			try {
+				const res = await fetch(apiUrl(endpoint), {
+					method: "POST",
+					headers: jsonHeaders(),
+					body: JSON.stringify(body),
+					signal: controller.signal,
+					credentials: "include",
+				});
 
-			if (!res.ok || !res.body) {
-				onError(`HTTP ${res.status}`);
-				return;
-			}
-
-			const reader = res.body.getReader();
-			const decoder = new TextDecoder();
-			let buffer = "";
-
-			while (true) {
-				const { done, value } = await reader.read();
-				if (done) break;
-
-				buffer += decoder.decode(value, { stream: true });
-				const lines = buffer.split("\n");
-				buffer = lines.pop() ?? "";
-
-				for (const line of lines) {
-					if (!line.startsWith("data: ")) continue;
-					const payload = line.slice(6).replace(/\r$/, "");
-					if (handleStreamPayload(payload, onDelta, onDone, onError)) return;
+				if (!res.ok || !res.body) {
+					if (res.status >= 500 && attempt < MAX_RETRIES) {
+						await new Promise((r) => setTimeout(r, 1000 * (attempt + 1)));
+						continue;
+					}
+					onError(`HTTP ${res.status}`);
+					return;
 				}
+
+				const reader = res.body.getReader();
+				const decoder = new TextDecoder();
+				let buffer = "";
+
+				while (true) {
+					const { done, value } = await reader.read();
+					if (done) break;
+
+					buffer += decoder.decode(value, { stream: true });
+					const lines = buffer.split("\n");
+					buffer = lines.pop() ?? "";
+
+					for (const line of lines) {
+						if (!line.startsWith("data: ")) continue;
+						const payload = line.slice(6).replace(/\r$/, "");
+						if (handleStreamPayload(payload, onDelta, onDone, onError)) return;
+					}
+				}
+				onDone();
+				return;
+			} catch (err: unknown) {
+				if (err instanceof DOMException && err.name === "AbortError") return;
+				if (attempt < MAX_RETRIES) {
+					await new Promise((r) => setTimeout(r, 1000 * (attempt + 1)));
+					continue;
+				}
+				onError(String(err));
 			}
-			onDone();
-		} catch (err: unknown) {
-			if (err instanceof DOMException && err.name === "AbortError") return;
-			onError(String(err));
 		}
 	})();
 
@@ -131,10 +150,10 @@ function createStreamRequest(
 }
 
 export function chatStream(options: ChatStreamOptions): AbortController {
-	const { messages, file_context, language, model, api_key, base_url, onDelta, onDone, onError } = options;
+	const { messages, file_context, language, model, api_key, base_url, temperature, max_tokens, onDelta, onDone, onError } = options;
 	return createStreamRequest(
 		"/ai/chat",
-		{ messages, file_context, language, model: model || undefined, api_key: api_key || undefined, base_url: base_url || undefined },
+		{ messages, file_context, language, model: model || undefined, api_key: api_key || undefined, base_url: base_url || undefined, temperature, max_tokens },
 		onDelta,
 		onDone,
 		onError,
@@ -142,10 +161,10 @@ export function chatStream(options: ChatStreamOptions): AbortController {
 }
 
 export function customChatStream(options: CustomChatStreamOptions): AbortController {
-	const { endpoint, messages, file_context, language, model, api_key, base_url, extraBody, onDelta, onDone, onError } = options;
+	const { endpoint, messages, file_context, language, model, api_key, base_url, temperature, max_tokens, extraBody, onDelta, onDone, onError } = options;
 	return createStreamRequest(
 		endpoint,
-		{ messages, file_context, language, model: model || undefined, api_key: api_key || undefined, base_url: base_url || undefined, ...(extraBody ?? {}) },
+		{ messages, file_context, language, model: model || undefined, api_key: api_key || undefined, base_url: base_url || undefined, temperature, max_tokens, ...(extraBody ?? {}) },
 		onDelta,
 		onDone,
 		onError,
@@ -170,16 +189,18 @@ export interface FixBugStreamOptions {
 	model?: string;
 	api_key?: string;
 	base_url?: string;
+	temperature?: number;
+	max_tokens?: number;
 	onDelta: (text: string) => void;
 	onDone: () => void;
 	onError: (err: string) => void;
 }
 
 export function fixBugStream(options: FixBugStreamOptions): AbortController {
-	const { code, error_message, language, model, api_key, base_url, onDelta, onDone, onError } = options;
+	const { code, error_message, language, model, api_key, base_url, temperature, max_tokens, onDelta, onDone, onError } = options;
 	return createStreamRequest(
 		"/ai/fix",
-		{ code, error_message, language, model: model || undefined, api_key: api_key || undefined, base_url: base_url || undefined },
+		{ code, error_message, language, model: model || undefined, api_key: api_key || undefined, base_url: base_url || undefined, temperature, max_tokens },
 		onDelta,
 		onDone,
 		onError,

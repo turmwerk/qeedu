@@ -18,6 +18,11 @@ class AICopilotServicer(ai_copilot_pb2_grpc.AICopilotServiceServicer):
                 file_content=request.file_content,
                 cursor_offset=request.cursor_offset,
                 file_path=request.file_path,
+                model=request.model,
+                api_key=request.api_key,
+                base_url=request.base_url,
+                temperature=request.temperature if request.temperature > 0 else None,
+                max_tokens=request.max_tokens if request.max_tokens > 0 else None,
             )
             return ai_copilot_pb2.CompleteResponse(suggestion=suggestion)
         except Exception as e:

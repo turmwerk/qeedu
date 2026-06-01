@@ -24,22 +24,16 @@ from configs.llm import (
     CODEX_SANDBOX,
     CODEX_VERBOSITY,
     CODEX_WORKDIR,
-    LLM_BASE_URL,
     LLM_CLI_CHUNK_SIZE,
     LLM_CLI_TIMEOUT_SECONDS,
-    LLM_EXTRA_HEADERS,
     LLM_FALLBACK_PROVIDER,
     LLM_MAX_TOKENS,
-    LLM_MODEL,
-    LLM_PROVIDER,
-    get_api_key,
-    key_count,
-    rotate_api_key,
+    DEFAULT_CHAT_MODEL,
+    resolve_provider,
 )
 
 logger = logging.getLogger(__name__)
 
-OPENAI_PROVIDERS = {"auto", "openai", "openai-compatible", "openrouter", "deepseek", "azure", "ollama"}
 CLI_PROVIDERS = {"codex", "claude"}
 
 
@@ -54,12 +48,12 @@ def _is_rate_limit(exc: Exception) -> bool:
     return "429" in str(exc) or "rate" in str(exc).lower()
 
 
-def create_client(key: str = "", base_url: str = "") -> OpenAI:
-    """Create an OpenAI-compatible client. Uses the current rotation key if none given."""
+def create_client(key: str = "", base_url: str = "", headers: dict[str, str] | None = None) -> OpenAI:
+    """Create an OpenAI-compatible client."""
     return OpenAI(
-        api_key=key or get_api_key(),
-        base_url=base_url or LLM_BASE_URL,
-        default_headers=LLM_EXTRA_HEADERS or None,
+        api_key=key,
+        base_url=base_url,
+        default_headers=headers or None,
     )
 
 
@@ -72,40 +66,34 @@ def stream_chat_completion(
     base_url: str = "",
 ) -> Generator[str, None, None]:
     """Yield text deltas from the configured LLM provider."""
-    provider = _select_provider()
-    resolved_model = model or LLM_MODEL
+    resolved_model = model or DEFAULT_CHAT_MODEL
+    provider_cfg = resolve_provider(model=resolved_model, api_key=api_key, base_url=base_url)
     logger.info("Using LLM provider: %s, model: %s, custom_key: %s, custom_url: %s",
-                provider, resolved_model, bool(api_key), bool(base_url))
+                provider_cfg.provider, resolved_model, bool(api_key), bool(base_url))
 
-    if provider == "openai":
-        yield from _stream_openai(messages, temperature, max_tokens, resolved_model, api_key, base_url)
+    if provider_cfg.api_key and provider_cfg.base_url:
+        yield from _stream_openai(
+            messages,
+            temperature,
+            max_tokens,
+            resolved_model,
+            provider_cfg.api_key,
+            provider_cfg.base_url,
+            provider_cfg.headers,
+        )
         return
-
-    yield from _stream_cli(provider, messages)
-
-
-def _select_provider() -> str:
-    provider = LLM_PROVIDER or "auto"
-
-    if provider in OPENAI_PROVIDERS and get_api_key():
-        return "openai"
-    if provider in CLI_PROVIDERS:
-        return provider
 
     fallback = LLM_FALLBACK_PROVIDER or "auto"
     if fallback in CLI_PROVIDERS and _cli_available(fallback):
-        return fallback
+        yield from _stream_cli(fallback, messages)
+        return
 
     for candidate in ("codex", "claude"):
         if _cli_available(candidate):
-            return candidate
+            yield from _stream_cli(candidate, messages)
+            return
 
-    if provider in OPENAI_PROVIDERS:
-        raise RuntimeError(
-            "No LLM_API_KEY is configured and no local Codex/Claude CLI is available."
-        )
-
-    raise RuntimeError(f"Unsupported LLM_PROVIDER: {provider}")
+    raise RuntimeError("No provider credentials configured and no local Codex/Claude CLI is available.")
 
 
 def _stream_openai(
@@ -113,54 +101,24 @@ def _stream_openai(
     temperature: float,
     max_tokens: int,
     model: str,
-    api_key: str = "",
-    base_url: str = "",
+    api_key: str,
+    base_url: str,
+    headers: dict[str, str] | None = None,
 ) -> Generator[str, None, None]:
-    # If a custom API key + base_url is provided, use them directly (no rotation).
-    if api_key:
-        client = create_client(key=api_key, base_url=base_url or LLM_BASE_URL)
-        stream = client.chat.completions.create(
-            model=model,
-            messages=messages,
-            max_tokens=max_tokens,
-            temperature=temperature,
-            stream=True,
-        )
-        for chunk in stream:
-            if not chunk.choices:
-                continue
-            delta = chunk.choices[0].delta
-            if delta.content:
-                yield delta.content
-        return
-
-    # Otherwise use key rotation.
-    total_keys = max(key_count(), 1)
-    for attempt in range(total_keys):
-        client = create_client()
-        try:
-            stream = client.chat.completions.create(
-                model=model,
-                messages=messages,
-                max_tokens=max_tokens,
-                temperature=temperature,
-                stream=True,
-            )
-            for chunk in stream:
-                if not chunk.choices:
-                    continue
-                delta = chunk.choices[0].delta
-                if delta.content:
-                    yield delta.content
-            return
-        except Exception as e:
-            if _is_rate_limit(e) and rotate_api_key():
-                logger.warning(
-                    "Rate limited (attempt %d/%d), rotating API key...",
-                    attempt + 1, total_keys,
-                )
-                continue
-            raise
+    client = create_client(key=api_key, base_url=base_url, headers=headers)
+    stream = client.chat.completions.create(
+        model=model,
+        messages=messages,
+        max_tokens=max_tokens,
+        temperature=temperature,
+        stream=True,
+    )
+    for chunk in stream:
+        if not chunk.choices:
+            continue
+        delta = chunk.choices[0].delta
+        if delta.content:
+            yield delta.content
 
 
 def _stream_cli(provider: str, messages: list[dict[str, str]]) -> Generator[str, None, None]:

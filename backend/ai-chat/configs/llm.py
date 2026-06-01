@@ -1,15 +1,17 @@
-"""LLM provider configuration with API key rotation.
+"""LLM provider configuration with per-provider credentials.
 
 Loads settings from a centralized JSON config file (configs/llm.json at the
-backend root).  Environment variables can still override individual fields.
+backend root). Environment variables can still override individual fields.
 
-Supports multiple API keys via the ``api_keys`` array — when the current key
-hits a rate limit the client rotates to the next key.
+The built-in model strategy is intentionally small:
+- default chat/fix model: ``deepseek-v4-flash`` via DeepSeek
+- alternate fast model: one OpenRouter model
+
+Custom model requests may override API key and base URL from the frontend.
 """
 
 import json
 import os
-import threading
 from pathlib import Path
 
 _CONFIG_PATH = Path(os.getenv("LLM_CONFIG_PATH", "/app/configs/llm.json"))
@@ -22,69 +24,57 @@ if _CONFIG_PATH.exists():
 _chat_cfg: dict = (_cfg.get("models") or {}).get("chat", {})
 _fixbug_cfg: dict = (_cfg.get("models") or {}).get("fixbug", {})
 _extra_headers: dict = _cfg.get("extra_headers", {})
+_providers_cfg: dict = _cfg.get("providers", {})
+_deepseek_cfg: dict = _providers_cfg.get("deepseek", {})
+_openrouter_cfg: dict = _providers_cfg.get("openrouter", {})
 
-# ── Provider identity ───────────────────────────────
-LLM_PROVIDER: str = os.getenv("LLM_PROVIDER", _cfg.get("provider", "openrouter")).strip().lower()
 
-# ── Connection ──────────────────────────────────────
-# Single key override via env var (backwards-compatible)
-LLM_API_KEY: str = (
-    os.getenv("LLM_API_KEY") or os.getenv("OPENAI_API_KEY") or ""
+def _env_or_cfg(env_names: tuple[str, ...], cfg: dict, key: str, default: str = "") -> str:
+    for env_name in env_names:
+        value = os.getenv(env_name)
+        if value and value.strip():
+            return value.strip()
+    value = cfg.get(key, default)
+    return value.strip() if isinstance(value, str) else default
+
+
+DEEPSEEK_API_KEY: str = _env_or_cfg(("DEEPSEEK_API_KEY",), _deepseek_cfg, "api_key")
+DEEPSEEK_BASE_URL: str = _env_or_cfg(
+    ("DEEPSEEK_BASE_URL",),
+    _deepseek_cfg,
+    "base_url",
+    "https://api.deepseek.com",
+)
+
+OPENROUTER_API_KEY: str = _env_or_cfg(
+    ("OPENROUTER_API_KEY", "LLM_API_KEY", "OPENAI_API_KEY"),
+    _openrouter_cfg,
+    "api_key",
+)
+if not OPENROUTER_API_KEY:
+    api_keys = _cfg.get("api_keys", [])
+    if api_keys:
+        OPENROUTER_API_KEY = str(api_keys[0]).strip()
+OPENROUTER_BASE_URL: str = _env_or_cfg(
+    ("OPENROUTER_BASE_URL", "LLM_BASE_URL", "OPENAI_BASE_URL"),
+    _openrouter_cfg,
+    "base_url",
+    "https://openrouter.ai/api/v1",
+)
+if OPENROUTER_BASE_URL == "https://openrouter.ai/api/v1":
+    OPENROUTER_BASE_URL = os.getenv("LLM_BASE_URL") or os.getenv("OPENAI_BASE_URL") or _cfg.get("base_url", "https://openrouter.ai/api/v1")
+
+DEFAULT_CHAT_MODEL: str = os.getenv(
+    "LLM_CHAT_MODEL", _chat_cfg.get("model", "deepseek-v4-flash")
 ).strip()
 
-# Multiple keys loaded from JSON config.
-LLM_API_KEYS: list[str] = _cfg.get("api_keys", [])
-if LLM_API_KEY and LLM_API_KEY not in LLM_API_KEYS:
-    LLM_API_KEYS.insert(0, LLM_API_KEY)
-# Filter out empty strings.
-LLM_API_KEYS = [k.strip() for k in LLM_API_KEYS if k and k.strip()]
 
-LLM_BASE_URL: str = (
-    os.getenv("LLM_BASE_URL")
-    or os.getenv("OPENAI_BASE_URL")
-    or _cfg.get("base_url", "https://openrouter.ai/api/v1")
-).strip()
-
-# ── API key rotation ────────────────────────────────
-_key_index: int = 0
-_key_lock = threading.Lock()
-
-
-def get_api_key() -> str:
-    """Return the current API key (no rotation)."""
-    global _key_index
-    if not LLM_API_KEYS:
-        return ""
-    with _key_lock:
-        idx = _key_index % len(LLM_API_KEYS)
-    return LLM_API_KEYS[idx]
-
-
-def rotate_api_key() -> bool:
-    """Advance to the next API key. Returns False if only one key exists."""
-    global _key_index
-    if len(LLM_API_KEYS) <= 1:
-        return False
-    with _key_lock:
-        _key_index = (_key_index + 1) % len(LLM_API_KEYS)
-    return True
-
-
-def key_count() -> int:
-    return len(LLM_API_KEYS)
-
-
-# ── Model selection ─────────────────────────────────
-LLM_MODEL: str = os.getenv(
-    "LLM_MODEL", _chat_cfg.get("model", "deepseek/deepseek-v4-flash:free")
-).strip()
-
-# ── Generation parameters ───────────────────────────
 def _get_float(name: str, default: float) -> float:
     try:
         return float(os.getenv(name, str(default)))
     except ValueError:
         return default
+
 
 def _get_int(name: str, default: int) -> int:
     try:
@@ -92,12 +82,12 @@ def _get_int(name: str, default: int) -> int:
     except ValueError:
         return default
 
+
 LLM_TEMPERATURE: float = _get_float("LLM_TEMPERATURE", _chat_cfg.get("temperature", 0.7))
 LLM_MAX_TOKENS: int = _get_int("LLM_MAX_TOKENS", _chat_cfg.get("max_tokens", 4096))
 
-# ── FixBug model (can differ from chat) ─────────────
 FIXBUG_MODEL: str = os.getenv(
-    "FIXBUG_MODEL", _fixbug_cfg.get("model", LLM_MODEL)
+    "LLM_FIX_MODEL", _fixbug_cfg.get("model", DEFAULT_CHAT_MODEL)
 ).strip()
 FIXBUG_TEMPERATURE: float = _get_float(
     "FIXBUG_TEMPERATURE", _fixbug_cfg.get("temperature", 0.3)
@@ -106,13 +96,59 @@ FIXBUG_MAX_TOKENS: int = _get_int(
     "FIXBUG_MAX_TOKENS", _fixbug_cfg.get("max_tokens", 4096)
 )
 
-# ── Extra headers for OpenRouter ────────────────────
 LLM_EXTRA_HEADERS: dict[str, str] = {
     k: os.getenv(k.replace("-", "_").upper(), v)
     for k, v in _extra_headers.items()
 }
 
-# ── Local CLI fallback ──────────────────────────────
+
+class ProviderConfig(dict):
+    @property
+    def provider(self) -> str:
+        return self.get("provider", "")
+
+    @property
+    def api_key(self) -> str:
+        return self.get("api_key", "")
+
+    @property
+    def base_url(self) -> str:
+        return self.get("base_url", "")
+
+    @property
+    def headers(self) -> dict[str, str]:
+        return self.get("headers", {})
+
+
+def resolve_provider(model: str = "", api_key: str = "", base_url: str = "") -> ProviderConfig:
+    """Resolve credentials/base URL for a request."""
+    chosen_model = (model or DEFAULT_CHAT_MODEL).strip()
+
+    if api_key:
+        custom_url = (base_url or OPENROUTER_BASE_URL).strip()
+        return ProviderConfig(
+            provider="custom",
+            api_key=api_key.strip(),
+            base_url=custom_url,
+            headers=LLM_EXTRA_HEADERS if "openrouter.ai" in custom_url.lower() else {},
+        )
+
+    if chosen_model == "deepseek-v4-flash":
+        return ProviderConfig(
+            provider="deepseek",
+            api_key=DEEPSEEK_API_KEY,
+            base_url=DEEPSEEK_BASE_URL,
+            headers={},
+        )
+
+    return ProviderConfig(
+        provider="openrouter",
+        api_key=OPENROUTER_API_KEY,
+        base_url=OPENROUTER_BASE_URL,
+        headers=LLM_EXTRA_HEADERS,
+    )
+
+
 LLM_FALLBACK_PROVIDER: str = os.getenv("LLM_FALLBACK_PROVIDER", "auto").strip().lower()
 LLM_CLI_TIMEOUT_SECONDS: int = _get_int("LLM_CLI_TIMEOUT_SECONDS", 240)
 LLM_CLI_CHUNK_SIZE: int = _get_int("LLM_CLI_CHUNK_SIZE", 96)

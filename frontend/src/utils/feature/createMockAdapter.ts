@@ -21,6 +21,12 @@ type ChatTransportArgs = {
   messages: ChatMessage[];
   input: string;
   files: File[];
+  fileContext?: string;
+  model?: string;
+  apiKey?: string;
+  baseUrl?: string;
+  temperature?: number;
+  maxTokens?: number;
   onDelta: (text: string) => void;
   onDone: () => void;
   onError: (err: string) => void;
@@ -123,6 +129,12 @@ export const createMockAdapter = <T extends FeatureRecordBase>(
       ({
         messages,
         files,
+        fileContext,
+        model,
+        apiKey,
+        baseUrl,
+        temperature,
+        maxTokens,
         onDelta,
         onDone,
         onError,
@@ -139,12 +151,18 @@ export const createMockAdapter = <T extends FeatureRecordBase>(
         );
 
         void readFileContext(config.botName, contextLabel, files)
-          .then((fileContext) => {
+          .then((generatedContext) => {
             if (controller.signal.aborted) return;
+            const combinedContext = [fileContext, generatedContext].filter(Boolean).join("\n\n");
             streamController = chatStream({
               messages,
-              file_context: fileContext,
+              file_context: combinedContext || undefined,
               language: "text",
+              model,
+              api_key: apiKey,
+              base_url: baseUrl,
+              temperature,
+              max_tokens: maxTokens,
               onDelta,
               onDone,
               onError,

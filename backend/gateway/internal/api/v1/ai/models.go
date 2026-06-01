@@ -15,16 +15,8 @@ type ModelInfo struct {
 }
 
 var availableModels = []ModelInfo{
-	{ID: "google/gemma-4-26b-a4b-it:free", Name: "Gemma 4 26B A4B (快)", Provider: "Google"},
-	{ID: "google/gemma-4-31b-it:free", Name: "Gemma 4 31B", Provider: "Google"},
-	{ID: "deepseek/deepseek-v4-flash:free", Name: "DeepSeek V4 Flash", Provider: "DeepSeek"},
-	{ID: "moonshotai/kimi-k2.6:free", Name: "Kimi K2.6", Provider: "MoonshotAI"},
-	{ID: "qwen/qwen3-coder:free", Name: "Qwen3 Coder 480B", Provider: "Qwen"},
-	{ID: "openai/gpt-oss-120b:free", Name: "GPT-OSS 120B", Provider: "OpenAI"},
-	{ID: "nvidia/nemotron-3-super-120b-a12b:free", Name: "Nemotron 3 Super", Provider: "NVIDIA"},
-	{ID: "meta-llama/llama-3.3-70b-instruct:free", Name: "Llama 3.3 70B", Provider: "Meta"},
-	{ID: "openrouter/owl-alpha", Name: "Owl Alpha 1.7T", Provider: "OpenRouter"},
-	{ID: "z-ai/glm-4.5-air:free", Name: "GLM 4.5 Air", Provider: "Z.ai"},
+	{ID: "deepseek-v4-flash", Name: "DeepSeek V4 Flash", Provider: "DeepSeek"},
+	{ID: "google/gemini-2.5-flash-lite:nitro", Name: "Gemini 2.5 Flash Lite (OpenRouter 快)", Provider: "OpenRouter"},
 }
 
 // currentChatModel returns the active chat model ID (env-overridable).
@@ -32,7 +24,7 @@ func currentChatModel() string {
 	if m := os.Getenv("LLM_CHAT_MODEL"); m != "" {
 		return strings.TrimSpace(m)
 	}
-	return "google/gemma-4-31b-it:free"
+	return "deepseek-v4-flash"
 }
 
 // currentFixModel returns the active fixbug model ID.
