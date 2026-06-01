@@ -68,6 +68,12 @@ DEFAULT_CHAT_MODEL: str = os.getenv(
     "LLM_CHAT_MODEL", _chat_cfg.get("model", "deepseek-v4-flash")
 ).strip()
 
+# Backward-compatible exports for package-level re-exports in configs/__init__.py.
+LLM_PROVIDER: str = "deepseek" if DEFAULT_CHAT_MODEL == "deepseek-v4-flash" else "openrouter"
+LLM_API_KEY: str = DEEPSEEK_API_KEY if LLM_PROVIDER == "deepseek" else OPENROUTER_API_KEY
+LLM_BASE_URL: str = DEEPSEEK_BASE_URL if LLM_PROVIDER == "deepseek" else OPENROUTER_BASE_URL
+LLM_MODEL: str = DEFAULT_CHAT_MODEL
+
 
 def _get_float(name: str, default: float) -> float:
     try:

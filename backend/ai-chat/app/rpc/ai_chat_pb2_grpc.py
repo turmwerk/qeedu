@@ -3,7 +3,7 @@
 import grpc
 import warnings
 
-from app.rpc import ai_chat_pb2 as ai__chat_dot_v1_dot_ai__chat__pb2
+from app.rpc import ai_chat_pb2 as ai__chat__pb2
 
 GRPC_GENERATED_VERSION = '1.80.0'
 GRPC_VERSION = grpc.__version__
@@ -18,7 +18,7 @@ except ImportError:
 if _version_not_supported:
     raise RuntimeError(
         f'The grpc package installed is at version {GRPC_VERSION},'
-        + ' but the generated code in ai_chat/v1/ai_chat_pb2_grpc.py depends on'
+        + ' but the generated code in ai_chat_pb2_grpc.py depends on'
         + f' grpcio>={GRPC_GENERATED_VERSION}.'
         + f' Please upgrade your grpc module to grpcio>={GRPC_GENERATED_VERSION}'
         + f' or downgrade your generated code using grpcio-tools<={GRPC_VERSION}.'
@@ -36,13 +36,13 @@ class AIChatServiceStub(object):
         """
         self.Chat = channel.unary_stream(
                 '/ai_chat.v1.AIChatService/Chat',
-                request_serializer=ai__chat_dot_v1_dot_ai__chat__pb2.ChatRequest.SerializeToString,
-                response_deserializer=ai__chat_dot_v1_dot_ai__chat__pb2.ChatResponse.FromString,
+                request_serializer=ai__chat__pb2.ChatRequest.SerializeToString,
+                response_deserializer=ai__chat__pb2.ChatResponse.FromString,
                 _registered_method=True)
         self.FixBug = channel.unary_stream(
                 '/ai_chat.v1.AIChatService/FixBug',
-                request_serializer=ai__chat_dot_v1_dot_ai__chat__pb2.FixBugRequest.SerializeToString,
-                response_deserializer=ai__chat_dot_v1_dot_ai__chat__pb2.FixBugResponse.FromString,
+                request_serializer=ai__chat__pb2.FixBugRequest.SerializeToString,
+                response_deserializer=ai__chat__pb2.FixBugResponse.FromString,
                 _registered_method=True)
 
 
@@ -66,13 +66,13 @@ def add_AIChatServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'Chat': grpc.unary_stream_rpc_method_handler(
                     servicer.Chat,
-                    request_deserializer=ai__chat_dot_v1_dot_ai__chat__pb2.ChatRequest.FromString,
-                    response_serializer=ai__chat_dot_v1_dot_ai__chat__pb2.ChatResponse.SerializeToString,
+                    request_deserializer=ai__chat__pb2.ChatRequest.FromString,
+                    response_serializer=ai__chat__pb2.ChatResponse.SerializeToString,
             ),
             'FixBug': grpc.unary_stream_rpc_method_handler(
                     servicer.FixBug,
-                    request_deserializer=ai__chat_dot_v1_dot_ai__chat__pb2.FixBugRequest.FromString,
-                    response_serializer=ai__chat_dot_v1_dot_ai__chat__pb2.FixBugResponse.SerializeToString,
+                    request_deserializer=ai__chat__pb2.FixBugRequest.FromString,
+                    response_serializer=ai__chat__pb2.FixBugResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -100,8 +100,8 @@ class AIChatService(object):
             request,
             target,
             '/ai_chat.v1.AIChatService/Chat',
-            ai__chat_dot_v1_dot_ai__chat__pb2.ChatRequest.SerializeToString,
-            ai__chat_dot_v1_dot_ai__chat__pb2.ChatResponse.FromString,
+            ai__chat__pb2.ChatRequest.SerializeToString,
+            ai__chat__pb2.ChatResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -127,8 +127,8 @@ class AIChatService(object):
             request,
             target,
             '/ai_chat.v1.AIChatService/FixBug',
-            ai__chat_dot_v1_dot_ai__chat__pb2.FixBugRequest.SerializeToString,
-            ai__chat_dot_v1_dot_ai__chat__pb2.FixBugResponse.FromString,
+            ai__chat__pb2.FixBugRequest.SerializeToString,
+            ai__chat__pb2.FixBugResponse.FromString,
             options,
             channel_credentials,
             insecure,

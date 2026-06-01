@@ -1,6 +1,7 @@
 package lsp
 
 import (
+	"encoding/json"
 	"io"
 	"os/exec"
 	"sync"
@@ -25,12 +26,12 @@ type Proxy struct {
 }
 
 type rpcEnvelope struct {
-	JSONRPC string    `json:"jsonrpc"`
-	ID      []byte    `json:"id,omitempty"`
-	Method  string    `json:"method,omitempty"`
-	Params  []byte    `json:"params,omitempty"`
-	Result  []byte    `json:"result,omitempty"`
-	Error   *rpcError `json:"error,omitempty"`
+	JSONRPC string          `json:"jsonrpc"`
+	ID      json.RawMessage `json:"id,omitempty"`
+	Method  string          `json:"method,omitempty"`
+	Params  json.RawMessage `json:"params,omitempty"`
+	Result  json.RawMessage `json:"result,omitempty"`
+	Error   *rpcError       `json:"error,omitempty"`
 }
 
 type rpcError struct {

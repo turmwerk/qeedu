@@ -3,7 +3,7 @@
 import grpc
 import warnings
 
-from app.rpc import ai_copilot_pb2 as ai__copilot_dot_v1_dot_ai__copilot__pb2
+from app.rpc import ai_copilot_pb2 as ai__copilot__pb2
 
 GRPC_GENERATED_VERSION = '1.80.0'
 GRPC_VERSION = grpc.__version__
@@ -18,7 +18,7 @@ except ImportError:
 if _version_not_supported:
     raise RuntimeError(
         f'The grpc package installed is at version {GRPC_VERSION},'
-        + ' but the generated code in ai_copilot/v1/ai_copilot_pb2_grpc.py depends on'
+        + ' but the generated code in ai_copilot_pb2_grpc.py depends on'
         + f' grpcio>={GRPC_GENERATED_VERSION}.'
         + f' Please upgrade your grpc module to grpcio>={GRPC_GENERATED_VERSION}'
         + f' or downgrade your generated code using grpcio-tools<={GRPC_VERSION}.'
@@ -36,8 +36,8 @@ class AICopilotServiceStub(object):
         """
         self.Complete = channel.unary_unary(
                 '/ai_copilot.v1.AICopilotService/Complete',
-                request_serializer=ai__copilot_dot_v1_dot_ai__copilot__pb2.CompleteRequest.SerializeToString,
-                response_deserializer=ai__copilot_dot_v1_dot_ai__copilot__pb2.CompleteResponse.FromString,
+                request_serializer=ai__copilot__pb2.CompleteRequest.SerializeToString,
+                response_deserializer=ai__copilot__pb2.CompleteResponse.FromString,
                 _registered_method=True)
 
 
@@ -55,8 +55,8 @@ def add_AICopilotServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'Complete': grpc.unary_unary_rpc_method_handler(
                     servicer.Complete,
-                    request_deserializer=ai__copilot_dot_v1_dot_ai__copilot__pb2.CompleteRequest.FromString,
-                    response_serializer=ai__copilot_dot_v1_dot_ai__copilot__pb2.CompleteResponse.SerializeToString,
+                    request_deserializer=ai__copilot__pb2.CompleteRequest.FromString,
+                    response_serializer=ai__copilot__pb2.CompleteResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -84,8 +84,8 @@ class AICopilotService(object):
             request,
             target,
             '/ai_copilot.v1.AICopilotService/Complete',
-            ai__copilot_dot_v1_dot_ai__copilot__pb2.CompleteRequest.SerializeToString,
-            ai__copilot_dot_v1_dot_ai__copilot__pb2.CompleteResponse.FromString,
+            ai__copilot__pb2.CompleteRequest.SerializeToString,
+            ai__copilot__pb2.CompleteResponse.FromString,
             options,
             channel_credentials,
             insecure,
