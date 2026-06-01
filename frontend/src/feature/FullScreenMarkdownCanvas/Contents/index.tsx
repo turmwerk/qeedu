@@ -44,7 +44,7 @@ const CanvasContents: React.FC<Props> = ({ value, onChange }) => {
   return (
     <div
       ref={wrapRef}
-      className="grid p-0 bg-gradient-to-br from-white/60 via-purple-50/40 to-blue-50/40 dark:from-[#152236]/80 dark:via-[#1a2d48]/60 dark:to-[#152236]/60 flex-1 min-h-0 overflow-hidden"
+      className="grid p-0 bg-gradient-to-br from-white/60 via-[#ecefef]/50 to-[#e8f3e8]/40 dark:from-black/90 dark:via-[#071107]/70 dark:to-black/90 flex-1 min-h-0 overflow-hidden"
       style={{ gridTemplateColumns: columns }}
       onMouseMove={onMouseMove}
       onMouseUp={stopDrag}

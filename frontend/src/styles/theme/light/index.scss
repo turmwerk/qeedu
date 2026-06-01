@@ -1,43 +1,59 @@
 /* Light theme variables */
 :root[data-theme="light"], [data-theme="light"] {
-  --brand-accent: #4b2a85;
-  --brand-accent-strong: #3b1a6a;
-  --brand-accent-soft: rgba(75, 42, 133, 0.08);
-  --brand-accent-faint: rgba(75, 42, 133, 0.16);
-  --brand-border: rgba(75, 42, 133, 0.18);
-  --brand-shadow: 0 10px 24px rgba(75, 42, 133, 0.06);
-  --brand-text: #2b1650;
+  --brand-accent: #111827;
+  --brand-accent-strong: #1a9e1a;
+  --brand-accent-soft: rgba(31, 196, 31, 0.08);
+  --brand-accent-faint: rgba(31, 196, 31, 0.16);
+  --brand-border: rgba(26, 158, 26, 0.18);
+  --brand-border-strong: rgba(26, 158, 26, 0.38);
+  --brand-shadow: 0 10px 24px rgba(26, 158, 26, 0.08);
+  --brand-text: #111827;
   --header-blue: var(--brand-text);
-  --brand-muted: #666;
+  --brand-muted: #64787b;
   --brand-bg: #ffffff;
-  --brand-blue: #3b5bdb;
-  --brand-purple: #6d28d9;
+  --brand-blue: #111827;
+  --brand-purple: #1fc41f;
+  --brand-cyan: #1fc41f;
+  --brand-cyan-soft: rgba(31, 196, 31, 0.12);
+  --surface-gray: #ecefef;
+  --surface-container: rgba(255, 255, 255, 0.76);
+  --surface-container-low: rgba(248, 250, 250, 0.44);
   /* Nav button colors for light */
   --nav-bg: #ffffff;
   --nav-fg: #1f2937; /* dark text */
   /* Glass button */
-  --glass-btn-bg: rgba(255, 255, 255, 0.35);
-  --glass-btn-border: rgba(255, 255, 255, 0.45);
-  --glass-btn-shadow: 0 8px 32px rgba(120, 90, 200, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.55);
-  --glass-btn-hover-bg: rgba(255, 255, 255, 0.50);
-  --glass-btn-hover-border: rgba(255, 255, 255, 0.60);
-  --glass-btn-hover-shadow: 0 14px 40px rgba(104, 86, 180, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.70);
+  --glass-btn-bg: rgba(255, 255, 255, 0.58);
+  --glass-btn-border: rgba(255, 255, 255, 0.68);
+  --glass-btn-shadow: 0 8px 28px rgba(26, 158, 26, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.76);
+  --glass-btn-hover-bg: rgba(255, 255, 255, 0.78);
+  --glass-btn-hover-border: rgba(31, 196, 31, 0.40);
+  --glass-btn-hover-shadow: 0 14px 36px rgba(26, 158, 26, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.86);
   /* App root gradient */
   --app-root-bg:
-    radial-gradient(44rem 34rem at 18% 28%, rgba(255, 150, 190, 0.52) 0%, rgba(255, 150, 190, 0) 68%),
-    radial-gradient(38rem 30rem at 82% 72%, rgba(195, 130, 255, 0.45) 0%, rgba(195, 130, 255, 0) 66%),
-    radial-gradient(32rem 26rem at 62% 8%, rgba(255, 210, 230, 0.5) 0%, rgba(255, 210, 230, 0) 64%),
-    radial-gradient(28rem 22rem at 5% 80%, rgba(180, 155, 255, 0.38) 0%, rgba(180, 155, 255, 0) 60%),
-    linear-gradient(135deg, #fce4f0 0%, #f3d6ff 45%, #dce4ff 100%);
-  --app-root-bg-color: #fce4f0;
+    linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(236, 239, 239, 0) 42%),
+    #ecefef;
+  --app-root-bg-color: #ecefef;
   /* Auth panel */
-  --auth-panel-bg: rgba(255, 255, 255, 0.60);
-  --auth-panel-shadow: 0 12px 38px rgba(120, 90, 200, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.78), inset 0 -1px 0 rgba(255, 255, 255, 0.36);
-  --auth-submit-bg: var(--brand-blue);
-  --auth-submit-text: #ffffff;
-  --auth-submit-hover: var(--brand-purple);
-  --auth-submit-shadow: var(--brand-shadow);
-  --github-icon-fill: #ffffff;
+  --auth-panel-bg: rgba(255, 255, 255, 0.72);
+  --auth-panel-shadow: 0 12px 38px rgba(26, 158, 26, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.82), inset 0 -1px 0 rgba(255, 255, 255, 0.38);
+  --auth-control-bg: rgba(255, 255, 255, 0.86);
+  --auth-control-hover-bg: rgba(255, 255, 255, 0.96);
+  --auth-control-border: rgba(17, 24, 39, 0.16);
+  --auth-control-hover-border: rgba(26, 158, 26, 0.52);
+  --auth-control-text: var(--brand-text);
+  --auth-control-hover-text: #1a9e1a;
+  --auth-control-shadow: none;
+  --auth-field-bg: rgba(255, 255, 255, 0.92);
+  --auth-field-border: rgba(17, 24, 39, 0.16);
+  --auth-field-hover-border: rgba(26, 158, 26, 0.44);
+  --auth-field-focus-border: rgba(26, 158, 26, 0.64);
+  --auth-field-text: var(--brand-text);
+  --auth-field-placeholder: var(--brand-muted);
+  --auth-submit-bg: var(--auth-control-bg);
+  --auth-submit-text: var(--auth-control-text);
+  --auth-submit-hover: var(--auth-control-hover-bg);
+  --auth-submit-shadow: var(--auth-control-shadow);
+  --github-icon-fill: currentColor;
   --auth-autofill-shadow: 0 0 0 1000px #ffffff inset;
   --auth-autofill-text: var(--brand-text);
 }
@@ -46,7 +62,7 @@
 [data-theme="light"] html,
 [data-theme="light"] body,
 [data-theme="light"] #root {
-  background-color: #fce4f0 !important;
+  background-color: #ecefef !important;
   background-image: none !important;
 }
 
@@ -62,6 +78,40 @@
   background: transparent !important;
   border-bottom: none !important;
   box-shadow: none !important;
+}
+
+[data-theme="light"] [class*="bg-[var(--brand-blue)]"],
+[data-theme="light"] [class*="bg-[var(--brand-accent)]"] {
+  background-color: #1a9e1a !important;
+}
+
+[data-theme="light"] [class~="hover:border-[var(--brand-blue)]"]:hover,
+[data-theme="light"] [class~="hover:border-[var(--brand-accent)]"]:hover,
+[data-theme="light"] [class~="hover:border-[var(--brand-purple)]"]:hover {
+  border-color: #1a9e1a !important;
+}
+
+[data-theme="light"] [class~="text-[var(--brand-purple)]"],
+[data-theme="light"] [class~="!text-[var(--brand-purple)]"] {
+  color: #111827 !important;
+}
+
+[data-theme="light"] .main-header .header-menu-active,
+[data-theme="light"] .main-header .trigger-active {
+  color: #1fc41f !important;
+}
+
+[data-theme="light"] [class~="text-[var(--brand-purple)]"]:hover,
+[data-theme="light"] [class~="!text-[var(--brand-purple)]"]:hover,
+[data-theme="light"] [class~="hover:text-[var(--brand-blue)]"]:hover,
+[data-theme="light"] [class~="hover:text-[var(--brand-accent)]"]:hover,
+[data-theme="light"] [class~="hover:text-[var(--brand-purple)]"]:hover,
+[data-theme="light"] .group:hover [class~="text-[var(--brand-purple)]"],
+[data-theme="light"] .group:hover [class~="!text-[var(--brand-purple)]"],
+[data-theme="light"] .group:hover [class~="group-hover:text-[var(--brand-blue)]"],
+[data-theme="light"] .group:hover [class~="group-hover:text-[var(--brand-accent)]"],
+[data-theme="light"] .group:hover [class~="group-hover:text-[var(--brand-purple)]"] {
+  color: #1fc41f !important;
 }
 
 

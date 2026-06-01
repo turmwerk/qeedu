@@ -66,7 +66,7 @@ const Introduction: React.FC<IntroductionProps> = ({ onScrollToNext }) => {
           <h1 className="text-[48px] font-black text-[var(--brand-blue)] text-center mb-2 select-none">
             启育·QeEdu
           </h1>
-          <div className="text-[20px] text-[#666] text-center select-none">
+          <div className="text-[20px] text-[var(--brand-muted)] text-center select-none">
             面向高校全角色、全场景的 AI 原生智能体平台
           </div>
         </div>

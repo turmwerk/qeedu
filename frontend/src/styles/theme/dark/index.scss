@@ -1,57 +1,74 @@
 /* Dark theme variables */
 :root[data-theme="dark"], [data-theme="dark"] {
-  --brand-accent: #8b5cf6; /* keep accent visible on dark */
-  --brand-accent-strong: #6f3ae6;
-  --brand-accent-soft: rgba(139, 92, 246, 0.08);
-  --brand-accent-faint: rgba(139, 92, 246, 0.12);
-  --brand-border: rgba(255, 255, 255, 0.08);
+  --brand-accent: #929d92;
+  --brand-accent-strong: #6ef06e;
+  --brand-accent-soft: rgba(31, 196, 31, 0.10);
+  --brand-accent-faint: rgba(31, 196, 31, 0.16);
+  --brand-border: rgba(255, 255, 255, 0.10);
+  --brand-border-strong: rgba(31, 196, 31, 0.40);
   --brand-shadow: none;
-  --brand-text: #dde4f5;
-  --brand-muted: #c4cce4;
-  --brand-bg: #152236; /* 显青深蓝，不过暗，星点清晰浮现 */
+  --brand-text: #8c968c;
+  --brand-muted: #747e74;
+  --brand-bg: #000000;
   /* Nav button colors for dark (only arrow color needed when no box) */
-  --nav-fg: #ffffff;
-  --header-blue: #3b82f6; /* blue for headers in dark mode */
+  --nav-fg: #929d92;
+  --header-blue: #929d92;
   /* Auth-specific colors (cards/buttons) to ensure good contrast in dark mode */
-  --auth-panel-bg: rgba(255,255,255,0.04);
-  --auth-panel-border: rgba(255,255,255,0.08);
-  --auth-btn-bg: #1e40af; /* darker vivid blue for primary button */
-  --auth-btn-hover: #7c3aed; /* purple hover */
-  --auth-btn-text: #ffffff;
-  --auth-link: #93c5fd; /* lighter blue for inline links */
-  --auth-link-hover: #c4b5fd; /* lighter purple on hover */
-  --brand-blue: #93c5fd;
-  --brand-purple: #c4b5fd;
+  --auth-panel-bg: rgba(10, 10, 10, 0.82);
+  --auth-panel-border: rgba(31, 196, 31, 0.16);
+  --auth-btn-bg: rgba(20, 28, 39, 0.94);
+  --auth-btn-hover: rgba(30, 41, 59, 0.98);
+  --auth-btn-text: var(--brand-text);
+  --auth-link: #1fc41f;
+  --auth-link-hover: #6ef06e;
+  --brand-blue: #929d92;
+  --brand-purple: #1fc41f;
+  --brand-cyan: #1fc41f;
+  --brand-cyan-soft: rgba(31, 196, 31, 0.14);
+  --surface-gray: #000000;
+  --surface-container: rgba(255, 255, 255, 0.08);
+  --surface-container-low: rgba(255, 255, 255, 0.05);
   /* Glass button */
-  --glass-btn-bg: rgba(255, 255, 255, 0.12);
-  --glass-btn-border: rgba(255, 255, 255, 0.18);
-  --glass-btn-shadow: 0 8px 32px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15);
-  --glass-btn-hover-bg: rgba(255, 255, 255, 0.20);
-  --glass-btn-hover-border: rgba(255, 255, 255, 0.28);
-  --glass-btn-hover-shadow: 0 14px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  --glass-btn-bg: rgba(10, 10, 10, 0.74);
+  --glass-btn-border: rgba(31, 196, 31, 0.18);
+  --glass-btn-shadow: 0 8px 32px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  --glass-btn-hover-bg: rgba(31, 196, 31, 0.10);
+  --glass-btn-hover-border: rgba(31, 196, 31, 0.46);
+  --glass-btn-hover-shadow: 0 14px 40px rgba(0, 0, 0, 0.52), inset 0 1px 0 rgba(255, 255, 255, 0.12);
   /* App root gradient */
   --app-root-bg:
-    radial-gradient(70rem 55rem at 10% 20%, rgba(90, 60, 200, 0.30) 0%, rgba(90, 60, 200, 0) 65%),
-    radial-gradient(55rem 45rem at 85% 75%, rgba(30, 80, 180, 0.22) 0%, rgba(30, 80, 180, 0) 62%),
-    linear-gradient(180deg, #152236 0%, #1a2d48 100%);
-  --app-root-bg-color: #152236;
+    #000000;
+  --app-root-bg-color: #000000;
   /* Auth panel */
-  --auth-panel-bg: rgba(255, 255, 255, 0.11);
-  --auth-panel-shadow: 0 12px 38px rgba(0, 0, 0, 0.52), inset 0 1px 0 rgba(255, 255, 255, 0.16), inset 0 -1px 0 rgba(255, 255, 255, 0.08);
-  --auth-submit-bg: var(--brand-blue);
-  --auth-submit-text: #ffffff;
-  --auth-submit-hover: var(--brand-purple);
+  --auth-panel-bg: rgba(10, 10, 10, 0.82);
+  --auth-panel-shadow: 0 12px 38px rgba(0, 0, 0, 0.62), inset 0 1px 0 rgba(31, 196, 31, 0.16), inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+  --auth-control-bg: rgba(20, 28, 39, 0.94);
+  --auth-control-hover-bg: rgba(30, 41, 59, 0.98);
+  --auth-control-border: rgba(148, 163, 184, 0.16);
+  --auth-control-hover-border: rgba(31, 196, 31, 0.52);
+  --auth-control-text: var(--brand-text);
+  --auth-control-hover-text: #1fc41f;
+  --auth-control-shadow: none;
+  --auth-field-bg: rgba(7, 13, 9, 0.92);
+  --auth-field-border: rgba(148, 163, 184, 0.16);
+  --auth-field-hover-border: rgba(31, 196, 31, 0.46);
+  --auth-field-focus-border: rgba(31, 196, 31, 0.68);
+  --auth-field-text: var(--brand-text);
+  --auth-field-placeholder: var(--brand-muted);
+  --auth-submit-bg: var(--auth-control-bg);
+  --auth-submit-text: var(--auth-control-text);
+  --auth-submit-hover: var(--auth-control-hover-bg);
   --auth-submit-shadow: none;
-  --github-icon-fill: #000000;
-  --auth-autofill-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.12) inset;
-  --auth-autofill-text: #111827;
+  --github-icon-fill: currentColor;
+  --auth-autofill-shadow: 0 0 0 1000px rgba(31, 196, 31, 0.10) inset;
+  --auth-autofill-text: var(--brand-text);
 }
 
 /* Global dark mode body/html/root background */
 [data-theme="dark"] html,
 [data-theme="dark"] body,
 [data-theme="dark"] #root {
-  background-color: #152236 !important;
+  background-color: #000000 !important;
   background-image: none !important;
 }
 
@@ -68,4 +85,84 @@
   background: transparent !important;
   border-bottom: none !important;
   box-shadow: none !important;
+}
+
+[data-theme="dark"] [class*="bg-[var(--brand-blue)]"],
+[data-theme="dark"] [class*="bg-[var(--brand-accent)]"] {
+  background-color: #1a9e1a !important;
+}
+
+[data-theme="dark"] [class~="hover:border-[var(--brand-blue)]"]:hover,
+[data-theme="dark"] [class~="hover:border-[var(--brand-accent)]"]:hover,
+[data-theme="dark"] [class~="hover:border-[var(--brand-purple)]"]:hover {
+  border-color: #1fc41f !important;
+}
+
+[data-theme="dark"] [class~="text-[var(--brand-purple)]"],
+[data-theme="dark"] [class~="!text-[var(--brand-purple)]"] {
+  color: var(--brand-accent) !important;
+}
+
+[data-theme="dark"] [class~="dark:text-white"],
+[data-theme="dark"] [class~="dark:text-[#f8fbff]"] {
+  color: var(--brand-accent) !important;
+}
+
+[data-theme="dark"] [class~="dark:text-white/90"] {
+  color: var(--brand-text) !important;
+}
+
+[data-theme="dark"] [class~="dark:text-white/80"],
+[data-theme="dark"] [class~="dark:text-white/60"],
+[data-theme="dark"] [class~="dark:text-white/50"],
+[data-theme="dark"] [class~="dark:text-gray-200"],
+[data-theme="dark"] [class~="dark:text-gray-400"],
+[data-theme="dark"] [class~="dark:text-[#dbe5f3]"],
+[data-theme="dark"] [class~="dark:text-[#c0cadb]"] {
+  color: var(--brand-muted) !important;
+}
+
+[data-theme="dark"] [class~="text-[#666]"],
+[data-theme="dark"] [class~="text-[#999]"],
+[data-theme="dark"] [class~="text-[#67748a]"],
+[data-theme="dark"] [class~="text-gray-500"],
+[data-theme="dark"] [class~="text-gray-600"] {
+  color: var(--brand-muted) !important;
+}
+
+[data-theme="dark"] [class~="text-[#1f2937]"],
+[data-theme="dark"] [class~="text-[#243246]"],
+[data-theme="dark"] [class~="text-[#334155]"],
+[data-theme="dark"] [class~="text-gray-700"],
+[data-theme="dark"] [class~="text-gray-800"],
+[data-theme="dark"] [class~="text-slate-900"] {
+  color: var(--brand-text) !important;
+}
+
+[data-theme="dark"] input[placeholder*="搜索"] {
+  background-color: #071107 !important;
+  border-color: rgba(31, 196, 31, 0.24) !important;
+  color: var(--brand-text) !important;
+}
+
+[data-theme="dark"] input[placeholder*="搜索"]::placeholder {
+  color: var(--brand-muted) !important;
+}
+
+[data-theme="dark"] .main-header .header-menu-active,
+[data-theme="dark"] .main-header .trigger-active {
+  color: #1fc41f !important;
+}
+
+[data-theme="dark"] [class~="text-[var(--brand-purple)]"]:hover,
+[data-theme="dark"] [class~="!text-[var(--brand-purple)]"]:hover,
+[data-theme="dark"] [class~="hover:text-[var(--brand-blue)]"]:hover,
+[data-theme="dark"] [class~="hover:text-[var(--brand-accent)]"]:hover,
+[data-theme="dark"] [class~="hover:text-[var(--brand-purple)]"]:hover,
+[data-theme="dark"] .group:hover [class~="text-[var(--brand-purple)]"],
+[data-theme="dark"] .group:hover [class~="!text-[var(--brand-purple)]"],
+[data-theme="dark"] .group:hover [class~="group-hover:text-[var(--brand-blue)]"],
+[data-theme="dark"] .group:hover [class~="group-hover:text-[var(--brand-accent)]"],
+[data-theme="dark"] .group:hover [class~="group-hover:text-[var(--brand-purple)]"] {
+  color: #1fc41f !important;
 }

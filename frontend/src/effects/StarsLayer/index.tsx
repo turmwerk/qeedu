@@ -9,7 +9,7 @@ const StarsLayer: React.FC = () => {
     animRef.current = createStarsAnimation({
       count: 220,
       maxRadius: 1.6,
-      color: "#b8c8e8",
+      color: "#6ef06e",
       speed: 0.06,
     });
     return () => {

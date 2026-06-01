@@ -62,7 +62,7 @@ const FullScreenMarkdownCanvas: React.FC<{
 
   return (
     <div
-      className={`fixed inset-0 z-[9999] flex flex-col min-h-0 bg-white/95 dark:bg-[#152236]/95 backdrop-blur-xl transition-opacity duration-300 ease-out ${
+      className={`fixed inset-0 z-[9999] flex flex-col min-h-0 bg-[#ecefef]/95 dark:bg-black/95 backdrop-blur-xl transition-opacity duration-300 ease-out ${
         isAnimating ? "opacity-100" : "opacity-0"
       }`}
     >

@@ -32,25 +32,48 @@ const AuthLayout: React.FC = () => {
           -webkit-backdrop-filter: blur(44px) saturate(215%);
           backdrop-filter: blur(44px) saturate(215%);
         }
-        /* Auth 提交按钮 */
-        .auth-panel button[type="submit"] {
-          background-color: var(--auth-submit-bg) !important;
-          color: var(--auth-submit-text) !important;
-          box-shadow: var(--auth-submit-shadow) !important;
+        /* Auth primary actions: monogatari-style panel buttons */
+        .auth-panel .auth-primary-action {
+          background: var(--auth-control-bg) !important;
+          color: var(--auth-control-text) !important;
+          border: 1px solid var(--auth-control-border) !important;
+          box-shadow: var(--auth-control-shadow) !important;
+          -webkit-backdrop-filter: blur(18px);
+          backdrop-filter: blur(18px);
         }
-        .auth-panel button[type="submit"]:hover {
-          background-color: var(--auth-submit-hover) !important;
+        .auth-panel .auth-primary-action:hover {
+          background: var(--auth-control-hover-bg) !important;
+          color: var(--auth-control-hover-text) !important;
+          border-color: var(--auth-control-hover-border) !important;
         }
-        .auth-panel button[type="submit"]:disabled {
+        .auth-panel .auth-primary-action:disabled {
           opacity: 0.7;
         }
         /* Tab 下划�?*/
         .auth-panel .tab-underline {
           background-color: var(--brand-accent) !important;
         }
+        .auth-panel .auth-field-shell {
+          background: var(--auth-field-bg) !important;
+          border-color: var(--auth-field-border) !important;
+        }
+        .auth-panel .auth-field-shell:hover {
+          border-color: var(--auth-field-hover-border) !important;
+        }
+        .auth-panel .auth-field-shell:focus-within {
+          border-color: var(--auth-field-focus-border) !important;
+        }
+        .auth-panel .auth-floating-label {
+          background: var(--auth-field-bg) !important;
+          color: var(--auth-field-text) !important;
+        }
         /* Auth 输入框：autofill 保持圆角与背景一�?*/
         .auth-panel .auth-field-input {
           border-radius: inherit;
+          color: var(--auth-field-text) !important;
+        }
+        .auth-panel .auth-field-input::placeholder {
+          color: var(--auth-field-placeholder) !important;
         }
         .auth-panel .auth-field-input:-webkit-autofill,
         .auth-panel .auth-field-input:-webkit-autofill:hover,
@@ -73,17 +96,17 @@ const AuthLayout: React.FC = () => {
         data-oid=".fza9ll"
       >
         <div
-          className="absolute w-[600px] h-[600px] rounded-full bg-gradient-to-r from-purple-300/30 to-blue-300/30 blur-[120px] -top-48 -left-48 animate-[float_20s_ease-in-out_infinite]"
+          className="absolute w-[600px] h-[600px] rounded-full bg-[radial-gradient(circle,rgba(31,196,31,0.18)_0%,rgba(31,196,31,0)_64%)] blur-[120px] -top-48 -left-48 animate-[float_20s_ease-in-out_infinite]"
           data-oid="8i9qm59"
         />
 
         <div
-          className="absolute w-[500px] h-[500px] rounded-full bg-gradient-to-r from-pink-300/30 to-purple-300/30 blur-[100px] top-1/4 -right-32 animate-[float_25s_ease-in-out_infinite_reverse]"
+          className="absolute w-[500px] h-[500px] rounded-full bg-[radial-gradient(circle,rgba(26,158,26,0.14)_0%,rgba(26,158,26,0)_66%)] blur-[100px] top-1/4 -right-32 animate-[float_25s_ease-in-out_infinite_reverse]"
           data-oid="hf-_bb1"
         />
 
         <div
-          className="absolute w-[400px] h-[400px] rounded-full bg-gradient-to-r from-blue-300/25 to-indigo-300/25 blur-[90px] bottom-0 left-1/3 animate-[float_22s_ease-in-out_infinite]"
+          className="absolute w-[400px] h-[400px] rounded-full bg-[radial-gradient(circle,rgba(31,196,31,0.12)_0%,rgba(31,196,31,0)_62%)] blur-[90px] bottom-0 left-1/3 animate-[float_22s_ease-in-out_infinite]"
           data-oid="ax:ih-t"
         />
       </div>

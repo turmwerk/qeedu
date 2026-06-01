@@ -29,7 +29,7 @@ const menuButtonUnderline =
   "after:content-[''] after:absolute after:left-0 after:-bottom-[1px] after:h-[1.5px] after:w-0 after:bg-current after:transition-all after:duration-200 hover:after:w-full";
 const menuButtonIdle = "text-[var(--brand-blue)] bg-transparent";
 const menuButtonActive =
-  "text-[var(--brand-purple)] bg-[var(--brand-accent-soft)]";
+  "header-menu-active text-[var(--brand-purple)] bg-[var(--brand-accent-soft)]";
 
 type DropdownItem = {
   label: string;

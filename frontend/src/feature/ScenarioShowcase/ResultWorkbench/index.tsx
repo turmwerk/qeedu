@@ -30,7 +30,7 @@ const ResultWorkbench: React.FC<{
         <input
           readOnly
           value={searchPlaceholder}
-          className="h-16 flex-1 rounded-[24px] border border-[#d7dff4] bg-white/90 px-6 text-[16px] text-[#4b5563] outline-none"
+          className="h-16 flex-1 rounded-[24px] border border-[#d7dff4] bg-white/90 px-6 text-[16px] text-[#4b5563] outline-none dark:border-[rgba(31,196,31,0.24)] dark:bg-[#071107] dark:text-[var(--brand-text)]"
         />
         <div className="flex gap-3">
           <Button className="rounded-[22px] border border-[#d7dff4] bg-white px-6 py-3 text-sm font-semibold text-[#334155]">高级筛选</Button>

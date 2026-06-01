@@ -61,13 +61,13 @@ const ListPage: React.FC<Props> = ({
         </div>
 
         <div className="flex gap-3">
-          <div className="flex min-w-0 flex-1 items-center gap-3 rounded-[24px] border border-[#dbe1f3] bg-white px-5 py-4 dark:border-white/10 dark:bg-white/6">
+          <div className="flex min-w-0 flex-1 items-center gap-3 rounded-[24px] border border-[#dbe1f3] bg-white px-5 py-4 dark:border-[rgba(31,196,31,0.24)] dark:bg-[#071107]">
             <SearchOutlinedIcon className="text-[#94a3b8]" />
             <input
               value={keyword}
               onChange={(event) => setKeyword(event.target.value)}
               placeholder="搜索会议名称、领域或简称，例如 CHI / UIST / ACL"
-              className="w-full bg-transparent text-[15px] text-[#243246] outline-none placeholder:text-[#94a3b8] dark:text-white"
+              className="w-full bg-transparent text-[15px] text-[#243246] outline-none placeholder:text-[#94a3b8] dark:text-[var(--brand-text)] dark:placeholder:text-[var(--brand-muted)]"
             />
           </div>
           <Button className="rounded-[20px] bg-[var(--brand-blue)] px-6 py-4 text-sm font-semibold text-white">

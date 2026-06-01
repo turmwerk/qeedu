@@ -26,7 +26,7 @@ const CanvasHeader: React.FC<Props> = ({
   onClose,
 }) => {
   return (
-    <div className="flex items-center justify-between gap-2 sm:gap-4 px-2 sm:px-4 py-0.5 border-b border-white/40 dark:border-white/10 bg-gradient-to-r from-white/70 via-purple-50/60 to-indigo-50/60 dark:from-[#1a2d48]/80 dark:via-[#1e293b]/70 dark:to-[#1a2d48]/70 shadow-[0_10px_30px_rgba(124,58,237,0.08)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.3)]">
+    <div className="flex items-center justify-between gap-2 sm:gap-4 px-2 sm:px-4 py-0.5 border-b border-white/40 dark:border-white/10 bg-gradient-to-r from-white/70 via-[#ecefef]/70 to-[#e8f3e8]/60 dark:from-black/90 dark:via-[#071107]/80 dark:to-black/90 shadow-[0_10px_30px_rgba(26,158,26,0.08)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.3)]">
       {/* Left: sider toggle + title */}
       <div className="flex items-center gap-2 sm:gap-3 shrink-0">
         {!siderOpen && (

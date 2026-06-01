@@ -31,11 +31,11 @@ const SearchBar: React.FC<SearchBarProps> = ({
 	const leftPad = leftSlot ? "pl-9" : "pl-3";
 	const rightPad = rightSlot ? "pr-9" : "pr-3";
 	const iconButtonClass =
-		"flex items-center justify-center w-12 h-12 border border-transparent dark:border-white/[0.45] bg-white dark:bg-white/10 text-[var(--brand-blue)] transition-[background,border-color,color] hover:text-[var(--brand-purple)] hover:bg-[var(--brand-accent-soft)] dark:hover:bg-white/18 hover:border-[var(--brand-purple)]";
+		"flex items-center justify-center w-12 h-12 border border-transparent dark:border-[rgba(31,196,31,0.24)] bg-white dark:bg-[#071107] text-[var(--brand-blue)] transition-[background,border-color,color] hover:text-[var(--brand-purple)] hover:bg-[var(--brand-accent-soft)] dark:hover:bg-[rgba(31,196,31,0.12)] hover:border-[var(--brand-purple)]";
 
 	const inputNode = (
 		<div
-			className={`relative flex items-center h-12 rounded-xl border border-transparent dark:border-white/[0.45] bg-white/90 shadow-[0_6px_16px_rgba(15,23,42,0.08)] transition-[border-color,box-shadow] hover:border-[var(--brand-accent)] focus-within:border-[var(--brand-accent)] focus-within:shadow-[0_8px_20px_rgba(59,130,246,0.16)] ${
+			className={`relative flex items-center h-12 rounded-xl border border-transparent dark:border-[rgba(31,196,31,0.24)] bg-white/90 dark:bg-[#071107] shadow-[0_6px_16px_rgba(15,23,42,0.08)] dark:shadow-none transition-[border-color,box-shadow] hover:border-[var(--brand-accent)] focus-within:border-[var(--brand-accent)] focus-within:shadow-[0_8px_20px_rgba(59,130,246,0.16)] ${
 				className || ""
 			}`}
 		>
@@ -48,7 +48,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
 				value={value}
 				onChange={(e) => onChange(e.target.value)}
 				placeholder={placeholder}
-				className={`w-full h-full bg-transparent text-sm text-[#1f2937] placeholder:text-[#9aa3b2] outline-none ${leftPad} ${rightPad} ${
+				className={`w-full h-full bg-transparent text-sm text-[#1f2937] dark:text-[var(--brand-text)] placeholder:text-[#9aa3b2] dark:placeholder:text-[var(--brand-muted)] outline-none ${leftPad} ${rightPad} ${
 					inputClassName || ""
 				}`}
 			/>

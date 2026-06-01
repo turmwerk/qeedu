@@ -191,6 +191,19 @@ const SearchModal: React.FC<SearchModalProps> = ({ open, onClose }) => {
           border-color: var(--brand-purple) !important;
           box-shadow: 0 0 0 2px rgba(109, 40, 217, 0.18) !important;
         }
+        :root[data-theme="dark"] .search-modal-panel {
+          background: rgba(3, 8, 4, 0.96) !important;
+          border-color: rgba(31, 196, 31, 0.20) !important;
+          box-shadow: 0 16px 48px rgba(0,0,0,0.62), inset 0 1px 0 rgba(31, 196, 31, 0.10) !important;
+        }
+        :root[data-theme="dark"] .search-modal-input.ant-input {
+          background: #071107 !important;
+          color: var(--brand-text) !important;
+          border-color: rgba(31, 196, 31, 0.28) !important;
+        }
+        :root[data-theme="dark"] .search-modal-input.ant-input::placeholder {
+          color: var(--brand-muted) !important;
+        }
         .search-modal-result {
           border: 1px solid transparent;
           transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;

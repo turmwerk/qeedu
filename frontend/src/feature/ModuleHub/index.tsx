@@ -110,7 +110,7 @@ const ModuleHub: React.FC<Props> = ({
           )}
           {subtitle && (
             <div
-              className="px-1 text-[#666] text-[14px] sm:text-[16px] tracking-[1px] sm:tracking-[3px] text-center relative z-[1] break-words"
+              className="px-1 text-[var(--brand-muted)] text-[14px] sm:text-[16px] tracking-[1px] sm:tracking-[3px] text-center relative z-[1] break-words"
               data-oid="1y85vfz"
             >
               {subtitle}
