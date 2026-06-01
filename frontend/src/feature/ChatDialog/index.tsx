@@ -83,22 +83,35 @@ const Dialog: React.FC<DialogProps> & {
     return () => { cancelled = true; };
   }, [handleSelectModel, selectedModel]);
 
-  // Merge custom configs into models list
+  // Keep the visible list focused: only show the two backend models by default,
+  // and append the currently selected custom model when one is active.
   const allModels = useMemo(() => {
-    const customModels: ModelInfo[] = customConfigs.map((cfg) => ({
-      id: `__cfg_${cfg.id}`,
-      name: cfg.name,
-      provider: (() => {
-        try {
-          return new URL(cfg.baseUrl).hostname || "Custom";
-        } catch {
-          return "Custom";
-        }
-      })(),
-    }));
-    // If selectedModel is a custom config, ensure it shows correctly
-    return [...models, ...customModels];
-  }, [models, customConfigs]);
+    if (!selectedModel.startsWith("__cfg_")) {
+      return models;
+    }
+
+    const activeConfig = customConfigs.find((cfg) => `__cfg_${cfg.id}` === selectedModel);
+    if (!activeConfig) {
+      return models;
+    }
+
+    const provider = (() => {
+      try {
+        return new URL(activeConfig.baseUrl).hostname || "Custom";
+      } catch {
+        return "Custom";
+      }
+    })();
+
+    return [
+      ...models,
+      {
+        id: `__cfg_${activeConfig.id}`,
+        name: activeConfig.name,
+        provider,
+      },
+    ];
+  }, [models, customConfigs, selectedModel]);
 
   const activeCustom = useMemo(
     () => customConfigs.find((cfg) => `__cfg_${cfg.id}` === selectedModel) ?? null,
