@@ -4,6 +4,7 @@ import FullScreenMarkdownCanvas from "@/feature/FullScreenMarkdownCanvas";
 import AssistantPanel from "./AssistantPanel";
 import Header from "./Header";
 import MarkdownPanel from "./MarkdownPanel";
+import { SYLLABUS_EVENTS } from "../constants";
 
 const DetailPage: React.FC<{
   md: string;
@@ -65,6 +66,7 @@ const DetailPage: React.FC<{
               if (updated !== null) setMd(updated);
               setOpenFull(false);
             }}
+            siderEvents={SYLLABUS_EVENTS}
           />
         )}
       </div>

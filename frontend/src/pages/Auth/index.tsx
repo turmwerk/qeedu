@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import Footer from "@/layouts/MainLayout/Footer";
 import SnowLayer from "@/effects/SnowLayer";
@@ -6,11 +6,22 @@ import StarsLayer from "@/effects/StarsLayer";
 import { getStoredTheme } from "@/utils/theme/controller";
 const AuthLayout: React.FC = () => {
   const location = useLocation();
-  const isDark = getStoredTheme() === 'dark';
+  const [theme, setTheme] = useState(getStoredTheme);
+  const isDark = theme === 'dark';
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   }, [location.pathname]);
+
+  useEffect(() => {
+    const handleThemeChange = () => setTheme(getStoredTheme());
+    window.addEventListener("theme-change", handleThemeChange);
+    window.addEventListener("storage", handleThemeChange);
+    return () => {
+      window.removeEventListener("theme-change", handleThemeChange);
+      window.removeEventListener("storage", handleThemeChange);
+    };
+  }, []);
 
   return (
     <div

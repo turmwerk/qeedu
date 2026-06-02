@@ -8,11 +8,19 @@ export function getStoredTheme(): Theme {
   return 'light';
 }
 
+export function clearStarsCanvases() {
+  if (typeof document === 'undefined') return;
+  document.querySelectorAll('.stars-canvas').forEach((node) => node.remove());
+}
+
 export function applyTheme(t: Theme) {
   const root = document.documentElement;
   root.classList.add('theme-switching');
   root.setAttribute('data-theme', t);
   localStorage.setItem(THEME_KEY, t);
+  if (t === 'light') {
+    clearStarsCanvases();
+  }
   // Broadcast change for same-window listeners
   try {
     window.dispatchEvent(new CustomEvent('theme-change', { detail: { theme: t } }));

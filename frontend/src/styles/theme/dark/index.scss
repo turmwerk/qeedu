@@ -732,3 +732,11 @@ html[data-theme="dark"] .chat-custom-model-modal [class~="bg-gray-200"] {
   border-color: rgba(31, 196, 31, 0.18) !important;
   color: var(--brand-muted) !important;
 }
+
+[data-theme="dark"] :where(a, button, [role="button"], .dropdown-menu-item, .dropdown-trigger-btn, .ant-btn, .ant-menu-item, .ant-tabs-tab, .ant-segmented-item):hover {
+  color: #1fc41f !important;
+}
+
+[data-theme="dark"] :where(a, button, [role="button"], .dropdown-menu-item, .dropdown-trigger-btn, .ant-btn, .ant-menu-item, .ant-tabs-tab, .ant-segmented-item):hover :where(span, svg, p, div, label, strong, em, small) {
+  color: #1fc41f !important;
+}
