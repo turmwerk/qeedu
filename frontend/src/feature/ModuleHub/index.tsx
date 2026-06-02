@@ -32,9 +32,9 @@ type Props = {
   renderFeature?: (item: Feature) => React.ReactNode;
   /**
    * Tailwind grid-cols class applied to the card grid.
-   * Defaults to `"grid-cols-2 lg:grid-cols-3"` so module hubs render
-   * two cards per row on phones and three cards per row on desktop.
-   * Pass e.g. `"grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"` for tutorial grids.
+   * Defaults to `"grid-cols-1 md:grid-cols-2 lg:grid-cols-3"` so module hubs
+   * render one card per row on mobile and three cards per row on desktop.
+   * Pass e.g. `"grid-cols-1 md:grid-cols-2 lg:grid-cols-3"` for tutorial grids.
    */
   gridCols?: string;
   searchable?: boolean;
@@ -85,13 +85,13 @@ const ModuleHub: React.FC<Props> = ({
     }
 
     const featuresCount = features.length;
-    // 当只有 2 个或 4 个卡片时，显示为每行 2 个
+    // 当只有 2 个或 4 个卡片时，移动端单列，桌面保持每行 2 个
     if (featuresCount === 2 || featuresCount === 4) {
-      return "grid-cols-2";
+      return "grid-cols-1 md:grid-cols-2";
     }
 
-    // 其他情况使用默认布局：移动端 2 列，桌面端 3 列
-    return "grid-cols-2 lg:grid-cols-3";
+    // 其他情况使用默认布局：移动端 1 列，桌面端 3 列
+    return "grid-cols-1 md:grid-cols-2 lg:grid-cols-3";
   };
   return (
     <div className="module-hub-section relative w-full max-w-full overflow-x-hidden" data-oid="ntkw4hz">

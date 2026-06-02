@@ -73,7 +73,7 @@ const FeatureHub: React.FC = () => {
       headline="启育·QeEdu"
       subtitle="面向高校全角色、全场景的 AI 原生智能体平台"
       features={features}
-      gridCols="grid-cols-2 xl:grid-cols-3"
+      gridCols="grid-cols-1 md:grid-cols-2 xl:grid-cols-3"
     />
   );
 };

@@ -12,7 +12,7 @@ const ResearchHub: React.FC = () => {
         <OverviewMetrics metrics={conferenceCountdownMetrics} />
       </section>
 
-      <div className="module-hub-grid grid gap-x-2 gap-y-2 sm:gap-x-8 sm:gap-y-8 relative z-[1] min-w-0 grid-cols-2 lg:grid-cols-3">
+      <div className="module-hub-grid grid gap-x-2 gap-y-2 sm:gap-x-8 sm:gap-y-8 relative z-[1] min-w-0 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         {researchHubFeatures.map((item) => (
           <ModuleCard
             key={item.key}

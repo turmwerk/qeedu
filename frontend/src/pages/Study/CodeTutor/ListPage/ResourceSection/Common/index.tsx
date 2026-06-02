@@ -32,7 +32,6 @@ const CommonSection: React.FC = () => (
       subtitle="编程练习 · 开源社区 · AI 前沿"
       features={COMMON_SITES}
       renderFeature={renderSite}
-      gridCols="grid-cols-2 lg:grid-cols-3"
     />
   </div>
 );

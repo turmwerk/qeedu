@@ -32,7 +32,7 @@ const AIChatSection: React.FC = () => (
       subtitle="精选的AI聊天资源，助你轻松获取AI的强大功能"
       features={AI_CHAT_SITES}
       renderFeature={renderSite}
-      gridCols="grid-cols-2 lg:grid-cols-3"
+      gridCols="grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
     />
   </div>
 );

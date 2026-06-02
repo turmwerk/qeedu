@@ -31,7 +31,7 @@ const renderCard = (item: Feature) => {
   );
 };
 
-const gridCols = ACADEMIC_CARDS.length === 4 ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-2 lg:grid-cols-4";
+const gridCols = ACADEMIC_CARDS.length === 4 ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1 md:grid-cols-2 lg:grid-cols-4";
 
 const AcademicSection: React.FC = () => (
   <div className="w-full min-w-0 overflow-x-hidden">

@@ -59,18 +59,18 @@ const Introduction: React.FC<IntroductionProps> = ({ onScrollToNext }) => {
 
   return (
     <section
-      className="relative w-full flex flex-col items-center justify-center min-h-[90vh] h-[90vh] bg-transparent overflow-hidden -mt-px z-[1]"
+      className="relative w-full flex flex-col items-center justify-center min-h-[100svh] h-auto bg-transparent overflow-visible -mt-px z-[1] px-0 py-16 md:min-h-[90vh] md:h-[90vh] md:overflow-hidden md:py-0"
     >
-      <div className="flex-1 flex flex-col items-center justify-center w-full h-full gap-6 px-4">
-        <div className="-mt-8 flex flex-col items-center">
-          <h1 className="text-[48px] font-black text-[var(--brand-blue)] text-center mb-2 select-none">
+      <div className="flex flex-col items-center justify-center w-full gap-5 px-4 md:h-full md:flex-1 md:gap-6">
+        <div className="flex flex-col items-center md:-mt-8">
+          <h1 className="text-[38px] sm:text-[48px] font-black text-[var(--brand-blue)] text-center mb-2 select-none">
             启育·QeEdu
           </h1>
-          <div className="text-[20px] text-[var(--brand-muted)] text-center select-none">
+          <div className="text-[16px] sm:text-[20px] text-[var(--brand-muted)] text-center select-none">
             面向高校全角色、全场景的 AI 原生智能体平台
           </div>
         </div>
-        <div className="mt-2 grid w-full max-w-[1120px] grid-cols-1 justify-items-center gap-3 sm:grid-cols-[minmax(0,500px)_minmax(0,500px)] sm:justify-center">
+        <div className="mt-2 grid w-full max-w-[1120px] grid-cols-1 justify-items-center gap-3 md:grid-cols-[minmax(0,500px)_minmax(0,500px)] md:justify-center">
           {quickActions.map((item) => (
             <div key={item.title} className="w-full max-w-[500px]">
               <ModuleCard
@@ -85,7 +85,7 @@ const Introduction: React.FC<IntroductionProps> = ({ onScrollToNext }) => {
           ))}
         </div>
       </div>
-      <div className="absolute left-1/2 -translate-x-1/2 bottom-8 z-10">
+      <div className="relative z-10 mt-2 md:absolute md:left-1/2 md:bottom-8 md:mt-0 md:-translate-x-1/2">
         <NavButton onClick={onScrollToNext || (() => {})} ariaLabel="向下滚动" />
       </div>
     </section>

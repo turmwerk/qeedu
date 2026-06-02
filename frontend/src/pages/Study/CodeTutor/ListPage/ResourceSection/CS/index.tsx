@@ -34,7 +34,6 @@ const CsSection: React.FC = () => (
     subtitle="操作系统 · 网络 · 算法 · 数据库 · AI · 分布式"
     features={CS_COURSES}
     renderFeature={renderCourse}
-    gridCols="grid-cols-2 lg:grid-cols-3"
   />
 );
 
