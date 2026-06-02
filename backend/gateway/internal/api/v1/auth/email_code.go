@@ -135,6 +135,7 @@ func sendEmailWithResend(to, subject, body string) error {
 		return err
 	}
 	req.Header.Set("Authorization", "Bearer "+apiKey)
+	req.Header.Set("User-Agent", "QeEdu/1.0")
 	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{Timeout: 10 * time.Second}
