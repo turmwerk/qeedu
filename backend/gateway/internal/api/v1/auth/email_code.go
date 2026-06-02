@@ -1,8 +1,12 @@
 package auth
 
 import (
+	"bytes"
 	"crypto/rand"
+	"encoding/json"
 	"fmt"
+	"html"
+	"io"
 	"log"
 	"math/big"
 	"net/http"
@@ -97,7 +101,73 @@ func verifyEmailCode(email string, purpose emailCodePurpose, code string) bool {
 	return true
 }
 
-func sendEmail(to, subject, body string) error {
+func sendEmailWithResend(to, subject, body string) error {
+	apiKey := strings.TrimSpace(os.Getenv("RESEND_API_KEY"))
+	from := strings.TrimSpace(os.Getenv("RESEND_EMAIL_FROM"))
+	if apiKey == "" || from == "" {
+		return fmt.Errorf("resend not configured")
+	}
+
+	displayFrom := from
+	if !strings.Contains(displayFrom, "<") && strings.Contains(displayFrom, "@") {
+		displayFrom = fmt.Sprintf("QeEdu <%s>", displayFrom)
+	}
+
+	htmlBody := fmt.Sprintf(
+		`<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.7;color:#111827"><p>%s</p><pre style="font-size:24px;font-weight:700;letter-spacing:4px">%s</pre><p style="color:#64748b">10 分钟内有效。</p></div>`,
+		html.EscapeString("你的 QeEdu 邮箱验证码是："),
+		html.EscapeString(extractEmailCode(body)),
+	)
+
+	payload, err := json.Marshal(map[string]any{
+		"from":    displayFrom,
+		"to":      []string{to},
+		"subject": subject,
+		"text":    body,
+		"html":    htmlBody,
+	})
+	if err != nil {
+		return err
+	}
+
+	req, err := http.NewRequest(http.MethodPost, "https://api.resend.com/emails", bytes.NewReader(payload))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Authorization", "Bearer "+apiKey)
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode >= http.StatusOK && resp.StatusCode < http.StatusMultipleChoices {
+		return nil
+	}
+
+	raw, _ := io.ReadAll(io.LimitReader(resp.Body, 2048))
+	return fmt.Errorf("resend returned %s: %s", resp.Status, strings.TrimSpace(string(raw)))
+}
+
+func extractEmailCode(body string) string {
+	var digits strings.Builder
+	for _, ch := range body {
+		if ch >= '0' && ch <= '9' {
+			digits.WriteRune(ch)
+			if digits.Len() == 6 {
+				return digits.String()
+			}
+			continue
+		}
+		digits.Reset()
+	}
+	return ""
+}
+
+func sendEmailWithSMTP(to, subject, body string) error {
 	host := strings.TrimSpace(os.Getenv("SMTP_HOST"))
 	port := strings.TrimSpace(os.Getenv("SMTP_PORT"))
 	user := strings.TrimSpace(os.Getenv("SMTP_USER"))
@@ -128,6 +198,33 @@ func sendEmail(to, subject, body string) error {
 	return smtp.SendMail(host+":"+port, auth, from, []string{to}, []byte(msg))
 }
 
+func sendEmail(to, subject, body string) error {
+	var failures []string
+	if strings.TrimSpace(os.Getenv("RESEND_API_KEY")) != "" ||
+		strings.TrimSpace(os.Getenv("RESEND_EMAIL_FROM")) != "" {
+		if err := sendEmailWithResend(to, subject, body); err == nil {
+			return nil
+		} else {
+			failures = append(failures, "resend: "+err.Error())
+		}
+	}
+
+	if strings.TrimSpace(os.Getenv("SMTP_HOST")) != "" ||
+		strings.TrimSpace(os.Getenv("SMTP_PORT")) != "" ||
+		strings.TrimSpace(os.Getenv("SMTP_FROM")) != "" {
+		if err := sendEmailWithSMTP(to, subject, body); err == nil {
+			return nil
+		} else {
+			failures = append(failures, "smtp: "+err.Error())
+		}
+	}
+
+	if len(failures) > 0 {
+		return fmt.Errorf("%s", strings.Join(failures, "; "))
+	}
+	return fmt.Errorf("email provider not configured")
+}
+
 // SendCode sends or returns a development email verification code.
 //
 //	POST /api/v1/auth/send-code
@@ -151,12 +248,14 @@ func SendCode(c *gin.Context) {
 	subject := "QeEdu 邮箱验证码"
 	body := fmt.Sprintf("你的验证码是：%s\n\n用途：%s\n10 分钟内有效。", code, purpose)
 	if err := sendEmail(email, subject, body); err != nil {
-		log.Printf("[auth] email code for %s (%s): %s; smtp skipped: %v", email, purpose, code, err)
+		log.Printf("[auth] email code for %s (%s): %s; email send failed: %v", email, purpose, code, err)
 		resp := gin.H{"ok": true, "message": "verification code generated"}
 		if !configs.IsProd() {
 			resp["dev_code"] = code
+			c.JSON(http.StatusOK, resp)
+			return
 		}
-		c.JSON(http.StatusOK, resp)
+		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "邮箱服务未配置或发送失败，请稍后重试"})
 		return
 	}
 

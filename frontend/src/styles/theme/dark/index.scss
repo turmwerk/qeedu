@@ -101,6 +101,15 @@
   color: var(--brand-accent) !important;
 }
 
+[data-theme="dark"] [class~="hover:text-[var(--brand-blue)]"]:hover,
+[data-theme="dark"] [class~="hover:text-[var(--brand-accent)]"]:hover,
+[data-theme="dark"] [class~="hover:text-[var(--brand-purple)]"]:hover,
+[data-theme="dark"] .group:hover [class~="group-hover:text-[var(--brand-blue)]"],
+[data-theme="dark"] .group:hover [class~="group-hover:text-[var(--brand-accent)]"],
+[data-theme="dark"] .group:hover [class~="group-hover:text-[var(--brand-purple)]"] {
+  color: #1fc41f !important;
+}
+
 [data-theme="dark"] [class~="dark:text-white"],
 [data-theme="dark"] [class~="dark:text-[#f8fbff]"] {
   color: var(--brand-text) !important;
