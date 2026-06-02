@@ -34,6 +34,7 @@ const AssignmentReviewDetailPage: React.FC<Props> = ({
   onUploadFolder,
 }) => {
   const folderInputRef = useRef<HTMLInputElement | null>(null);
+  const assistantDialogId = `assignment-review-${record.id}-${selectedSubmission?.id ?? "main"}`;
 
   useEffect(() => {
     const input = folderInputRef.current;
@@ -78,6 +79,7 @@ const AssignmentReviewDetailPage: React.FC<Props> = ({
           <MainPanel
             record={record}
             selectedSubmission={selectedSubmission}
+            assistantDialogId={assistantDialogId}
             onSelectSubmission={onSelectSubmission}
             onToggleTask={onToggleTask}
             onAppendContent={onAppendContent}
@@ -87,7 +89,7 @@ const AssignmentReviewDetailPage: React.FC<Props> = ({
         }
         right={
           <AssistantPanel
-            dialogId={`assignment-review-${record.id}-${selectedSubmission?.id ?? "main"}`}
+            dialogId={assistantDialogId}
             botName="批改协同助手"
             initMessage="我已经读取当前批改任务和提交上下文，可以继续生成反馈、复核 rubric 或整理回写建议。"
             transport={assignmentReviewAdapter.createChatTransport(

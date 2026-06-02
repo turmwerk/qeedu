@@ -5,6 +5,8 @@ import { timelineQuickActions, timelineRecords } from "@/pages/Management/featur
 import Button from "@/ui/Button";
 import { showToast } from "@/ui/Toast";
 import {
+  buildRecordActionPrompt,
+  runRecordAIAction,
   workbenchMainPanelShellClassName,
   workbenchScrollAreaClassName,
 } from "@/pages/shared/workbench";
@@ -18,7 +20,23 @@ type Props = {
   onStatusChange: (milestoneId: string, status: string) => void;
 };
 
-const MainPanel: React.FC<Props> = ({ records, selected, onOpenRecord, onStatusChange }) => (
+const MainPanel: React.FC<Props> = ({ records, selected, onOpenRecord, onStatusChange }) => {
+  const dialogId = selected ? `management-timeline-${selected.id}` : null;
+  const runAIAction = (action: string) => {
+    runRecordAIAction(
+      dialogId,
+      buildRecordActionPrompt(action, selected, [
+        {
+          label: "里程碑",
+          value: (selected?.milestones ?? [])
+            .map((item: any) => `${item.date ?? "未定"} ${item.title}（${item.status}）：${item.summary ?? ""}`)
+            .join("；"),
+        },
+      ]),
+    );
+  };
+
+  return (
   <div className={workbenchMainPanelShellClassName}>
     <div className={workbenchScrollAreaClassName}>
       <div className="space-y-6">
@@ -89,7 +107,9 @@ const MainPanel: React.FC<Props> = ({ records, selected, onOpenRecord, onStatusC
                       variant="secondary"
                       size="sm"
                       className="mt-3 w-full justify-center"
-                      onClick={() => showToast("已生成冲突处理建议")}
+                      onClick={() =>
+                        runAIAction(`请为这个排期冲突生成处理建议，并给出改期、提醒和责任人同步方案：${item}`)
+                      }
                     >
                       解决冲突
                     </Button>
@@ -97,12 +117,18 @@ const MainPanel: React.FC<Props> = ({ records, selected, onOpenRecord, onStatusC
                 ))}
               </div>
             </div>
-            <ActionDock actions={timelineQuickActions} templates={[]} onInsert={() => showToast("已复制时间轴动作提示")} />
+            <ActionDock
+              actions={timelineQuickActions}
+              templates={[]}
+              onInsert={() => showToast("已复制时间轴动作提示")}
+              onRunAI={(prompt) => runAIAction(prompt)}
+            />
           </div>
         </div>
       </div>
     </div>
   </div>
-);
+  );
+};
 
 export default MainPanel;

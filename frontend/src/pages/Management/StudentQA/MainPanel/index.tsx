@@ -5,6 +5,8 @@ import List from "@/ui/List";
 import Button from "@/ui/Button";
 import { showToast } from "@/ui/Toast";
 import {
+  buildRecordActionPrompt,
+  runRecordAIAction,
   workbenchMainPanelShellClassName,
   workbenchScrollAreaClassName,
 } from "@/pages/shared/workbench";
@@ -18,7 +20,23 @@ type Props = {
   onUpdateSelected: (patch: Record<string, unknown>) => void;
 };
 
-const MainPanel: React.FC<Props> = ({ records, selected, onOpenRecord, onUpdateSelected }) => (
+const MainPanel: React.FC<Props> = ({ records, selected, onOpenRecord, onUpdateSelected }) => {
+  const dialogId = selected ? `management-student-qa-${selected.id}` : null;
+  const runAIAction = (action: string) => {
+    runRecordAIAction(
+      dialogId,
+      buildRecordActionPrompt(action, selected, [
+        {
+          label: "FAQ 树",
+          value: (selected?.faqTree ?? [])
+            .map((item: any) => `${item.title}：${item.answer}`)
+            .join("；"),
+        },
+      ]),
+    );
+  };
+
+  return (
   <div className={workbenchMainPanelShellClassName}>
     <div className={workbenchScrollAreaClassName}>
       <div className="space-y-6">
@@ -56,7 +74,12 @@ const MainPanel: React.FC<Props> = ({ records, selected, onOpenRecord, onUpdateS
                       <div className="mt-2 text-sm text-slate-500 dark:text-slate-300">{selected.subtitle}</div>
                     </div>
                     <div className="flex gap-2">
-                      <Button variant="secondary" onClick={() => showToast("AI 建议回复已生成")}>
+                      <Button
+                        variant="secondary"
+                        onClick={() =>
+                          runAIAction("请基于学生提问、当前草稿和 FAQ 树生成一版礼貌、简洁、可执行的建议回复。")
+                        }
+                      >
                         生成建议回复
                       </Button>
                       <Button
@@ -80,7 +103,23 @@ const MainPanel: React.FC<Props> = ({ records, selected, onOpenRecord, onUpdateS
                       <div className="mt-2 text-sm leading-7 text-slate-700 dark:text-slate-200">{selected.content}</div>
                       <div className="mt-4 flex flex-wrap gap-2">
                         {["发送回复", "接受 AI 建议", "保存为 FAQ"].map((label) => (
-                          <Button key={label} variant="secondary" size="sm" onClick={() => showToast(`${label} 已执行`)}>
+                          <Button
+                            key={label}
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => {
+                              if (label === "接受 AI 建议") {
+                                runAIAction("请把刚才的 AI 建议整理成可直接发送给学生的标准回复，并指出需要人工确认的口径。");
+                                return;
+                              }
+                              if (label === "发送回复") {
+                                onUpdateSelected({ status: "已解决", updatedAt: Date.now() });
+                                showToast("回复已发送并标记为已解决");
+                                return;
+                              }
+                              showToast("已保存为 FAQ");
+                            }}
+                          >
                             {label}
                           </Button>
                         ))}
@@ -129,6 +168,7 @@ const MainPanel: React.FC<Props> = ({ records, selected, onOpenRecord, onUpdateS
       </div>
     </div>
   </div>
-);
+  );
+};
 
 export default MainPanel;

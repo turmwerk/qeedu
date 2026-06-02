@@ -7,6 +7,8 @@ import Button from "@/ui/Button";
 import { showToast } from "@/ui/Toast";
 import { processAssistantQuickActions, processAssistantRecords } from "@/pages/Management/featureData";
 import {
+  buildRecordActionPrompt,
+  runRecordAIAction,
   workbenchMainPanelShellClassName,
   workbenchScrollAreaClassName,
 } from "@/pages/shared/workbench";
@@ -47,6 +49,21 @@ const MainPanel: React.FC<Props> = ({
     status,
     items: filtered.filter((record) => record.status === status),
   }));
+
+  const dialogId = selected ? `management-process-${selected.id}` : null;
+  const runAIAction = (action: string) => {
+    runRecordAIAction(
+      dialogId,
+      buildRecordActionPrompt(action, selected, [
+        {
+          label: "任务清单",
+          value: (selected?.tasks ?? [])
+            .map((task: any) => `${task.done ? "已完成" : "未完成"} - ${task.title}：${task.detail ?? ""}`)
+            .join("；"),
+        },
+      ]),
+    );
+  };
 
   return (
     <div className={workbenchMainPanelShellClassName}>
@@ -132,7 +149,12 @@ const MainPanel: React.FC<Props> = ({
                     <Button variant="secondary" onClick={() => onRequestDelete(selected.id)}>
                       删除案例
                     </Button>
-                    <Button variant="primary" onClick={() => showToast("AI 已重新生成办理步骤")}>
+                    <Button
+                      variant="primary"
+                      onClick={() =>
+                        runAIAction("请根据当前案例重新生成角色化办理步骤，标出依赖关系、风险节点和补救动作。")
+                      }
+                    >
                       AI 生成步骤
                     </Button>
                   </div>
@@ -171,7 +193,18 @@ const MainPanel: React.FC<Props> = ({
                       >
                         <div className="text-sm font-bold text-slate-900 dark:text-white">{title}</div>
                         <div className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">{desc}</div>
-                        <Button variant="secondary" size="sm" className="mt-3" onClick={() => showToast(`${cta} 已执行`)}>
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          className="mt-3"
+                          onClick={() => {
+                            if (cta === "指派负责人") {
+                              showToast(`${cta} 已执行`);
+                              return;
+                            }
+                            runAIAction(`请围绕异常「${title}」生成处理动作：${cta}。异常描述：${desc}`);
+                          }}
+                        >
                           {cta}
                         </Button>
                       </div>
@@ -190,6 +223,7 @@ const MainPanel: React.FC<Props> = ({
                       updatedAt: Date.now(),
                     })
                   }
+                  onRunAI={(prompt) => runAIAction(prompt)}
                 />
                 <div className="space-y-6">
                   <ResourceBoard resources={selected.resources ?? []} />
@@ -206,7 +240,7 @@ const MainPanel: React.FC<Props> = ({
                           key={label}
                           variant="secondary"
                           className="justify-start"
-                          onClick={() => showToast(`${label} 已生成`)}
+                          onClick={() => runAIAction(`请${label}，要求输出可直接发送或同步给相关责任人的文本。`)}
                         >
                           {label}
                         </Button>

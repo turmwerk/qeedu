@@ -7,6 +7,8 @@ import List from "@/ui/List";
 import { showToast } from "@/ui/Toast";
 import { literatureSearchRecords } from "@/pages/Research/featureData";
 import {
+  buildRecordActionPrompt,
+  runRecordAIAction,
   workbenchMainPanelShellClassName,
   workbenchScrollAreaClassName,
 } from "@/pages/shared/workbench";
@@ -29,7 +31,24 @@ const MainPanel: React.FC<Props> = ({
   onOpenRecord,
   onOpenReader,
   onAppendContent,
-}) => (
+}) => {
+  const dialogId = selected ? `research-literature-${selected.id}` : null;
+  const runAIAction = (action: string) => {
+    runRecordAIAction(
+      dialogId,
+      buildRecordActionPrompt(action, selected, [
+        { label: "筛选条件", value: selected?.filters },
+        {
+          label: "候选论文",
+          value: (selected?.savedPapers ?? [])
+            .map((paper: any) => `${paper.title}（${paper.meta}，${paper.status}）`)
+            .join("；"),
+        },
+      ]),
+    );
+  };
+
+  return (
   <div className={workbenchMainPanelShellClassName}>
     <div className={workbenchScrollAreaClassName}>
       <div className="space-y-6">
@@ -78,10 +97,20 @@ const MainPanel: React.FC<Props> = ({
                 ))}
               </div>
               <div className="mt-4 flex flex-wrap gap-2">
-                <Button variant="secondary" onClick={() => showToast("已执行检索")}>
+                <Button
+                  variant="secondary"
+                  onClick={() =>
+                    runAIAction("请根据当前检索式执行一次检索策略分析，给出数据库语法改写、筛选顺序和下一步检索建议。")
+                  }
+                >
                   运行检索
                 </Button>
-                <Button variant="secondary" onClick={() => showToast("已生成主题聚类")}>
+                <Button
+                  variant="secondary"
+                  onClick={() =>
+                    runAIAction("请根据当前候选论文生成 3 个主题聚类，列出代表论文、纳排理由和后续精读优先级。")
+                  }
+                >
                   主题聚类
                 </Button>
               </div>
@@ -127,7 +156,13 @@ const MainPanel: React.FC<Props> = ({
                           key={label}
                           variant="secondary"
                           size="sm"
-                          onClick={() => showToast(`${paper.title}：${label}`)}
+                          onClick={() => {
+                            if (label === "写筛选理由" || label === "加入比较") {
+                              runAIAction(`请针对论文「${paper.title}」执行「${label}」，并说明与当前检索主题的关系。`);
+                              return;
+                            }
+                            showToast(`${paper.title}：${label}`);
+                          }}
                         >
                           {label}
                         </Button>
@@ -141,12 +176,18 @@ const MainPanel: React.FC<Props> = ({
         </div>
 
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1.08fr)_minmax(320px,0.92fr)]">
-          <ActionDock actions={quickActions} templates={[]} onInsert={onAppendContent} />
+          <ActionDock
+            actions={quickActions}
+            templates={[]}
+            onInsert={onAppendContent}
+            onRunAI={(prompt) => runAIAction(prompt)}
+          />
           <ResourceBoard resources={selected?.resources ?? []} />
         </div>
       </div>
     </div>
   </div>
-);
+  );
+};
 
 export default MainPanel;

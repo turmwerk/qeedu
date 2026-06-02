@@ -6,6 +6,8 @@ import { processFlowQuickActions, processFlowRecords } from "@/pages/Internation
 import Button from "@/ui/Button";
 import { showToast } from "@/ui/Toast";
 import {
+  buildRecordActionPrompt,
+  runRecordAIAction,
   workbenchMainPanelShellClassName,
   workbenchScrollAreaClassName,
 } from "@/pages/shared/workbench";
@@ -18,7 +20,29 @@ type Props = {
   onStatusChange: (milestoneId: string, status: string) => void;
 };
 
-const MainPanel: React.FC<Props> = ({ selected, onToggleTask, onStatusChange }) => (
+const MainPanel: React.FC<Props> = ({ selected, onToggleTask, onStatusChange }) => {
+  const dialogId = selected ? `international-process-${selected.id}` : null;
+  const runAIAction = (action: string) => {
+    runRecordAIAction(
+      dialogId,
+      buildRecordActionPrompt(action, selected, [
+        {
+          label: "任务",
+          value: (selected?.tasks ?? [])
+            .map((task: any) => `${task.done ? "已完成" : "未完成"} - ${task.title}：${task.detail ?? ""}`)
+            .join("；"),
+        },
+        {
+          label: "里程碑",
+          value: (selected?.milestones ?? [])
+            .map((item: any) => `${item.date ?? "未定"} ${item.title}（${item.status}）：${item.summary ?? ""}`)
+            .join("；"),
+        },
+      ]),
+    );
+  };
+
+  return (
   <div className={workbenchMainPanelShellClassName}>
     <div className={workbenchScrollAreaClassName}>
       <div className="space-y-6">
@@ -73,11 +97,17 @@ const MainPanel: React.FC<Props> = ({ selected, onToggleTask, onStatusChange }) 
               ))}
             </div>
           </div>
-          <ActionDock actions={processFlowQuickActions} templates={[]} onInsert={() => showToast("流程动作提示已复制")} />
+          <ActionDock
+            actions={processFlowQuickActions}
+            templates={[]}
+            onInsert={() => showToast("流程动作提示已复制")}
+            onRunAI={(prompt) => runAIAction(prompt)}
+          />
         </div>
       </div>
     </div>
   </div>
-);
+  );
+};
 
 export default MainPanel;

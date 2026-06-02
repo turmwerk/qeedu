@@ -9,6 +9,8 @@ import {
   materialsCenterRecords,
 } from "@/pages/Management/featureData";
 import {
+  buildRecordActionPrompt,
+  runRecordAIAction,
   workbenchMainPanelShellClassName,
   workbenchScrollAreaClassName,
 } from "@/pages/shared/workbench";
@@ -22,7 +24,13 @@ type Props = {
   onUpdateSelected: (patch: Record<string, unknown>) => void;
 };
 
-const MainPanel: React.FC<Props> = ({ records, selected, onOpenRecord, onUpdateSelected }) => (
+const MainPanel: React.FC<Props> = ({ records, selected, onOpenRecord, onUpdateSelected }) => {
+  const dialogId = selected ? `management-materials-${selected.id}` : null;
+  const runAIAction = (action: string) => {
+    runRecordAIAction(dialogId, buildRecordActionPrompt(action, selected));
+  };
+
+  return (
   <div className={workbenchMainPanelShellClassName}>
     <div className={workbenchScrollAreaClassName}>
       <div className="space-y-6">
@@ -65,7 +73,12 @@ const MainPanel: React.FC<Props> = ({ records, selected, onOpenRecord, onUpdateS
                       >
                         更新审核状态
                       </Button>
-                      <Button variant="primary" onClick={() => showToast("缺件清单已导出")}>导出缺件清单</Button>
+                      <Button
+                        variant="primary"
+                        onClick={() => runAIAction("请根据当前材料集合生成缺件清单，并输出给学生的补件说明和审核员内部摘要。")}
+                      >
+                        导出缺件清单
+                      </Button>
                     </div>
                   </div>
                   <div className="mt-5 overflow-hidden rounded-[24px] border border-slate-200 dark:border-white/10">
@@ -88,7 +101,17 @@ const MainPanel: React.FC<Props> = ({ records, selected, onOpenRecord, onUpdateS
                         <span className="font-semibold text-slate-900 dark:text-white">{title}</span>
                         <span className="text-slate-600 dark:text-slate-300">{status}</span>
                         <span className="text-slate-600 dark:text-slate-300">{issue}</span>
-                        <Button variant="secondary" size="sm" onClick={() => showToast(`${title} 已执行 ${action}`)}>
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => {
+                            if (action === "提醒") {
+                              runAIAction(`请针对材料项「${title}」生成补件提醒。当前状态：${status}，补件情况：${issue}。`);
+                              return;
+                            }
+                            showToast(`${title} 已执行 ${action}`);
+                          }}
+                        >
                           {action}
                         </Button>
                       </div>
@@ -109,6 +132,7 @@ const MainPanel: React.FC<Props> = ({ records, selected, onOpenRecord, onUpdateS
                         });
                         showToast("已把动作写入当前集合记录");
                       }}
+                      onRunAI={(prompt) => runAIAction(prompt)}
                     />
                     <div className="rounded-[28px] border border-sky-200/70 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.98)_0%,rgba(236,254,255,0.95)_34%,rgba(219,234,254,0.92)_100%)] p-5 shadow-[0_22px_52px_rgba(56,189,248,0.14)]">
                       <div className="text-xs font-bold uppercase tracking-[0.22em] text-sky-500/80">Template & Review Pulse</div>
@@ -122,7 +146,13 @@ const MainPanel: React.FC<Props> = ({ records, selected, onOpenRecord, onUpdateS
                             key={label}
                             variant="secondary"
                             className="justify-start"
-                            onClick={() => showToast(`${label} 功能已触发`)}
+                            onClick={() => {
+                              if (label === "批量导出审核摘要") {
+                                runAIAction("请基于当前材料集合批量生成审核摘要，区分学生可见说明和老师内部处理建议。");
+                                return;
+                              }
+                              showToast(`${label} 功能已触发`);
+                            }}
                           >
                             {label}
                           </Button>
@@ -138,6 +168,7 @@ const MainPanel: React.FC<Props> = ({ records, selected, onOpenRecord, onUpdateS
       </div>
     </div>
   </div>
-);
+  );
+};
 
 export default MainPanel;

@@ -6,8 +6,9 @@ import TimelinePanel from "@/feature/RecordWorkspace/TimelinePanel";
 import type { WorkspaceQuickAction } from "@/feature/RecordWorkspace";
 import { paperWritingRecords } from "@/pages/Research/featureData";
 import Button from "@/ui/Button";
-import { showToast } from "@/ui/Toast";
 import {
+  buildRecordActionPrompt,
+  runRecordAIAction,
   workbenchMainPanelShellClassName,
   workbenchScrollAreaClassName,
 } from "@/pages/shared/workbench";
@@ -36,7 +37,24 @@ const MainPanel: React.FC<Props> = ({
   onSave,
   onAppendContent,
   onUpdateMilestone,
-}) => (
+}) => {
+  const dialogId = selected ? `research-writing-${selected.id}` : null;
+  const runAIAction = (action: string) => {
+    runRecordAIAction(
+      dialogId,
+      buildRecordActionPrompt(action, selected, [
+        { label: "当前编辑区正文", value: editorText },
+        {
+          label: "里程碑",
+          value: (selected?.milestones ?? [])
+            .map((item: any) => `${item.title}（${item.status}）：${item.summary ?? ""}`)
+            .join("；"),
+        },
+      ]),
+    );
+  };
+
+  return (
   <div className={workbenchMainPanelShellClassName}>
     <div className={workbenchScrollAreaClassName}>
       <div className="space-y-6">
@@ -104,6 +122,7 @@ const MainPanel: React.FC<Props> = ({
               actions={quickActions}
               templates={selected?.templates ?? []}
               onInsert={onAppendContent}
+              onRunAI={(prompt) => runAIAction(prompt)}
             />
             <div className="rounded-[28px] border border-indigo-200/70 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.98)_0%,rgba(238,242,255,0.96)_36%,rgba(245,243,255,0.94)_100%)] p-5 shadow-[0_20px_52px_rgba(99,102,241,0.14)]">
               <div className="text-xs font-bold uppercase tracking-[0.22em] text-indigo-500/80">Submission Rhythm</div>
@@ -117,7 +136,7 @@ const MainPanel: React.FC<Props> = ({
                     key={label}
                     variant="secondary"
                     className="justify-start"
-                    onClick={() => showToast(`${label} 已生成`)}
+                    onClick={() => runAIAction(`请${label}，基于当前编辑区正文输出可直接采纳的结果。`)}
                   >
                     {label}
                   </Button>
@@ -129,6 +148,7 @@ const MainPanel: React.FC<Props> = ({
       </div>
     </div>
   </div>
-);
+  );
+};
 
 export default MainPanel;

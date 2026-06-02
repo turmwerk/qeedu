@@ -4,6 +4,11 @@ import InputArea from "./InputArea";
 import CustomModelModal, { type CustomModelConfig } from "./CustomModelModal";
 import { chatStream, getModels, type ChatMessage, type ModelInfo } from "@/api/ai";
 import { useModelSelectionStore } from "./modelSelectionStore";
+import {
+  CHAT_DIALOG_SEND_EVENT,
+  isChatDialogSendEvent,
+  takePendingChatDialogPrompts,
+} from "./events";
 
 interface DialogProps {
   dialogId: string;
@@ -55,6 +60,7 @@ const Dialog: React.FC<DialogProps> & {
   const [models, setModels] = useState<ModelInfo[]>([]);
   const [showCustomModal, setShowCustomModal] = useState(false);
   const [editingConfig, setEditingConfig] = useState<CustomModelConfig | null>(null);
+  const messagesRef = useRef<DialogMessage[]>([]);
   const bodyRef = useRef<HTMLDivElement | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const isAtBottomRef = useRef(true);
@@ -131,6 +137,7 @@ const Dialog: React.FC<DialogProps> & {
     try {
       localStorage.setItem(storageKey, JSON.stringify(messages));
     } catch {}
+    messagesRef.current = messages;
   }, [messages, storageKey]);
 
   useEffect(() => {
@@ -178,19 +185,17 @@ const Dialog: React.FC<DialogProps> & {
     }
   }, [messages, pending, scrollToBottom]);
 
-  const send = () => {
-    if (!input.trim() || pending) return;
-    const text = input;
-    const sentFiles = [...files];
+  const sendMessage = useCallback((rawText: string, sourceFiles: File[] = []) => {
+    const text = rawText.trim();
+    if (!text || pending) return;
+    const sentFiles = [...sourceFiles];
     const userMsg: DialogMessage = { from: "user", text, files: sentFiles };
     setMessages((m) => [...m, userMsg]);
-    setInput("");
-    setFiles([]);
     setPending(true);
     scrollToBottom("smooth");
 
     // Build chat history for the API
-    const chatHistory: ChatMessage[] = messages
+    const chatHistory: ChatMessage[] = messagesRef.current
       .filter((m) => m.text)
       .map((m) => ({
         role: m.from === "user" ? "user" as const : "assistant" as const,
@@ -296,6 +301,29 @@ const Dialog: React.FC<DialogProps> & {
           });
       outerController.signal.addEventListener("abort", () => streamCtrl.abort(), { once: true });
     });
+  }, [activeCustom, pending, scrollToBottom, selectedModel, transport]);
+
+  useEffect(() => {
+    const handleExternalSend = (event: Event) => {
+      if (!isChatDialogSendEvent(event) || event.detail.dialogId !== dialogId) return;
+      event.detail.handled = true;
+      sendMessage(event.detail.prompt, event.detail.files ?? []);
+    };
+    window.addEventListener(CHAT_DIALOG_SEND_EVENT, handleExternalSend);
+    return () => window.removeEventListener(CHAT_DIALOG_SEND_EVENT, handleExternalSend);
+  }, [dialogId, sendMessage]);
+
+  useEffect(() => {
+    for (const item of takePendingChatDialogPrompts(dialogId)) {
+      sendMessage(item.prompt, item.files ?? []);
+    }
+  }, [dialogId, sendMessage]);
+
+  const send = () => {
+    if (!input.trim() || pending) return;
+    sendMessage(input, files);
+    setInput("");
+    setFiles([]);
   };
 
   const stop = () => {

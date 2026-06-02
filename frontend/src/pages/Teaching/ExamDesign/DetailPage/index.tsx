@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import ConfirmDialog from "@/ui/ConfirmDialog";
 import SplitSiderLayout from "@/layouts/SplitSiderLayout";
 import ToastContainer from "@/ui/Toast";
+import { sendChatDialogPrompt } from "@/feature/ChatDialog/events";
 import Header from "./Header";
 import InsertQuestionModal from "./InsertQuestionModal";
 import PreviewModal from "./PreviewModal";
@@ -456,6 +457,20 @@ const DetailPage: React.FC<{
             const base = modalKnowledge ? `基于「${modalKnowledge}」` : "";
             const gen = `${base}${modalQType}题：请描述 ${modalKnowledge || "相关"} 的核心概念。`;
             setModalStem(gen);
+            sendChatDialogPrompt(
+              `${examId}-gen`,
+              [
+                "请生成一题可直接加入当前试卷的题目，并补充答案分析。",
+                `试卷：${localTitle || title || "未命名试卷"}`,
+                `题型：${modalQType}`,
+                `知识点：${modalKnowledge || "未指定"}`,
+                `难度：${modalDifficulty}`,
+                `认知层级：${modalCognition}`,
+                `分值：${modalScore}`,
+                `当前题干草稿：${gen}`,
+                "如果是选择题，请给出 4 个选项、正确答案和解析；其他题型请给出标准答案和评分要点。",
+              ].join("\n"),
+            );
           }}
           onSubmit={handleModalSubmit}
         />

@@ -5,6 +5,7 @@ import MarkdownEditor from "@/feature/MarkdownEditor";
 import MarkdownView from "@/feature/MarkdownView";
 import Dialog from "@/feature/ChatDialog";
 import PageHeader from "@/ui/PageHeader";
+import { buildRecordActionPrompt, runRecordAIAction } from "@/pages/shared/workbench";
 import ActionDock from "../ActionDock";
 import ChecklistBoard from "../ChecklistBoard";
 import OverviewMetrics from "../OverviewMetrics";
@@ -91,6 +92,13 @@ const WorkspaceDetailPage: React.FC<Props> = ({
     });
   };
 
+  const handleRunAIAction = (prompt: string) => {
+    runRecordAIAction(
+      getWorkspaceDialogId(config, record.id),
+      buildRecordActionPrompt(prompt, record),
+    );
+  };
+
   const handleToggleTask = (taskId: string) => {
     onPatchRecord({
       tasks: tasks.map((task) =>
@@ -158,6 +166,7 @@ const WorkspaceDetailPage: React.FC<Props> = ({
                         actions={quickActions.slice(0, 2)}
                         templates={templates}
                         onInsert={handleInsertContent}
+                        onRunAI={handleRunAIAction}
                       />
                     </div>
                   ) : null}
@@ -240,6 +249,7 @@ const WorkspaceDetailPage: React.FC<Props> = ({
                   actions={quickActions}
                   templates={templates}
                   onInsert={handleInsertContent}
+                  onRunAI={handleRunAIAction}
                 />
               ) : null}
 

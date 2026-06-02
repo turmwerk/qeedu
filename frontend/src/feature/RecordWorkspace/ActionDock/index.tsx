@@ -6,9 +6,10 @@ type Props = {
   actions: WorkspaceQuickAction[];
   templates: WorkspaceTemplate[];
   onInsert: (content: string, replace?: boolean) => void;
+  onRunAI?: (prompt: string) => void;
 };
 
-const ActionDock: React.FC<Props> = ({ actions, templates, onInsert }) => {
+const ActionDock: React.FC<Props> = ({ actions, templates, onInsert, onRunAI }) => {
   const getTemplate = (templateId?: string) =>
     templates.find((template) => template.id === templateId);
 
@@ -51,17 +52,23 @@ const ActionDock: React.FC<Props> = ({ actions, templates, onInsert }) => {
                 onClick={() => {
                   if (action.action === "append_prompt") {
                     onInsert(`\n\n## AI 代理动作\n${action.prompt}`, false);
+                    onRunAI?.(action.prompt);
                     return;
                   }
                   if (action.action === "append_template") {
                     const template = getTemplate(action.templateId);
                     if (template) onInsert(template.content, false);
+                    onRunAI?.(action.prompt);
+                    return;
+                  }
+                  if (onRunAI) {
+                    onRunAI(action.prompt);
                     return;
                   }
                   void copyText(action.prompt);
                 }}
               >
-                {action.action === "copy_prompt" ? "复制提示词" : "执行动作"}
+                {onRunAI || action.action !== "copy_prompt" ? "执行动作" : "复制提示词"}
               </Button>
               <Button
                 className="rounded-xl border border-transparent bg-[#f8fafc] px-3 py-1.5 text-sm font-semibold text-[#475569] transition hover:border-[#cbd5e1] hover:bg-[#e2e8f0] dark:bg-white/10 dark:text-[#e2e8f0]"

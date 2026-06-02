@@ -3,6 +3,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import FeatureRecordDialog from "@/feature/FeatureRecordDialog";
 import type { WorkspaceMetric, WorkspaceTask } from "@/feature/RecordWorkspace/types";
 import { useFeatureRecords } from "@/hooks/useFeatureRecords";
+import { buildRecordActionPrompt, runRecordAIAction } from "@/pages/shared/workbench";
 import { assignmentReviewAdapter } from "@/pages/Teaching/featureAdapters";
 import { assignmentReviewPageData } from "@/pages/Teaching/featureData";
 import ConfirmDialog from "@/ui/ConfirmDialog";
@@ -264,7 +265,18 @@ export const DetailRoute: React.FC = () => {
     updateSelected({
       content: `${selectedRecord.content}\n\n## ${studentLabel} 反馈草稿\n- 先肯定功能完成度\n- 再指出结构与测试问题\n- 最后给出下次提交建议`.trim(),
     });
-    showToast("已生成反馈草稿");
+    runRecordAIAction(
+      `assignment-review-${selectedRecord.id}-${selectedSubmission?.id ?? "main"}`,
+      buildRecordActionPrompt("请基于当前 rubric、提交队列和正文工作区生成结构化反馈草稿。需要包含完成情况、主要问题、可执行建议和可回写学生端版本。", selectedRecord, [
+        {
+          label: "当前学生",
+          value: selectedSubmission
+            ? `${selectedSubmission.studentName} ${selectedSubmission.score} ${selectedSubmission.status}`
+            : studentLabel,
+        },
+      ]),
+      "已发送到右侧 AI 助手生成反馈",
+    );
   };
 
   const handleWriteback = () => {

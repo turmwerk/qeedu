@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Dialog from "@/feature/ChatDialog";
+import { sendChatDialogPrompt } from "@/feature/ChatDialog/events";
 import ListPage from "../ListPage/index";
 import DetailPage from "../DetailPage/index";
 import CreateModal from "../CreateModal";
@@ -109,6 +110,19 @@ export const ListRoute: React.FC = () => {
       persist(next);
       setCurrentId(id);
       navigate(`/teaching/syllabus/detail?outlineId=${encodeURIComponent(id)}`);
+      window.setTimeout(() => {
+        sendChatDialogPrompt(
+          id,
+          [
+            "请基于以下课程信息生成一版可用于教学大纲的优化建议，覆盖课程简介、教学目标、周次安排、考核方式和阅读/作业建议。",
+            `课程名称：${name}`,
+            `课程类型：${payload.type ?? "未指定"}`,
+            `授课对象：${payload.audience ?? "未指定"}`,
+            `学分/课时：${payload.credit ?? payload.hours ?? "未指定"}`,
+            `已有初稿：\n${mdText}`,
+          ].join("\n"),
+        );
+      }, 300);
     },
     [getNextId, navigate, outlines, persist, setCurrentId]
   );

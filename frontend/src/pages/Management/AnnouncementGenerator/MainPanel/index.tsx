@@ -10,6 +10,8 @@ import {
   announcementGeneratorRecords,
 } from "@/pages/Management/featureData";
 import {
+  buildRecordActionPrompt,
+  runRecordAIAction,
   workbenchMainPanelShellClassName,
   workbenchScrollAreaClassName,
 } from "@/pages/shared/workbench";
@@ -54,6 +56,11 @@ const MainPanel: React.FC<Props> = ({
     if (tab === "短版") return `【简版提醒】${selected.title}\n请于规定时间内完成材料提交与系统填报，详情见正式通知。`;
     return selected.content;
   }, [selected, tab]);
+
+  const dialogId = selected ? `management-announcement-${selected.id}` : null;
+  const runAIAction = (action: string) => {
+    runRecordAIAction(dialogId, buildRecordActionPrompt(action, selected));
+  };
 
   return (
     <div className={workbenchMainPanelShellClassName}>
@@ -127,13 +134,29 @@ const MainPanel: React.FC<Props> = ({
                         <div className="mt-2 text-sm text-slate-500 dark:text-slate-300">{selected.subtitle}</div>
                       </div>
                       <div className="flex flex-wrap gap-2">
-                        <Button variant="secondary" onClick={() => setTab("FAQ")}>生成 FAQ</Button>
-                        <Button variant="secondary" onClick={() => setTab("短版")}>公众号短版</Button>
+                        <Button
+                          variant="secondary"
+                          onClick={() => {
+                            setTab("FAQ");
+                            runAIAction("请基于当前通知生成 FAQ，覆盖资格边界、材料格式、时间节点和咨询方式。");
+                          }}
+                        >
+                          生成 FAQ
+                        </Button>
+                        <Button
+                          variant="secondary"
+                          onClick={() => {
+                            setTab("短版");
+                            runAIAction("请把当前正式通知压缩成公众号短版，保留对象、截止时间、材料要求和咨询入口。");
+                          }}
+                        >
+                          公众号短版
+                        </Button>
                         <Button
                           variant="primary"
                           onClick={() => {
                             onAppendContent("\n\n## 发布版\n- 已整理正式通知结构与渠道说明");
-                            showToast("正式通知已生成发布版");
+                            runAIAction("请将当前通知草稿整理成可发布的正式通知版本，结构清晰、语气正式，并补充渠道发布注意事项。");
                           }}
                         >
                           生成正式通知
@@ -182,6 +205,7 @@ const MainPanel: React.FC<Props> = ({
                         actions={announcementGeneratorQuickActions}
                         templates={selected.templates ?? []}
                         onInsert={onAppendContent}
+                        onRunAI={(prompt) => runAIAction(prompt)}
                       />
                     </div>
                   </div>

@@ -10,6 +10,7 @@ import { assignmentReviewMainPanelShellClassName } from "../panelShell";
 type Props = {
   record: AssignmentReviewRecord;
   selectedSubmission?: AssignmentReviewSubmission;
+  assistantDialogId: string;
   onSelectSubmission: (submissionId: string) => void;
   onToggleTask: (taskId: string) => void;
   onAppendContent: (content: string, replace?: boolean) => void;
@@ -20,6 +21,7 @@ type Props = {
 const AssignmentReviewMainPanel: React.FC<Props> = ({
   record,
   selectedSubmission,
+  assistantDialogId,
   onSelectSubmission,
   onToggleTask,
   onAppendContent,
@@ -46,7 +48,12 @@ const AssignmentReviewMainPanel: React.FC<Props> = ({
 
           <div className="grid gap-5 2xl:grid-cols-[0.92fr_1.08fr]">
             <TasksSection record={record} onToggleTask={onToggleTask} />
-            <ToolsSection record={record} onAppendContent={onAppendContent} />
+            <ToolsSection
+              record={record}
+              selectedSubmission={selectedSubmission}
+              assistantDialogId={assistantDialogId}
+              onAppendContent={onAppendContent}
+            />
           </div>
         </div>
       </div>
