@@ -26,7 +26,7 @@ const FeatureRecordDialog: React.FC<Props> = ({
         onSubmit={onSubmit}
         submitText={submitText ?? "创建记录"}
         mode="table"
-        className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-slate-200 bg-slate-200"
+        className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-slate-200 bg-slate-200 dark:border-[rgba(31,196,31,0.22)] dark:bg-[rgba(31,196,31,0.12)]"
       />
     </Modal>
   );

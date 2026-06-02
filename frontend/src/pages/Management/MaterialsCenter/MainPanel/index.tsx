@@ -134,7 +134,7 @@ const MainPanel: React.FC<Props> = ({ records, selected, onOpenRecord, onUpdateS
                       }}
                       onRunAI={(prompt) => runAIAction(prompt)}
                     />
-                    <div className="rounded-[28px] border border-sky-200/70 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.98)_0%,rgba(236,254,255,0.95)_34%,rgba(219,234,254,0.92)_100%)] p-5 shadow-[0_22px_52px_rgba(56,189,248,0.14)]">
+                    <div className="workbench-surface-accent rounded-[28px] border border-sky-200/70 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.98)_0%,rgba(236,254,255,0.95)_34%,rgba(219,234,254,0.92)_100%)] p-5 shadow-[0_22px_52px_rgba(56,189,248,0.14)]">
                       <div className="text-xs font-bold uppercase tracking-[0.22em] text-sky-500/80">Template & Review Pulse</div>
                       <div className="mt-2 text-xl font-black text-slate-900 dark:text-white">模板与审核脉冲</div>
                       <div className="mt-3 text-sm leading-7 text-slate-600 dark:text-slate-300">

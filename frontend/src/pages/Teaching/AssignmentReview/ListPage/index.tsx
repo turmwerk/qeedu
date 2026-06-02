@@ -20,7 +20,7 @@ const AssignmentReviewListPage: React.FC<AssignmentReviewListPageProps> = ({
   onDeleteRecord,
 }) => {
   return (
-    <div className="flex w-full min-w-0 flex-col gap-6 px-4 py-6 md:px-6 xl:px-8">
+    <div className="assignment-review-list-page flex w-full min-w-0 flex-col gap-6 px-4 py-6 md:px-6 xl:px-8">
       <HeroSection
         metrics={metrics}
         hasRecords={hasRecords}

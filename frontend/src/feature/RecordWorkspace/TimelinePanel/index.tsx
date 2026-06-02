@@ -23,7 +23,7 @@ const statusClassMap: Record<WorkspaceMilestoneStatus, string> = {
 
 const TimelinePanel: React.FC<Props> = ({ milestones, onStatusChange }) => {
   return (
-    <div className="rounded-2xl bg-white/[0.88] p-4 shadow-[0_8px_24px_rgba(15,23,42,0.08)] backdrop-blur-[24px] dark:bg-white/[0.12]">
+    <div className="workbench-surface rounded-2xl bg-white/[0.88] p-4 shadow-[0_8px_24px_rgba(15,23,42,0.08)] backdrop-blur-[24px] dark:bg-white/[0.12]">
       <div className="mb-3">
         <div className="text-[16px] font-bold text-[var(--brand-blue)] dark:text-white">
           里程碑时间线
@@ -40,7 +40,7 @@ const TimelinePanel: React.FC<Props> = ({ milestones, onStatusChange }) => {
               <div className="absolute left-[10px] top-6 h-[calc(100%+4px)] w-[2px] bg-[#dbeafe] dark:bg-white/10" />
             )}
             <div className="absolute left-0 top-1.5 h-5 w-5 rounded-full bg-[var(--brand-blue)] shadow-[0_0_0_4px_rgba(59,130,246,0.12)]" />
-            <div className="rounded-xl border border-[#dbeafe] bg-white/70 px-3 py-3 dark:border-white/10 dark:bg-white/5">
+            <div className="workbench-surface-muted rounded-xl border border-[#dbeafe] bg-white/70 px-3 py-3 dark:border-white/10 dark:bg-white/5">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <div className="text-sm font-semibold text-[#1f2937] dark:text-white">

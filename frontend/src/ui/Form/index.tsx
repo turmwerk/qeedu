@@ -80,10 +80,10 @@ const Form: React.FC<FormProps> = ({
 
   const handleChange = (name: string, value: any) => setValues((v) => ({ ...v, [name]: value }));
 
-  const rootClass = mode === "table" ? "grid grid-cols-2 gap-px bg-[var(--brand-border)] border border-[var(--brand-border)]" : "grid grid-cols-2 gap-x-5 gap-y-4";
-  const itemClass = mode === "table" ? "flex flex-row bg-white items-stretch min-h-[48px]" : "flex flex-col";
-  const labelClass = mode === "table" ? "flex items-center w-[130px] px-4 bg-[#fafafa] text-[#333] font-medium text-sm border-r border-[var(--brand-border)] shrink-0" : "block mb-1.5 text-[#333] font-semibold";
-  const controlClass = mode === "table" ? "w-full border-0 rounded-none px-3.5 py-2.5 bg-transparent outline-none focus:bg-white focus:shadow-[inset_0_0_0_2px_var(--brand-accent-soft)]" : "w-full px-2 py-2 rounded-lg border border-[var(--brand-border)]";
+  const rootClass = mode === "table" ? "workspace-form grid grid-cols-2 gap-px bg-[var(--brand-border)] border border-[var(--brand-border)]" : "workspace-form grid grid-cols-2 gap-x-5 gap-y-4";
+  const itemClass = mode === "table" ? "workspace-form-field flex flex-row bg-white items-stretch min-h-[48px]" : "workspace-form-field flex flex-col";
+  const labelClass = mode === "table" ? "workspace-form-label flex items-center w-[130px] px-4 bg-[#fafafa] text-[#333] font-medium text-sm border-r border-[var(--brand-border)] shrink-0" : "workspace-form-label block mb-1.5 text-[#333] font-semibold";
+  const controlClass = mode === "table" ? "workspace-form-control w-full border-0 rounded-none px-3.5 py-2.5 bg-transparent outline-none focus:bg-white focus:shadow-[inset_0_0_0_2px_var(--brand-accent-soft)]" : "workspace-form-control w-full px-2 py-2 rounded-lg border border-[var(--brand-border)]";
 
   return (
     <form

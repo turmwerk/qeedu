@@ -9,7 +9,7 @@ type Props = {
 };
 
 const HeroSection: React.FC<Props> = ({ headline, description, selectedTitle, onCreate }) => (
-  <section className="rounded-[34px] border border-cyan-100 bg-[radial-gradient(circle_at_top_left,#ffffff_0%,#dbeafe_28%,#ccfbf1_62%,#ede9fe_100%)] px-5 py-4 shadow-[0_24px_60px_rgba(45,212,191,0.16)] md:px-6 md:py-5">
+  <section className="workbench-surface-accent rounded-[34px] border border-cyan-100 bg-[radial-gradient(circle_at_top_left,#ffffff_0%,#dbeafe_28%,#ccfbf1_62%,#ede9fe_100%)] px-5 py-4 shadow-[0_24px_60px_rgba(45,212,191,0.16)] md:px-6 md:py-5">
     <div className="flex flex-wrap items-start justify-between gap-3">
       <div className="max-w-3xl">
         <div className="text-xs font-bold uppercase tracking-[0.24em] text-cyan-600/80">
@@ -22,7 +22,7 @@ const HeroSection: React.FC<Props> = ({ headline, description, selectedTitle, on
       </div>
       <div className="flex flex-col items-end gap-3">
         {selectedTitle ? (
-          <div className="rounded-[22px] border border-white/70 bg-white/80 px-4 py-3 text-sm font-semibold text-slate-700">
+          <div className="workbench-surface-muted rounded-[22px] border border-white/70 bg-white/80 px-4 py-3 text-sm font-semibold text-slate-700">
             当前检索：{selectedTitle}
           </div>
         ) : null}

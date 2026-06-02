@@ -11,7 +11,7 @@ const ResourceBoard: React.FC<Props> = ({ resources }) => {
   const navigate = useNavigate();
 
   return (
-    <div className="rounded-2xl bg-white/[0.88] p-4 shadow-[0_8px_24px_rgba(15,23,42,0.08)] backdrop-blur-[24px] dark:bg-white/[0.12]">
+    <div className="workbench-surface rounded-2xl bg-white/[0.88] p-4 shadow-[0_8px_24px_rgba(15,23,42,0.08)] backdrop-blur-[24px] dark:bg-white/[0.12]">
       <div className="mb-3">
         <div className="text-[16px] font-bold text-[var(--brand-blue)] dark:text-white">
           资源与联动
@@ -25,7 +25,7 @@ const ResourceBoard: React.FC<Props> = ({ resources }) => {
         {resources.map((resource) => (
           <div
             key={resource.id}
-            className="rounded-xl border border-[#dbeafe] bg-white/70 px-3 py-3 dark:border-white/10 dark:bg-white/5"
+            className="workbench-surface-muted rounded-xl border border-[#dbeafe] bg-white/70 px-3 py-3 dark:border-white/10 dark:bg-white/5"
           >
             <div className="text-xs font-semibold uppercase tracking-[0.14em] text-[#64748b] dark:text-[#cbd5e1]">
               {resource.kind}

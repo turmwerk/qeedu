@@ -88,7 +88,7 @@ const MainPanel: React.FC<Props> = ({
 
             <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(320px,0.96fr)]">
               <TemplateWorkbench templates={selected?.templates ?? []} onInsert={onAppendContent} />
-              <div className="rounded-[28px] border border-amber-200/70 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.98)_0%,rgba(255,247,237,0.96)_34%,rgba(224,242,254,0.94)_100%)] p-5 shadow-[0_20px_48px_rgba(251,191,36,0.12)]">
+              <div className="workbench-surface-accent rounded-[28px] border border-amber-200/70 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.98)_0%,rgba(255,247,237,0.96)_34%,rgba(224,242,254,0.94)_100%)] p-5 shadow-[0_20px_48px_rgba(251,191,36,0.12)]">
                 <div className="text-xs font-bold uppercase tracking-[0.22em] text-amber-600/80">Send Check</div>
                 <div className="mt-2 text-xl font-black text-slate-900 dark:text-white">发送前检查</div>
                 <div className="mt-3 text-sm leading-7 text-slate-600 dark:text-slate-300">

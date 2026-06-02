@@ -22,7 +22,7 @@ const ActionDock: React.FC<Props> = ({ actions, templates, onInsert, onRunAI }) 
   };
 
   return (
-    <div className="rounded-2xl bg-white/[0.88] p-4 shadow-[0_8px_24px_rgba(15,23,42,0.08)] backdrop-blur-[24px] dark:bg-white/[0.12]">
+    <div className="workbench-surface rounded-2xl bg-white/[0.88] p-4 shadow-[0_8px_24px_rgba(15,23,42,0.08)] backdrop-blur-[24px] dark:bg-white/[0.12]">
       <div className="mb-3">
         <div className="text-[16px] font-bold text-[var(--brand-blue)] dark:text-white">
           AI 快捷动作
@@ -36,7 +36,7 @@ const ActionDock: React.FC<Props> = ({ actions, templates, onInsert, onRunAI }) 
         {actions.map((action) => (
           <div
             key={action.id}
-            className="rounded-xl border border-[#dbeafe] bg-white/70 px-3 py-3 dark:border-white/10 dark:bg-white/5"
+            className="workbench-surface-muted rounded-xl border border-[#dbeafe] bg-white/70 px-3 py-3 dark:border-white/10 dark:bg-white/5"
           >
             <div className="text-sm font-semibold text-[#1f2937] dark:text-white">
               {action.title}

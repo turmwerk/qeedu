@@ -17,7 +17,7 @@ const ChecklistBoard: React.FC<Props> = ({ tasks, onToggle }) => {
   const doneCount = tasks.filter((task) => task.done).length;
 
   return (
-    <div className="rounded-2xl bg-white/[0.88] p-4 shadow-[0_8px_24px_rgba(15,23,42,0.08)] backdrop-blur-[24px] dark:bg-white/[0.12]">
+    <div className="workbench-surface rounded-2xl bg-white/[0.88] p-4 shadow-[0_8px_24px_rgba(15,23,42,0.08)] backdrop-blur-[24px] dark:bg-white/[0.12]">
       <div className="mb-3 flex items-center justify-between gap-3">
         <div>
           <div className="text-[16px] font-bold text-[var(--brand-blue)] dark:text-white">
@@ -41,8 +41,8 @@ const ChecklistBoard: React.FC<Props> = ({ tasks, onToggle }) => {
             key={task.id}
             className={`rounded-xl border px-3 py-3 transition ${
               task.done
-                ? "border-[#bbf7d0] bg-[#f0fdf4] dark:border-[#14532d] dark:bg-[#052e16]/40"
-                : "border-[#dbeafe] bg-white/70 dark:border-white/10 dark:bg-white/5"
+                ? "workbench-surface-muted border-[#bbf7d0] bg-[#f0fdf4] dark:border-[#14532d] dark:bg-[#052e16]/40"
+                : "workbench-surface-muted border-[#dbeafe] bg-white/70 dark:border-white/10 dark:bg-white/5"
             }`}
           >
             <div className="flex items-start gap-3">

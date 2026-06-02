@@ -100,7 +100,7 @@ const MainPanel: React.FC<Props> = ({
                   ]}
                 />
               </div>
-              <div className="rounded-[28px] border border-violet-200/70 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.98)_0%,rgba(245,243,255,0.96)_38%,rgba(224,231,255,0.92)_100%)] p-5 shadow-[0_20px_48px_rgba(129,140,248,0.16)]">
+              <div className="workbench-surface-accent rounded-[28px] border border-violet-200/70 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.98)_0%,rgba(245,243,255,0.96)_38%,rgba(224,231,255,0.92)_100%)] p-5 shadow-[0_20px_48px_rgba(129,140,248,0.16)]">
                 <div className="text-xs font-bold uppercase tracking-[0.22em] text-violet-500/80">Channels</div>
                 <div className="mt-3 grid gap-3">
                   {[
@@ -113,7 +113,7 @@ const MainPanel: React.FC<Props> = ({
                       key={title}
                       type="button"
                       onClick={() => showToast(`${title} 渠道已加入当前发布方案`)}
-                      className="rounded-[20px] border border-white/80 bg-white/90 px-4 py-3 text-left hover:border-violet-300 hover:bg-white"
+                      className="workbench-surface-muted rounded-[20px] border border-white/80 bg-white/90 px-4 py-3 text-left hover:border-violet-300 hover:bg-white"
                     >
                       <div className="font-semibold text-slate-900 dark:text-white">{title}</div>
                       <div className="mt-1 text-sm text-slate-600 dark:text-slate-300">{desc}</div>
@@ -179,7 +179,7 @@ const MainPanel: React.FC<Props> = ({
                   </div>
 
                   <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(320px,0.94fr)]">
-                    <div className="rounded-[30px] border border-indigo-200/70 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.98)_0%,rgba(238,242,255,0.96)_36%,rgba(245,243,255,0.94)_100%)] p-5 shadow-[0_20px_52px_rgba(99,102,241,0.14)]">
+                    <div className="workbench-surface-accent rounded-[30px] border border-indigo-200/70 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.98)_0%,rgba(238,242,255,0.96)_36%,rgba(245,243,255,0.94)_100%)] p-5 shadow-[0_20px_52px_rgba(99,102,241,0.14)]">
                       <div className="mb-4 flex flex-wrap items-center gap-2">
                         {(["正式通知", "FAQ", "短版"] as const).map((item) => (
                           <Button
@@ -195,7 +195,7 @@ const MainPanel: React.FC<Props> = ({
                           </Button>
                         ))}
                       </div>
-                      <div className="rounded-[24px] border border-white/80 bg-white/88 p-5 text-sm leading-7 text-slate-700 dark:text-slate-200">
+                      <div className="workbench-surface-muted rounded-[24px] border border-white/80 bg-white/88 p-5 text-sm leading-7 text-slate-700 dark:text-slate-200">
                         {previewContent}
                       </div>
                     </div>

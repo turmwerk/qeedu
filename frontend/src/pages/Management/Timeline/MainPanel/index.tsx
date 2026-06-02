@@ -93,7 +93,7 @@ const MainPanel: React.FC<Props> = ({ records, selected, onOpenRecord, onStatusC
           </div>
 
           <div className="space-y-6">
-            <div className="rounded-[28px] border border-rose-200/70 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.98)_0%,rgba(255,241,242,0.96)_34%,rgba(238,242,255,0.94)_100%)] p-5 shadow-[0_22px_52px_rgba(244,114,182,0.12)]">
+            <div className="workbench-surface-accent rounded-[28px] border border-rose-200/70 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.98)_0%,rgba(255,241,242,0.96)_34%,rgba(238,242,255,0.94)_100%)] p-5 shadow-[0_22px_52px_rgba(244,114,182,0.12)]">
               <div className="text-xs font-bold uppercase tracking-[0.22em] text-rose-500/80">Conflict Radar</div>
               <div className="mt-2 text-xl font-black text-slate-900 dark:text-white">冲突雷达</div>
               <div className="mt-4 space-y-3">
@@ -101,7 +101,7 @@ const MainPanel: React.FC<Props> = ({ records, selected, onOpenRecord, onStatusC
                   "03/28 院系审批与奖学金补件提醒重叠",
                   "04/08 材料汇总与会议通知发布时间冲突",
                 ].map((item) => (
-                  <div key={item} className="rounded-[20px] border border-white/80 bg-white/88 px-4 py-4 text-sm text-slate-700 dark:text-slate-200">
+                  <div key={item} className="workbench-surface-muted rounded-[20px] border border-white/80 bg-white/88 px-4 py-4 text-sm text-slate-700 dark:text-slate-200">
                     {item}
                     <Button
                       variant="secondary"

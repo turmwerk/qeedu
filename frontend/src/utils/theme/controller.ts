@@ -9,7 +9,9 @@ export function getStoredTheme(): Theme {
 }
 
 export function applyTheme(t: Theme) {
-  document.documentElement.setAttribute('data-theme', t);
+  const root = document.documentElement;
+  root.classList.add('theme-switching');
+  root.setAttribute('data-theme', t);
   localStorage.setItem(THEME_KEY, t);
   // Broadcast change for same-window listeners
   try {
@@ -17,6 +19,7 @@ export function applyTheme(t: Theme) {
   } catch (e) {
     // ignore
   }
+  window.setTimeout(() => root.classList.remove('theme-switching'), 120);
 }
 
 export function toggleTheme(): Theme {

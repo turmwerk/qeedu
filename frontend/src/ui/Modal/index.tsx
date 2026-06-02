@@ -113,6 +113,47 @@ const Modal: React.FC<{
         .glass-modal-panel form[data-oid="l:34:qo"] textarea::placeholder {
           color: rgba(100, 116, 139, 0.6) !important;
         }
+        [data-theme="dark"] .glass-modal-panel,
+        html[data-theme="dark"] .glass-modal-panel {
+          background: rgba(0, 0, 0, 0.94) !important;
+          background-color: rgba(0, 0, 0, 0.94) !important;
+          border-color: rgba(31, 196, 31, 0.22) !important;
+          box-shadow: none !important;
+        }
+        [data-theme="dark"] .glass-modal-panel .glass-form-submit-bar,
+        html[data-theme="dark"] .glass-modal-panel .glass-form-submit-bar {
+          background: rgba(0, 0, 0, 0.90) !important;
+        }
+        [data-theme="dark"] .glass-modal-panel form[data-oid="l:34:qo"],
+        html[data-theme="dark"] .glass-modal-panel form[data-oid="l:34:qo"] {
+          background: rgba(31, 196, 31, 0.12) !important;
+          border-color: rgba(31, 196, 31, 0.22) !important;
+        }
+        [data-theme="dark"] .glass-modal-panel form[data-oid="l:34:qo"] > div[data-oid="hyu7xgg"],
+        html[data-theme="dark"] .glass-modal-panel form[data-oid="l:34:qo"] > div[data-oid="hyu7xgg"] {
+          background: rgba(0, 0, 0, 0.90) !important;
+        }
+        [data-theme="dark"] .glass-modal-panel form[data-oid="l:34:qo"] > div[data-oid="hyu7xgg"] > label[data-oid="q6s8k:o"],
+        html[data-theme="dark"] .glass-modal-panel form[data-oid="l:34:qo"] > div[data-oid="hyu7xgg"] > label[data-oid="q6s8k:o"] {
+          background: rgba(0, 0, 0, 0.94) !important;
+          border-right-color: rgba(31, 196, 31, 0.22) !important;
+          color: var(--brand-text) !important;
+        }
+        [data-theme="dark"] .glass-modal-panel form[data-oid="l:34:qo"] input,
+        [data-theme="dark"] .glass-modal-panel form[data-oid="l:34:qo"] textarea,
+        [data-theme="dark"] .glass-modal-panel form[data-oid="l:34:qo"] select,
+        html[data-theme="dark"] .glass-modal-panel form[data-oid="l:34:qo"] input,
+        html[data-theme="dark"] .glass-modal-panel form[data-oid="l:34:qo"] textarea,
+        html[data-theme="dark"] .glass-modal-panel form[data-oid="l:34:qo"] select {
+          background: rgba(0, 0, 0, 0.88) !important;
+          color: var(--brand-text) !important;
+        }
+        [data-theme="dark"] .glass-modal-panel form[data-oid="l:34:qo"] input::placeholder,
+        [data-theme="dark"] .glass-modal-panel form[data-oid="l:34:qo"] textarea::placeholder,
+        html[data-theme="dark"] .glass-modal-panel form[data-oid="l:34:qo"] input::placeholder,
+        html[data-theme="dark"] .glass-modal-panel form[data-oid="l:34:qo"] textarea::placeholder {
+          color: var(--brand-muted) !important;
+        }
       `}</style>
       <style data-oid="id:xo_v">
         {width ? `.${widthClass} { width: ${widthValue}; }` : ""}
@@ -131,7 +172,7 @@ const Modal: React.FC<{
             className="flex items-center justify-between px-5 py-4 border-b border-black/[0.08] dark:border-black/10"
             data-oid="rkufj.y"
           >
-            <div className="font-bold text-[#2d1b4f] dark:text-[#1e293b]" data-oid="0pbqih6">
+            <div className="font-bold text-[#2d1b4f] dark:text-[var(--brand-text)]" data-oid="0pbqih6">
               {title}
             </div>
             <button

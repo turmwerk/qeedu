@@ -38,7 +38,7 @@ const MetricCard: React.FC<Props> = ({ metric }) => {
 
   return (
     <div
-      className={`group rounded-[24px] border px-5 py-5 backdrop-blur-xl transition ${
+      className={`workbench-surface group rounded-[24px] border px-5 py-5 backdrop-blur-xl transition ${
         clickable ? "cursor-pointer hover:-translate-y-0.5" : ""
       } ${toneClassMap[tone]} dark:border-white/10 dark:bg-white/6`}
       onClick={clickable ? () => navigate(metric.to as string) : undefined}

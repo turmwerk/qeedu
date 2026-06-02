@@ -124,7 +124,7 @@ const MainPanel: React.FC<Props> = ({
               onInsert={onAppendContent}
               onRunAI={(prompt) => runAIAction(prompt)}
             />
-            <div className="rounded-[28px] border border-indigo-200/70 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.98)_0%,rgba(238,242,255,0.96)_36%,rgba(245,243,255,0.94)_100%)] p-5 shadow-[0_20px_52px_rgba(99,102,241,0.14)]">
+            <div className="workbench-surface-accent rounded-[28px] border border-indigo-200/70 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.98)_0%,rgba(238,242,255,0.96)_36%,rgba(245,243,255,0.94)_100%)] p-5 shadow-[0_20px_52px_rgba(99,102,241,0.14)]">
               <div className="text-xs font-bold uppercase tracking-[0.22em] text-indigo-500/80">Submission Rhythm</div>
               <div className="mt-2 text-xl font-black text-slate-900 dark:text-white">投稿节奏与终检</div>
               <div className="mt-3 text-sm leading-7 text-slate-600 dark:text-slate-300">

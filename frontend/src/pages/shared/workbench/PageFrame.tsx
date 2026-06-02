@@ -18,7 +18,7 @@ const WorkspacePageFrame: React.FC<WorkspacePageFrameProps> = ({
   minSplit = 48,
   maxSplit = 76,
 }) => (
-  <div className="flex h-full min-h-0 w-full flex-col overflow-hidden px-4 pb-4 md:px-6 xl:px-8">
+  <div className="workspace-page-frame flex h-full min-h-0 w-full flex-col overflow-hidden px-4 pb-4 md:px-6 xl:px-8">
     <div className="shrink-0 py-2">{header}</div>
     <SplitSiderLayout
       initialSplit={initialSplit}

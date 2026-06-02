@@ -79,11 +79,11 @@ const MainPanel: React.FC<Props> = ({
           </div>
 
           <div className="space-y-6">
-            <div className="rounded-[28px] border border-emerald-200/70 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.98)_0%,rgba(236,253,245,0.96)_34%,rgba(224,242,254,0.94)_100%)] p-5 shadow-[0_20px_48px_rgba(52,211,153,0.14)]">
+            <div className="workbench-surface-accent rounded-[28px] border border-emerald-200/70 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.98)_0%,rgba(236,253,245,0.96)_34%,rgba(224,242,254,0.94)_100%)] p-5 shadow-[0_20px_48px_rgba(52,211,153,0.14)]">
               <div className="text-xs font-bold uppercase tracking-[0.22em] text-emerald-600/80">
                 Query Builder
               </div>
-              <div className="mt-3 rounded-[24px] border border-white/80 bg-white/88 p-4 text-sm leading-7 text-slate-700 dark:text-slate-200">
+              <div className="workbench-surface-muted mt-3 rounded-[24px] border border-white/80 bg-white/88 p-4 text-sm leading-7 text-slate-700 dark:text-slate-200">
                 {selected?.content ?? 'TS=("generative AI") AND (creative workflow)'}
               </div>
               <div className="mt-4 flex flex-wrap gap-2">

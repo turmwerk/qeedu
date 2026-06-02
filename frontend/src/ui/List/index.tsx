@@ -80,7 +80,7 @@ function List<T = any>({
         return (
           <div
             key={key}
-            className={`group relative flex justify-between items-center bg-white/70 dark:bg-white/[0.34] p-2.5 sm:p-4 rounded-[12px] border border-transparent dark:border-white/50 transition-[box-shadow,border-color,background] hover:shadow-[0_12px_26px_rgba(17,24,39,0.12)] hover:border-[var(--brand-accent)] dark:hover:border-white/[0.65] hover:bg-white dark:hover:bg-white/[0.48] ${
+            className={`ui-list-item group relative flex justify-between items-center bg-white/70 dark:bg-black/90 p-2.5 sm:p-4 rounded-[12px] border border-transparent dark:border-[rgba(31,196,31,0.20)] transition-[box-shadow,border-color,background] hover:shadow-[0_12px_26px_rgba(17,24,39,0.12)] hover:border-[var(--brand-accent)] dark:hover:border-[rgba(31,196,31,0.42)] hover:bg-white dark:hover:bg-[rgba(31,196,31,0.12)] ${
               onItemClick && !disabled ? "cursor-pointer" : ""
             } ${itemClassName ? itemClassName(item) : ""}`}
             onClick={() => {
