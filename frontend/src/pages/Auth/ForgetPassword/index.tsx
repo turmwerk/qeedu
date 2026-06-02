@@ -6,6 +6,7 @@ import type { FormField } from "@/ui/Form";
 import buildFields from "../FieldsForm";
 import createNavAgreeFields from "../NavAgree";
 import AuthPanelActions from "../AuthPanelActions";
+import { resetPasswordWithEmail, sendEmailCode } from "@/api/auth";
 
 
 
@@ -53,6 +54,7 @@ export default function ForgetPassword() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showPassword2, setShowPassword2] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const goGuest = () => {
     showToast("使用“游客模式”进入首页");
@@ -71,11 +73,50 @@ export default function ForgetPassword() {
     showPassword2,
     setShowPassword2,
     sendButtonClass,
+    onSendCode: async (_field, email) => {
+      const normalized = email.trim();
+      if (!normalized) {
+        showToast("请先输入邮箱");
+        return;
+      }
+      try {
+        const res = await sendEmailCode(normalized, "reset");
+        showToast(res.dev_code ? `验证码：${res.dev_code}` : "验证码已发送");
+      } catch (err) {
+        showToast(err instanceof Error ? err.message : "验证码发送失败");
+      }
+    },
   });
 
-  const handleSubmit = (values: Record<string, unknown>) => {
-    console.log("forget-password", values);
-    showToast("重置密码未实现");
+  const handleSubmit = async (values: Record<string, unknown>) => {
+    if (submitting) return;
+    const email = String(values.email ?? "").trim();
+    const code = String(values.emailCode ?? "").trim();
+    const password = String(values.password ?? "");
+    const password2 = String(values.password2 ?? "");
+    if (!email || !code || !password) {
+      showToast("请填写邮箱、验证码和新密码");
+      return;
+    }
+    if (password !== password2) {
+      showToast("两次输入的密码不一致");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      await resetPasswordWithEmail({
+        email,
+        code,
+        new_password: password,
+      });
+      window.dispatchEvent(new Event("auth-change"));
+      showToast("密码已重置");
+      navigate("/");
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : "重置密码失败");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const navAgree = createNavAgreeFields(navigate, goGuest, "修改并登录即代表您已阅读并同意", "forget");
@@ -100,6 +141,7 @@ export default function ForgetPassword() {
             </>
           }
           submitClassName={primaryButtonClass}
+          submitLoading={submitting}
           fieldClassName="relative [&>label]:sr-only col-span-2"
           className="flex flex-col gap-1"
           data-oid="7e2a2_3"

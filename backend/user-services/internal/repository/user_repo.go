@@ -50,3 +50,12 @@ func (r *UserRepo) FindByEmail(email string) (*entity.User, error) {
 	}
 	return &u, nil
 }
+
+// FindByAccount looks up a user by email first, then by display name.
+func (r *UserRepo) FindByAccount(account string) (*entity.User, error) {
+	var u entity.User
+	if err := r.db.Where("email = ? OR name = ?", account, account).First(&u).Error; err != nil {
+		return nil, err
+	}
+	return &u, nil
+}

@@ -8,6 +8,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+const defaultOpenRouterModel = "liquid/lfm-2.5-1.2b-instruct:free"
+
 type ModelInfo struct {
 	ID       string `json:"id"`
 	Name     string `json:"name"`
@@ -15,8 +17,9 @@ type ModelInfo struct {
 }
 
 var availableModels = []ModelInfo{
-	{ID: "deepseek-v4-flash", Name: "deepseek-v4-flash", Provider: "DeepSeek"},
-	{ID: "liquid/lfm-2.5-1.2b-instruct:free", Name: "LFM2.5 1.2B Instruct (free)", Provider: "OpenRouter"},
+	{ID: defaultOpenRouterModel, Name: "LFM2.5-1.2B Instruct (free)", Provider: "OpenRouter"},
+	{ID: "deepseek-chat", Name: "DeepSeek Chat", Provider: "DeepSeek"},
+	{ID: "deepseek-reasoner", Name: "DeepSeek Reasoner", Provider: "DeepSeek"},
 }
 
 // currentChatModel returns the active chat model ID (env-overridable).
@@ -24,7 +27,7 @@ func currentChatModel() string {
 	if m := os.Getenv("LLM_CHAT_MODEL"); m != "" {
 		return strings.TrimSpace(m)
 	}
-	return "deepseek-v4-flash"
+	return defaultOpenRouterModel
 }
 
 // currentFixModel returns the active fixbug model ID.

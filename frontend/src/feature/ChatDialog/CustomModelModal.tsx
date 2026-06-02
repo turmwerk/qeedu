@@ -26,7 +26,7 @@ const PRESETS: Preset[] = [
   {
     name: "DeepSeek",
     baseUrl: "https://api.deepseek.com",
-    models: ["deepseek-v4-flash"],
+    models: ["deepseek-chat", "deepseek-reasoner"],
   },
   {
     name: "自定义 (OpenAI 兼容)",
@@ -234,9 +234,7 @@ const CustomModelModal: React.FC<Props> = ({ initial, onSave, onClose }) => {
 
         {/* Footer */}
         <div className="sticky bottom-0 bg-gray-50 px-6 py-3 border-t border-gray-100 flex justify-between items-center rounded-b-2xl">
-          <span className="text-[11px] text-gray-400">
-            {preset.name !== "自定义 (OpenAI 兼容)" ? `厂商: ${preset.name}` : "自定义厂商"}
-          </span>
+          <span className="text-[11px] text-gray-400">配置仅保存到当前浏览器</span>
           <div className="flex gap-2">
             <button
               className="px-4 py-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors"

@@ -1,5 +1,6 @@
 import { useSyncExternalStore, useCallback, useEffect, useState } from "react";
 import { apiUrl } from "@/api/config";
+import { logoutRequest } from "@/api/auth";
 
 // Auth state: fetched from /me via httpOnly cookie.
 let snapshot: { user: { id: number; name: string } | null } = { user: null };
@@ -55,9 +56,9 @@ export function useAuth() {
 		user: state.user,
 		loading,
 		logout: useCallback(async () => {
-			// Server-side: cookie is httpOnly; can't clear from JS.
-			// The server should provide a /logout endpoint, but for now
-			// just clear local state.
+			try {
+				await logoutRequest();
+			} catch {}
 			snapshot = { user: null };
 			window.dispatchEvent(new Event("auth-change"));
 		}, []),

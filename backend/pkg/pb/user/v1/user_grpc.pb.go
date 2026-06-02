@@ -20,6 +20,10 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	UserService_FindOrCreateOAuthUser_FullMethodName = "/user.v1.UserService/FindOrCreateOAuthUser"
+	UserService_FindOrCreateEmailUser_FullMethodName = "/user.v1.UserService/FindOrCreateEmailUser"
+	UserService_CreatePasswordUser_FullMethodName    = "/user.v1.UserService/CreatePasswordUser"
+	UserService_VerifyPassword_FullMethodName        = "/user.v1.UserService/VerifyPassword"
+	UserService_UpdatePassword_FullMethodName        = "/user.v1.UserService/UpdatePassword"
 	UserService_GetUserByID_FullMethodName           = "/user.v1.UserService/GetUserByID"
 	UserService_GetUserByEmail_FullMethodName        = "/user.v1.UserService/GetUserByEmail"
 )
@@ -29,6 +33,10 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserServiceClient interface {
 	FindOrCreateOAuthUser(ctx context.Context, in *FindOrCreateOAuthUserRequest, opts ...grpc.CallOption) (*FindOrCreateOAuthUserResponse, error)
+	FindOrCreateEmailUser(ctx context.Context, in *FindOrCreateEmailUserRequest, opts ...grpc.CallOption) (*FindOrCreateEmailUserResponse, error)
+	CreatePasswordUser(ctx context.Context, in *CreatePasswordUserRequest, opts ...grpc.CallOption) (*CreatePasswordUserResponse, error)
+	VerifyPassword(ctx context.Context, in *VerifyPasswordRequest, opts ...grpc.CallOption) (*VerifyPasswordResponse, error)
+	UpdatePassword(ctx context.Context, in *UpdatePasswordRequest, opts ...grpc.CallOption) (*UpdatePasswordResponse, error)
 	GetUserByID(ctx context.Context, in *GetUserByIDRequest, opts ...grpc.CallOption) (*GetUserByIDResponse, error)
 	GetUserByEmail(ctx context.Context, in *GetUserByEmailRequest, opts ...grpc.CallOption) (*GetUserByEmailResponse, error)
 }
@@ -45,6 +53,46 @@ func (c *userServiceClient) FindOrCreateOAuthUser(ctx context.Context, in *FindO
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(FindOrCreateOAuthUserResponse)
 	err := c.cc.Invoke(ctx, UserService_FindOrCreateOAuthUser_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) FindOrCreateEmailUser(ctx context.Context, in *FindOrCreateEmailUserRequest, opts ...grpc.CallOption) (*FindOrCreateEmailUserResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(FindOrCreateEmailUserResponse)
+	err := c.cc.Invoke(ctx, UserService_FindOrCreateEmailUser_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) CreatePasswordUser(ctx context.Context, in *CreatePasswordUserRequest, opts ...grpc.CallOption) (*CreatePasswordUserResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreatePasswordUserResponse)
+	err := c.cc.Invoke(ctx, UserService_CreatePasswordUser_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) VerifyPassword(ctx context.Context, in *VerifyPasswordRequest, opts ...grpc.CallOption) (*VerifyPasswordResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(VerifyPasswordResponse)
+	err := c.cc.Invoke(ctx, UserService_VerifyPassword_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) UpdatePassword(ctx context.Context, in *UpdatePasswordRequest, opts ...grpc.CallOption) (*UpdatePasswordResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdatePasswordResponse)
+	err := c.cc.Invoke(ctx, UserService_UpdatePassword_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -76,6 +124,10 @@ func (c *userServiceClient) GetUserByEmail(ctx context.Context, in *GetUserByEma
 // for forward compatibility.
 type UserServiceServer interface {
 	FindOrCreateOAuthUser(context.Context, *FindOrCreateOAuthUserRequest) (*FindOrCreateOAuthUserResponse, error)
+	FindOrCreateEmailUser(context.Context, *FindOrCreateEmailUserRequest) (*FindOrCreateEmailUserResponse, error)
+	CreatePasswordUser(context.Context, *CreatePasswordUserRequest) (*CreatePasswordUserResponse, error)
+	VerifyPassword(context.Context, *VerifyPasswordRequest) (*VerifyPasswordResponse, error)
+	UpdatePassword(context.Context, *UpdatePasswordRequest) (*UpdatePasswordResponse, error)
 	GetUserByID(context.Context, *GetUserByIDRequest) (*GetUserByIDResponse, error)
 	GetUserByEmail(context.Context, *GetUserByEmailRequest) (*GetUserByEmailResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
@@ -90,6 +142,18 @@ type UnimplementedUserServiceServer struct{}
 
 func (UnimplementedUserServiceServer) FindOrCreateOAuthUser(context.Context, *FindOrCreateOAuthUserRequest) (*FindOrCreateOAuthUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FindOrCreateOAuthUser not implemented")
+}
+func (UnimplementedUserServiceServer) FindOrCreateEmailUser(context.Context, *FindOrCreateEmailUserRequest) (*FindOrCreateEmailUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FindOrCreateEmailUser not implemented")
+}
+func (UnimplementedUserServiceServer) CreatePasswordUser(context.Context, *CreatePasswordUserRequest) (*CreatePasswordUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreatePasswordUser not implemented")
+}
+func (UnimplementedUserServiceServer) VerifyPassword(context.Context, *VerifyPasswordRequest) (*VerifyPasswordResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VerifyPassword not implemented")
+}
+func (UnimplementedUserServiceServer) UpdatePassword(context.Context, *UpdatePasswordRequest) (*UpdatePasswordResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdatePassword not implemented")
 }
 func (UnimplementedUserServiceServer) GetUserByID(context.Context, *GetUserByIDRequest) (*GetUserByIDResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserByID not implemented")
@@ -132,6 +196,78 @@ func _UserService_FindOrCreateOAuthUser_Handler(srv interface{}, ctx context.Con
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).FindOrCreateOAuthUser(ctx, req.(*FindOrCreateOAuthUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_FindOrCreateEmailUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FindOrCreateEmailUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).FindOrCreateEmailUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_FindOrCreateEmailUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).FindOrCreateEmailUser(ctx, req.(*FindOrCreateEmailUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_CreatePasswordUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreatePasswordUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).CreatePasswordUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_CreatePasswordUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).CreatePasswordUser(ctx, req.(*CreatePasswordUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_VerifyPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VerifyPasswordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).VerifyPassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_VerifyPassword_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).VerifyPassword(ctx, req.(*VerifyPasswordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_UpdatePassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdatePasswordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).UpdatePassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_UpdatePassword_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).UpdatePassword(ctx, req.(*UpdatePasswordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -182,6 +318,22 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "FindOrCreateOAuthUser",
 			Handler:    _UserService_FindOrCreateOAuthUser_Handler,
+		},
+		{
+			MethodName: "FindOrCreateEmailUser",
+			Handler:    _UserService_FindOrCreateEmailUser_Handler,
+		},
+		{
+			MethodName: "CreatePasswordUser",
+			Handler:    _UserService_CreatePasswordUser_Handler,
+		},
+		{
+			MethodName: "VerifyPassword",
+			Handler:    _UserService_VerifyPassword_Handler,
+		},
+		{
+			MethodName: "UpdatePassword",
+			Handler:    _UserService_UpdatePassword_Handler,
 		},
 		{
 			MethodName: "GetUserByID",

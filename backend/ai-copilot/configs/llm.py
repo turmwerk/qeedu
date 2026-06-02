@@ -54,11 +54,11 @@ if OPENROUTER_BASE_URL == "https://openrouter.ai/api/v1":
     OPENROUTER_BASE_URL = os.getenv("LLM_BASE_URL") or os.getenv("OPENAI_BASE_URL") or _cfg.get("base_url", "https://openrouter.ai/api/v1")
 
 DEFAULT_COPILOT_MODEL: str = os.getenv(
-    "LLM_COPILOT_MODEL", _copilot_cfg.get("model", "deepseek-v4-flash")
+    "LLM_COPILOT_MODEL", _copilot_cfg.get("model", "liquid/lfm-2.5-1.2b-instruct:free")
 ).strip()
 
 # Backward-compatible exports for package-level re-exports in configs/__init__.py.
-LLM_PROVIDER: str = "deepseek" if DEFAULT_COPILOT_MODEL == "deepseek-v4-flash" else "openrouter"
+LLM_PROVIDER: str = "deepseek" if DEFAULT_COPILOT_MODEL.startswith("deepseek-") else "openrouter"
 LLM_API_KEY: str = DEEPSEEK_API_KEY if LLM_PROVIDER == "deepseek" else OPENROUTER_API_KEY
 LLM_BASE_URL: str = DEEPSEEK_BASE_URL if LLM_PROVIDER == "deepseek" else OPENROUTER_BASE_URL
 LLM_MODEL: str = DEFAULT_COPILOT_MODEL
@@ -101,7 +101,7 @@ def resolve_provider(model: str = "", api_key: str = "", base_url: str = "") -> 
             headers=LLM_EXTRA_HEADERS if "openrouter.ai" in custom_url.lower() else {},
         )
 
-    if chosen_model == "deepseek-v4-flash":
+    if chosen_model.startswith("deepseek-"):
         return ProviderConfig(
             api_key=DEEPSEEK_API_KEY,
             base_url=DEEPSEEK_BASE_URL,

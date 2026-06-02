@@ -15,17 +15,17 @@
   "base_url": "https://openrouter.ai/api/v1",
   "models": {
     "chat": {
-      "model": "deepseek-v4-flash",
+      "model": "liquid/lfm-2.5-1.2b-instruct:free",
       "temperature": 0.7,
       "max_tokens": 4096
     },
     "copilot": {
-      "model": "deepseek-v4-flash",
+      "model": "liquid/lfm-2.5-1.2b-instruct:free",
       "temperature": 0.2,
       "max_tokens": 512
     },
     "fixbug": {
-      "model": "deepseek-v4-flash",
+      "model": "liquid/lfm-2.5-1.2b-instruct:free",
       "temperature": 0.3,
       "max_tokens": 4096
     }

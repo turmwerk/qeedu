@@ -6,6 +6,10 @@ option go_package = "github.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/user/
 
 service UserService {
   rpc FindOrCreateOAuthUser(FindOrCreateOAuthUserRequest) returns (FindOrCreateOAuthUserResponse);
+  rpc FindOrCreateEmailUser(FindOrCreateEmailUserRequest) returns (FindOrCreateEmailUserResponse);
+  rpc CreatePasswordUser(CreatePasswordUserRequest) returns (CreatePasswordUserResponse);
+  rpc VerifyPassword(VerifyPasswordRequest) returns (VerifyPasswordResponse);
+  rpc UpdatePassword(UpdatePasswordRequest) returns (UpdatePasswordResponse);
   rpc GetUserByID(GetUserByIDRequest) returns (GetUserByIDResponse);
   rpc GetUserByEmail(GetUserByEmailRequest) returns (GetUserByEmailResponse);
 }
@@ -34,6 +38,43 @@ message FindOrCreateOAuthUserRequest {
 }
 
 message FindOrCreateOAuthUserResponse {
+  User user = 1;
+}
+
+message FindOrCreateEmailUserRequest {
+  string email = 1;
+  string name  = 2;
+}
+
+message FindOrCreateEmailUserResponse {
+  User user = 1;
+}
+
+message CreatePasswordUserRequest {
+  string email    = 1;
+  string name     = 2;
+  string password = 3;
+}
+
+message CreatePasswordUserResponse {
+  User user = 1;
+}
+
+message VerifyPasswordRequest {
+  string account  = 1;
+  string password = 2;
+}
+
+message VerifyPasswordResponse {
+  User user = 1;
+}
+
+message UpdatePasswordRequest {
+  string email        = 1;
+  string new_password = 2;
+}
+
+message UpdatePasswordResponse {
   User user = 1;
 }
 

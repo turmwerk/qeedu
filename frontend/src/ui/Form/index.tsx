@@ -35,7 +35,7 @@ export interface FormField {
   accept?: string;
   rows?: number;
   span?: number;
-  render?: (value: any, onChange: (v: any) => void) => React.ReactNode;
+  render?: (value: any, onChange: (v: any) => void, values: Record<string, any>) => React.ReactNode;
 }
 
 export interface FormProps {
@@ -141,7 +141,7 @@ const Form: React.FC<FormProps> = ({
               {f.label}
             </label>
             {f.render ? (
-              f.render(values[f.name], (v: any) => handleChange(f.name, v))
+              f.render(values[f.name], (v: any) => handleChange(f.name, v), values)
             ) : f.type === "textarea" ? (
               <textarea className={controlClass} id={inputId} aria-label={ariaLabel} value={values[f.name]} onChange={(e) => handleChange(f.name, e.target.value)} placeholder={f.placeholder} rows={f.rows || 4} data-oid="hpptuyo" />
             ) : f.type === "select" ? (
@@ -206,4 +206,3 @@ const Form: React.FC<FormProps> = ({
 };
 
 export default Form;
- 

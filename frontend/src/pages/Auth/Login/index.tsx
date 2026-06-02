@@ -13,12 +13,14 @@ import MailIcon from "@/ui/Icon/MailIcon";
 import UserIcon from "@/ui/Icon/UserIcon";
 import EnterIcon from "@/ui/Icon/EnterIcon";
 import { apiUrl } from "@/api/config";
+import { loginWithEmailCode, loginWithPassword, sendEmailCode } from "@/api/auth";
 
 export default function Login() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [showPassword, setShowPassword] = useState(false);
   const [mode, setMode] = useState<"password" | "sms" | "quick">("quick");
+  const [submitting, setSubmitting] = useState(false);
 
   const goGuest = () => {
     showToast("使用\"游客模式\"进入首页");
@@ -70,6 +72,19 @@ export default function Login() {
     showPassword,
     setShowPassword,
     sendButtonClass,
+    onSendCode: async (_field, email) => {
+      const normalized = email.trim();
+      if (!normalized) {
+        showToast("请先输入邮箱");
+        return;
+      }
+      try {
+        const res = await sendEmailCode(normalized, "login");
+        showToast(res.dev_code ? `验证码：${res.dev_code}` : "验证码已发送");
+      } catch (err) {
+        showToast(err instanceof Error ? err.message : "验证码发送失败");
+      }
+    },
   });
 
   const navAgree = createNavAgreeFields(
@@ -79,12 +94,34 @@ export default function Login() {
     "login",
   );
 
-  const handleSubmit = (values: Record<string, unknown>) => {
-    console.log("login", values, "mode", mode);
-    if (mode === "password") {
-      showToast("账密登录未接入，使用\"游客模式\"进入首页");
-    } else {
-      showToast("验证码登录未接入，使用\"游客模式\"进入首页");
+  const handleSubmit = async (values: Record<string, unknown>) => {
+    if (submitting) return;
+    setSubmitting(true);
+    try {
+      if (mode === "password") {
+        const account = String(values.account ?? "").trim();
+        const password = String(values.password ?? "");
+        if (!account || !password) {
+          showToast("请输入账号和密码");
+          return;
+        }
+        await loginWithPassword(account, password);
+      } else {
+        const email = String(values.email ?? "").trim();
+        const code = String(values.smsCode ?? "").trim();
+        if (!email || !code) {
+          showToast("请输入邮箱和验证码");
+          return;
+        }
+        await loginWithEmailCode(email, code);
+      }
+      window.dispatchEvent(new Event("auth-change"));
+      showToast("登录成功");
+      navigate("/");
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : "登录失败");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -107,6 +144,7 @@ export default function Login() {
 
         {mode === "quick" ? (
           <div className="flex flex-col gap-3 mt-2 animate-[slideInFromBottom_220ms_cubic-bezier(.2,.9,.2,1)_both]">
+            {/* 南京大学统一认证暂不实现，先隐藏入口。
             <button
               type="button"
               className={primaryButtonClass}
@@ -114,6 +152,7 @@ export default function Login() {
             >
               <span>南京大学统一认证</span>
             </button>
+            */}
             <button
               type="button"
               className={primaryButtonClass}
@@ -176,6 +215,7 @@ export default function Login() {
                 </>
               }
               submitClassName={primaryButtonClass}
+              submitLoading={submitting}
               fieldClassName="relative [&>label]:sr-only col-span-2"
               className="flex flex-col gap-0.5"
               animateFieldsKey={mode}

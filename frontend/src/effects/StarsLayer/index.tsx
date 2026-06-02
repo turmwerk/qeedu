@@ -7,8 +7,8 @@ const StarsLayer: React.FC = () => {
 
   useEffect(() => {
     animRef.current = createStarsAnimation({
-      count: 220,
-      maxRadius: 1.6,
+      count: 620,
+      maxRadius: 3.1,
       color: "#6ef06e",
       speed: 0.06,
     });

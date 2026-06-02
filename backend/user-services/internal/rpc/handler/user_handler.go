@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"errors"
 
 	userv1 "github.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/user/v1"
 	"github.com/dieWehmut/nju-edu-ai-system/backend/user-services/internal/entity"
@@ -40,6 +41,72 @@ func (h *UserHandler) FindOrCreateOAuthUser(
 	}
 
 	return &userv1.FindOrCreateOAuthUserResponse{User: entityToProto(u)}, nil
+}
+
+func (h *UserHandler) FindOrCreateEmailUser(
+	ctx context.Context,
+	req *userv1.FindOrCreateEmailUserRequest,
+) (*userv1.FindOrCreateEmailUserResponse, error) {
+	u, err := h.svc.FindOrCreateEmailUser(req.Email, req.Name)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, status.Error(codes.InvalidArgument, "email is required")
+		}
+		return nil, status.Errorf(codes.Internal, "find or create email user: %v", err)
+	}
+	return &userv1.FindOrCreateEmailUserResponse{User: entityToProto(u)}, nil
+}
+
+func (h *UserHandler) CreatePasswordUser(
+	ctx context.Context,
+	req *userv1.CreatePasswordUserRequest,
+) (*userv1.CreatePasswordUserResponse, error) {
+	u, err := h.svc.CreatePasswordUser(req.Email, req.Name, req.Password)
+	if err != nil {
+		switch {
+		case errors.Is(err, services.ErrEmailAlreadyExists):
+			return nil, status.Error(codes.AlreadyExists, err.Error())
+		case errors.Is(err, services.ErrWeakPassword), err == gorm.ErrRecordNotFound:
+			return nil, status.Error(codes.InvalidArgument, err.Error())
+		default:
+			return nil, status.Errorf(codes.Internal, "create password user: %v", err)
+		}
+	}
+	return &userv1.CreatePasswordUserResponse{User: entityToProto(u)}, nil
+}
+
+func (h *UserHandler) VerifyPassword(
+	ctx context.Context,
+	req *userv1.VerifyPasswordRequest,
+) (*userv1.VerifyPasswordResponse, error) {
+	u, err := h.svc.VerifyPassword(req.Account, req.Password)
+	if err != nil {
+		switch {
+		case errors.Is(err, services.ErrInvalidCredential):
+			return nil, status.Error(codes.Unauthenticated, err.Error())
+		case errors.Is(err, services.ErrNoPassword):
+			return nil, status.Error(codes.FailedPrecondition, err.Error())
+		default:
+			return nil, status.Errorf(codes.Internal, "verify password: %v", err)
+		}
+	}
+	return &userv1.VerifyPasswordResponse{User: entityToProto(u)}, nil
+}
+
+func (h *UserHandler) UpdatePassword(
+	ctx context.Context,
+	req *userv1.UpdatePasswordRequest,
+) (*userv1.UpdatePasswordResponse, error) {
+	u, err := h.svc.UpdatePassword(req.Email, req.NewPassword)
+	if err != nil {
+		switch {
+		case errors.Is(err, services.ErrWeakPassword):
+			return nil, status.Error(codes.InvalidArgument, err.Error())
+		default:
+			return nil, status.Errorf(codes.Internal, "update password: %v", err)
+		}
+	}
+	return &userv1.UpdatePasswordResponse{User: entityToProto(u)}, nil
 }
 
 func (h *UserHandler) GetUserByID(

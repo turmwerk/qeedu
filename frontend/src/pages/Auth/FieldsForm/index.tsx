@@ -16,10 +16,11 @@ export interface BuildFieldsOptions {
   showPassword2?: boolean;
   setShowPassword2?: (v: boolean) => void;
   sendButtonClass: string;
+  onSendCode?: (field: "login" | "register" | "forget", email: string) => void;
 }
 
 export function buildFields(kind: "login-password" | "login-sms" | "register" | "forget", opts: BuildFieldsOptions): FormField[] {
-  const { showPassword, setShowPassword, showPassword2, setShowPassword2, sendButtonClass } = opts;
+  const { showPassword, setShowPassword, showPassword2, setShowPassword2, sendButtonClass, onSendCode } = opts;
   void sendButtonClass;
 
   const hasValue = (value: unknown) => String(value ?? "").trim().length > 0;
@@ -82,7 +83,7 @@ export function buildFields(kind: "login-password" | "login-sms" | "register" | 
   if (kind === "login-sms") {
     const fields: FormField[] = [
       {
-        name: "phone",
+        name: "email",
         label: "邮箱",
         placeholder: "邮箱",
         render: (value, onChange) => (
@@ -91,7 +92,7 @@ export function buildFields(kind: "login-password" | "login-sms" | "register" | 
               <IdIcon />
             </div>
             {renderFloatingLabel("  邮箱", value)}
-            <input className={`${inputClass} pl-[56px] pr-4`} id="login-phone" name="phone" value={value} onChange={(e) => onChange(e.target.value)} placeholder="邮箱" inputMode="tel" />
+            <input className={`${inputClass} pl-[56px] pr-4`} id="login-email" name="email" value={value} onChange={(e) => onChange(e.target.value)} placeholder="邮箱" inputMode="email" />
           </div>
         ),
       },
@@ -99,7 +100,7 @@ export function buildFields(kind: "login-password" | "login-sms" | "register" | 
         name: "smsCode",
         label: "验证码",
         placeholder: "验证码",
-        render: (value, onChange) => (
+        render: (value, onChange, values) => (
           <div className={shellClass}>
             <div className="absolute left-0 top-0 w-[56px] h-[56px] flex items-center justify-center text-[var(--brand-muted)] pointer-events-none z-10">
               <KeyIcon />
@@ -107,7 +108,7 @@ export function buildFields(kind: "login-password" | "login-sms" | "register" | 
             {renderFloatingLabel("验证码", value)}
             <input className={`${inputClass} flex-1 pl-[56px] pr-[110px]`} id="login-sms-code" name="smsCode" value={value} onChange={(e) => onChange(e.target.value)} placeholder="验证码" autoComplete="one-time-code" />
 
-            <button type="button" onClick={() => showToast("验证码发送未实现")} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--brand-blue)] hover:text-[var(--brand-purple)] font-bold bg-transparent border-0">
+            <button type="button" onClick={() => onSendCode ? onSendCode("login", String(values.email ?? "")) : showToast("验证码发送未实现")} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--brand-blue)] hover:text-[var(--brand-purple)] font-bold bg-transparent border-0">
               获取验证码
             </button>
           </div>
@@ -141,7 +142,7 @@ export function buildFields(kind: "login-password" | "login-sms" | "register" | 
         name: codeName,
         label: "验证码",
         placeholder: "验证码",
-        render: (value, onChange) => (
+        render: (value, onChange, values) => (
           <div className={shellClass}>
             <div className="absolute left-0 top-0 w-[56px] h-[56px] flex items-center justify-center text-[var(--brand-muted)] pointer-events-none z-10">
               <KeyIcon />
@@ -149,7 +150,7 @@ export function buildFields(kind: "login-password" | "login-sms" | "register" | 
             {renderFloatingLabel("验证码", value)}
             <input className={`${inputClass} flex-1 pl-[56px] pr-[110px]`} id={`${kind}-${codeName}`} name={codeName} value={value} onChange={(e) => onChange(e.target.value)} placeholder="验证码" autoComplete="one-time-code" />
 
-            <button type="button" onClick={() => showToast("验证码发送未实现")} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--brand-blue)] hover:text-[var(--brand-purple)] font-bold bg-transparent border-0">
+            <button type="button" onClick={() => onSendCode ? onSendCode(kind, String(values.email ?? "")) : showToast("验证码发送未实现")} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--brand-blue)] hover:text-[var(--brand-purple)] font-bold bg-transparent border-0">
               获取验证码
             </button>
           </div>
