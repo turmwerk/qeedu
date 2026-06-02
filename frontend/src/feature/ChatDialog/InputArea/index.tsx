@@ -37,6 +37,11 @@ const InputArea: React.FC<InputAreaProps> = ({
   onEditCustom,
 }) => {
   const [selectedMode, setSelectedMode] = useState<string>("Agent");
+  const formatModelName = (name: string) =>
+    name
+      .replace(/\s*\(free\)\s*/gi, "")
+      .replace(/^LFM2\.5-1\.2B Instruct$/i, "LFM2.5 Instruct")
+      .trim();
 
   // 模式选项
   const modeItems: DropdownItem[] = [
@@ -52,9 +57,9 @@ const InputArea: React.FC<InputAreaProps> = ({
       const isCustom = m.id.startsWith("__cfg_");
       return {
         label: (
-          <span className="flex items-center gap-1">
-            <span>
-              <span className="font-medium">{m.name}</span>
+          <span className="flex min-w-0 max-w-[150px] items-center gap-1 sm:max-w-[190px]">
+            <span className="min-w-0">
+              <span className="block truncate font-medium">{formatModelName(m.name)}</span>
             </span>
             {isCustom && onEditCustom && (
               <span
@@ -76,7 +81,7 @@ const InputArea: React.FC<InputAreaProps> = ({
     // 自定义模型
     items.push({
       label: (
-        <span className="text-gray-500">
+        <span className="block max-w-[150px] truncate text-gray-500 sm:max-w-[190px]">
           ⚙ 添加自定义模型…
         </span>
       ),

@@ -34,7 +34,7 @@ const ControlRow: React.FC<ControlRowProps> = ({
           direction="up"
           showSelected={true}
           showCheck={true}
-          buttonClassName="chat-control-button bg-white border border-[var(--brand-border)] text-[var(--brand-text)] px-2.5 py-1 rounded-xl text-sm font-medium transition-[background,border-color,box-shadow] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[0_4px_12px_rgba(59,130,246,0.15)] whitespace-nowrap"
+          buttonClassName="chat-control-button chat-model-select-button max-w-[190px] overflow-hidden bg-white border border-[var(--brand-border)] text-[var(--brand-text)] px-2.5 py-1 rounded-xl text-sm font-medium transition-[background,border-color,box-shadow] hover:bg-[var(--brand-accent-soft)] hover:border-[var(--brand-accent)] hover:shadow-[0_4px_12px_rgba(59,130,246,0.15)] whitespace-nowrap sm:max-w-[230px]"
         />
       </div>
 

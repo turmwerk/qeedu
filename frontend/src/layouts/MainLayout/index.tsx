@@ -18,7 +18,7 @@ import {
   EXAM_TITLE,
 } from "@/pages/Teaching/ExamDesign/constants";
 import { allWorkspaceModules } from "@/pages/workspaceRegistry";
-import { getStoredTheme, applyTheme } from "@/utils/theme/controller";
+import { getStoredTheme } from "@/utils/theme/controller";
 import { getEffectsEnabled } from "@/utils/effects/controller";
 import SnowLayer from "@/effects/SnowLayer";
 import StarsLayer from "@/effects/StarsLayer";
@@ -69,9 +69,6 @@ const MainLayout: React.FC = () => {
   const [effectsEnabled, setEffectsEnabled] = useState(() => getEffectsEnabled());
 
   useEffect(() => {
-    // Ensure document and other parts are updated
-    applyTheme(theme);
-
     const onThemeChange = (e: Event) => {
       const t = (e as CustomEvent).detail?.theme as "light" | "dark" | undefined;
       if (t) setTheme(t);
@@ -85,7 +82,7 @@ const MainLayout: React.FC = () => {
       window.removeEventListener("theme-change", onThemeChange as EventListener);
       window.removeEventListener("storage", onStorage);
     };
-  }, [theme]);
+  }, []);
 
   useEffect(() => {
     const onEffectsChange = (e: Event) => {

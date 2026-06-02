@@ -26,7 +26,7 @@ const PRESETS: Preset[] = [
   {
     name: "DeepSeek",
     baseUrl: "https://api.deepseek.com",
-    models: ["deepseek-chat", "deepseek-reasoner"],
+    models: ["deepseek-v4-pro"],
   },
   {
     name: "自定义 (OpenAI 兼容)",
@@ -56,6 +56,11 @@ const CustomModelModal: React.FC<Props> = ({ initial, onSave, onClose }) => {
   const [showKey, setShowKey] = useState(false);
 
   const preset = PRESETS[presetIdx];
+  const formatModelLabel = (model: string) =>
+    model
+      .replace(/:free$/i, "")
+      .replace(/^liquid\/lfm-2\.5-1\.2b-instruct$/i, "LFM2.5 Instruct")
+      .trim();
 
   const handlePreset = (idx: number) => {
     setPresetIdx(idx);
@@ -183,7 +188,7 @@ const CustomModelModal: React.FC<Props> = ({ initial, onSave, onClose }) => {
                     }`}
                     onClick={() => setModelId(m)}
                   >
-                    {m}
+                    {formatModelLabel(m)}
                   </button>
                 ))}
               </div>

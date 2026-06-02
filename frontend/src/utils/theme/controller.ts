@@ -1,5 +1,6 @@
 export type Theme = 'light' | 'dark';
 const THEME_KEY = 'app_theme';
+let themeSwitchingTimer: number | null = null;
 
 export function getStoredTheme(): Theme {
   const t = localStorage.getItem(THEME_KEY) as Theme | null;
@@ -27,7 +28,13 @@ export function applyTheme(t: Theme) {
   } catch (e) {
     // ignore
   }
-  window.setTimeout(() => root.classList.remove('theme-switching'), 120);
+  if (themeSwitchingTimer !== null) {
+    window.clearTimeout(themeSwitchingTimer);
+  }
+  themeSwitchingTimer = window.setTimeout(() => {
+    root.classList.remove('theme-switching');
+    themeSwitchingTimer = null;
+  }, 48);
 }
 
 export function toggleTheme(): Theme {

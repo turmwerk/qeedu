@@ -270,22 +270,12 @@
 
 [data-theme="dark"] .main-header .header-menu-active,
 [data-theme="dark"] .main-header .trigger-active,
-[data-theme="dark"] .main-header button:hover,
-[data-theme="dark"] .main-header [role="button"]:hover,
-[data-theme="dark"] .main-header button:hover :where(span, svg),
-[data-theme="dark"] .main-header [role="button"]:hover :where(span, svg),
 [data-theme="dark"] .auth-panel [aria-current="true"],
 [data-theme="dark"] .auth-panel [aria-current="true"] :where(span, svg),
 [data-theme="dark"] .auth-panel .tab-underline + span {
   color: #1fc41f !important;
 }
 
-[data-theme="dark"] .main-header [class~="hover:text-[var(--brand-blue)]"]:hover,
-[data-theme="dark"] .main-header [class~="hover:text-[var(--brand-accent)]"]:hover,
-[data-theme="dark"] .main-header [class~="hover:text-[var(--brand-purple)]"]:hover,
-[data-theme="dark"] .main-header .group:hover [class~="group-hover:text-[var(--brand-blue)]"],
-[data-theme="dark"] .main-header .group:hover [class~="group-hover:text-[var(--brand-accent)]"],
-[data-theme="dark"] .main-header .group:hover [class~="group-hover:text-[var(--brand-purple)]"],
 [data-theme="dark"] .dropdown-menu-item.item-active :where(span, svg),
 [data-theme="dark"] .dropdown-trigger-btn.trigger-active :where(span, svg),
 [data-theme="dark"] .ant-menu-item-selected :where(span, svg),
@@ -595,13 +585,13 @@ html[data-theme="dark"] .chat-custom-model-footer {
   background-color: rgba(31, 196, 31, 0.12) !important;
   border-color: rgba(31, 196, 31, 0.48) !important;
   box-shadow: none !important;
-  color: #1fc41f !important;
+  color: var(--brand-text) !important;
 }
 
 [data-theme="dark"] .chat-dialog-root .chat-control-button:hover :where(span, svg),
 [data-theme="dark"] .chat-dialog-root .chat-message-menu-button:hover :where(span, svg),
 [data-theme="dark"] .chat-dialog-root .chat-floating-action:hover :where(span, svg) {
-  color: #1fc41f !important;
+  color: var(--brand-text) !important;
 }
 
 [data-theme="dark"] .chat-dialog-root :where(
@@ -712,7 +702,7 @@ html[data-theme="dark"] .chat-custom-model-modal button {
 html[data-theme="dark"] .chat-custom-model-modal button:hover {
   background-color: rgba(31, 196, 31, 0.12) !important;
   border-color: rgba(31, 196, 31, 0.46) !important;
-  color: #1fc41f !important;
+  color: var(--brand-text) !important;
 }
 
 [data-theme="dark"] .chat-custom-model-modal [class~="bg-blue-50"],
@@ -733,10 +723,12 @@ html[data-theme="dark"] .chat-custom-model-modal [class~="bg-gray-200"] {
   color: var(--brand-muted) !important;
 }
 
-[data-theme="dark"] :where(a, button, [role="button"], .dropdown-menu-item, .dropdown-trigger-btn, .ant-btn, .ant-menu-item, .ant-tabs-tab, .ant-segmented-item):hover {
+[data-theme="dark"] :where(a, [class~="underline"], [class~="hover:underline"]):hover,
+[data-theme="dark"] .group:hover [class~="group-hover:underline"] {
   color: #1fc41f !important;
 }
 
-[data-theme="dark"] :where(a, button, [role="button"], .dropdown-menu-item, .dropdown-trigger-btn, .ant-btn, .ant-menu-item, .ant-tabs-tab, .ant-segmented-item):hover :where(span, svg, p, div, label, strong, em, small) {
+[data-theme="dark"] :where(a, [class~="underline"], [class~="hover:underline"]):hover :where(span, svg, p, strong, em, small),
+[data-theme="dark"] .group:hover [class~="group-hover:underline"] :where(span, svg, p, strong, em, small) {
   color: #1fc41f !important;
 }
