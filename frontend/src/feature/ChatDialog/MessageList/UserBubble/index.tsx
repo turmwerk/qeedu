@@ -82,7 +82,7 @@ const UserBubble: React.FC<UserBubbleProps> = ({
     >
       <div
         ref={bubbleRef}
-        className={`bg-[#e0f2f1] text-[#0f3f3b] px-3 py-2 rounded-xl border transition-[border-color] ${
+        className={`chat-user-bubble bg-[#e0f2f1] text-[#0f3f3b] px-3 py-2 rounded-xl border transition-[border-color] ${
           isEditing ? "border-[#14b8a6]" : "border-transparent hover:border-[#14b8a6]"
         }`}
         style={{ wordBreak: "break-word", overflowWrap: "anywhere", boxSizing: "border-box" }}
@@ -95,7 +95,7 @@ const UserBubble: React.FC<UserBubbleProps> = ({
             onKeyDown={(e) => {
               if (e.key === "Escape") { setIsEditing(false); setEditText(text); }
             }}
-            className="w-full bg-transparent text-[#0f3f3b] leading-relaxed outline-none resize-none"
+            className="chat-user-edit w-full bg-transparent text-[#0f3f3b] leading-relaxed outline-none resize-none"
             style={{ wordBreak: "break-word", overflowWrap: "anywhere", overflow: "hidden" }}
           />
         ) : (
@@ -105,7 +105,7 @@ const UserBubble: React.FC<UserBubbleProps> = ({
 
       {/* Version navigation */}
       {hasVersions && (
-        <div className="flex items-center justify-end gap-1 mt-1 text-[11px] text-gray-400">
+        <div className="chat-version-nav flex items-center justify-end gap-1 mt-1 text-[11px] text-gray-400">
           <button
             className="px-1 hover:text-gray-600 disabled:opacity-30"
             disabled={currentVi <= 0}

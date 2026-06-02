@@ -202,7 +202,7 @@ const InsertQuestionModal: React.FC<InsertQuestionModalProps> = ({
         </div>
         <div className="w-[360px] ml-4">
           <div className="font-bold mb-2 text-[var(--brand-text)] dark:text-black/85">对话记录</div>
-          <div className="bg-white dark:bg-white/10 rounded-[10px] p-3 shadow-[0_1px_6px_rgba(0,0,0,0.06)] dark:shadow-[0_1px_6px_rgba(0,0,0,0.2)] flex flex-col h-[360px] mt-2">
+          <div className="chat-dialog-shell bg-white dark:bg-white/10 rounded-[10px] p-3 shadow-[0_1px_6px_rgba(0,0,0,0.06)] dark:shadow-[0_1px_6px_rgba(0,0,0,0.2)] flex flex-col h-[360px] mt-2">
             <div className="flex-1 flex flex-col min-h-0 text-[#666] dark:text-black/55">
               <Dialog
                 dialogId={`${examId}-gen`}

@@ -44,7 +44,7 @@ const TextRow: React.FC<TextRowProps> = ({
       placeholder={pending ? "对方输入中（仍可输入）" : placeholder}
       onKeyDown={handleKeyDown}
       rows={1}
-      className="w-full px-2.5 py-1.5 focus:outline-none resize-none auto-resize-textarea"
+      className="chat-input-textarea w-full px-2.5 py-1.5 focus:outline-none resize-none auto-resize-textarea"
       onInput={adjustHeight}
     />
   );

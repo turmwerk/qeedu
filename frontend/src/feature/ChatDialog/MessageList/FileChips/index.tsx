@@ -17,7 +17,7 @@ const FileChips: React.FC<FileChipsProps> = ({ files, align }) => {
       {files.map((file, fileIdx) => (
         <div
           key={fileIdx}
-          className="flex items-center gap-1 px-2 py-1 rounded-lg border border-[var(--brand-border)] bg-white text-xs"
+          className="chat-file-chip flex items-center gap-1 px-2 py-1 rounded-lg border border-[var(--brand-border)] bg-white text-xs"
         >
           <svg
             className="w-3 h-3 text-[var(--brand-accent)]"

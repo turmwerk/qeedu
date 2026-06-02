@@ -24,7 +24,7 @@ const WorkspaceAssistantPanel: React.FC<WorkspaceAssistantPanelProps> = ({
   shellClassName,
   innerClassName,
 }) => (
-  <div className={joinWorkbenchClasses(workbenchAssistantPanelShellClassName, shellClassName)}>
+  <div className={joinWorkbenchClasses(workbenchAssistantPanelShellClassName, "chat-dialog-shell", shellClassName)}>
     <div className={joinWorkbenchClasses("flex-1 min-h-0 p-4 md:p-5", innerClassName)}>
       <ChatDialog
         dialogId={dialogId}

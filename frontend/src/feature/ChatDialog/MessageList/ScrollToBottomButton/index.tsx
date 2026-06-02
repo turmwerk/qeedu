@@ -17,6 +17,7 @@ const ScrollToBottomButton: React.FC<ScrollToBottomButtonProps> = ({
         visible={!isAtBottom}
         ariaLabel="滚动到底部"
         title="滚动到底部"
+        className="chat-floating-action"
         icon={
           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <path

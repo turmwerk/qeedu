@@ -202,7 +202,7 @@ const RightPanel: React.FC<RightPanelProps> = ({
               </div>
             </div>
 
-            <div className="bg-white dark:bg-white rounded-[10px] p-3 shadow-[0_1px_6px_rgba(0,0,0,0.06)] dark:shadow-[0_1px_6px_rgba(0,0,0,0.2)] flex flex-col shrink-0 min-h-[560px]">
+            <div className="chat-dialog-shell bg-white dark:bg-white rounded-[10px] p-3 shadow-[0_1px_6px_rgba(0,0,0,0.06)] dark:shadow-[0_1px_6px_rgba(0,0,0,0.2)] flex flex-col shrink-0 min-h-[560px]">
               <div className="h-full flex flex-col min-h-0">
                 <Dialog
                   dialogId={dialogId}

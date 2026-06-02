@@ -129,7 +129,7 @@ const MessageList: React.FC<MessageListProps> = ({
       <div className="relative flex-1 min-h-0 overflow-hidden">
         <div
           ref={bodyRef}
-          className="absolute inset-0 bg-[var(--brand-accent-soft)] rounded-lg p-3 pr-4 flex flex-col gap-2 overflow-y-auto hide-scrollbar"
+          className="chat-message-list absolute inset-0 bg-[var(--brand-accent-soft)] rounded-lg p-3 pr-4 flex flex-col gap-2 overflow-y-auto hide-scrollbar"
           data-oid="3i9rwq-"
         >
           {messages.map((m, i) => (

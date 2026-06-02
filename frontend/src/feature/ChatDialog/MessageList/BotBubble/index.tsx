@@ -135,7 +135,7 @@ const BotBubble: React.FC<BotBubbleProps> = ({
       onMouseLeave={() => setIsHovered(false)}
     >
       <div
-        className="w-full rounded-md bg-[#f7f7f8] px-4 py-3 text-[#111827] shadow-sm"
+        className="chat-bot-bubble w-full rounded-md bg-[#f7f7f8] px-4 py-3 text-[#111827] shadow-sm"
         style={{ wordBreak: "break-word", overflowWrap: "anywhere" }}
       >
         {isEditing ? (
@@ -143,7 +143,7 @@ const BotBubble: React.FC<BotBubbleProps> = ({
             ref={textareaRef}
             value={editText}
             onChange={(e) => { setEditText(e.target.value); resizeTextarea(); }}
-            className="w-full resize-none bg-transparent text-[#111827] leading-relaxed outline-none"
+            className="chat-bot-edit w-full resize-none bg-transparent text-[#111827] leading-relaxed outline-none"
             style={{ wordBreak: "break-word", overflowWrap: "anywhere", overflow: "hidden" }}
           />
         ) : (
@@ -153,7 +153,7 @@ const BotBubble: React.FC<BotBubbleProps> = ({
 
       {/* Version navigation */}
       {hasVersions && (
-        <div className="flex items-center gap-1 mt-1 text-[11px] text-gray-400">
+        <div className="chat-version-nav flex items-center gap-1 mt-1 text-[11px] text-gray-400">
           <button
             className="px-1 hover:text-gray-600 disabled:opacity-30"
             disabled={currentVi <= 0}

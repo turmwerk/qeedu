@@ -497,7 +497,7 @@ const Dialog: React.FC<DialogProps> & {
   }, []);
 
   return (
-    <div className="flex h-full min-h-0 min-w-0 flex-col gap-3 overflow-hidden" data-oid="zx6bwsx">
+    <div className="chat-dialog-root flex h-full min-h-0 min-w-0 flex-col gap-3 overflow-hidden" data-oid="zx6bwsx">
       <div className="shrink-0 flex items-center gap-2" data-oid="o.dphsl">
         <span className="font-bold text-[var(--brand-text)]">{botName}</span>
       </div>

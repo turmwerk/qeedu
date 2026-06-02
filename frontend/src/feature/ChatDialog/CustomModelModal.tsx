@@ -86,11 +86,11 @@ const CustomModelModal: React.FC<Props> = ({ initial, onSave, onClose }) => {
       onMouseDown={onClose}
     >
       <div
-        className="bg-white rounded-2xl shadow-2xl w-[560px] max-w-[95vw] max-h-[90vh] overflow-auto"
+        className="chat-custom-model-modal bg-white rounded-2xl shadow-2xl w-[560px] max-w-[95vw] max-h-[90vh] overflow-auto"
         onMouseDown={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="sticky top-0 bg-white px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+        <div className="chat-custom-model-header sticky top-0 bg-white px-6 py-4 border-b border-gray-100 flex items-center justify-between">
           <h2 className="text-lg font-bold text-gray-800">自定义模型配置</h2>
           <button className="text-gray-400 hover:text-gray-600 text-xl leading-none" onClick={onClose}>
             ✕
@@ -233,7 +233,7 @@ const CustomModelModal: React.FC<Props> = ({ initial, onSave, onClose }) => {
         </div>
 
         {/* Footer */}
-        <div className="sticky bottom-0 bg-gray-50 px-6 py-3 border-t border-gray-100 flex justify-between items-center rounded-b-2xl">
+        <div className="chat-custom-model-footer sticky bottom-0 bg-gray-50 px-6 py-3 border-t border-gray-100 flex justify-between items-center rounded-b-2xl">
           <span className="text-[11px] text-gray-400">配置仅保存到当前浏览器</span>
           <div className="flex gap-2">
             <button

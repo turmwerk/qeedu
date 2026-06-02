@@ -16,7 +16,7 @@ const AssignmentReviewAssistantPanel: React.FC<Props> = ({
   transport,
 }) => {
   return (
-    <div className={`${assignmentReviewAssistantPanelShellClassName} p-4`}>
+    <div className={`${assignmentReviewAssistantPanelShellClassName} chat-dialog-shell p-4`}>
       <div className="flex flex-1 min-h-0 min-w-0 flex-col">
         <ChatDialog
           dialogId={dialogId}

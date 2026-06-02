@@ -272,7 +272,7 @@ const WorkspaceDetailPage: React.FC<Props> = ({
                 </div>
               </div>
 
-              <div className={`${panelClassName} min-h-[560px] overflow-hidden p-4`}>
+              <div className={`${panelClassName} chat-dialog-shell min-h-[560px] overflow-hidden p-4`}>
                 <div className="mb-3 flex flex-wrap gap-2">
                   {config.assistantPrompts.map((item) => (
                     <span

@@ -87,7 +87,7 @@ const InputArea: React.FC<InputAreaProps> = ({
   }, [models, selectedModel, onSelectModel, onAddCustom, onEditCustom]);
 
   return (
-    <div className="flex flex-col border border-[var(--brand-border)] rounded-xl bg-white overflow-visible transition-[border-color,box-shadow] hover:border-[var(--brand-accent)] hover:shadow-[0_4px_12px_rgba(59,130,246,0.15)]">
+    <div className="chat-input-area flex flex-col border border-[var(--brand-border)] rounded-xl bg-white overflow-visible transition-[border-color,box-shadow] hover:border-[var(--brand-accent)] hover:shadow-[0_4px_12px_rgba(59,130,246,0.15)]">
       <style>{`
         .auto-resize-textarea {
           min-height: 40px;

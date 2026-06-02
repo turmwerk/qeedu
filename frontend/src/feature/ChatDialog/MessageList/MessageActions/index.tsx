@@ -121,7 +121,7 @@ const MessageActions: React.FC<MessageActionsProps> = ({
         visible={true}
         ariaLabel={isEditing ? "淇濆瓨" : "缂栬緫"}
         title={isEditing ? "淇濆瓨" : "缂栬緫"}
-        className="border-[var(--edit-color)] text-[var(--edit-color)] hover:bg-[var(--edit-hover-bg)] hover:shadow-[var(--edit-hover-shadow)]"
+        className="chat-floating-action border-[var(--edit-color)] text-[var(--edit-color)] hover:bg-[var(--edit-hover-bg)] hover:shadow-[var(--edit-hover-shadow)]"
         icon={
           isEditing ? (
             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -149,7 +149,7 @@ const MessageActions: React.FC<MessageActionsProps> = ({
         visible={true}
         ariaLabel="閲嶈瘯"
         title="閲嶈瘯"
-        className="border-[var(--retry-color)] text-[var(--retry-color)] hover:bg-[var(--retry-hover-bg)] hover:shadow-[var(--retry-hover-shadow)]"
+        className="chat-floating-action border-[var(--retry-color)] text-[var(--retry-color)] hover:bg-[var(--retry-hover-bg)] hover:shadow-[var(--retry-hover-shadow)]"
         icon={
           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <path
@@ -166,7 +166,7 @@ const MessageActions: React.FC<MessageActionsProps> = ({
         direction="down"
         showSelected={false}
         showCheck={false}
-        buttonClassName="inline-flex items-center justify-center w-8 h-8 p-0 rounded-full border border-[var(--menu-color)] bg-white text-[var(--menu-color)] shadow-[0_2px_8px_rgba(15,23,42,0.12)] transition-[transform,box-shadow,background,border-color] hover:bg-[var(--menu-hover-bg)] hover:shadow-[var(--menu-hover-shadow)] active:scale-95"
+        buttonClassName="chat-message-menu-button inline-flex items-center justify-center w-8 h-8 p-0 rounded-full border border-[var(--menu-color)] bg-white text-[var(--menu-color)] shadow-[0_2px_8px_rgba(15,23,42,0.12)] transition-[transform,box-shadow,background,border-color] hover:bg-[var(--menu-hover-bg)] hover:shadow-[var(--menu-hover-shadow)] active:scale-95"
         button={
           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <path

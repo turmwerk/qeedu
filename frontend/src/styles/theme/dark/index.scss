@@ -544,3 +544,191 @@ html[data-theme="dark"] .glass-modal-panel .workspace-form-control {
 html[data-theme="dark"] .glass-modal-panel .workspace-form-control::placeholder {
   color: var(--brand-muted) !important;
 }
+
+[data-theme="dark"] .chat-dialog-root {
+  color: var(--brand-text);
+}
+
+[data-theme="dark"] .chat-dialog-root .chat-message-list,
+[data-theme="dark"] .chat-dialog-root .chat-input-area,
+[data-theme="dark"] .chat-dialog-root .chat-bot-bubble,
+[data-theme="dark"] .chat-dialog-root .chat-user-bubble,
+[data-theme="dark"] .chat-dialog-root .chat-pending-bubble,
+[data-theme="dark"] .chat-dialog-root .chat-file-chip,
+[data-theme="dark"] .chat-dialog-shell,
+[data-theme="dark"] .chat-custom-model-modal,
+[data-theme="dark"] .chat-custom-model-header,
+[data-theme="dark"] .chat-custom-model-footer,
+html[data-theme="dark"] .chat-dialog-shell,
+html[data-theme="dark"] .chat-custom-model-modal,
+html[data-theme="dark"] .chat-custom-model-header,
+html[data-theme="dark"] .chat-custom-model-footer {
+  background-color: rgba(0, 0, 0, 0.92) !important;
+  background-image: none !important;
+  border-color: rgba(31, 196, 31, 0.22) !important;
+  box-shadow: none !important;
+  color: var(--brand-text) !important;
+}
+
+[data-theme="dark"] .chat-dialog-root .chat-input-area:hover,
+[data-theme="dark"] .chat-dialog-root .chat-bot-bubble:hover,
+[data-theme="dark"] .chat-dialog-root .chat-user-bubble:hover,
+[data-theme="dark"] .chat-dialog-root .chat-file-chip:hover {
+  background-color: rgba(0, 0, 0, 0.94) !important;
+  border-color: rgba(31, 196, 31, 0.42) !important;
+  box-shadow: none !important;
+  color: var(--brand-text) !important;
+}
+
+[data-theme="dark"] .chat-dialog-root .chat-control-button,
+[data-theme="dark"] .chat-dialog-root .chat-message-menu-button,
+[data-theme="dark"] .chat-dialog-root .chat-floating-action {
+  background-color: rgba(0, 0, 0, 0.90) !important;
+  border-color: rgba(31, 196, 31, 0.24) !important;
+  box-shadow: none !important;
+  color: var(--brand-text) !important;
+}
+
+[data-theme="dark"] .chat-dialog-root .chat-control-button:hover,
+[data-theme="dark"] .chat-dialog-root .chat-message-menu-button:hover,
+[data-theme="dark"] .chat-dialog-root .chat-floating-action:hover {
+  background-color: rgba(31, 196, 31, 0.12) !important;
+  border-color: rgba(31, 196, 31, 0.48) !important;
+  box-shadow: none !important;
+  color: #1fc41f !important;
+}
+
+[data-theme="dark"] .chat-dialog-root .chat-control-button:hover :where(span, svg),
+[data-theme="dark"] .chat-dialog-root .chat-message-menu-button:hover :where(span, svg),
+[data-theme="dark"] .chat-dialog-root .chat-floating-action:hover :where(span, svg) {
+  color: #1fc41f !important;
+}
+
+[data-theme="dark"] .chat-dialog-root :where(
+  .chat-message-list,
+  .chat-input-area,
+  .chat-bot-bubble,
+  .chat-user-bubble,
+  .chat-pending-bubble,
+  .chat-file-chip,
+  .chat-version-nav
+) :where(p, span, div, button, textarea, input, select, option, svg, th, td, li, h1, h2, h3, h4, h5, h6, small, strong, em) {
+  color: var(--brand-text) !important;
+}
+
+[data-theme="dark"] .chat-dialog-root :where(textarea, input, select),
+[data-theme="dark"] .chat-dialog-root .chat-input-textarea,
+[data-theme="dark"] .chat-dialog-root .chat-bot-edit,
+[data-theme="dark"] .chat-dialog-root .chat-user-edit {
+  background-color: rgba(0, 0, 0, 0.92) !important;
+  border-color: rgba(31, 196, 31, 0.22) !important;
+  color: var(--brand-text) !important;
+  caret-color: #1fc41f;
+}
+
+[data-theme="dark"] .chat-dialog-root :where(textarea, input)::placeholder {
+  color: var(--brand-muted) !important;
+}
+
+[data-theme="dark"] .chat-dialog-root .chat-pending-bubble .dialog-dot {
+  background-color: #1fc41f !important;
+}
+
+[data-theme="dark"] .chat-dialog-root .chat-bot-bubble :where(a) {
+  color: #6ef06e !important;
+}
+
+[data-theme="dark"] .chat-dialog-root .chat-bot-bubble :where(blockquote, th, td) {
+  background-color: rgba(0, 0, 0, 0.90) !important;
+  border-color: rgba(31, 196, 31, 0.24) !important;
+  color: var(--brand-text) !important;
+}
+
+[data-theme="dark"] .chat-dialog-root .chat-bot-bubble :where(pre, code) {
+  background-color: rgba(3, 9, 3, 0.96) !important;
+  border-color: rgba(31, 196, 31, 0.20) !important;
+  color: var(--brand-text) !important;
+}
+
+[data-theme="dark"] .chat-dialog-root .dropdown-menu-item {
+  background-color: rgba(0, 0, 0, 0.92) !important;
+  border-color: rgba(31, 196, 31, 0.20) !important;
+  color: var(--brand-text) !important;
+}
+
+[data-theme="dark"] .chat-dialog-root .dropdown-menu-item:hover {
+  background-color: rgba(31, 196, 31, 0.12) !important;
+  border-color: rgba(31, 196, 31, 0.42) !important;
+  color: var(--brand-text) !important;
+}
+
+[data-theme="dark"] .chat-dialog-root .dropdown-menu-item.item-active,
+[data-theme="dark"] .chat-dialog-root .dropdown-trigger-btn.trigger-active {
+  background-color: rgba(31, 196, 31, 0.12) !important;
+  border-color: rgba(31, 196, 31, 0.46) !important;
+  color: #1fc41f !important;
+}
+
+[data-theme="dark"] .chat-custom-model-modal :where(h1, h2, h3, h4, p, label, span, div, button, strong, em, small),
+html[data-theme="dark"] .chat-custom-model-modal :where(h1, h2, h3, h4, p, label, span, div, button, strong, em, small) {
+  color: var(--brand-text) !important;
+}
+
+[data-theme="dark"] .chat-custom-model-modal :where(input, textarea, select),
+html[data-theme="dark"] .chat-custom-model-modal :where(input, textarea, select) {
+  background-color: rgba(0, 0, 0, 0.92) !important;
+  border-color: rgba(31, 196, 31, 0.22) !important;
+  color: var(--brand-text) !important;
+  caret-color: #1fc41f;
+}
+
+[data-theme="dark"] .chat-custom-model-modal :where(input, textarea, select):focus,
+html[data-theme="dark"] .chat-custom-model-modal :where(input, textarea, select):focus {
+  border-color: rgba(31, 196, 31, 0.56) !important;
+  box-shadow: 0 0 0 1px rgba(31, 196, 31, 0.16) !important;
+}
+
+[data-theme="dark"] .chat-custom-model-modal :where(input, textarea)::placeholder,
+html[data-theme="dark"] .chat-custom-model-modal :where(input, textarea)::placeholder {
+  color: var(--brand-muted) !important;
+}
+
+[data-theme="dark"] .chat-custom-model-modal input[type="range"],
+html[data-theme="dark"] .chat-custom-model-modal input[type="range"] {
+  accent-color: #1fc41f;
+  background-color: transparent !important;
+  border-color: transparent !important;
+}
+
+[data-theme="dark"] .chat-custom-model-modal button,
+html[data-theme="dark"] .chat-custom-model-modal button {
+  background-color: rgba(0, 0, 0, 0.90) !important;
+  border-color: rgba(31, 196, 31, 0.22) !important;
+  box-shadow: none !important;
+  color: var(--brand-text) !important;
+}
+
+[data-theme="dark"] .chat-custom-model-modal button:hover,
+html[data-theme="dark"] .chat-custom-model-modal button:hover {
+  background-color: rgba(31, 196, 31, 0.12) !important;
+  border-color: rgba(31, 196, 31, 0.46) !important;
+  color: #1fc41f !important;
+}
+
+[data-theme="dark"] .chat-custom-model-modal [class~="bg-blue-50"],
+[data-theme="dark"] .chat-custom-model-modal [class~="bg-green-50"],
+html[data-theme="dark"] .chat-custom-model-modal [class~="bg-blue-50"],
+html[data-theme="dark"] .chat-custom-model-modal [class~="bg-green-50"] {
+  background-color: rgba(31, 196, 31, 0.12) !important;
+  border-color: rgba(31, 196, 31, 0.46) !important;
+  color: #1fc41f !important;
+}
+
+[data-theme="dark"] .chat-custom-model-modal [class~="bg-gray-50"],
+[data-theme="dark"] .chat-custom-model-modal [class~="bg-gray-200"],
+html[data-theme="dark"] .chat-custom-model-modal [class~="bg-gray-50"],
+html[data-theme="dark"] .chat-custom-model-modal [class~="bg-gray-200"] {
+  background-color: rgba(0, 0, 0, 0.90) !important;
+  border-color: rgba(31, 196, 31, 0.18) !important;
+  color: var(--brand-muted) !important;
+}
