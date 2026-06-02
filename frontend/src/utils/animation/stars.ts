@@ -1,7 +1,7 @@
 /**
  * Stars background animation utility
  * Renders a static star field with tiny slowly-drifting dots.
- * NO mouse interaction, NO connecting lines – completely independent from snow.
+ * NO mouse interaction - completely independent from snow.
  *
  * Usage:
  *   const stars = createStarsAnimation();
@@ -18,6 +18,14 @@ export interface StarsOptions {
   color?: string;
   /** Max drift speed in px/frame (default: 0.08) */
   speed?: number;
+  /** Distance in px for subtle partial star links (default: 0, disabled) */
+  linkDistance?: number;
+  /** Max opacity for star links (default: 0.12) */
+  lineOpacity?: number;
+  /** Link line width in px (default: 0.8) */
+  lineWidth?: number;
+  /** Max number of links each star can start per frame (default: 2) */
+  maxLinksPerStar?: number;
 }
 
 export interface StarsAnimation {
@@ -31,6 +39,7 @@ interface Star {
   y: number;
   r: number;        // radius
   opacity: number;
+  alpha: number;
   vx: number;
   vy: number;
   twinklePhase: number;   // offset for opacity oscillation
@@ -49,6 +58,10 @@ export function createStarsAnimation(options: StarsOptions = {}): StarsAnimation
     maxRadius = 1.6,
     color = '#b8c8e8',   // slightly blue-tinted white, matches night sky
     speed = 0.06,
+    linkDistance = 0,
+    lineOpacity = 0.12,
+    lineWidth = 0.8,
+    maxLinksPerStar = 2,
   } = options;
 
   const rgb = hexToRgb(color);
@@ -87,6 +100,7 @@ export function createStarsAnimation(options: StarsOptions = {}): StarsAnimation
       y: forceY !== undefined ? forceY : Math.random() * H,
       r,
       opacity: Math.random() * 0.5 + 0.3,
+      alpha: 0,
       vx: (Math.random() - 0.5) * speed,
       vy: (Math.random() - 0.5) * speed,
       twinklePhase: Math.random() * Math.PI * 2,
@@ -99,6 +113,37 @@ export function createStarsAnimation(options: StarsOptions = {}): StarsAnimation
     for (let i = 0; i < count; i++) stars.push(makeStar());
   }
 
+  function drawConnections() {
+    if (linkDistance <= 0 || lineOpacity <= 0 || maxLinksPerStar <= 0) return;
+
+    const maxDistanceSq = linkDistance * linkDistance;
+    ctx.lineWidth = lineWidth;
+
+    for (let i = 0; i < stars.length; i++) {
+      const a = stars[i];
+      let links = 0;
+
+      for (let j = i + 1; j < stars.length && links < maxLinksPerStar; j++) {
+        const b = stars[j];
+        const dx = a.x - b.x;
+        const dy = a.y - b.y;
+        const distanceSq = dx * dx + dy * dy;
+        if (distanceSq > maxDistanceSq) continue;
+
+        const distance = Math.sqrt(distanceSq);
+        const alpha = lineOpacity * (1 - distance / linkDistance) * Math.min(a.alpha, b.alpha);
+        if (alpha <= 0.006) continue;
+
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.strokeStyle = `rgba(${rgb.r},${rgb.g},${rgb.b},${alpha})`;
+        ctx.stroke();
+        links += 1;
+      }
+    }
+  }
+
   function frame() {
     if (paused) return;
     ctx.clearRect(0, 0, W, H);
@@ -106,11 +151,15 @@ export function createStarsAnimation(options: StarsOptions = {}): StarsAnimation
     for (const s of stars) {
       // Slow twinkle via sine oscillation
       s.twinklePhase += s.twinkleSpeed;
-      const alpha = s.opacity * (0.7 + 0.3 * Math.sin(s.twinklePhase));
+      s.alpha = s.opacity * (0.7 + 0.3 * Math.sin(s.twinklePhase));
+    }
 
+    drawConnections();
+
+    for (const s of stars) {
       ctx.beginPath();
       ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(${rgb.r},${rgb.g},${rgb.b},${alpha})`;
+      ctx.fillStyle = `rgba(${rgb.r},${rgb.g},${rgb.b},${s.alpha})`;
       ctx.fill();
 
       // Drift

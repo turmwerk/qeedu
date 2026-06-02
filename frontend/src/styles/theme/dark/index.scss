@@ -47,7 +47,7 @@
   --auth-control-border: rgba(148, 163, 184, 0.16);
   --auth-control-hover-border: rgba(31, 196, 31, 0.52);
   --auth-control-text: var(--brand-text);
-  --auth-control-hover-text: #1fc41f;
+  --auth-control-hover-text: var(--brand-text);
   --auth-control-shadow: none;
   --auth-field-bg: rgba(0, 0, 0, 0.92);
   --auth-field-border: rgba(148, 163, 184, 0.16);
@@ -352,6 +352,12 @@
 
 [data-theme="dark"] [class*="bg-white/"],
 [data-theme="dark"] [class*="dark:bg-white/"],
+[data-theme="dark"] [class*="!bg-white"],
+[data-theme="dark"] [class*="dark:!bg-white"],
+[data-theme="dark"] [class*="!bg-[#f"],
+[data-theme="dark"] [class*="!bg-[#e"],
+[data-theme="dark"] [class*="!bg-[#d"],
+[data-theme="dark"] [class*="!bg-[#c"],
 [data-theme="dark"] [class*="bg-gray-"],
 [data-theme="dark"] [class*="dark:bg-gray-"],
 [data-theme="dark"] [class*="bg-slate-"],
@@ -385,8 +391,33 @@
 
 [data-theme="dark"] [class*="hover:bg-white"]:hover,
 [data-theme="dark"] [class*="dark:hover:bg-white"]:hover,
+[data-theme="dark"] [class*="hover:!bg-white"]:hover,
+[data-theme="dark"] [class*="dark:hover:!bg-white"]:hover,
 [data-theme="dark"] [class*="hover:bg-slate"]:hover,
-[data-theme="dark"] [class*="dark:hover:bg-slate"]:hover {
+[data-theme="dark"] [class*="dark:hover:bg-slate"]:hover,
+[data-theme="dark"] [class*="hover:bg-gray"]:hover,
+[data-theme="dark"] [class*="dark:hover:bg-gray"]:hover,
+[data-theme="dark"] [class*="hover:bg-zinc"]:hover,
+[data-theme="dark"] [class*="dark:hover:bg-zinc"]:hover,
+[data-theme="dark"] [class*="hover:bg-neutral"]:hover,
+[data-theme="dark"] [class*="dark:hover:bg-neutral"]:hover,
+[data-theme="dark"] [class*="hover:bg-red"]:hover,
+[data-theme="dark"] [class*="hover:bg-orange"]:hover,
+[data-theme="dark"] [class*="hover:bg-amber"]:hover,
+[data-theme="dark"] [class*="hover:bg-yellow"]:hover,
+[data-theme="dark"] [class*="hover:bg-green"]:hover,
+[data-theme="dark"] [class*="hover:bg-emerald"]:hover,
+[data-theme="dark"] [class*="hover:bg-sky"]:hover,
+[data-theme="dark"] [class*="hover:bg-blue"]:hover,
+[data-theme="dark"] [class*="hover:bg-indigo"]:hover,
+[data-theme="dark"] [class*="hover:bg-violet"]:hover,
+[data-theme="dark"] [class*="hover:bg-purple"]:hover,
+[data-theme="dark"] [class*="hover:bg-pink"]:hover,
+[data-theme="dark"] [class*="hover:bg-rose"]:hover,
+[data-theme="dark"] [class*="hover:bg-[#f"]:hover,
+[data-theme="dark"] [class*="hover:bg-[#e"]:hover,
+[data-theme="dark"] [class*="hover:bg-[#d"]:hover,
+[data-theme="dark"] [class*="hover:bg-[#c"]:hover {
   background-color: rgba(31, 196, 31, 0.12) !important;
   background-image: none !important;
 }
@@ -448,14 +479,28 @@
 
 [data-theme="dark"] [style*="background: rgb(255"],
 [data-theme="dark"] [style*="background-color: rgb(255"],
+[data-theme="dark"] [style*="background:rgba(255"],
+[data-theme="dark"] [style*="background-color:rgba(255"],
+[data-theme="dark"] [style*="background: rgba(255"],
+[data-theme="dark"] [style*="background-color: rgba(255"],
+[data-theme="dark"] [style*="background: RGB(255"],
+[data-theme="dark"] [style*="background-color: RGB(255"],
 [data-theme="dark"] [style*="background: #fff"],
 [data-theme="dark"] [style*="background-color: #fff"],
+[data-theme="dark"] [style*="background: #FFF"],
+[data-theme="dark"] [style*="background-color: #FFF"],
 [data-theme="dark"] [style*="background: white"],
 [data-theme="dark"] [style*="background-color: white"],
+[data-theme="dark"] [style*="background: White"],
+[data-theme="dark"] [style*="background-color: White"],
 [data-theme="dark"] [style*="background:#fff"],
 [data-theme="dark"] [style*="background-color:#fff"],
+[data-theme="dark"] [style*="background:#FFF"],
+[data-theme="dark"] [style*="background-color:#FFF"],
 [data-theme="dark"] [style*="background:white"],
-[data-theme="dark"] [style*="background-color:white"] {
+[data-theme="dark"] [style*="background-color:white"],
+[data-theme="dark"] [style*="background:White"],
+[data-theme="dark"] [style*="background-color:White"] {
   background: rgba(0, 0, 0, 0.90) !important;
   background-color: rgba(0, 0, 0, 0.90) !important;
   background-image: none !important;
@@ -513,7 +558,7 @@
 
 [data-theme="dark"] .search-modal-close:hover {
   background: rgba(31, 196, 31, 0.12) !important;
-  color: #1fc41f !important;
+  color: var(--brand-text) !important;
 }
 
 [data-theme="dark"] .dropdown-menu-item:hover,
@@ -521,8 +566,17 @@
 [data-theme="dark"] button:hover,
 [data-theme="dark"] [role="button"]:hover {
   background-color: rgba(31, 196, 31, 0.12) !important;
-  color: #1fc41f !important;
+  color: var(--brand-text) !important;
   border-color: rgba(31, 196, 31, 0.42) !important;
+}
+
+[data-theme="dark"] .dropdown-menu-item:hover :where(span, p, div, label, strong, em, svg),
+[data-theme="dark"] .dropdown-trigger-btn:hover :where(span, p, div, label, strong, em, svg),
+[data-theme="dark"] button:hover :where(span, p, div, label, strong, em, svg),
+[data-theme="dark"] [role="button"]:hover :where(span, p, div, label, strong, em, svg),
+[data-theme="dark"] .group:hover [class*="group-hover:text-"],
+[data-theme="dark"] [class*="hover:text-"]:hover {
+  color: var(--brand-text) !important;
 }
 
 [data-theme="dark"] .dropdown-menu-item.item-active,
@@ -552,19 +606,150 @@
 }
 
 [data-theme="dark"] .main-header .header-menu-active,
-[data-theme="dark"] .main-header .trigger-active {
+[data-theme="dark"] .main-header .trigger-active,
+[data-theme="dark"] .main-header button:hover,
+[data-theme="dark"] .main-header [role="button"]:hover,
+[data-theme="dark"] .main-header button:hover :where(span, svg),
+[data-theme="dark"] .main-header [role="button"]:hover :where(span, svg),
+[data-theme="dark"] .auth-panel [aria-current="true"],
+[data-theme="dark"] .auth-panel [aria-current="true"] :where(span, svg),
+[data-theme="dark"] .auth-panel .tab-underline + span {
   color: #1fc41f !important;
 }
 
-[data-theme="dark"] [class~="text-[var(--brand-purple)]"]:hover,
-[data-theme="dark"] [class~="!text-[var(--brand-purple)]"]:hover,
-[data-theme="dark"] [class~="hover:text-[var(--brand-blue)]"]:hover,
-[data-theme="dark"] [class~="hover:text-[var(--brand-accent)]"]:hover,
-[data-theme="dark"] [class~="hover:text-[var(--brand-purple)]"]:hover,
-[data-theme="dark"] .group:hover [class~="text-[var(--brand-purple)]"],
-[data-theme="dark"] .group:hover [class~="!text-[var(--brand-purple)]"],
-[data-theme="dark"] .group:hover [class~="group-hover:text-[var(--brand-blue)]"],
-[data-theme="dark"] .group:hover [class~="group-hover:text-[var(--brand-accent)]"],
-[data-theme="dark"] .group:hover [class~="group-hover:text-[var(--brand-purple)]"] {
+[data-theme="dark"] .main-header [class~="hover:text-[var(--brand-blue)]"]:hover,
+[data-theme="dark"] .main-header [class~="hover:text-[var(--brand-accent)]"]:hover,
+[data-theme="dark"] .main-header [class~="hover:text-[var(--brand-purple)]"]:hover,
+[data-theme="dark"] .main-header .group:hover [class~="group-hover:text-[var(--brand-blue)]"],
+[data-theme="dark"] .main-header .group:hover [class~="group-hover:text-[var(--brand-accent)]"],
+[data-theme="dark"] .main-header .group:hover [class~="group-hover:text-[var(--brand-purple)]"],
+[data-theme="dark"] .dropdown-menu-item.item-active :where(span, svg),
+[data-theme="dark"] .dropdown-trigger-btn.trigger-active :where(span, svg),
+[data-theme="dark"] .ant-menu-item-selected :where(span, svg),
+[data-theme="dark"] .ant-tabs-tab-active :where(span, svg),
+[data-theme="dark"] .ant-segmented-item-selected :where(span, svg) {
   color: #1fc41f !important;
+}
+
+[data-theme="dark"] :where(
+  .ant-collapse,
+  .ant-collapse-item,
+  .ant-collapse-content,
+  .ant-collapse-header,
+  .ant-descriptions,
+  .ant-descriptions-view,
+  .ant-empty,
+  .ant-form-item,
+  .ant-form-item-label,
+  .ant-pagination,
+  .ant-pagination-item,
+  .ant-pagination-prev,
+  .ant-pagination-next,
+  .ant-select-item,
+  .ant-select-item-option,
+  .ant-upload,
+  .ant-upload-list,
+  .ant-upload-list-item,
+  .ant-radio-button-wrapper,
+  .ant-checkbox-inner,
+  .ant-switch,
+  .ant-notification-notice,
+  .ant-message-notice-content,
+  .ant-picker-cell,
+  .ant-picker-content th,
+  .ant-picker-content td,
+  .ant-table-thead > tr > th,
+  .ant-table-tbody > tr > td
+) {
+  background-color: rgba(0, 0, 0, 0.88) !important;
+  color: var(--brand-text) !important;
+  border-color: rgba(31, 196, 31, 0.20) !important;
+}
+
+[data-theme="dark"] :where(
+  .ant-collapse,
+  .ant-collapse-item,
+  .ant-collapse-content,
+  .ant-descriptions,
+  .ant-empty,
+  .ant-form-item,
+  .ant-pagination,
+  .ant-select-item,
+  .ant-upload,
+  .ant-upload-list-item,
+  .ant-notification-notice,
+  .ant-message-notice-content
+) :where(span, p, div, label, strong, em, small, th, td) {
+  color: var(--brand-text) !important;
+}
+
+[data-theme="dark"] [class*="bg-[rgba(255"],
+[data-theme="dark"] [class*="dark:bg-[rgba(255"],
+[data-theme="dark"] [class*="bg-[rgb(255"],
+[data-theme="dark"] [class*="dark:bg-[rgb(255"],
+[data-theme="dark"] [class*="bg-[#fff"],
+[data-theme="dark"] [class*="bg-[#FFF"],
+[data-theme="dark"] [class*="dark:bg-[#fff"],
+[data-theme="dark"] [class*="dark:bg-[#FFF"] {
+  background-color: rgba(0, 0, 0, 0.88) !important;
+  background-image: none !important;
+  color: var(--brand-text) !important;
+}
+
+[data-theme="dark"] :where(
+  .glass-modal-panel,
+  .search-modal-panel,
+  .ant-modal-content,
+  .ant-drawer-content,
+  .ant-popover-inner,
+  .ant-dropdown-menu,
+  .ant-card,
+  .ant-list-item,
+  .ant-table,
+  .ant-collapse,
+  .ant-upload,
+  form,
+  fieldset
+) :where(input, textarea, select, button, [role="button"]) {
+  background-color: rgba(0, 0, 0, 0.90) !important;
+  color: var(--brand-text) !important;
+  border-color: rgba(31, 196, 31, 0.22) !important;
+}
+
+[data-theme="dark"] :where(
+  .glass-modal-panel,
+  .search-modal-panel,
+  .ant-modal-content,
+  .ant-drawer-content,
+  .ant-popover-inner,
+  .ant-dropdown-menu,
+  .ant-card,
+  .ant-list-item,
+  .ant-table,
+  .ant-collapse,
+  .ant-upload,
+  form,
+  fieldset
+) :where(button, [role="button"]):hover {
+  background-color: rgba(31, 196, 31, 0.12) !important;
+  color: var(--brand-text) !important;
+  border-color: rgba(31, 196, 31, 0.42) !important;
+}
+
+[data-theme="dark"] :where(
+  .glass-modal-panel,
+  .search-modal-panel,
+  .ant-modal-content,
+  .ant-drawer-content,
+  .ant-popover-inner,
+  .ant-dropdown-menu,
+  .ant-card,
+  .ant-list-item,
+  .ant-table,
+  .ant-collapse,
+  .ant-upload,
+  form,
+  fieldset
+) :where(button, [role="button"]):hover :where(span, p, div, label, strong, em, svg) {
+  color: var(--brand-text) !important;
 }
