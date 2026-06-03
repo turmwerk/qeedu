@@ -1,5 +1,4 @@
 ﻿import type { FormField } from "@/ui/Form";
-import { showToast } from "@/ui/Toast";
 import KeyIcon from "@/ui/Icon/KeyIcon";
 import IdIcon from "@/ui/Icon/IdIcon";
 import LockIcon from "@/ui/Icon/LockIcon";
@@ -17,10 +16,12 @@ export interface BuildFieldsOptions {
   setShowPassword2?: (v: boolean) => void;
   sendButtonClass: string;
   onSendCode?: (field: "login" | "register" | "forget", email: string) => void;
+  codeCooldowns?: Partial<Record<"login" | "register" | "forget", number>>;
+  codeSending?: Partial<Record<"login" | "register" | "forget", boolean>>;
 }
 
 export function buildFields(kind: "login-password" | "login-sms" | "register" | "forget", opts: BuildFieldsOptions): FormField[] {
-  const { showPassword, setShowPassword, showPassword2, setShowPassword2, sendButtonClass, onSendCode } = opts;
+  const { showPassword, setShowPassword, showPassword2, setShowPassword2, sendButtonClass, onSendCode, codeCooldowns, codeSending } = opts;
   void sendButtonClass;
 
   const hasValue = (value: unknown) => String(value ?? "").trim().length > 0;
@@ -40,6 +41,24 @@ export function buildFields(kind: "login-password" | "login-sms" | "register" | 
       {label}
     </span>
   );
+  const renderCodeButton = (field: "login" | "register" | "forget", email: string) => {
+    const cooldown = Math.max(0, Number(codeCooldowns?.[field] ?? 0));
+    const sending = !!codeSending?.[field];
+    const disabled = cooldown > 0 || sending;
+    return (
+      <button
+        type="button"
+        onClick={() => {
+          if (!disabled) onSendCode?.(field, email);
+        }}
+        disabled={disabled}
+        aria-disabled={disabled}
+        className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--brand-blue)] hover:text-[var(--brand-purple)] font-bold bg-transparent border-0 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:text-[var(--brand-blue)]"
+      >
+        {sending ? "发送中" : cooldown > 0 ? `${cooldown}s 后重新获取` : "获取验证码"}
+      </button>
+    );
+  };
 
   if (kind === "login-password") {
     const fields: FormField[] = [
@@ -108,9 +127,7 @@ export function buildFields(kind: "login-password" | "login-sms" | "register" | 
             {renderFloatingLabel("验证码", value)}
             <input className={`${inputClass} flex-1 pl-[56px] pr-[110px]`} id="login-sms-code" name="smsCode" value={value} onChange={(e) => onChange(e.target.value)} placeholder="验证码" autoComplete="one-time-code" />
 
-            <button type="button" onClick={() => onSendCode ? onSendCode("login", String(values.email ?? "")) : showToast("验证码发送未实现")} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--brand-blue)] hover:text-[var(--brand-purple)] font-bold bg-transparent border-0">
-              获取验证码
-            </button>
+            {renderCodeButton("login", String(values.email ?? ""))}
           </div>
         ),
       },
@@ -138,6 +155,24 @@ export function buildFields(kind: "login-password" | "login-sms" | "register" | 
           </div>
         ),
       },
+      ...(kind === "register"
+        ? [
+            {
+              name: "name",
+              label: "用户名",
+              placeholder: "用户名",
+              render: (value, onChange) => (
+                <div className={shellClass}>
+                  <div className="absolute left-0 top-0 w-[56px] h-[56px] flex items-center justify-center text-[var(--brand-muted)] pointer-events-none">
+                    <IdIcon />
+                  </div>
+                  {renderFloatingLabel("用户名", value)}
+                  <input className={`${inputClass} pl-[56px] pr-4`} id="register-name" name="name" value={value} onChange={(e) => onChange(e.target.value)} placeholder="用户名" autoComplete="username" maxLength={30} />
+                </div>
+              ),
+            } satisfies FormField,
+          ]
+        : []),
       {
         name: codeName,
         label: "验证码",
@@ -150,9 +185,7 @@ export function buildFields(kind: "login-password" | "login-sms" | "register" | 
             {renderFloatingLabel("验证码", value)}
             <input className={`${inputClass} flex-1 pl-[56px] pr-[110px]`} id={`${kind}-${codeName}`} name={codeName} value={value} onChange={(e) => onChange(e.target.value)} placeholder="验证码" autoComplete="one-time-code" />
 
-            <button type="button" onClick={() => onSendCode ? onSendCode(kind, String(values.email ?? "")) : showToast("验证码发送未实现")} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--brand-blue)] hover:text-[var(--brand-purple)] font-bold bg-transparent border-0">
-              获取验证码
-            </button>
+            {renderCodeButton(kind, String(values.email ?? ""))}
           </div>
         ),
       },

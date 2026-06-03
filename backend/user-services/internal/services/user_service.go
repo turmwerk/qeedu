@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/dieWehmut/nju-edu-ai-system/backend/user-services/internal/entity"
 	"github.com/dieWehmut/nju-edu-ai-system/backend/user-services/internal/repository"
@@ -30,6 +31,8 @@ type OAuthProfile struct {
 
 var (
 	ErrEmailAlreadyExists = errors.New("email already exists")
+	ErrNameAlreadyExists  = errors.New("username already exists")
+	ErrInvalidName        = errors.New("username must be 2-30 characters")
 	ErrWeakPassword       = errors.New("password must be at least 6 characters")
 	ErrInvalidCredential  = errors.New("invalid account or password")
 	ErrNoPassword         = errors.New("user has no password")
@@ -50,6 +53,14 @@ func normalizeName(name, email string) string {
 	return email
 }
 
+func validateName(name string) error {
+	length := utf8.RuneCountInString(strings.TrimSpace(name))
+	if length < 2 || length > 30 {
+		return ErrInvalidName
+	}
+	return nil
+}
+
 func hashPassword(password string) (string, error) {
 	if len(password) < 6 {
 		return "", ErrWeakPassword
@@ -67,9 +78,15 @@ func (s *UserService) FindOrCreateOAuthUser(p OAuthProfile) (*entity.User, error
 	u, err := s.repo.FindByProvider(p.Provider, p.ProviderID)
 	if err == nil {
 		// Update profile fields that may have changed upstream
-		u.Name = p.Name
-		u.Email = p.Email
-		u.AvatarURL = p.AvatarURL
+		if strings.TrimSpace(p.Name) != "" {
+			u.Name = strings.TrimSpace(p.Name)
+		}
+		if normalizeEmail(p.Email) != "" {
+			u.Email = normalizeEmail(p.Email)
+		}
+		if strings.TrimSpace(p.AvatarURL) != "" {
+			u.AvatarURL = strings.TrimSpace(p.AvatarURL)
+		}
 		_ = s.repo.Update(u)
 		return u, nil
 	}
@@ -80,11 +97,11 @@ func (s *UserService) FindOrCreateOAuthUser(p OAuthProfile) (*entity.User, error
 
 	// New user
 	u = &entity.User{
-		Provider:   p.Provider,
-		ProviderID: p.ProviderID,
-		Name:       p.Name,
-		Email:      p.Email,
-		AvatarURL:  p.AvatarURL,
+		Provider:   strings.TrimSpace(p.Provider),
+		ProviderID: strings.TrimSpace(p.ProviderID),
+		Name:       strings.TrimSpace(p.Name),
+		Email:      normalizeEmail(p.Email),
+		AvatarURL:  strings.TrimSpace(p.AvatarURL),
 	}
 	if err := s.repo.Create(u); err != nil {
 		return nil, err
@@ -99,7 +116,7 @@ func (s *UserService) FindOrCreateEmailUser(email, name string) (*entity.User, e
 		return nil, gorm.ErrRecordNotFound
 	}
 
-	u, err := s.repo.FindByEmail(email)
+	u, err := s.repo.FindLocalByEmail(email)
 	if err == nil {
 		return u, nil
 	}
@@ -122,11 +139,21 @@ func (s *UserService) FindOrCreateEmailUser(email, name string) (*entity.User, e
 // CreatePasswordUser registers a local email user with a password.
 func (s *UserService) CreatePasswordUser(email, name, password string) (*entity.User, error) {
 	email = normalizeEmail(email)
+	name = normalizeName(name, email)
 	if email == "" {
 		return nil, gorm.ErrRecordNotFound
 	}
+	if err := validateName(name); err != nil {
+		return nil, err
+	}
 
-	existing, err := s.repo.FindByEmail(email)
+	if nameUser, err := s.repo.FindLocalByName(name); err == nil && nameUser.ProviderID != email {
+		return nil, ErrNameAlreadyExists
+	} else if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, err
+	}
+
+	existing, err := s.repo.FindLocalByEmail(email)
 	if err == nil {
 		if existing.PasswordHash != "" {
 			return nil, ErrEmailAlreadyExists
@@ -137,7 +164,8 @@ func (s *UserService) CreatePasswordUser(email, name, password string) (*entity.
 		}
 		existing.Provider = "email"
 		existing.ProviderID = email
-		existing.Name = normalizeName(name, email)
+		existing.Name = name
+		existing.Email = email
 		existing.PasswordHash = hashed
 		if err := s.repo.Update(existing); err != nil {
 			return nil, err
@@ -155,7 +183,7 @@ func (s *UserService) CreatePasswordUser(email, name, password string) (*entity.
 	u := &entity.User{
 		Provider:     "email",
 		ProviderID:   email,
-		Name:         normalizeName(name, email),
+		Name:         name,
 		Email:        email,
 		PasswordHash: hashed,
 	}
@@ -168,7 +196,10 @@ func (s *UserService) CreatePasswordUser(email, name, password string) (*entity.
 // VerifyPassword returns the user if the supplied password matches.
 func (s *UserService) VerifyPassword(account, password string) (*entity.User, error) {
 	account = strings.TrimSpace(account)
-	u, err := s.repo.FindByAccount(account)
+	if strings.Contains(account, "@") {
+		account = normalizeEmail(account)
+	}
+	u, err := s.repo.FindLocalByAccount(account)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrInvalidCredential
@@ -192,7 +223,7 @@ func (s *UserService) UpdatePassword(email, password string) (*entity.User, erro
 		return nil, err
 	}
 
-	u, err := s.repo.FindByEmail(email)
+	u, err := s.repo.FindLocalByEmail(email)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return s.CreatePasswordUser(email, "", password)

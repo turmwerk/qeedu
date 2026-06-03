@@ -249,7 +249,11 @@ func SendCode(c *gin.Context) {
 	subject := "QeEdu 邮箱验证码"
 	body := fmt.Sprintf("你的验证码是：%s\n\n用途：%s\n10 分钟内有效。", code, purpose)
 	if err := sendEmail(email, subject, body); err != nil {
-		log.Printf("[auth] email code for %s (%s): %s; email send failed: %v", email, purpose, code, err)
+		if configs.IsProd() {
+			log.Printf("[auth] email code for %s (%s) send failed: %v", email, purpose, err)
+		} else {
+			log.Printf("[auth] email code for %s (%s): %s; email send failed: %v", email, purpose, code, err)
+		}
 		resp := gin.H{"ok": true, "message": "verification code generated"}
 		if !configs.IsProd() {
 			resp["dev_code"] = code

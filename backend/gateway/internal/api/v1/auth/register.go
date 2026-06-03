@@ -3,6 +3,7 @@ package auth
 import (
 	"net/http"
 	"strings"
+	"unicode/utf8"
 
 	userRPC "github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/rpc/user"
 	"github.com/gin-gonic/gin"
@@ -10,7 +11,7 @@ import (
 
 type registerRequest struct {
 	Email    string `json:"email" binding:"required,email"`
-	Name     string `json:"name"`
+	Name     string `json:"name" binding:"required"`
 	Code     string `json:"code" binding:"required"`
 	Password string `json:"password" binding:"required,min=6"`
 }
@@ -26,6 +27,12 @@ func Register(c *gin.Context) {
 	}
 
 	email := normalizeEmail(req.Email)
+	name := strings.TrimSpace(req.Name)
+	nameLen := utf8.RuneCountInString(name)
+	if nameLen < 2 || nameLen > 30 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "用户名需为 2-30 个字符"})
+		return
+	}
 	if !verifyEmailCode(email, purposeRegister, req.Code) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "验证码错误或已过期"})
 		return
@@ -34,7 +41,7 @@ func Register(c *gin.Context) {
 	u, err := userRPC.CreatePasswordUser(
 		c.Request.Context(),
 		email,
-		strings.TrimSpace(req.Name),
+		name,
 		req.Password,
 	)
 	if err != nil {

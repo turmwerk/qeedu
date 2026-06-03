@@ -9,6 +9,7 @@ import (
 )
 
 const defaultOpenRouterModel = "liquid/lfm-2.5-1.2b-instruct:free"
+const defaultDeepSeekModel = "deepseek-v4-flash"
 
 type ModelInfo struct {
 	ID       string `json:"id"`
@@ -18,7 +19,7 @@ type ModelInfo struct {
 
 var availableModels = []ModelInfo{
 	{ID: defaultOpenRouterModel, Name: "LFM2.5 Instruct", Provider: "OpenRouter"},
-	{ID: "deepseek-v4-pro", Name: "DeepSeek V4 Pro", Provider: "DeepSeek"},
+	{ID: defaultDeepSeekModel, Name: "DeepSeek V4 Flash", Provider: "DeepSeek"},
 }
 
 // currentChatModel returns the active chat model ID (env-overridable).
@@ -26,7 +27,7 @@ func currentChatModel() string {
 	if m := os.Getenv("LLM_CHAT_MODEL"); m != "" {
 		return strings.TrimSpace(m)
 	}
-	return defaultOpenRouterModel
+	return defaultDeepSeekModel
 }
 
 // currentFixModel returns the active fixbug model ID.

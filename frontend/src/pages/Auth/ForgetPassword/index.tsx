@@ -7,6 +7,7 @@ import buildFields from "../FieldsForm";
 import createNavAgreeFields from "../NavAgree";
 import AuthPanelActions from "../AuthPanelActions";
 import { resetPasswordWithEmail, sendEmailCode } from "@/api/auth";
+import { useCodeCountdown } from "../useCodeCountdown";
 
 
 
@@ -55,6 +56,7 @@ export default function ForgetPassword() {
   const [showPassword, setShowPassword] = useState(false);
   const [showPassword2, setShowPassword2] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const resetCode = useCodeCountdown();
 
   const goGuest = () => {
     showToast("使用“游客模式”进入首页");
@@ -73,18 +75,20 @@ export default function ForgetPassword() {
     showPassword2,
     setShowPassword2,
     sendButtonClass,
+    codeCooldowns: { forget: resetCode.cooldown },
+    codeSending: { forget: resetCode.sending },
     onSendCode: async (_field, email) => {
       const normalized = email.trim();
       if (!normalized) {
         showToast("请先输入邮箱");
         return;
       }
-      try {
+      await resetCode.run(async () => {
         const res = await sendEmailCode(normalized, "reset");
         showToast(res.dev_code ? `验证码：${res.dev_code}` : "验证码已发送");
-      } catch (err) {
+      }).catch((err) => {
         showToast(err instanceof Error ? err.message : "验证码发送失败");
-      }
+      });
     },
   });
 

@@ -7,6 +7,7 @@ import buildFields from "../FieldsForm";
 import createNavAgreeFields from "../NavAgree";
 import AuthPanelActions from "../AuthPanelActions";
 import { registerWithEmail, sendEmailCode } from "@/api/auth";
+import { useCodeCountdown } from "../useCodeCountdown";
 
 function EnterIcon() {
   return (
@@ -23,6 +24,7 @@ export default function Resister() {
   const [showPassword, setShowPassword] = useState(false);
   const [showPassword2, setShowPassword2] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const registerCode = useCodeCountdown();
 
   const goGuest = () => {
     showToast("使用“游客模式”进入首页");
@@ -40,29 +42,36 @@ export default function Resister() {
     showPassword2,
     setShowPassword2,
     sendButtonClass,
+    codeCooldowns: { register: registerCode.cooldown },
+    codeSending: { register: registerCode.sending },
     onSendCode: async (_field, email) => {
       const normalized = email.trim();
       if (!normalized) {
         showToast("请先输入邮箱");
         return;
       }
-      try {
+      await registerCode.run(async () => {
         const res = await sendEmailCode(normalized, "register");
         showToast(res.dev_code ? `验证码：${res.dev_code}` : "验证码已发送");
-      } catch (err) {
+      }).catch((err) => {
         showToast(err instanceof Error ? err.message : "验证码发送失败");
-      }
+      });
     },
   });
 
   const handleSubmit = async (values: Record<string, unknown>) => {
     if (submitting) return;
     const email = String(values.email ?? "").trim();
+    const name = String(values.name ?? "").trim();
     const code = String(values.emailCode ?? "").trim();
     const password = String(values.password ?? "");
     const password2 = String(values.password2 ?? "");
-    if (!email || !code || !password) {
-      showToast("请填写邮箱、验证码和密码");
+    if (!email || !name || !code || !password) {
+      showToast("请填写邮箱、用户名、验证码和密码");
+      return;
+    }
+    if (name.length < 2 || name.length > 30) {
+      showToast("用户名需为 2-30 个字符");
       return;
     }
     if (password !== password2) {
@@ -73,6 +82,7 @@ export default function Resister() {
     try {
       await registerWithEmail({
         email,
+        name,
         code,
         password,
       });

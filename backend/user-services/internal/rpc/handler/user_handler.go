@@ -66,7 +66,9 @@ func (h *UserHandler) CreatePasswordUser(
 		switch {
 		case errors.Is(err, services.ErrEmailAlreadyExists):
 			return nil, status.Error(codes.AlreadyExists, err.Error())
-		case errors.Is(err, services.ErrWeakPassword), err == gorm.ErrRecordNotFound:
+		case errors.Is(err, services.ErrNameAlreadyExists):
+			return nil, status.Error(codes.AlreadyExists, err.Error())
+		case errors.Is(err, services.ErrWeakPassword), errors.Is(err, services.ErrInvalidName), err == gorm.ErrRecordNotFound:
 			return nil, status.Error(codes.InvalidArgument, err.Error())
 		default:
 			return nil, status.Errorf(codes.Internal, "create password user: %v", err)

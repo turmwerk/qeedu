@@ -14,6 +14,7 @@ import UserIcon from "@/ui/Icon/UserIcon";
 import EnterIcon from "@/ui/Icon/EnterIcon";
 import { apiUrl } from "@/api/config";
 import { loginWithEmailCode, loginWithPassword, sendEmailCode } from "@/api/auth";
+import { useCodeCountdown } from "../useCodeCountdown";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -21,6 +22,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [mode, setMode] = useState<"password" | "sms" | "quick">("quick");
   const [submitting, setSubmitting] = useState(false);
+  const loginCode = useCodeCountdown();
 
   const goGuest = () => {
     showToast("使用\"游客模式\"进入首页");
@@ -72,18 +74,20 @@ export default function Login() {
     showPassword,
     setShowPassword,
     sendButtonClass,
+    codeCooldowns: { login: loginCode.cooldown },
+    codeSending: { login: loginCode.sending },
     onSendCode: async (_field, email) => {
       const normalized = email.trim();
       if (!normalized) {
         showToast("请先输入邮箱");
         return;
       }
-      try {
+      await loginCode.run(async () => {
         const res = await sendEmailCode(normalized, "login");
         showToast(res.dev_code ? `验证码：${res.dev_code}` : "验证码已发送");
-      } catch (err) {
+      }).catch((err) => {
         showToast(err instanceof Error ? err.message : "验证码发送失败");
-      }
+      });
     },
   });
 

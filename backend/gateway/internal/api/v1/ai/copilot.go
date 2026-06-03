@@ -3,19 +3,19 @@ package ai
 import (
 	"net/http"
 
-	aicopilotv1 "github.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/ai-copilot/v1"
 	aiCopilotRPC "github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/rpc/ai-copilot"
+	aicopilotv1 "github.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/ai-copilot/v1"
 	"github.com/gin-gonic/gin"
 )
 
 type completeReqBody struct {
-	Language     string `json:"language"`
-	FileContent  string `json:"file_content"`
-	CursorOffset int32  `json:"cursor_offset"`
-	FilePath     string `json:"file_path"`
-	Model        string `json:"model"`
-	APIKey       string `json:"api_key"`
-	BaseURL      string `json:"base_url"`
+	Language     string  `json:"language"`
+	FileContent  string  `json:"file_content"`
+	CursorOffset int32   `json:"cursor_offset"`
+	FilePath     string  `json:"file_path"`
+	Model        string  `json:"model"`
+	APIKey       string  `json:"api_key"`
+	BaseURL      string  `json:"base_url"`
 	Temperature  float64 `json:"temperature"`
 	MaxTokens    int32   `json:"max_tokens"`
 }
@@ -28,12 +28,17 @@ func Complete(c *gin.Context) {
 		return
 	}
 
+	model := body.Model
+	if model == "" {
+		model = currentCopilotModel()
+	}
+
 	resp, err := aiCopilotRPC.Complete(c.Request.Context(), &aicopilotv1.CompleteRequest{
 		Language:     body.Language,
 		FileContent:  body.FileContent,
 		CursorOffset: body.CursorOffset,
 		FilePath:     body.FilePath,
-		Model:        body.Model,
+		Model:        model,
 		ApiKey:       body.APIKey,
 		BaseUrl:      body.BaseURL,
 		Temperature:  body.Temperature,

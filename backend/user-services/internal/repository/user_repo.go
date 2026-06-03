@@ -51,10 +51,33 @@ func (r *UserRepo) FindByEmail(email string) (*entity.User, error) {
 	return &u, nil
 }
 
-// FindByAccount looks up a user by email first, then by display name.
-func (r *UserRepo) FindByAccount(account string) (*entity.User, error) {
+// FindLocalByEmail looks up the local email/password identity for an email.
+func (r *UserRepo) FindLocalByEmail(email string) (*entity.User, error) {
 	var u entity.User
-	if err := r.db.Where("email = ? OR name = ?", account, account).First(&u).Error; err != nil {
+	if err := r.db.Where("provider = ? AND provider_id = ?", "email", email).First(&u).Error; err != nil {
+		return nil, err
+	}
+	return &u, nil
+}
+
+// FindLocalByName looks up a local email/password identity by username.
+func (r *UserRepo) FindLocalByName(name string) (*entity.User, error) {
+	var u entity.User
+	if err := r.db.Where("provider = ? AND name = ?", "email", name).First(&u).Error; err != nil {
+		return nil, err
+	}
+	return &u, nil
+}
+
+// FindLocalByAccount looks up a local email/password identity by email or username.
+func (r *UserRepo) FindLocalByAccount(account string) (*entity.User, error) {
+	var u entity.User
+	if err := r.db.Where(
+		"provider = ? AND (provider_id = ? OR name = ?)",
+		"email",
+		account,
+		account,
+	).First(&u).Error; err != nil {
 		return nil, err
 	}
 	return &u, nil

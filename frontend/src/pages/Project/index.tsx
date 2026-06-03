@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 import { useSearchParams, Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import Loader from "@/effects/Loader";
 import { WorkspaceProvider } from "./context";
 import { PROJECT_NAMES } from "./data/projectNames";
 import TopBar from "./TopBar";
@@ -116,13 +117,21 @@ const ProjectPageInner: React.FC = () => {
 };
 
 const ProjectPage: React.FC = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
   const [searchParams] = useSearchParams();
   const proId = Number(searchParams.get("proId") ?? "1");
   const projectName = PROJECT_NAMES[proId] ?? `项目 ${proId}`;
   const workspaceKey = Number.isFinite(proId)
     ? `project:${proId}`
     : `project:${projectName}`;
+
+  if (loading) {
+    return (
+      <div className="flex h-screen w-screen items-center justify-center bg-[#1e1e1e]">
+        <Loader size="lg" text="加载中" subtext="正在验证登录状态..." />
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;

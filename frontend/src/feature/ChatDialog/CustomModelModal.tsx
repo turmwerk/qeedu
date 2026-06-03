@@ -26,7 +26,7 @@ const PRESETS: Preset[] = [
   {
     name: "DeepSeek",
     baseUrl: "https://api.deepseek.com",
-    models: ["deepseek-v4-pro"],
+    models: ["deepseek-v4-flash"],
   },
   {
     name: "自定义 (OpenAI 兼容)",
