@@ -15,7 +15,9 @@ import {
 import SearchModal from "@/layouts/MainLayout/SearchModal";
 import { useAuth } from "@/hooks/useAuth";
 import { getStoredTheme, toggleTheme } from "@/utils/theme/controller";
+import { getEffectsEnabled, toggleEffects } from "@/utils/effects/controller";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import Modal from "@/ui/Modal";
 import { internationalModuleCatalog } from "@/pages/International/moduleCatalog";
 import { managementModuleCatalog, managementIcon } from "@/pages/Management/moduleCatalog";
 import { researchModuleCatalog } from "@/pages/Research/moduleCatalog";
@@ -93,7 +95,11 @@ const internationalDropdownItems: DropdownItem[] = internationalModuleCatalog.ma
   icon: item.icon,
 }));
 
-const MainHeader: React.FC = () => {
+interface MainHeaderProps {
+  floatActionsVisible?: boolean;
+}
+
+const MainHeader: React.FC<MainHeaderProps> = ({ floatActionsVisible = false }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const navStackRef = useRef<string[]>([]);
@@ -106,7 +112,9 @@ const MainHeader: React.FC = () => {
   const isResearch = location.pathname.startsWith("/research");
 
   const [searchVisible, setSearchVisible] = useState(false);
+  const [settingsVisible, setSettingsVisible] = useState(false);
   const [theme, setTheme] = useState(getStoredTheme());
+  const [effectsEnabled, setEffectsEnabled] = useState(getEffectsEnabled());
 
   useEffect(() => {
     const handler = () => setTheme(getStoredTheme());
@@ -118,9 +126,23 @@ const MainHeader: React.FC = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const handler = () => setEffectsEnabled(getEffectsEnabled());
+    window.addEventListener("effects-change", handler);
+    window.addEventListener("storage", handler);
+    return () => {
+      window.removeEventListener("effects-change", handler);
+      window.removeEventListener("storage", handler);
+    };
+  }, []);
+
   const handleToggleTheme = () => {
     const next = toggleTheme();
     setTheme(next);
+  };
+
+  const handleToggleEffects = () => {
+    setEffectsEnabled(toggleEffects());
   };
 
   const normalizeRoute = (pathname: string, search: string): string => {
@@ -284,6 +306,45 @@ const MainHeader: React.FC = () => {
       data-oid="hoa5tyk"
     >
       <SearchModal open={searchVisible} onClose={() => setSearchVisible(false)} />
+      <Modal
+        visible={settingsVisible}
+        title="全局设置"
+        onClose={() => setSettingsVisible(false)}
+        width={420}
+        bodyClassName="px-5 py-5"
+      >
+        <div className="flex flex-col gap-4 text-[var(--brand-text)]">
+          <div className="flex items-center justify-between gap-4 rounded-lg border border-[var(--brand-border)] bg-[var(--surface-container)] px-4 py-3">
+            <div>
+              <div className="text-sm font-semibold">语言</div>
+              <div className="text-xs text-[var(--brand-muted)]">简体中文 / 繁體中文 / English</div>
+            </div>
+            <LanguageSwitcher />
+          </div>
+          <button
+            type="button"
+            className="flex items-center justify-between gap-4 rounded-lg border border-[var(--brand-border)] bg-[var(--surface-container)] px-4 py-3 text-left transition hover:border-[var(--brand-purple)] hover:text-[var(--brand-purple)]"
+            onClick={handleToggleTheme}
+          >
+            <span>
+              <span className="block text-sm font-semibold">主题</span>
+              <span className="block text-xs text-[var(--brand-muted)]">当前：{theme === "dark" ? "暗色" : "亮色"}</span>
+            </span>
+            <span>{theme === "dark" ? "切换到亮色" : "切换到暗色"}</span>
+          </button>
+          <button
+            type="button"
+            className="flex items-center justify-between gap-4 rounded-lg border border-[var(--brand-border)] bg-[var(--surface-container)] px-4 py-3 text-left transition hover:border-[var(--brand-purple)] hover:text-[var(--brand-purple)]"
+            onClick={handleToggleEffects}
+          >
+            <span>
+              <span className="block text-sm font-semibold">背景特效</span>
+              <span className="block text-xs text-[var(--brand-muted)]">当前：{effectsEnabled ? "开启" : "关闭"}</span>
+            </span>
+            <span>{effectsEnabled ? "关闭" : "开启"}</span>
+          </button>
+        </div>
+      </Modal>
       <div className="flex items-center gap-1 sm:gap-3" data-oid="40dtg53">
         {!isHomePage && (
           <Button
@@ -304,39 +365,42 @@ const MainHeader: React.FC = () => {
       </div>
 
       <div className="flex items-center gap-1 sm:gap-1.5" data-oid="lg2sztd">
-        <LanguageSwitcher />
-        <Button
-          className={`${menuButtonBase} ${menuButtonUnderline} ${menuButtonIdle}`}
-          onClick={() => {}}
-          data-oid="settings-button"
-        >
-          <SettingOutlinedIcon />
-          <span className="hidden sm:inline">设置</span>
-        </Button>
-        <Button
-          className={`${menuButtonBase} ${menuButtonUnderline} ${menuButtonIdle}`}
-          onClick={handleToggleTheme}
-          data-oid="theme-button"
-        >
-          {theme === "dark" ? (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="leading-none inline-block">
-              <path d="M12 4V2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M12 22v-2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M4.93 4.93L3.51 3.51" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M20.49 20.49l-1.42-1.42" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M4 12H2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M22 12h-2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M4.93 19.07l-1.42 1.42" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M20.49 3.51l-1.42 1.42" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-              <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.8" />
-            </svg>
-          ) : (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="leading-none inline-block">
-              <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          )}
-          <span className="hidden sm:inline">主题</span>
-        </Button>
+        {!floatActionsVisible && (
+          <>
+            <Button
+              className={`${menuButtonBase} ${menuButtonUnderline} ${menuButtonIdle}`}
+              onClick={() => setSettingsVisible(true)}
+              data-oid="settings-button"
+            >
+              <SettingOutlinedIcon />
+              <span className="hidden sm:inline">设置</span>
+            </Button>
+            <Button
+              className={`${menuButtonBase} ${menuButtonUnderline} ${menuButtonIdle}`}
+              onClick={handleToggleTheme}
+              data-oid="theme-button"
+            >
+              {theme === "dark" ? (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="leading-none inline-block">
+                  <path d="M12 4V2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M12 22v-2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M4.93 4.93L3.51 3.51" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M20.49 20.49l-1.42-1.42" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M4 12H2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M22 12h-2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M4.93 19.07l-1.42 1.42" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M20.49 3.51l-1.42 1.42" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                  <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.8" />
+                </svg>
+              ) : (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="leading-none inline-block">
+                  <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              )}
+              <span className="hidden sm:inline">主题</span>
+            </Button>
+          </>
+        )}
         <Button
           className={`${menuButtonBase} ${menuButtonUnderline} ${menuButtonIdle}`}
           onClick={() => setSearchVisible(true)}
@@ -462,6 +526,11 @@ const MainHeader: React.FC = () => {
             }
             buttonClassName={`${menuButtonBase} ${menuButtonIdle} hidden sm:inline-flex`}
             items={[
+              {
+                label: "个人中心",
+                active: location.pathname.startsWith("/account"),
+                onClick: () => navigate("/account"),
+              },
               {
                 label: "退出登录",
                 active: false,

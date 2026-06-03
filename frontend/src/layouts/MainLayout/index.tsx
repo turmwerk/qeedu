@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Layout } from "antd";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Header from "./Header";
@@ -61,6 +61,11 @@ const MainLayout: React.FC = () => {
   );
   const workspaceSidersRef = useRef(workspaceSiders);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+  const [scrollContainerEl, setScrollContainerEl] = useState<HTMLDivElement | null>(null);
+  const assignScrollContainer = useCallback((node: HTMLDivElement | null) => {
+    scrollContainerRef.current = node;
+    setScrollContainerEl(node);
+  }, []);
 
   // Theme control (centralized here)
   const [theme, setTheme] = useState<"light" | "dark">(() => getStoredTheme());
@@ -322,6 +327,7 @@ const MainLayout: React.FC = () => {
       {/* 全局 Header */}
       <div className="flex-shrink-0 relative z-[100]">
         <Header
+          floatActionsVisible={!isDetailPage}
           data-oid="d8-wqm."
         />
       </div>
@@ -396,7 +402,7 @@ const MainLayout: React.FC = () => {
               <div
                 className="h-full min-h-0 overflow-y-auto overflow-x-hidden"
                 data-oid="giq3cbp"
-                ref={scrollContainerRef}
+                ref={assignScrollContainer}
               >
                 <div className="flex min-h-full flex-col">
                   <div className="w-full min-w-0 flex-1">
@@ -409,7 +415,7 @@ const MainLayout: React.FC = () => {
               <div
                 className={`h-full min-h-0 ${isDetailPage ? "flex flex-col overflow-hidden" : "overflow-y-auto overflow-x-hidden"}`}
                 data-oid="giq3cbp"
-                ref={scrollContainerRef}
+                ref={assignScrollContainer}
               >
                 <div className={isDetailPage ? "flex-1 min-h-0 min-w-0 w-full" : "w-full min-w-0"}>
                   <Outlet />
@@ -417,7 +423,7 @@ const MainLayout: React.FC = () => {
               </div>
             )}
             {/* 除了 detail 页面，所有页面都显示 FloatActions */}
-            {!isDetailPage && <FloatActions />}
+            {!isDetailPage && <FloatActions scrollContainer={scrollContainerEl} />}
           </Content>
         </Layout>
       </div>

@@ -9,6 +9,7 @@ import internationalRoutes from "./international.routes";
 import researchRoutes from "./research.routes";
 import managementRoutes from "./management.routes";
 import projectRoutes from "./project.routes";
+import accountRoutes from "./account.routes";
 
 const mainRoutes: RouteObject[] = [
   {
@@ -28,6 +29,7 @@ const mainRoutes: RouteObject[] = [
       ...internationalRoutes,
       ...researchRoutes,
       ...managementRoutes,
+      ...accountRoutes,
     ],
   },
 ];

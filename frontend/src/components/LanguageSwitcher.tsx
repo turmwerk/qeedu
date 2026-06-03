@@ -58,6 +58,14 @@ export function LanguageSwitcher({ className = "" }: LanguageSwitcherProps) {
           transform: translateX(-10px);
         }
 
+        .language-switcher-root .language-item:hover,
+        .language-switcher-root .language-item:focus-visible {
+          color: var(--brand-purple) !important;
+          background: var(--brand-accent-soft) !important;
+          border-color: var(--brand-purple) !important;
+          outline: none;
+        }
+
         .language-dropdown.open .language-item {
           animation: slideInItem 0.2s ease-out forwards;
         }
@@ -96,7 +104,7 @@ export function LanguageSwitcher({ className = "" }: LanguageSwitcherProps) {
         }
       `}</style>
 
-      <div className={`relative ${className}`} ref={dropdownRef}>
+      <div className={`language-switcher-root relative ${className}`} ref={dropdownRef}>
         <button
           aria-label={t("tooltips.languageSwitcher")}
           className={`inline-flex h-9 w-9 items-center justify-center text-[var(--brand-text)] transition-all duration-300 hover:scale-110 hover:text-[var(--brand-purple)] active:scale-95 ${
@@ -127,7 +135,7 @@ export function LanguageSwitcher({ className = "" }: LanguageSwitcherProps) {
           {languages.map((lang) => (
             <button
               key={lang.code}
-              className={`language-item relative flex w-full items-center justify-between overflow-hidden px-4 py-2 text-left text-sm transition-all duration-150 hover:bg-white/10 active:scale-[0.98] ${
+              className={`language-item relative flex w-[calc(100%-12px)] items-center justify-between overflow-hidden rounded-lg border border-transparent px-3 py-2 text-left text-sm transition-all duration-150 active:scale-[0.98] mx-1.5 ${
                 language === lang.code
                   ? "bg-white/5 text-[var(--brand-purple)]"
                   : "text-[var(--brand-text)]"

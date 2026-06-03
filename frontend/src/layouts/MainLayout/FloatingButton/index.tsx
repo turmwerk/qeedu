@@ -1,117 +1,401 @@
-import React, { useState, useRef } from "react";
-import Button from "@/ui/Button";
+import React, { useEffect, useState } from "react";
+import {
+  ArrowUpOutlined,
+  BgColorsOutlined,
+  MoonOutlined,
+  SettingOutlined,
+  SunOutlined,
+} from "@ant-design/icons";
+import { getEffectsEnabled, toggleEffects } from "@/utils/effects/controller";
+import { getStoredTheme, toggleTheme } from "@/utils/theme/controller";
+import { useLanguage, type Language } from "@/context/LanguageContext";
 
-
-export interface FloatingButtonProps {
-  onClick: () => void;
+interface FloatingButtonProps {
+  scrollContainer?: HTMLElement | null;
+  onClick?: () => void;
   visible?: boolean;
-  icon: React.ReactNode;
+  icon?: React.ReactNode;
   ariaLabel?: string;
   title?: string;
   className?: string;
   style?: React.CSSProperties;
-  size?: number | string; // 支持自定义尺寸
-  shape?: 'circle' | 'square' | string; // 支持自定义形状。也可以直接传入 tailwind 类名，例如 'rounded-lg' 或 'rounded-xl'
-  color?: string; // 主色
-  bgColor?: string; // 背景色
-  borderColor?: string; // 边框色
-  hoverStyle?: React.CSSProperties; // 悬浮时样式
-  activeStyle?: React.CSSProperties; // 激活时样式
-  hoverClassName?: string; // 悬浮时class
-  activeClassName?: string; // 激活时class
+  size?: number | string;
+  shape?: "circle" | "square" | string;
+  color?: string;
+  bgColor?: string;
+  borderColor?: string;
+  hoverStyle?: React.CSSProperties;
+  activeStyle?: React.CSSProperties;
+  hoverClassName?: string;
+  activeClassName?: string;
 }
 
+const languages: { code: Language; label: string; name: string }[] = [
+  { code: "zh-CN", label: "CN", name: "简体中文" },
+  { code: "zh-TW", label: "TW", name: "繁體中文" },
+  { code: "en", label: "EN", name: "English" },
+];
 
-const FloatingButton: React.FC<FloatingButtonProps> = ({
+const LegacyFloatingButton: React.FC<FloatingButtonProps> = ({
   onClick,
   visible = true,
   icon,
   ariaLabel,
   title,
   className = "",
-  style = {},
+  style,
   size = 36,
-  shape = 'circle',
+  shape = "circle",
   color,
   bgColor,
   borderColor,
-  hoverStyle = {},
-  activeStyle = {},
-  hoverClassName = '',
-  activeClassName = '',
 }) => {
-  // 动态样式
-  // 支持直接传入 tailwind 的 rounded 类，例如 'rounded-lg'
+  if (!icon || !onClick) return null;
+  const baseSize = typeof size === "number" ? `${size}px` : size;
   const shapeClass =
-    shape === 'circle' ? 'rounded-full' : shape === 'square' ? 'rounded' : (typeof shape === 'string' && shape.startsWith('rounded') ? shape : 'rounded-lg');
-  const baseSize = typeof size === 'number' ? `${size}px` : size;
-  const mergedStyle: React.CSSProperties = {
-    width: baseSize,
-    height: baseSize,
-    color: color || undefined,
-    background: bgColor || undefined,
-    borderColor: borderColor || undefined,
-    ...style,
-  };
+    shape === "circle"
+      ? "rounded-full"
+      : shape === "square"
+        ? "rounded"
+        : typeof shape === "string" && shape.startsWith("rounded")
+          ? shape
+          : "rounded-lg";
 
-  // 默认样式仿照 Header 中的侧边按钮
-  // 如果调用方没有传 bgColor，则使用默认白底；否则让调用方控制背景（可设为透明）
-  // 当 className 含 glass-btn 时，去掉 border/bg 默认值，完全交给 CSS glass 规则
-  const isGlass = className.includes('glass');
-  const bgClass = isGlass ? '' : (bgColor ? '' : 'bg-white');
-  const borderClass = isGlass ? '' : 'border border-[var(--brand-border)] hover:border-[var(--brand-accent)]';
-  const defaultClasses = `inline-flex items-center justify-center p-0 ${borderClass} ${bgClass} text-[var(--brand-accent)] hover:bg-[var(--brand-accent-soft)] transition`;
-
-  // hover/active 颜色通过 className 传递或外部覆盖
-  // 合并 hover/active 样式
-  // 通过 Tailwind/自定义className传递hover/active样式，或通过 style 传递
-  // 这里仅合并基础样式，hover/active 建议通过 className 传递
-
-  const [isHovered, setIsHovered] = useState(false);
-  const [isActive, setIsActive] = useState(false);
-  const [isJumping, setIsJumping] = useState(false);
-  const jumpTimer = useRef<number | null>(null);
-
-  const interactionStyle = isActive ? activeStyle : isHovered ? hoverStyle : {};
-  const finalStyle: React.CSSProperties = { ...mergedStyle, ...interactionStyle };
   return (
-    <Button
+    <button
       type="button"
       onClick={onClick}
       aria-label={ariaLabel}
       title={title}
-      style={finalStyle}
-      onMouseEnter={() => {
-        setIsHovered(true);
-        // trigger a single quick jump on mouse enter
-        setIsJumping(true);
-        if (jumpTimer.current) {
-          window.clearTimeout(jumpTimer.current);
-        }
-        jumpTimer.current = window.setTimeout(() => {
-          setIsJumping(false);
-          jumpTimer.current = null;
-        }, 120);
+      className={`inline-flex items-center justify-center border border-[var(--brand-border)] bg-[var(--surface-container)] text-[var(--brand-text)] transition hover:border-[var(--brand-purple)] hover:text-[var(--brand-purple)] ${visible ? "opacity-100" : "pointer-events-none opacity-0"} ${shapeClass} ${className}`}
+      style={{
+        width: baseSize,
+        height: baseSize,
+        color,
+        background: bgColor,
+        borderColor,
+        ...style,
       }}
-      onMouseLeave={() => {
-        setIsHovered(false);
-        setIsActive(false);
-        if (jumpTimer.current) {
-          window.clearTimeout(jumpTimer.current);
-          jumpTimer.current = null;
-        }
-        setIsJumping(false);
-      }}
-      onMouseDown={() => setIsActive(true)}
-      onMouseUp={() => setIsActive(false)}
-      onBlur={() => setIsActive(false)}
-      className={`${defaultClasses} ${visible ? "opacity-100" : "opacity-0 pointer-events-none"} ${shapeClass} ${className} ${hoverClassName} ${activeClassName} group`}
     >
-      <span className={`inline-flex items-center justify-center leading-none transform transition-transform duration-100 ease-linear ${isJumping ? '-translate-y-1' : ''}`}>
-        {icon}
-      </span>
-    </Button>
+      {icon}
+    </button>
   );
+};
+
+const FloatingControls: React.FC<{ scrollContainer?: HTMLElement | null }> = ({ scrollContainer }) => {
+  const { language, setLanguage } = useLanguage();
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [languageOpen, setLanguageOpen] = useState(false);
+  const [atTop, setAtTop] = useState(true);
+  const [theme, setTheme] = useState(getStoredTheme());
+  const [effectsEnabled, setEffectsEnabled] = useState(getEffectsEnabled());
+
+  useEffect(() => {
+    const target = scrollContainer ?? window;
+    const readTop = () => {
+      const top = scrollContainer ? scrollContainer.scrollTop : window.scrollY;
+      setAtTop(top < 60);
+    };
+
+    readTop();
+    target.addEventListener("scroll", readTop, { passive: true });
+    return () => target.removeEventListener("scroll", readTop);
+  }, [scrollContainer]);
+
+  useEffect(() => {
+    const handleTheme = () => setTheme(getStoredTheme());
+    const handleEffects = () => setEffectsEnabled(getEffectsEnabled());
+    window.addEventListener("theme-change", handleTheme);
+    window.addEventListener("effects-change", handleEffects);
+    window.addEventListener("storage", handleTheme);
+    window.addEventListener("storage", handleEffects);
+    return () => {
+      window.removeEventListener("theme-change", handleTheme);
+      window.removeEventListener("effects-change", handleEffects);
+      window.removeEventListener("storage", handleTheme);
+      window.removeEventListener("storage", handleEffects);
+    };
+  }, []);
+
+  const handleToggleSettings = () => {
+    setSettingsOpen((open) => {
+      if (open) setLanguageOpen(false);
+      return !open;
+    });
+  };
+
+  const handleToggleTheme = () => {
+    setTheme(toggleTheme());
+  };
+
+  const handleToggleEffects = () => {
+    setEffectsEnabled(toggleEffects());
+  };
+
+  const scrollToTop = () => {
+    if (scrollContainer) {
+      scrollContainer.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  return (
+    <div className={`float-controls ${atTop ? "is-top-hidden" : ""}`} aria-label="Quick controls">
+      <style>{`
+        .float-controls {
+          position: fixed;
+          right: 20px;
+          bottom: 20px;
+          z-index: 80;
+          width: 48px;
+          pointer-events: none;
+        }
+
+        .float-controls__button {
+          position: absolute;
+          right: 0;
+          width: 44px;
+          height: 44px;
+          display: inline-grid;
+          place-items: center;
+          border: 1px solid var(--brand-border);
+          border-radius: 10px;
+          color: var(--brand-text);
+          background: var(--surface-container);
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+          cursor: pointer;
+          pointer-events: auto;
+          font-size: 20px;
+          transition:
+            bottom 200ms ease,
+            transform 180ms ease,
+            opacity 180ms ease,
+            background-color 180ms ease,
+            border-color 180ms ease,
+            color 180ms ease;
+        }
+
+        :root[data-theme="light"] .float-controls__button {
+          border-color: rgba(17, 24, 39, 0.15);
+          background: rgba(255, 255, 255, 0.9);
+          box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+          color: #111827;
+        }
+
+        .float-controls__button:hover,
+        .float-controls__button:focus-visible {
+          border-color: rgba(31, 196, 31, 0.58);
+          color: var(--brand-purple);
+          transform: translateY(-1px);
+          outline: none;
+        }
+
+        .float-controls__top {
+          bottom: 0;
+          transition: opacity 200ms ease, transform 200ms ease;
+        }
+
+        .float-controls.is-top-hidden .float-controls__top {
+          opacity: 0;
+          pointer-events: none;
+          transform: translateY(6px) scale(0.92);
+        }
+
+        .float-controls__settings {
+          bottom: 54px;
+          transition: bottom 200ms ease;
+        }
+
+        .float-controls.is-top-hidden .float-controls__settings {
+          bottom: 0;
+        }
+
+        .float-controls__opt-dynamic,
+        .float-controls__opt-language,
+        .float-controls__opt-theme {
+          opacity: 0;
+          transform: translateY(8px) scale(0.95);
+          pointer-events: none;
+          transition:
+            bottom 200ms ease,
+            transform 180ms ease,
+            opacity 180ms ease;
+        }
+
+        .float-controls__opt-theme {
+          bottom: 108px;
+        }
+
+        .float-controls.is-top-hidden .float-controls__opt-theme {
+          bottom: 54px;
+        }
+
+        .float-controls__opt-language {
+          bottom: 162px;
+        }
+
+        .float-controls.is-top-hidden .float-controls__opt-language {
+          bottom: 108px;
+        }
+
+        .float-controls__opt-dynamic {
+          bottom: 216px;
+        }
+
+        .float-controls.is-top-hidden .float-controls__opt-dynamic {
+          bottom: 162px;
+        }
+
+        .float-controls__opt-dynamic.is-visible,
+        .float-controls__opt-language.is-visible,
+        .float-controls__opt-theme.is-visible {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+          pointer-events: auto;
+        }
+
+        .float-controls__button.is-active {
+          color: var(--brand-purple);
+          border-color: rgba(31, 196, 31, 0.58);
+          background: rgba(31, 196, 31, 0.14);
+        }
+
+        .float-controls__globe {
+          font-size: 13px;
+          font-weight: 900;
+        }
+
+        .float-controls__langs {
+          position: absolute;
+          right: 54px;
+          bottom: 162px;
+          display: flex;
+          gap: 10px;
+          opacity: 0;
+          transform: translateX(8px);
+          pointer-events: none;
+          transition: transform 180ms ease, opacity 180ms ease, bottom 200ms ease;
+        }
+
+        .float-controls.is-top-hidden .float-controls__langs {
+          bottom: 108px;
+        }
+
+        .float-controls__langs.is-open {
+          opacity: 1;
+          transform: translateX(0);
+          pointer-events: auto;
+        }
+
+        .float-controls__lang {
+          position: static;
+          width: 44px;
+          height: 44px;
+          font-size: 12px;
+          font-weight: 900;
+        }
+
+        @media (max-width: 900px) {
+          .float-controls {
+            right: 14px;
+            bottom: 14px;
+          }
+
+          .float-controls__langs {
+            right: 54px;
+            bottom: 162px;
+            width: 152px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+          }
+
+          .float-controls.is-top-hidden .float-controls__langs {
+            bottom: 108px;
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .float-controls__button,
+          .float-controls__langs {
+            transition: none;
+          }
+        }
+      `}</style>
+
+      <div className={`float-controls__langs ${languageOpen ? "is-open" : ""}`}>
+        {languages.map((item) => (
+          <button
+            key={item.code}
+            className={`float-controls__button float-controls__lang ${language === item.code ? "is-active" : ""}`}
+            type="button"
+            title={item.name}
+            aria-label={item.name}
+            onClick={() => setLanguage(item.code)}
+          >
+            {item.label}
+          </button>
+        ))}
+      </div>
+
+      <button
+        className={`float-controls__button float-controls__opt-dynamic ${settingsOpen ? "is-visible" : ""} ${effectsEnabled ? "is-active" : ""}`}
+        type="button"
+        title={effectsEnabled ? "关闭特效" : "开启特效"}
+        aria-label={effectsEnabled ? "关闭特效" : "开启特效"}
+        onClick={handleToggleEffects}
+      >
+        <BgColorsOutlined />
+      </button>
+
+      <button
+        className={`float-controls__button float-controls__opt-language ${settingsOpen ? "is-visible" : ""}`}
+        type="button"
+        title="语言"
+        aria-label="语言"
+        onClick={() => setLanguageOpen((open) => !open)}
+      >
+        <span className="float-controls__globe">Aa</span>
+      </button>
+
+      <button
+        className={`float-controls__button float-controls__opt-theme ${settingsOpen ? "is-visible" : ""}`}
+        type="button"
+        title="切换主题"
+        aria-label="切换主题"
+        onClick={handleToggleTheme}
+      >
+        {theme === "dark" ? <SunOutlined /> : <MoonOutlined />}
+      </button>
+
+      <button
+        className={`float-controls__button float-controls__settings ${settingsOpen ? "is-active" : ""}`}
+        type="button"
+        title="设置"
+        aria-label="设置"
+        onClick={handleToggleSettings}
+      >
+        <SettingOutlined />
+      </button>
+
+      <button
+        className="float-controls__button float-controls__top"
+        type="button"
+        title="返回顶部"
+        aria-label="返回顶部"
+        onClick={scrollToTop}
+      >
+        <ArrowUpOutlined />
+      </button>
+    </div>
+  );
+};
+
+const FloatingButton: React.FC<FloatingButtonProps> = (props) => {
+  if (props.icon && props.onClick) {
+    return <LegacyFloatingButton {...props} />;
+  }
+  return <FloatingControls scrollContainer={props.scrollContainer} />;
 };
 
 export default FloatingButton;
