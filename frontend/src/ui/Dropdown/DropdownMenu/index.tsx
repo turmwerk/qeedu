@@ -45,13 +45,13 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
     ? "bg-white dark:bg-white/10 text-[var(--brand-blue)] border-0 hover:bg-[var(--brand-accent-soft)] dark:hover:bg-white/18 hover:text-[var(--brand-purple)]"
     : "text-[var(--brand-blue)] border-0 hover:text-[var(--brand-purple)]";
 
-  const portalPanelClass = `bg-transparent border-none shadow-none pl-1 pt-1 pb-1 pr-0 min-w-[120px] flex flex-col gap-0.5 transition-[opacity] duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+  const portalPanelClass = `dropdown-menu-panel bg-transparent border-none shadow-none pl-1 pt-1 pb-1 pr-0 min-w-[120px] flex flex-col gap-0.5 transition-[opacity] duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] ${
     open
       ? "opacity-100 pointer-events-auto"
       : "opacity-0 pointer-events-none"
   }`;
 
-  const relativePanelClass = `bg-transparent border-none shadow-none absolute ${menuAlignClass} ${menuPositionClass} pl-1 pt-1 pb-1 pr-0 min-w-[120px] flex flex-col gap-0.5 opacity-0 pointer-events-none z-[2147483647] transition-[opacity] duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:opacity-100 group-hover:pointer-events-auto group-focus-within:opacity-100 group-focus-within:pointer-events-auto`;
+  const relativePanelClass = `dropdown-menu-panel bg-transparent border-none shadow-none absolute ${menuAlignClass} ${menuPositionClass} pl-1 pt-1 pb-1 pr-0 min-w-[120px] flex flex-col gap-0.5 opacity-0 pointer-events-none z-[2147483647] transition-[opacity] duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:opacity-100 group-hover:pointer-events-auto group-focus-within:opacity-100 group-focus-within:pointer-events-auto`;
 
   return (
     <>
