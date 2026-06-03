@@ -154,7 +154,7 @@ function scheduleScan(language: Language, root: Node = document.body, immediate 
   }).requestIdleCallback;
 
   if (immediate) {
-    requestAnimationFrame(run);
+    run();
     return;
   }
 

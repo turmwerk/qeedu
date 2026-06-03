@@ -141,7 +141,7 @@ const FloatingControls: React.FC<{ scrollContainer?: HTMLElement | null }> = ({ 
 
   const handleSelectLanguage = (nextLanguage: Language) => {
     setLanguageOpen(false);
-    window.requestAnimationFrame(() => setLanguage(nextLanguage));
+    setLanguage(nextLanguage);
   };
 
   const scrollToTop = () => {

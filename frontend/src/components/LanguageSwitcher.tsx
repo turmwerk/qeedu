@@ -35,7 +35,7 @@ export function LanguageSwitcher({ className = "", iconSize = 18 }: LanguageSwit
 
   const handleLanguageChange = (lang: Language) => {
     setIsOpen(false);
-    window.requestAnimationFrame(() => setLanguage(lang));
+    setLanguage(lang);
   };
 
   return (
