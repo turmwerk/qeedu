@@ -13,7 +13,7 @@ export default function EyeTooltip({ on, onToggle, ariaLabel, children }: EyeToo
   return (
     <div className="absolute right-0 top-0 w-[56px] h-[56px] p-0 inline-flex items-center justify-center box-border">
       <HoverTooltip
-        tooltipClassName="w-[220px] text-sm leading-5 p-3"
+        tooltipClassName="auth-eye-tooltip w-[220px] text-sm leading-5 p-3"
         content={
           <>
             <div>长度为 8-16 位字符</div>
