@@ -262,6 +262,14 @@
     inset 0 -1px 0 rgba(255, 255, 255, 0.10) !important;
 }
 
+[data-theme="dark"] .auth-panel .auth-field-input {
+  background: transparent !important;
+  background-color: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  color: var(--brand-text) !important;
+}
+
 [data-theme="dark"] .auth-panel .auth-primary-action {
   background-color: rgba(255, 255, 255, 0.16) !important;
   border-color: rgba(31, 196, 31, 0.28) !important;
@@ -270,6 +278,20 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.18),
     inset 0 -1px 0 rgba(255, 255, 255, 0.10) !important;
   color: var(--brand-text) !important;
+}
+
+[data-theme="dark"] .auth-panel .auth-code-action {
+  background: transparent !important;
+  background-color: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  color: var(--brand-text) !important;
+}
+
+[data-theme="dark"] .auth-panel .auth-code-action:hover,
+[data-theme="dark"] .auth-panel .auth-code-action:focus-visible {
+  color: #1fc41f !important;
+  outline: none !important;
 }
 
 [data-theme="dark"] .auth-panel .auth-primary-action:hover,

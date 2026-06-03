@@ -56,7 +56,7 @@ export function buildFields(kind: "login-password" | "login-sms" | "register" | 
         }}
         disabled={disabled}
         aria-disabled={disabled}
-        className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--brand-blue)] hover:text-[var(--brand-purple)] font-bold bg-transparent border-0 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:text-[var(--brand-blue)]"
+        className="auth-code-action absolute right-3 top-1/2 -translate-y-1/2 text-[var(--brand-blue)] hover:text-[var(--brand-purple)] font-bold bg-transparent border-0 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:text-[var(--brand-blue)]"
       >
         {sending ? t("auth.sending") : cooldown > 0 ? t("auth.retryAfter", { seconds: String(cooldown) }) : t("auth.getCode")}
       </button>
