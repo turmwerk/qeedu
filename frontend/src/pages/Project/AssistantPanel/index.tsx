@@ -1,11 +1,32 @@
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { RobotOutlined, CloseOutlined, DoubleRightOutlined } from "@ant-design/icons";
 import Dialog from "@/feature/ChatDialog";
+import { chatStream } from "@/api/ai";
+import { showToast } from "@/ui/Toast";
 import { buildAssistantDialogId, buildAssistantIntro } from "../data/assistant";
 import { useWorkspace } from "../context";
+import {
+  appendCodeEditInstruction,
+  buildWorkspaceFileContext,
+  createHiddenEditBlockFilter,
+  flattenWorkspaceFiles,
+  formatAppliedEditSummary,
+  getFileName,
+  getParentPath,
+  normalizeWorkspacePath,
+  parseCodeEdits,
+  type ParsedCodeEdit,
+} from "./codeEdits";
 
 const AssistantPanel: React.FC = () => {
-  const { projectName, activeTabId, tabs } = useWorkspace();
+  const {
+    projectName,
+    fileTree,
+    activeTabId,
+    tabs,
+    updateFileContents,
+    addFileWithContent,
+  } = useWorkspace();
   const [collapsed, setCollapsed] = useState(false);
 
   const dialogId = buildAssistantDialogId(projectName);
@@ -21,6 +42,117 @@ const AssistantPanel: React.FC = () => {
       }),
     ];
   }, [activeTab?.content, activeTab?.title]);
+
+  const applyCodeEdits = useCallback((edits: ParsedCodeEdit[]) => {
+    if (edits.length === 0) return [];
+
+    const workspaceFiles = flattenWorkspaceFiles(useWorkspace.getState().fileTree);
+    const resolveTargetPath = (rawPath: string) => {
+      const normalized = normalizeWorkspacePath(rawPath);
+      if (!normalized) return "";
+      const directNode = useWorkspace.getState().getNodeByPath(normalized);
+      if (directNode?.type === "file") return normalized;
+
+      const requestedName = getFileName(normalized);
+      if (activeTab && requestedName && requestedName === activeTab.title) {
+        return activeTab.id;
+      }
+
+      const sameNameMatches = workspaceFiles.filter(
+        (file) => getFileName(file.path) === requestedName,
+      );
+      if (sameNameMatches.length === 1) {
+        return sameNameMatches[0].path;
+      }
+      return normalized;
+    };
+
+    const updates: { path: string; content: string }[] = [];
+    const createdPaths: string[] = [];
+
+    edits.forEach((edit) => {
+      const path = resolveTargetPath(edit.path);
+      if (!path) return;
+
+      const existing = useWorkspace.getState().getNodeByPath(path);
+      if (existing?.type === "file") {
+        updates.push({ path, content: edit.content });
+        return;
+      }
+
+      const parentPath = getParentPath(path);
+      const fileName = getFileName(path);
+      const parent = useWorkspace.getState().getNodeByPath(parentPath);
+      if (!fileName || parent?.type !== "directory") return;
+
+      const created = addFileWithContent(parentPath, fileName, edit.content, false);
+      if (created) {
+        createdPaths.push(created.path);
+      }
+    });
+
+    if (updates.length > 0) {
+      updateFileContents(updates);
+    }
+
+    const appliedPaths = [...updates.map((update) => update.path), ...createdPaths];
+    if (appliedPaths.length === 0) return [];
+
+    if (!activeTab || !appliedPaths.includes(activeTab.id)) {
+      const firstPath = appliedPaths[0];
+      window.setTimeout(() => {
+        const node = useWorkspace.getState().getNodeByPath(firstPath);
+        if (node?.type === "file") {
+          useWorkspace.getState().openFileTab(node);
+        }
+      }, 0);
+    }
+
+    showToast(
+      `AI updated ${appliedPaths.length} file${appliedPaths.length > 1 ? "s" : ""}`,
+    );
+    return appliedPaths;
+  }, [activeTab, addFileWithContent, updateFileContents]);
+
+  const transport = useCallback<NonNullable<React.ComponentProps<typeof Dialog>["transport"]>>((args) => {
+    const controller = new AbortController();
+    const fullResponse: string[] = [];
+    const filter = createHiddenEditBlockFilter(args.onDelta);
+    const workspaceContext = buildWorkspaceFileContext(fileTree, activeTab ?? null);
+    const fileContext = [workspaceContext, args.fileContext]
+      .filter(Boolean)
+      .join("\n\nAttached file context:\n");
+    const stream = chatStream({
+      messages: appendCodeEditInstruction(args.messages, activeTab ?? null),
+      file_context: fileContext || undefined,
+      mode: args.mode,
+      model: args.model,
+      api_key: args.apiKey,
+      base_url: args.baseUrl,
+      temperature: args.temperature,
+      max_tokens: args.maxTokens,
+      onDelta: (delta) => {
+        fullResponse.push(delta);
+        filter.push(delta);
+      },
+      onDone: () => {
+        filter.flush();
+        const edits = parseCodeEdits(fullResponse.join(""));
+        const appliedPaths = applyCodeEdits(edits);
+        if (appliedPaths.length > 0) {
+          args.onDelta(formatAppliedEditSummary(appliedPaths));
+        }
+        args.onDone();
+      },
+      onError: (err) => {
+        filter.flush();
+        args.onError(err);
+      },
+    });
+
+    controller.signal.addEventListener("abort", () => stream.abort(), { once: true });
+    return controller;
+  }, [activeTab, applyCodeEdits, fileTree]);
 
   if (collapsed) {
     return (
@@ -67,6 +199,7 @@ const AssistantPanel: React.FC = () => {
           botName="Code Tutor AI"
           initMessage={initMsg}
           suggestedFiles={suggestedFiles}
+          transport={transport}
         />
       </div>
     </div>
