@@ -24,6 +24,20 @@ export default function EyeTooltip({ on, onToggle, ariaLabel, children }: EyeToo
           background: rgba(255, 255, 255, 0.92);
           border-color: rgba(17, 24, 39, 0.14);
         }
+        .auth-eye-trigger {
+          background: rgba(255, 255, 255, 0.92) !important;
+          border: 1px solid rgba(17, 24, 39, 0.14) !important;
+          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.78) !important;
+          color: var(--brand-blue) !important;
+          -webkit-backdrop-filter: blur(16px) saturate(150%);
+          backdrop-filter: blur(16px) saturate(150%);
+        }
+        .auth-eye-trigger:hover,
+        .auth-eye-trigger:focus-visible {
+          border-color: rgba(26, 158, 26, 0.52) !important;
+          color: var(--brand-purple) !important;
+          outline: none !important;
+        }
         [data-theme="dark"] .auth-eye-tooltip {
           background: rgba(10, 10, 10, 0.92) !important;
           border-color: rgba(31, 196, 31, 0.34) !important;
@@ -40,11 +54,31 @@ export default function EyeTooltip({ on, onToggle, ariaLabel, children }: EyeToo
           background: rgba(10, 10, 10, 0.92) !important;
           border-color: rgba(31, 196, 31, 0.34) !important;
         }
+        [data-theme="dark"] .auth-eye-trigger {
+          background: rgba(255, 255, 255, 0.16) !important;
+          border-color: rgba(31, 196, 31, 0.28) !important;
+          box-shadow:
+            0 18px 44px rgba(0, 0, 0, 0.60),
+            inset 0 1px 0 rgba(255, 255, 255, 0.18),
+            inset 0 -1px 0 rgba(255, 255, 255, 0.10) !important;
+          color: var(--brand-text) !important;
+        }
+        [data-theme="dark"] .auth-eye-trigger:hover,
+        [data-theme="dark"] .auth-eye-trigger:focus-visible {
+          background: rgba(255, 255, 255, 0.16) !important;
+          border-color: #1fc41f !important;
+          color: #1fc41f !important;
+          box-shadow:
+            0 0 0 1px rgba(31, 196, 31, 0.18),
+            0 18px 44px rgba(0, 0, 0, 0.60),
+            inset 0 1px 0 rgba(255, 255, 255, 0.18),
+            inset 0 -1px 0 rgba(255, 255, 255, 0.10) !important;
+        }
       `}</style>
       <div className="auth-eye-tooltip-root group/auth-eye-tooltip relative inline-flex h-full w-full items-center justify-center">
         <Button
           type="button"
-          className={`border-0 bg-transparent ${on ? "text-[var(--brand-purple)]" : "text-[var(--brand-blue)]"} hover:text-[var(--brand-purple)] group-hover:text-[var(--brand-purple)] cursor-pointer w-[56px] h-[56px] p-0 inline-flex items-center justify-center box-border outline-none`}
+          className={`auth-eye-trigger ${on ? "text-[var(--brand-purple)]" : "text-[var(--brand-blue)]"} hover:text-[var(--brand-purple)] group-hover:text-[var(--brand-purple)] cursor-pointer w-[46px] h-[46px] p-0 inline-flex items-center justify-center box-border outline-none rounded-2xl`}
           onClick={onToggle}
           aria-label={ariaLabel}
         >
