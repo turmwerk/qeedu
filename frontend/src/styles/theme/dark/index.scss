@@ -35,6 +35,11 @@
   --glass-btn-hover-bg: rgba(31, 196, 31, 0.10);
   --glass-btn-hover-border: rgba(31, 196, 31, 0.46);
   --glass-btn-hover-shadow: 0 14px 40px rgba(0, 0, 0, 0.52), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  --dark-card-bg: rgba(31, 196, 31, 0.10);
+  --dark-card-bg-strong: rgba(31, 196, 31, 0.12);
+  --dark-card-border: rgba(31, 196, 31, 0.36);
+  --dark-card-hover-border: rgba(31, 196, 31, 0.72);
+  --dark-card-hover-ring: rgba(31, 196, 31, 0.16);
   /* App root gradient */
   --app-root-bg:
     #000000;
@@ -418,17 +423,17 @@ html.theme-switching *::after {
 [data-theme="dark"] .workbench-panel-shell,
 [data-theme="dark"] .workbench-surface,
 [data-theme="dark"] .assignment-review-list-page {
-  background-color: rgba(0, 0, 0, 0.90) !important;
+  background-color: var(--dark-card-bg) !important;
   background-image: none !important;
-  border-color: rgba(31, 196, 31, 0.20) !important;
+  border-color: var(--dark-card-border) !important;
   box-shadow: none !important;
   color: var(--brand-text) !important;
 }
 
 [data-theme="dark"] .workbench-surface-muted {
-  background-color: rgba(0, 0, 0, 0.90) !important;
+  background-color: var(--dark-card-bg) !important;
   background-image: none !important;
-  border-color: rgba(31, 196, 31, 0.20) !important;
+  border-color: var(--dark-card-border) !important;
   color: var(--brand-text) !important;
 }
 
@@ -453,32 +458,70 @@ html.theme-switching *::after {
 [data-theme="dark"] .assignment-review-list-page [class~="dark:bg-white/[0.12]"],
 [data-theme="dark"] .assignment-review-list-page [class~="dark:bg-slate-900/40"],
 [data-theme="dark"] .assignment-review-list-page [class~="dark:bg-slate-900/50"] {
-  background-color: rgba(0, 0, 0, 0.90) !important;
+  background-color: var(--dark-card-bg) !important;
   background-image: none !important;
-  border-color: rgba(31, 196, 31, 0.20) !important;
+  border-color: var(--dark-card-border) !important;
   color: var(--brand-text) !important;
 }
 
 [data-theme="dark"] .workbench-surface-accent {
   background:
-    radial-gradient(circle at 18% 18%, rgba(31, 196, 31, 0.10), transparent 28%),
-    radial-gradient(circle at 82% 10%, rgba(31, 196, 31, 0.08), transparent 24%),
+    radial-gradient(circle at 18% 18%, rgba(31, 196, 31, 0.16), transparent 28%),
+    radial-gradient(circle at 82% 10%, rgba(31, 196, 31, 0.12), transparent 24%),
     #000000 !important;
-  border-color: rgba(31, 196, 31, 0.22) !important;
+  border-color: var(--dark-card-border) !important;
   box-shadow: none !important;
   color: var(--brand-text) !important;
 }
 
 [data-theme="dark"] .ui-list-item {
-  background-color: rgba(0, 0, 0, 0.90) !important;
-  border-color: rgba(31, 196, 31, 0.20) !important;
+  background-color: var(--dark-card-bg-strong) !important;
+  border-color: var(--dark-card-border) !important;
   color: var(--brand-text) !important;
 }
 
+[data-theme="dark"] :where(
+  .workbench-surface,
+  .workbench-surface-muted,
+  .workbench-surface-accent,
+  .ui-list-item,
+  .search-modal-result,
+  .account-section,
+  .account-status-card,
+  .account-field,
+  .account-list__item,
+  .account-switch-row,
+  .ant-card,
+  .ant-list-item
+) {
+  background-color: var(--dark-card-bg) !important;
+  border-color: var(--dark-card-border) !important;
+}
+
 [data-theme="dark"] .ui-list-item:hover {
-  background-color: rgba(31, 196, 31, 0.12) !important;
-  border-color: rgba(31, 196, 31, 0.42) !important;
-  box-shadow: none !important;
+  background-color: var(--dark-card-bg-strong) !important;
+  border-color: var(--dark-card-hover-border) !important;
+  box-shadow: 0 0 0 1px var(--dark-card-hover-ring) !important;
+  color: var(--brand-text) !important;
+}
+
+[data-theme="dark"] :where(
+  .workbench-surface,
+  .workbench-surface-muted,
+  .workbench-surface-accent,
+  .ui-list-item,
+  .search-modal-result,
+  .account-section,
+  .account-status-card,
+  .account-field,
+  .account-list__item,
+  .account-switch-row,
+  .ant-card,
+  .ant-list-item
+):hover {
+  background-color: var(--dark-card-bg-strong) !important;
+  border-color: var(--dark-card-hover-border) !important;
+  box-shadow: 0 0 0 1px var(--dark-card-hover-ring) !important;
   color: var(--brand-text) !important;
 }
 
