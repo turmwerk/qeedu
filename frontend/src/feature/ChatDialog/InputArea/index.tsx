@@ -14,6 +14,7 @@ interface InputAreaProps {
   placeholder?: string;
   files: File[];
   onFilesChange: (files: File[]) => void;
+  suggestedFiles?: File[];
   models: ModelInfo[];
   selectedModel: string;
   onSelectModel: (id: string) => void;
@@ -30,6 +31,7 @@ const InputArea: React.FC<InputAreaProps> = ({
   placeholder = "输入消息，回车发送",
   files,
   onFilesChange,
+  suggestedFiles,
   models,
   selectedModel,
   onSelectModel,
@@ -99,7 +101,7 @@ const InputArea: React.FC<InputAreaProps> = ({
           max-height: 200px;
         }
       `}</style>
-      <FileRow files={files} onFilesChange={onFilesChange} />
+      <FileRow files={files} onFilesChange={onFilesChange} suggestedFiles={suggestedFiles} />
       <TextRow
         value={input}
         onChange={onInputChange}

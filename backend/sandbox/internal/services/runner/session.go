@@ -53,10 +53,83 @@ func buildRunFiles(relativeRoot string, cfg LangConfig, code string) map[string]
 	return files
 }
 
+func sanitizeRunFilePath(name string) string {
+	cleaned := path.Clean("/" + strings.TrimSpace(name))
+	cleaned = strings.TrimPrefix(cleaned, "/")
+	if cleaned == "." || cleaned == "" || strings.HasPrefix(cleaned, "../") {
+		return ""
+	}
+	return cleaned
+}
+
+func buildRequestRunFiles(relativeRoot string, cfg LangConfig, req RunRequest) map[string][]byte {
+	files := buildRunFiles(relativeRoot, cfg, req.Code)
+	for name, content := range req.Files {
+		cleaned := sanitizeRunFilePath(name)
+		if cleaned == "" {
+			continue
+		}
+		files[path.Join(relativeRoot, cleaned)] = []byte(content)
+	}
+	return files
+}
+
+func hasRunFile(req RunRequest, filename string) bool {
+	for name := range req.Files {
+		if sanitizeRunFilePath(name) == filename {
+			return true
+		}
+	}
+	return false
+}
+
+func hasRunFilePrefix(req RunRequest, prefix string) bool {
+	for name := range req.Files {
+		if strings.HasPrefix(sanitizeRunFilePath(name), prefix) {
+			return true
+		}
+	}
+	return false
+}
+
+func buildRunCommands(cfg LangConfig, req RunRequest) ([]string, []string) {
+	switch cfg.Language {
+	case "go":
+		if hasRunFile(req, "go.mod") {
+			return nil, []string{"go", "run", "."}
+		}
+	case "rust":
+		if hasRunFile(req, "Cargo.toml") {
+			return nil, []string{"cargo", "run", "--quiet"}
+		}
+	case "java":
+		if hasRunFilePrefix(req, "src/") {
+			return []string{"sh", "-lc", "mkdir -p out && javac src/*.java -d out"}, []string{"java", "-cp", "out", "Main"}
+		}
+	}
+	return cfg.CompileCmd, cfg.RunCmd
+}
+
 func buildExecCommand(cfg LangConfig, runDir string) []string {
 	runCmd := shellJoin(cfg.RunCmd)
 	if len(cfg.CompileCmd) > 0 {
 		runCmd = shellJoin(cfg.CompileCmd) + " && " + runCmd
+	}
+
+	script := fmt.Sprintf(
+		"trap 'rm -rf %s' EXIT; cd %s && %s",
+		shellQuote(runDir),
+		shellQuote(runDir),
+		runCmd,
+	)
+	return []string{"sh", "-lc", script}
+}
+
+func buildRequestExecCommand(cfg LangConfig, req RunRequest, runDir string) []string {
+	compileCmd, runCmdParts := buildRunCommands(cfg, req)
+	runCmd := shellJoin(runCmdParts)
+	if len(compileCmd) > 0 {
+		runCmd = shellJoin(compileCmd) + " && " + runCmd
 	}
 
 	script := fmt.Sprintf(

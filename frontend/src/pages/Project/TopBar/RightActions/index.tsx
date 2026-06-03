@@ -1,5 +1,6 @@
 import React from "react";
 import { QuestionCircleOutlined, SettingOutlined } from "@ant-design/icons";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 interface RightActionsProps {
   onHelp: () => void;
@@ -9,6 +10,7 @@ interface RightActionsProps {
 const RightActions: React.FC<RightActionsProps> = ({ onHelp, onSettings }) => {
   return (
     <div className="ml-auto flex items-center gap-1">
+      <LanguageSwitcher className="project-language-switcher" />
       {[
         { icon: <QuestionCircleOutlined />, title: "帮助", onClick: onHelp },
         { icon: <SettingOutlined />, title: "设置", onClick: onSettings },

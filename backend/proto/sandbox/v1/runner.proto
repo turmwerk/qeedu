@@ -11,6 +11,12 @@ message RunCodeRequest {
   string code            = 2;
   string stdin           = 3;
   int32  timeout_seconds = 4;
+  repeated RunFile files = 5;
+}
+
+message RunFile {
+  string path    = 1;
+  string content = 2;
 }
 
 message RunCodeResponse {

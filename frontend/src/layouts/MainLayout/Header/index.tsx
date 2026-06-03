@@ -15,6 +15,7 @@ import {
 import SearchModal from "@/layouts/MainLayout/SearchModal";
 import { useAuth } from "@/hooks/useAuth";
 import { getStoredTheme, toggleTheme } from "@/utils/theme/controller";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { internationalModuleCatalog } from "@/pages/International/moduleCatalog";
 import { managementModuleCatalog, managementIcon } from "@/pages/Management/moduleCatalog";
 import { researchModuleCatalog } from "@/pages/Research/moduleCatalog";
@@ -303,6 +304,7 @@ const MainHeader: React.FC = () => {
       </div>
 
       <div className="flex items-center gap-1 sm:gap-1.5" data-oid="lg2sztd">
+        <LanguageSwitcher />
         <Button
           className={`${menuButtonBase} ${menuButtonUnderline} ${menuButtonIdle}`}
           onClick={() => {}}

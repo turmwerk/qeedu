@@ -15,6 +15,7 @@ interface DialogProps {
   botName?: string;
   initMessage?: string;
   seedMessages?: DialogMessage[];
+  suggestedFiles?: File[];
   transport?: (args: {
     messages: ChatMessage[];
     input: string;
@@ -43,6 +44,7 @@ const Dialog: React.FC<DialogProps> & {
   botName = "对话助手",
   initMessage = "欢迎使用对话助手，你可以开始提问。",
   seedMessages,
+  suggestedFiles,
   transport,
 }) => {
   const storageKey = useMemo(() => getStorageKey(dialogId), [dialogId]);
@@ -521,6 +523,7 @@ const Dialog: React.FC<DialogProps> & {
           pending={pending}
           files={files}
           onFilesChange={setFiles}
+          suggestedFiles={suggestedFiles}
           models={allModels}
           selectedModel={selectedModel}
           onSelectModel={handleSelectModel}

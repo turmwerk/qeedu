@@ -11,7 +11,33 @@ import { getFileIcon } from "../../utils/filePresentation";
 import { useWorkspace } from "../../context";
 import { isRunnableLanguage } from "../../data/languageSupport";
 import { useTerminalPanelViewStore } from "../../TerminalPanel/viewStore";
-import { type TabItem } from "../types";
+import { type FileTreeNode, type TabItem } from "../types";
+
+const collectFiles = (node: FileTreeNode, basePath = node.path) => {
+  const files: { path: string; content: string; language?: string }[] = [];
+
+  const walk = (current: FileTreeNode) => {
+    if (current.type === "file") {
+      files.push({
+        path: current.path.slice(basePath.length).replace(/^\//, "") || current.name,
+        content: current.content ?? "",
+        language: current.language,
+      });
+      return;
+    }
+    current.children?.forEach(walk);
+  };
+
+  walk(node);
+  return files;
+};
+
+const resolveRunRootPath = (filePath: string, language?: string | null): string | null => {
+  if (language === "go" && filePath.startsWith("/test/go-hello/")) return "/test/go-hello";
+  if (language === "rust" && filePath.startsWith("/test/rust-hello/")) return "/test/rust-hello";
+  if (language === "java" && filePath.startsWith("/test/java-hello/")) return "/test/java-hello";
+  return null;
+};
 
 const FileTabBar: React.FC = () => {
   const {
@@ -25,6 +51,7 @@ const FileTabBar: React.FC = () => {
     closeAllTabs,
     setActiveTabId,
     setRunOutput,
+    getNodeByPath,
   } = useWorkspace();
   const { openAtEvent } = useContextMenu();
   const [running, setRunning] = useState(false);
@@ -97,6 +124,17 @@ const FileTabBar: React.FC = () => {
         code: activeTab.content,
         timeout_seconds: 15,
         workspace_key: workspaceKey,
+        files: (() => {
+          const runRootPath = resolveRunRootPath(activeTab.id, activeTab.language);
+          if (!runRootPath) return undefined;
+          const runRoot = getNodeByPath(runRootPath);
+          if (!runRoot) return undefined;
+          return collectFiles(runRoot).map((file) =>
+            file.path === activeTab.id.slice(runRootPath.length).replace(/^\//, "")
+              ? { ...file, content: activeTab.content ?? "" }
+              : file,
+          );
+        })(),
       });
       setRunOutput({
         stdout: resp.stdout,
@@ -127,7 +165,7 @@ const FileTabBar: React.FC = () => {
     } finally {
       setRunning(false);
     }
-  }, [activeTab, isRunnable, running, setRunOutput, workspaceKey]);
+  }, [activeTab, getNodeByPath, isRunnable, running, setRunOutput, workspaceKey]);
 
   const tabBarProps: TabBarProps = {
     tabs: tabs.map((t: TabItem) => ({

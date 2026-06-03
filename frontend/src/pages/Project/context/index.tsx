@@ -92,6 +92,7 @@ interface WorkspaceState {
   refreshFileTree: () => void;
   loadFileTree: (nextTree: FileTreeNode) => void;
   updateFileContents: (updates: { path: string; content: string }[]) => void;
+  getNodeByPath: (path: string) => FileTreeNode | null;
 }
 
 const getParentPath = (path: string): string => {
@@ -511,6 +512,7 @@ export const useWorkspace = create<WorkspaceState>((set, get) => ({
       }),
     }));
   },
+  getNodeByPath: (path) => findNodeByPath(get().fileTree, path),
 }));
 
 export const WorkspaceProvider: React.FC<{

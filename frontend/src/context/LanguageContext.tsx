@@ -1,0 +1,102 @@
+import { Component, createContext, useContext, useEffect, useState } from "react";
+import type { ErrorInfo, ReactNode } from "react";
+
+export const SUPPORTED_LANGUAGES = ["zh-CN", "zh-TW", "en"] as const;
+
+export type Language = (typeof SUPPORTED_LANGUAGES)[number];
+
+interface LanguageContextType {
+  language: Language;
+  setLanguage: (lang: Language) => void;
+}
+
+const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+const STORAGE_KEY = "story-language";
+
+class LanguageErrorBoundary extends Component<
+  { children: ReactNode; fallback?: ReactNode },
+  { hasError: boolean }
+> {
+  constructor(props: { children: ReactNode; fallback?: ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(): { hasError: boolean } {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error("LanguageProvider error:", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback || <div>Language loading...</div>;
+    }
+
+    return this.props.children;
+  }
+}
+
+const resolveInitialLanguage = (): Language => {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved && SUPPORTED_LANGUAGES.includes(saved as Language)) {
+      return saved as Language;
+    }
+  } catch (error) {
+    console.warn("Failed to load language from localStorage:", error);
+  }
+  return "zh-CN";
+};
+
+export function LanguageProvider({ children }: { children: ReactNode }) {
+  const [language, setLanguageState] = useState<Language>(resolveInitialLanguage);
+
+  const setLanguage = (lang: Language) => {
+    try {
+      setLanguageState(lang);
+      localStorage.setItem(STORAGE_KEY, lang);
+      document.documentElement.lang = lang;
+    } catch (error) {
+      console.warn("Failed to save language:", error);
+      setLanguageState(lang);
+    }
+  };
+
+  useEffect(() => {
+    try {
+      document.documentElement.lang = language;
+    } catch (error) {
+      console.warn("Failed to set document language:", error);
+    }
+  }, [language]);
+
+  return (
+    <LanguageErrorBoundary>
+      <LanguageContext.Provider value={{ language, setLanguage }}>
+        {children}
+      </LanguageContext.Provider>
+    </LanguageErrorBoundary>
+  );
+}
+
+export function useLanguage(): LanguageContextType {
+  const context = useContext(LanguageContext);
+
+  if (!context) {
+    console.error("useLanguage must be used within LanguageProvider");
+    if (import.meta.env.PROD) {
+      return {
+        language: "zh-CN",
+        setLanguage: () => console.warn("LanguageProvider not available"),
+      };
+    }
+    throw new Error("useLanguage must be used within LanguageProvider");
+  }
+
+  return context;
+}
+
+export const getLanguageStorageKey = () => STORAGE_KEY;

@@ -6,6 +6,7 @@ export interface RunCodeRequest {
   stdin?: string;
   timeout_seconds?: number;
   workspace_key?: string;
+  files?: WorkspaceFilePayload[];
 }
 
 export interface RunCodeResponse {

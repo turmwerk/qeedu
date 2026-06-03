@@ -1,15 +1,26 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { RobotOutlined, CloseOutlined, DoubleRightOutlined } from "@ant-design/icons";
 import Dialog from "@/feature/ChatDialog";
 import { buildAssistantDialogId, buildAssistantIntro } from "../data/assistant";
 import { useWorkspace } from "../context";
 
 const AssistantPanel: React.FC = () => {
-  const { projectName, activeTabId } = useWorkspace();
+  const { projectName, activeTabId, tabs } = useWorkspace();
   const [collapsed, setCollapsed] = useState(false);
 
   const dialogId = buildAssistantDialogId(projectName);
   const initMsg = buildAssistantIntro(projectName);
+  const activeTab = tabs.find((tab) => tab.id === activeTabId);
+  const suggestedFiles = useMemo(() => {
+    if (!activeTab || activeTab.content === undefined) return [];
+    const blob = new Blob([activeTab.content], { type: "text/plain;charset=utf-8" });
+    return [
+      new File([blob], activeTab.title, {
+        type: "text/plain",
+        lastModified: Date.now(),
+      }),
+    ];
+  }, [activeTab?.content, activeTab?.title]);
 
   if (collapsed) {
     return (
@@ -55,6 +66,7 @@ const AssistantPanel: React.FC = () => {
           dialogId={dialogId}
           botName="Code Tutor AI"
           initMessage={initMsg}
+          suggestedFiles={suggestedFiles}
         />
       </div>
     </div>

@@ -1,14 +1,25 @@
 import React from "react";
 import { RouterProvider } from "react-router-dom";
 import { ConfigProvider } from "antd";
-import zhCN from "antd/locale/zh_CN";
+import antdEnUS from "antd/locale/en_US";
+import antdZhCN from "antd/locale/zh_CN";
+import antdZhTW from "antd/locale/zh_TW";
 import router from "./router";
 import ToastContainer from "@/ui/Toast";
+import { LanguageProvider, useLanguage, type Language } from "@/context/LanguageContext";
 
-const App: React.FC = () => {
+const ANT_LOCALE_MAP: Record<Language, typeof antdZhCN> = {
+  "zh-CN": antdZhCN,
+  "zh-TW": antdZhTW,
+  en: antdEnUS,
+};
+
+const AppContent: React.FC = () => {
+  const { language } = useLanguage();
+
   return (
     <ConfigProvider
-      locale={zhCN}
+      locale={ANT_LOCALE_MAP[language]}
       theme={{
         token: {
           colorPrimary: "#1A9E1A",
@@ -65,5 +76,11 @@ const App: React.FC = () => {
     </ConfigProvider>
   );
 };
+
+const App: React.FC = () => (
+  <LanguageProvider>
+    <AppContent />
+  </LanguageProvider>
+);
 
 export default App;

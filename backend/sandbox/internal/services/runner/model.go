@@ -21,6 +21,7 @@ type RunRequest struct {
 	Language     string
 	Code         string
 	Stdin        string
+	Files        map[string]string
 	Timeout      time.Duration // 0 means use LangConfig default
 }
 

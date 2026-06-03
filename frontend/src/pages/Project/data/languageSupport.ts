@@ -34,6 +34,7 @@ const LANGUAGE_BY_EXTENSION: Record<string, string> = {
   md: "markdown",
   markdown: "markdown",
   json: "json",
+  toml: "toml",
   yml: "yaml",
   yaml: "yaml",
   html: "html",
@@ -54,6 +55,15 @@ interface SandboxSampleFile {
   language: string;
   content: string;
 }
+
+const buildFileNode = (parentPath: string, file: SandboxSampleFile): FileTreeNode => ({
+  id: `${parentPath}/${file.name}`,
+  name: file.name,
+  path: `${parentPath}/${file.name}`,
+  type: "file",
+  language: file.language,
+  content: file.content,
+});
 
 export const SANDBOX_TEST_FILES: SandboxSampleFile[] = [
   {
@@ -112,12 +122,112 @@ export const buildSandboxTestFolder = (): FileTreeNode => ({
   name: "test",
   path: "/test",
   type: "directory",
-  children: SANDBOX_TEST_FILES.map((file) => ({
-    id: `/test/${file.name}`,
-    name: file.name,
-    path: `/test/${file.name}`,
-    type: "file",
-    language: file.language,
-    content: file.content,
-  })),
+  children: [
+    ...SANDBOX_TEST_FILES
+      .filter((file) => !["main.go", "Main.java", "main.rs"].includes(file.name))
+      .map((file) => buildFileNode("/test", file)),
+    {
+      id: "/test/go-hello",
+      name: "go-hello",
+      path: "/test/go-hello",
+      type: "directory",
+      children: [
+        buildFileNode("/test/go-hello", {
+          name: "go.mod",
+          language: "plaintext",
+          content: "module qe-edu-go-hello\n\ngo 1.22\n",
+        }),
+        buildFileNode("/test/go-hello", {
+          name: "main.go",
+          language: "go",
+          content:
+            'package main\n\nimport "fmt"\n\nfunc main() {\n\tfmt.Println(message())\n}\n',
+        }),
+        buildFileNode("/test/go-hello", {
+          name: "message.go",
+          language: "go",
+          content:
+            'package main\n\nfunc message() string {\n\treturn "Hello from Go module sandbox"\n}\n',
+        }),
+        buildFileNode("/test/go-hello", {
+          name: "README.md",
+          language: "markdown",
+          content: "# Go 示例\n\n在终端中进入本目录后运行：\n\n```bash\ngo run .\n```\n",
+        }),
+      ],
+    },
+    {
+      id: "/test/java-hello",
+      name: "java-hello",
+      path: "/test/java-hello",
+      type: "directory",
+      children: [
+        {
+          id: "/test/java-hello/src",
+          name: "src",
+          path: "/test/java-hello/src",
+          type: "directory",
+          children: [
+            buildFileNode("/test/java-hello/src", {
+              name: "Main.java",
+              language: "java",
+              content:
+                'public class Main {\n    public static void main(String[] args) {\n        System.out.println(Message.text());\n    }\n}\n',
+            }),
+            buildFileNode("/test/java-hello/src", {
+              name: "Message.java",
+              language: "java",
+              content:
+                'public class Message {\n    public static String text() {\n        return "Hello from Java sandbox project";\n    }\n}\n',
+            }),
+          ],
+        },
+        buildFileNode("/test/java-hello", {
+          name: "README.md",
+          language: "markdown",
+          content:
+            "# Java 示例\n\n在终端中进入本目录后运行：\n\n```bash\njavac src/*.java -d out && java -cp out Main\n```\n",
+        }),
+      ],
+    },
+    {
+      id: "/test/rust-hello",
+      name: "rust-hello",
+      path: "/test/rust-hello",
+      type: "directory",
+      children: [
+        buildFileNode("/test/rust-hello", {
+          name: "Cargo.toml",
+          language: "toml",
+          content:
+            '[package]\nname = "qe_edu_rust_hello"\nversion = "0.1.0"\nedition = "2021"\n\n[dependencies]\n',
+        }),
+        {
+          id: "/test/rust-hello/src",
+          name: "src",
+          path: "/test/rust-hello/src",
+          type: "directory",
+          children: [
+            buildFileNode("/test/rust-hello/src", {
+              name: "main.rs",
+              language: "rust",
+              content:
+                'mod message;\n\nfn main() {\n    println!("{}", message::text());\n}\n',
+            }),
+            buildFileNode("/test/rust-hello/src", {
+              name: "message.rs",
+              language: "rust",
+              content:
+                "pub fn text() -> &'static str {\n    \"Hello from Rust Cargo sandbox\"\n}\n",
+            }),
+          ],
+        },
+        buildFileNode("/test/rust-hello", {
+          name: "README.md",
+          language: "markdown",
+          content: "# Rust 示例\n\n在终端中进入本目录后运行：\n\n```bash\ncargo run\n```\n",
+        }),
+      ],
+    },
+  ],
 });

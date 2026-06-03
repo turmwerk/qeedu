@@ -27,6 +27,7 @@ type RunCodeRequest struct {
 	Code           string                 `protobuf:"bytes,2,opt,name=code,proto3" json:"code,omitempty"`
 	Stdin          string                 `protobuf:"bytes,3,opt,name=stdin,proto3" json:"stdin,omitempty"`
 	TimeoutSeconds int32                  `protobuf:"varint,4,opt,name=timeout_seconds,json=timeoutSeconds,proto3" json:"timeout_seconds,omitempty"`
+	Files          []*RunFile             `protobuf:"bytes,5,rep,name=files,proto3" json:"files,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -89,6 +90,65 @@ func (x *RunCodeRequest) GetTimeoutSeconds() int32 {
 	return 0
 }
 
+func (x *RunCodeRequest) GetFiles() []*RunFile {
+	if x != nil {
+		return x.Files
+	}
+	return nil
+}
+
+type RunFile struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Path          string                 `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
+	Content       string                 `protobuf:"bytes,2,opt,name=content,proto3" json:"content,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RunFile) Reset() {
+	*x = RunFile{}
+	mi := &file_sandbox_v1_runner_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RunFile) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RunFile) ProtoMessage() {}
+
+func (x *RunFile) ProtoReflect() protoreflect.Message {
+	mi := &file_sandbox_v1_runner_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RunFile.ProtoReflect.Descriptor instead.
+func (*RunFile) Descriptor() ([]byte, []int) {
+	return file_sandbox_v1_runner_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *RunFile) GetPath() string {
+	if x != nil {
+		return x.Path
+	}
+	return ""
+}
+
+func (x *RunFile) GetContent() string {
+	if x != nil {
+		return x.Content
+	}
+	return ""
+}
+
 type RunCodeResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Stdout        string                 `protobuf:"bytes,1,opt,name=stdout,proto3" json:"stdout,omitempty"`
@@ -102,7 +162,7 @@ type RunCodeResponse struct {
 
 func (x *RunCodeResponse) Reset() {
 	*x = RunCodeResponse{}
-	mi := &file_sandbox_v1_runner_proto_msgTypes[1]
+	mi := &file_sandbox_v1_runner_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -114,7 +174,7 @@ func (x *RunCodeResponse) String() string {
 func (*RunCodeResponse) ProtoMessage() {}
 
 func (x *RunCodeResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_sandbox_v1_runner_proto_msgTypes[1]
+	mi := &file_sandbox_v1_runner_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -127,7 +187,7 @@ func (x *RunCodeResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RunCodeResponse.ProtoReflect.Descriptor instead.
 func (*RunCodeResponse) Descriptor() ([]byte, []int) {
-	return file_sandbox_v1_runner_proto_rawDescGZIP(), []int{1}
+	return file_sandbox_v1_runner_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *RunCodeResponse) GetStdout() string {
@@ -170,12 +230,16 @@ var File_sandbox_v1_runner_proto protoreflect.FileDescriptor
 const file_sandbox_v1_runner_proto_rawDesc = "" +
 	"\n" +
 	"\x17sandbox/v1/runner.proto\x12\n" +
-	"sandbox.v1\"\x7f\n" +
+	"sandbox.v1\"\xaa\x01\n" +
 	"\x0eRunCodeRequest\x12\x1a\n" +
 	"\blanguage\x18\x01 \x01(\tR\blanguage\x12\x12\n" +
 	"\x04code\x18\x02 \x01(\tR\x04code\x12\x14\n" +
 	"\x05stdin\x18\x03 \x01(\tR\x05stdin\x12'\n" +
-	"\x0ftimeout_seconds\x18\x04 \x01(\x05R\x0etimeoutSeconds\"\x97\x01\n" +
+	"\x0ftimeout_seconds\x18\x04 \x01(\x05R\x0etimeoutSeconds\x12)\n" +
+	"\x05files\x18\x05 \x03(\v2\x13.sandbox.v1.RunFileR\x05files\"7\n" +
+	"\aRunFile\x12\x12\n" +
+	"\x04path\x18\x01 \x01(\tR\x04path\x12\x18\n" +
+	"\acontent\x18\x02 \x01(\tR\acontent\"\x97\x01\n" +
 	"\x0fRunCodeResponse\x12\x16\n" +
 	"\x06stdout\x18\x01 \x01(\tR\x06stdout\x12\x16\n" +
 	"\x06stderr\x18\x02 \x01(\tR\x06stderr\x12\x1b\n" +
@@ -197,19 +261,21 @@ func file_sandbox_v1_runner_proto_rawDescGZIP() []byte {
 	return file_sandbox_v1_runner_proto_rawDescData
 }
 
-var file_sandbox_v1_runner_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_sandbox_v1_runner_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_sandbox_v1_runner_proto_goTypes = []any{
 	(*RunCodeRequest)(nil),  // 0: sandbox.v1.RunCodeRequest
-	(*RunCodeResponse)(nil), // 1: sandbox.v1.RunCodeResponse
+	(*RunFile)(nil),         // 1: sandbox.v1.RunFile
+	(*RunCodeResponse)(nil), // 2: sandbox.v1.RunCodeResponse
 }
 var file_sandbox_v1_runner_proto_depIdxs = []int32{
-	0, // 0: sandbox.v1.RunnerService.RunCode:input_type -> sandbox.v1.RunCodeRequest
-	1, // 1: sandbox.v1.RunnerService.RunCode:output_type -> sandbox.v1.RunCodeResponse
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	1, // 0: sandbox.v1.RunCodeRequest.files:type_name -> sandbox.v1.RunFile
+	0, // 1: sandbox.v1.RunnerService.RunCode:input_type -> sandbox.v1.RunCodeRequest
+	2, // 2: sandbox.v1.RunnerService.RunCode:output_type -> sandbox.v1.RunCodeResponse
+	2, // [2:3] is the sub-list for method output_type
+	1, // [1:2] is the sub-list for method input_type
+	1, // [1:1] is the sub-list for extension type_name
+	1, // [1:1] is the sub-list for extension extendee
+	0, // [0:1] is the sub-list for field type_name
 }
 
 func init() { file_sandbox_v1_runner_proto_init() }
@@ -223,7 +289,7 @@ func file_sandbox_v1_runner_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_sandbox_v1_runner_proto_rawDesc), len(file_sandbox_v1_runner_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

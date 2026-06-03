@@ -42,6 +42,10 @@ func (h *RunnerHandler) RunCode(ctx context.Context, req *sandboxv1.RunCodeReque
 	}
 
 	ownerID, workspaceKey := runnerScopeFromContext(ctx)
+	files := make(map[string]string, len(req.Files))
+	for _, file := range req.Files {
+		files[file.Path] = file.Content
+	}
 
 	result, err := h.mgr.Run(ctx, runner.RunRequest{
 		OwnerID:      ownerID,
@@ -49,6 +53,7 @@ func (h *RunnerHandler) RunCode(ctx context.Context, req *sandboxv1.RunCodeReque
 		Language:     req.Language,
 		Code:         req.Code,
 		Stdin:        req.Stdin,
+		Files:        files,
 		Timeout:      timeout,
 	})
 	if err != nil {

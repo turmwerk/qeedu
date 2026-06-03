@@ -11,10 +11,19 @@ import { previewFileInNewTab } from "@/utils/file/preview";
 interface FileRowProps {
   files: File[];
   onFilesChange: (files: File[]) => void;
+  suggestedFiles?: File[];
 }
 
-const FileRow: React.FC<FileRowProps> = ({ files, onFilesChange }) => {
+const FileRow: React.FC<FileRowProps> = ({ files, onFilesChange, suggestedFiles = [] }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const attachedNames = new Set(files.map((file) => file.name));
+  const visibleSuggestions = suggestedFiles.filter((file) => !attachedNames.has(file.name));
+
+  const getExtensionBadge = (name: string) => {
+    const parts = name.split(".");
+    const ext = parts.length > 1 ? parts.pop()?.toLowerCase() : "";
+    return (ext || "file").slice(0, 4);
+  };
 
   const handleFileClick = () => {
     fileInputRef.current?.click();
@@ -32,6 +41,10 @@ const FileRow: React.FC<FileRowProps> = ({ files, onFilesChange }) => {
 
   const handlePreviewFile = (file: File) => {
     previewFileInNewTab(file);
+  };
+
+  const addSuggestedFile = (file: File) => {
+    onFilesChange([...files, file]);
   };
 
   return (
@@ -110,6 +123,23 @@ const FileRow: React.FC<FileRowProps> = ({ files, onFilesChange }) => {
                 ×
               </Button>
             </div>
+          );
+        })}
+        {visibleSuggestions.map((file) => {
+          return (
+            <button
+              key={`suggested-${file.name}-${file.lastModified}`}
+              type="button"
+              onClick={() => addSuggestedFile(file)}
+              className="chat-file-suggestion inline-flex h-7 items-center gap-1.5 rounded-xl border border-dashed border-[var(--brand-border)] px-2 text-xs text-[var(--brand-text)] transition-[background,border-color,color,box-shadow] hover:border-[var(--brand-accent)] hover:bg-[var(--brand-accent-soft)] hover:text-[var(--brand-text)]"
+              title={`添加 ${file.name} 到上下文`}
+            >
+              <span className="text-sm leading-none">+</span>
+              <span className="inline-flex min-w-5 items-center justify-center rounded bg-[var(--brand-accent-soft)] px-1 py-0.5 text-[9px] font-semibold uppercase leading-none text-[var(--brand-accent)]">
+                {getExtensionBadge(file.name)}
+              </span>
+              <span className="max-w-[110px] truncate">{file.name}</span>
+            </button>
           );
         })}
       </div>

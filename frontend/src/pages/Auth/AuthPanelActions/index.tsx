@@ -1,12 +1,11 @@
 import React, { useState, useRef } from "react";
 import Button from "@/ui/Button";
 import HoverTooltip from "@/ui/HoverTooltip";
-import GlobeIcon from "@/ui/Icon/GlobeIcon";
 import SunIcon from "@/ui/Icon/SunIcon";
 import MoonIcon from "@/ui/Icon/MoonIcon";
 import SettingsIcon from "@/ui/Icon/SettingsIcon";
 import { getStoredTheme, toggleTheme } from "@/utils/theme/controller";
-import { showToast } from "@/ui/Toast";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 /**
  * Auth 面板右上角操作栏
@@ -122,10 +121,7 @@ const AuthPanelActions: React.FC = () => {
         }
       `}</style>
       <div className="flex items-center gap-0">
-        {/* 语言按钮 */}
-        <ActionButton label="切换语言" ariaLabel="语言" onClick={() => showToast("语言切换未实现")}>
-          <GlobeIcon />
-        </ActionButton>
+        <LanguageSwitcher />
 
         <span className="text-gray-300 text-[10px] select-none mx-0.5">|</span>
 

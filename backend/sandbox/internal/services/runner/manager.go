@@ -76,9 +76,10 @@ func (m *Manager) runFresh(ctx context.Context, req RunRequest, cfg LangConfig, 
 		stdinReader = strings.NewReader(req.Stdin)
 	}
 
-	cmd := cfg.RunCmd
-	if len(cfg.CompileCmd) > 0 {
-		cmd = []string{"sh", "-c", "cd /code && " + strings.Join(cfg.CompileCmd, " ") + " && " + strings.Join(cfg.RunCmd, " ")}
+	compileCmd, runCmd := buildRunCommands(cfg, req)
+	cmd := runCmd
+	if len(compileCmd) > 0 {
+		cmd = []string{"sh", "-c", "cd /code && " + shellJoin(compileCmd) + " && " + shellJoin(runCmd)}
 	}
 
 	return m.docker.Run(ctx, container.RunConfig{
@@ -89,7 +90,7 @@ func (m *Manager) runFresh(ctx context.Context, req RunRequest, cfg LangConfig, 
 		CPUQuota:   defaultCPUQuota,
 		Timeout:    timeout,
 		Stdin:      stdinReader,
-		Files:      buildRunFiles("", cfg, req.Code),
+		Files:      buildRequestRunFiles("", cfg, req),
 	})
 }
 
@@ -102,7 +103,7 @@ func (m *Manager) runWithSession(ctx context.Context, req RunRequest, cfg LangCo
 			return nil, err
 		}
 
-		result, err := m.executeInSession(ctx, sess, cfg, req.Code, req.Stdin, timeout)
+		result, err := m.executeInSession(ctx, sess, cfg, req, timeout)
 		if err == nil {
 			return result, nil
 		}
@@ -170,8 +171,7 @@ func (m *Manager) executeInSession(
 	ctx context.Context,
 	sess *session,
 	cfg LangConfig,
-	code string,
-	stdin string,
+	req RunRequest,
 	timeout time.Duration,
 ) (*container.RunResult, error) {
 	sess.mu.Lock()
@@ -183,18 +183,18 @@ func (m *Manager) executeInSession(
 	relativeRoot := buildRunRoot(cfg.Language, runID)
 	runDir := buildRunDir(cfg.Language, runID)
 
-	if err := m.docker.CopyFilesToContainer(ctx, sess.ContainerID, runnerBaseDir, buildRunFiles(relativeRoot, cfg, code)); err != nil {
+	if err := m.docker.CopyFilesToContainer(ctx, sess.ContainerID, runnerBaseDir, buildRequestRunFiles(relativeRoot, cfg, req)); err != nil {
 		return nil, err
 	}
 
 	var stdinReader io.Reader
-	if stdin != "" {
-		stdinReader = strings.NewReader(stdin)
+	if req.Stdin != "" {
+		stdinReader = strings.NewReader(req.Stdin)
 	}
 
 	return m.docker.Exec(ctx, container.ExecConfig{
 		ContainerID: sess.ContainerID,
-		Cmd:         buildExecCommand(cfg, runDir),
+		Cmd:         buildRequestExecCommand(cfg, req, runDir),
 		WorkingDir:  runnerBaseDir,
 		Timeout:     timeout,
 		Stdin:       stdinReader,

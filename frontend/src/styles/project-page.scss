@@ -11,3 +11,15 @@
     overflow: hidden !important;
   }
 }
+
+.project-page-root .project-language-switcher {
+  --brand-text: #cccccc;
+  --brand-purple: #6ef06e;
+  --brand-border: rgba(110, 240, 110, 0.22);
+  --surface-container: rgba(0, 0, 0, 0.94);
+}
+
+.project-page-root .project-language-switcher .language-item:hover {
+  color: #cccccc;
+  background: rgba(110, 240, 110, 0.12);
+}

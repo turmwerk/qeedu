@@ -16,14 +16,14 @@ const StarsLayer: React.FC = () => {
     const createStars = () => {
       destroyStars();
       animRef.current = createStarsAnimation({
-      count: 760,
-      maxRadius: 3.4,
-      color: "#6ef06e",
-      speed: 0.06,
-      linkDistance: 86,
-      lineOpacity: 0.16,
-      lineWidth: 0.75,
-      maxLinksPerStar: 2,
+        count: 760,
+        maxRadius: 3.4,
+        color: "#6ef06e",
+        speed: 0.06,
+        linkDistance: 96,
+        lineOpacity: 0.2,
+        lineWidth: 0.85,
+        maxLinksPerStar: 2,
       });
     };
 

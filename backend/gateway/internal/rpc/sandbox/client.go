@@ -44,6 +44,7 @@ func RunCode(
 	timeoutSeconds int32,
 	ownerID uint64,
 	workspaceKey string,
+	files []*sandboxv1.RunFile,
 ) (*sandboxv1.RunCodeResponse, error) {
 	if ownerID > 0 {
 		ctx = metadata.AppendToOutgoingContext(ctx, runnerOwnerIDMetadataKey, strconv.FormatUint(ownerID, 10))
@@ -56,6 +57,7 @@ func RunCode(
 		Code:           code,
 		Stdin:          stdin,
 		TimeoutSeconds: timeoutSeconds,
+		Files:          files,
 	})
 }
 
