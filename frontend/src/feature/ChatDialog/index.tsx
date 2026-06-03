@@ -1,8 +1,15 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import MessageList, { type DialogMessage } from "./MessageList";
+import MessageList, { type DialogFileMeta, type DialogMessage } from "./MessageList";
 import InputArea from "./InputArea";
 import CustomModelModal, { type CustomModelConfig } from "./CustomModelModal";
 import { chatStream, getModels, type ChatMessage, type ChatMode, type ModelInfo } from "@/api/ai";
+import {
+  clearDialogMessages,
+  fetchDialogMessages,
+  saveDialogMessages,
+  type StoredDialogMessage,
+} from "@/api/aiHistory";
+import { useAuth } from "@/hooks/useAuth";
 import { useModelSelectionStore } from "./modelSelectionStore";
 import {
   CHAT_DIALOG_SEND_EVENT,
@@ -34,9 +41,84 @@ interface DialogProps {
 }
 
 const getStorageKey = (dialogId: string) => `dialog_messages_${dialogId}`;
+const FILE_ONLY_PROMPT = "Please use the attached files as context.";
 const DEPRECATED_MODEL_IDS = new Set([
   "google/gemini-2.5-flash-lite:nitro",
 ]);
+
+const toDialogFileMeta = (file: File | DialogFileMeta): DialogFileMeta => ({
+  name: file.name,
+  type: file.type || undefined,
+  size: typeof file.size === "number" ? file.size : undefined,
+  lastModified: typeof file.lastModified === "number" ? file.lastModified : undefined,
+});
+
+const normalizeDialogMessages = (value: unknown): DialogMessage[] => {
+  if (!Array.isArray(value)) return [];
+
+  return value.flatMap((item) => {
+    if (!item || typeof item !== "object") return [];
+    const record = item as Record<string, unknown>;
+    const from = record.from === "user" ? "user" : record.from === "bot" ? "bot" : null;
+    if (!from) return [];
+
+    const files = Array.isArray(record.files)
+      ? record.files.flatMap((rawFile) => {
+          if (!rawFile || typeof rawFile !== "object") return [];
+          if (typeof File !== "undefined" && rawFile instanceof File) {
+            return [toDialogFileMeta(rawFile)];
+          }
+          const file = rawFile as Record<string, unknown>;
+          if (typeof file.name !== "string" || !file.name.trim()) return [];
+          return [{
+            name: file.name,
+            type: typeof file.type === "string" ? file.type : undefined,
+            size: typeof file.size === "number" ? file.size : undefined,
+            lastModified: typeof file.lastModified === "number" ? file.lastModified : undefined,
+          }];
+        })
+      : undefined;
+
+    return [{
+      from,
+      text: typeof record.text === "string" ? record.text : "",
+      files: files && files.length > 0 ? files : undefined,
+      versions: Array.isArray(record.versions)
+        ? record.versions.filter((version): version is string => typeof version === "string")
+        : undefined,
+      versionIndex: typeof record.versionIndex === "number" ? record.versionIndex : undefined,
+    }];
+  });
+};
+
+const createInitialMessages = (
+  initMessage: string,
+  seedMessages?: DialogMessage[],
+): DialogMessage[] => {
+  const normalizedSeeds = normalizeDialogMessages(seedMessages);
+  if (normalizedSeeds.length > 0) return normalizedSeeds;
+  return [{ from: "bot", text: initMessage }];
+};
+
+const readLocalMessages = (storageKey: string, fallback: DialogMessage[]): DialogMessage[] => {
+  try {
+    const raw = localStorage.getItem(storageKey);
+    if (raw) {
+      const messages = normalizeDialogMessages(JSON.parse(raw));
+      if (messages.length > 0) return messages;
+    }
+  } catch {}
+  return fallback;
+};
+
+const serializeMessages = (messages: DialogMessage[]): StoredDialogMessage[] =>
+  messages.map((message) => ({
+    from: message.from,
+    text: message.text,
+    files: message.files?.map(toDialogFileMeta).filter((file) => file.name),
+    versions: message.versions,
+    versionIndex: message.versionIndex,
+  }));
 
 const Dialog: React.FC<DialogProps> & {
   clearDialog: (dialogId: string) => void;
@@ -49,13 +131,10 @@ const Dialog: React.FC<DialogProps> & {
   transport,
 }) => {
   const storageKey = useMemo(() => getStorageKey(dialogId), [dialogId]);
+  const { isAuthenticated, loading: authLoading } = useAuth();
   const [messages, setMessages] = useState<DialogMessage[]>(() => {
-    try {
-      const raw = localStorage.getItem(storageKey);
-      if (raw) return JSON.parse(raw);
-    } catch {}
-    if (seedMessages?.length) return seedMessages;
-    return [{ from: "bot", text: initMessage }];
+    const fallback = createInitialMessages(initMessage, seedMessages);
+    return readLocalMessages(storageKey, fallback);
   });
   const [input, setInput] = useState("");
   const [files, setFiles] = useState<File[]>([]);
@@ -70,6 +149,10 @@ const Dialog: React.FC<DialogProps> & {
   const isAtBottomRef = useRef(true);
   const pendingDeltaRef = useRef("");
   const rafRef = useRef(0);
+  const historyReadyRef = useRef(false);
+  const historyReadyDialogRef = useRef<string | null>(null);
+  const historyLoadSeqRef = useRef(0);
+  const saveTimerRef = useRef<number | null>(null);
 
   const selectedModel = useModelSelectionStore((state) => state.selectedModel);
   const customConfigs = useModelSelectionStore((state) => state.customConfigs);
@@ -136,46 +219,107 @@ const Dialog: React.FC<DialogProps> & {
     [customConfigs, selectedModel],
   );
 
-  // 持久化消息
-  React.useEffect(() => {
-    try {
-      localStorage.setItem(storageKey, JSON.stringify(messages));
-    } catch {}
+  useEffect(() => {
     messagesRef.current = messages;
-  }, [messages, storageKey]);
+  }, [messages]);
+
+  useEffect(() => {
+    if (saveTimerRef.current) {
+      window.clearTimeout(saveTimerRef.current);
+      saveTimerRef.current = null;
+    }
+
+    if (authLoading) return;
+
+    if (isAuthenticated) {
+      if (!historyReadyRef.current || historyReadyDialogRef.current !== dialogId) return;
+
+      const timer = window.setTimeout(() => {
+        saveDialogMessages(dialogId, serializeMessages(messages)).catch((err: unknown) => {
+          const status = (err as { response?: { status?: number } })?.response?.status;
+          if (status === 401) {
+            window.dispatchEvent(new Event("auth-change"));
+          }
+        });
+      }, 450);
+      saveTimerRef.current = timer;
+      return () => {
+        if (saveTimerRef.current === timer) {
+          window.clearTimeout(timer);
+          saveTimerRef.current = null;
+        }
+      };
+    }
+
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(serializeMessages(messages)));
+    } catch {}
+  }, [authLoading, dialogId, isAuthenticated, messages, storageKey]);
 
   useEffect(() => {
     return () => {
       abortRef.current?.abort();
       abortRef.current = null;
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      if (saveTimerRef.current) window.clearTimeout(saveTimerRef.current);
     };
   }, []);
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(storageKey);
-      if (raw) {
-        setMessages(JSON.parse(raw));
-        abortRef.current?.abort();
-        abortRef.current = null;
-        return;
-      }
-    } catch {}
-    if (seedMessages?.length) {
-      setMessages(seedMessages);
-      setInput("");
-      setPending(false);
-      abortRef.current?.abort();
-      abortRef.current = null;
-      return;
-    }
-    setMessages([{ from: "bot", text: initMessage }]);
-    setInput("");
-    setPending(false);
     abortRef.current?.abort();
     abortRef.current = null;
-  }, [storageKey, initMessage, seedMessages]);
+    pendingDeltaRef.current = "";
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = 0;
+    }
+    setInput("");
+    setFiles([]);
+    setPending(false);
+
+    if (authLoading) {
+      return;
+    }
+
+    const fallback = createInitialMessages(initMessage, seedMessages);
+    const loadSeq = historyLoadSeqRef.current + 1;
+    historyLoadSeqRef.current = loadSeq;
+    historyReadyRef.current = false;
+    historyReadyDialogRef.current = null;
+
+    if (isAuthenticated) {
+      fetchDialogMessages(dialogId)
+        .then((remoteMessages) => {
+          if (historyLoadSeqRef.current !== loadSeq) return;
+          const normalized = normalizeDialogMessages(remoteMessages);
+          const nextMessages = normalized.length > 0 ? normalized : fallback;
+          setMessages(nextMessages);
+          messagesRef.current = nextMessages;
+          historyReadyRef.current = true;
+          historyReadyDialogRef.current = dialogId;
+        })
+        .catch((err: unknown) => {
+          if (historyLoadSeqRef.current !== loadSeq) return;
+          const status = (err as { response?: { status?: number } })?.response?.status;
+          let nextMessages = fallback;
+          if (status === 401) {
+            window.dispatchEvent(new Event("auth-change"));
+            nextMessages = readLocalMessages(storageKey, fallback);
+          }
+          setMessages(nextMessages);
+          messagesRef.current = nextMessages;
+          historyReadyRef.current = false;
+          historyReadyDialogRef.current = null;
+        });
+      return;
+    }
+
+    const nextMessages = readLocalMessages(storageKey, fallback);
+    setMessages(nextMessages);
+    messagesRef.current = nextMessages;
+    historyReadyRef.current = true;
+    historyReadyDialogRef.current = dialogId;
+  }, [authLoading, dialogId, initMessage, isAuthenticated, seedMessages, storageKey]);
 
   const scrollToBottom = useCallback((behavior: ScrollBehavior = "auto") => {
     const body = bodyRef.current;
@@ -191,9 +335,16 @@ const Dialog: React.FC<DialogProps> & {
 
   const sendMessage = useCallback((rawText: string, sourceFiles: File[] = []) => {
     const text = rawText.trim();
-    if (!text || pending) return;
     const sentFiles = [...sourceFiles];
-    const userMsg: DialogMessage = { from: "user", text, files: sentFiles };
+    if ((!text && sentFiles.length === 0) || pending) return;
+    const sentFileMetas = sentFiles.map(toDialogFileMeta);
+    const visibleText = text || sentFileMetas.map((file) => file.name).join(", ");
+    const apiText = text || FILE_ONLY_PROMPT;
+    const userMsg: DialogMessage = {
+      from: "user",
+      text: visibleText,
+      files: sentFileMetas.length > 0 ? sentFileMetas : undefined,
+    };
     setMessages((m) => [...m, userMsg]);
     setPending(true);
     scrollToBottom("smooth");
@@ -205,7 +356,7 @@ const Dialog: React.FC<DialogProps> & {
         role: m.from === "user" ? "user" as const : "assistant" as const,
         content: m.text,
       }));
-    chatHistory.push({ role: "user", content: text });
+    chatHistory.push({ role: "user", content: apiText });
 
     // Add empty bot message that will be filled by streaming
     setMessages((m) => [...m, { from: "bot", text: "" }]);
@@ -215,7 +366,13 @@ const Dialog: React.FC<DialogProps> & {
       if (sentFiles.length === 0) return "";
       const chunks = await Promise.all(
         sentFiles.map(async (file) => {
-          const content = await file.text();
+          let content = "";
+          try {
+            content = await file.text();
+          } catch {}
+          if (!content) {
+            return `File: ${file.name}\n[Unable to read text content]`;
+          }
           return `File: ${file.name}\n\`\`\`\n${content.slice(0, 8000)}\n\`\`\``;
         }),
       );
@@ -283,7 +440,7 @@ const Dialog: React.FC<DialogProps> & {
       const streamCtrl = transport
         ? transport({
             messages: chatHistory,
-            input: text,
+            input: apiText,
             files: sentFiles,
             fileContext,
             mode: chatMode,
@@ -326,7 +483,7 @@ const Dialog: React.FC<DialogProps> & {
   }, [dialogId, sendMessage]);
 
   const send = () => {
-    if (!input.trim() || pending) return;
+    if ((!input.trim() && files.length === 0) || pending) return;
     sendMessage(input, files);
     setInput("");
     setFiles([]);
@@ -573,6 +730,7 @@ Dialog.clearDialog = (dialogId: string) => {
   try {
     localStorage.removeItem(getStorageKey(dialogId));
   } catch {}
+  void clearDialogMessages(dialogId).catch(() => {});
 };
 
 export default Dialog;

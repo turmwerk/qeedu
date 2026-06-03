@@ -6,10 +6,17 @@ import PendingBubble from "./PendingBubble";
 import ScrollToBottomButton from "./ScrollToBottomButton";
 import CustomScrollbar from "./CustomScrollbar";
 
+export interface DialogFileMeta {
+  name: string;
+  type?: string;
+  size?: number;
+  lastModified?: number;
+}
+
 export interface DialogMessage {
   from: "user" | "bot";
   text: string;
-  files?: File[];
+  files?: DialogFileMeta[];
   versions?: string[];
   versionIndex?: number;
 }

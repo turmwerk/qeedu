@@ -83,6 +83,9 @@ func RegisterRoutes(r *gin.Engine) {
 			protected.POST("/ai/chat", ai.Chat)
 			protected.POST("/ai/complete", ai.Complete)
 			protected.POST("/ai/fix", ai.FixBug)
+			protected.GET("/ai/dialogs/:dialogId/messages", ai.GetDialogMessages)
+			protected.PUT("/ai/dialogs/:dialogId/messages", ai.SaveDialogMessages)
+			protected.DELETE("/ai/dialogs/:dialogId/messages", ai.DeleteDialogMessages)
 
 			// Feature workspaces
 			registerFeatureRoutes(protected, "teaching")

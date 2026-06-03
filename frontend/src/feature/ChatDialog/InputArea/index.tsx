@@ -117,7 +117,7 @@ const InputArea: React.FC<InputAreaProps> = ({
         onSend={onSend}
         onStop={onStop}
         pending={pending}
-        disabled={!input.trim()}
+        disabled={!input.trim() && files.length === 0}
       />
     </div>
   );

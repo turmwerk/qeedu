@@ -6,6 +6,7 @@ import (
 
 	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/configs"
 	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/api"
+	aiAPI "github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/api/v1/ai"
 	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/middleware"
 	aiChatRPC "github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/rpc/ai-chat"
 	aiCopilotRPC "github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/rpc/ai-copilot"
@@ -25,6 +26,9 @@ func main() {
 		log.Fatal("[gateway] DATABASE_DSN is required")
 	}
 	db.Init(configs.DatabaseDSN)
+	if err := aiAPI.AutoMigrate(); err != nil {
+		log.Fatalf("[gateway] failed to migrate ai tables: %v", err)
+	}
 
 	// User-services gRPC client
 	userRPC.Init(configs.UserServiceAddr)

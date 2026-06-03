@@ -32,6 +32,7 @@ const FileRow: React.FC<FileRowProps> = ({ files, onFilesChange, suggestedFiles 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newFiles = handleFileSelection(files, e.target.files);
     onFilesChange(newFiles);
+    e.target.value = "";
   };
 
   const removeFile = (index: number) => {

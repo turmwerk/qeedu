@@ -1,7 +1,8 @@
 import React from "react";
+import { type DialogFileMeta } from "../index";
 
 interface FileChipsProps {
-  files: File[];
+  files: DialogFileMeta[];
   align: "start" | "end";
 }
 
