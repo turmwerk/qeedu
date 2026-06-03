@@ -1,4 +1,4 @@
-import { Component, createContext, startTransition, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { Component, createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import type { ErrorInfo, ReactNode } from "react";
 import RuntimeTranslationLayer from "@/components/RuntimeTranslationLayer";
 
@@ -57,12 +57,12 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   const setLanguage = useCallback((lang: Language) => {
     try {
-      startTransition(() => setLanguageState(lang));
+      setLanguageState(lang);
       localStorage.setItem(STORAGE_KEY, lang);
       document.documentElement.lang = lang;
     } catch (error) {
       console.warn("Failed to save language:", error);
-      startTransition(() => setLanguageState(lang));
+      setLanguageState(lang);
     }
   }, []);
 

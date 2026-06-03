@@ -33,6 +33,18 @@ const ATTRIBUTE_SKIP_SELECTOR = [
 
 const textOriginals = new WeakMap<Text, string>();
 const attrOriginals = new WeakMap<Element, Map<string, string>>();
+let internalMutationDepth = 0;
+
+function commitInternalMutation(action: () => void) {
+  internalMutationDepth += 1;
+  try {
+    action();
+  } finally {
+    queueMicrotask(() => {
+      internalMutationDepth = Math.max(0, internalMutationDepth - 1);
+    });
+  }
+}
 
 function shouldSkipText(element: Element | null): boolean {
   return Boolean(element?.closest(TEXT_SKIP_SELECTOR));
@@ -60,7 +72,9 @@ function translateTextNode(node: Text, language: Language) {
 
   const next = translateRuntimeText(original, language);
   if (current !== next) {
-    node.nodeValue = next;
+    commitInternalMutation(() => {
+      node.nodeValue = next;
+    });
   }
 }
 
@@ -98,7 +112,9 @@ function translateElementAttributes(element: Element, language: Language) {
 
     const next = translateRuntimeText(original, language);
     if (current !== next) {
-      element.setAttribute(name, next);
+      commitInternalMutation(() => {
+        element.setAttribute(name, next);
+      });
     }
   });
 }
@@ -167,6 +183,8 @@ export function RuntimeTranslationLayer({ language }: { language: Language }) {
     };
 
     const observer = new MutationObserver((mutations) => {
+      if (internalMutationDepth > 0) return;
+
       for (const mutation of mutations) {
         if (mutation.type === "characterData") {
           const node = mutation.target as Text;
