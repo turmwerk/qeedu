@@ -10,7 +10,7 @@ const ResearchHub: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="flex w-full min-w-0 flex-col gap-8 px-4 py-6 md:px-6 xl:px-8">
+    <div className="research-hub-page flex w-full min-w-0 flex-col gap-8 px-4 py-6 md:px-6 xl:px-8">
       <section className="workbench-surface rounded-[28px] border border-[#dbe1f3] bg-white/80 p-5 shadow-[0_18px_45px_rgba(15,23,42,0.08)] backdrop-blur-[24px] dark:border-white/10 dark:bg-white/8">
         <OverviewMetrics metrics={conferenceCountdownMetrics} />
       </section>
