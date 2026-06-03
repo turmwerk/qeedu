@@ -1,4 +1,4 @@
-import { chatStream, type ChatMessage } from "@/api/ai";
+import { chatStream, type ChatMessage, type ChatMode } from "@/api/ai";
 import {
   createFeatureId,
   loadFeatureRecords,
@@ -22,6 +22,7 @@ type ChatTransportArgs = {
   input: string;
   files: File[];
   fileContext?: string;
+  mode: ChatMode;
   model?: string;
   apiKey?: string;
   baseUrl?: string;
@@ -130,6 +131,7 @@ export const createMockAdapter = <T extends FeatureRecordBase>(
         messages,
         files,
         fileContext,
+        mode,
         model,
         apiKey,
         baseUrl,
@@ -158,6 +160,7 @@ export const createMockAdapter = <T extends FeatureRecordBase>(
               messages,
               file_context: combinedContext || undefined,
               language: "text",
+              mode,
               model,
               api_key: apiKey,
               base_url: baseUrl,

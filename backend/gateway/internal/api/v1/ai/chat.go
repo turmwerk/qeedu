@@ -3,6 +3,7 @@ package ai
 import (
 	"io"
 	"net/http"
+	"strings"
 
 	aiChatRPC "github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/rpc/ai-chat"
 	aichatv1 "github.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/ai-chat/v1"
@@ -13,6 +14,7 @@ type chatReqBody struct {
 	Messages    []chatMsg `json:"messages"`
 	FileContext string    `json:"file_context"`
 	Language    string    `json:"language"`
+	Mode        string    `json:"mode"`
 	Model       string    `json:"model"`
 	APIKey      string    `json:"api_key"`
 	BaseURL     string    `json:"base_url"`
@@ -25,6 +27,26 @@ type chatMsg struct {
 	Content string `json:"content"`
 }
 
+func normalizeChatMode(value string) string {
+	switch strings.ToLower(strings.TrimSpace(value)) {
+	case "agent", "plan":
+		return strings.ToLower(strings.TrimSpace(value))
+	default:
+		return "ask"
+	}
+}
+
+func chatModeInstruction(mode string) string {
+	switch mode {
+	case "agent":
+		return "Chat mode: agent. Work autonomously toward the user's goal, use the provided context, make practical decisions when safe, and ask only when required information is missing."
+	case "plan":
+		return "Chat mode: plan. Produce a clear, structured plan with concrete steps, dependencies, risks, and verification points. Do not claim that work has already been executed."
+	default:
+		return "Chat mode: ask. Answer the user's question directly and concisely, using the provided context when relevant."
+	}
+}
+
 // Chat handles POST /api/v1/ai/chat with SSE streaming.
 func Chat(c *gin.Context) {
 	var body chatReqBody
@@ -33,9 +55,11 @@ func Chat(c *gin.Context) {
 		return
 	}
 
-	msgs := make([]*aichatv1.ChatMessage, len(body.Messages))
-	for i, m := range body.Messages {
-		msgs[i] = &aichatv1.ChatMessage{Role: m.Role, Content: m.Content}
+	mode := normalizeChatMode(body.Mode)
+	msgs := make([]*aichatv1.ChatMessage, 0, len(body.Messages)+1)
+	msgs = append(msgs, &aichatv1.ChatMessage{Role: "system", Content: chatModeInstruction(mode)})
+	for _, m := range body.Messages {
+		msgs = append(msgs, &aichatv1.ChatMessage{Role: m.Role, Content: m.Content})
 	}
 
 	req := &aichatv1.ChatRequest{

@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import MessageList, { type DialogMessage } from "./MessageList";
 import InputArea from "./InputArea";
 import CustomModelModal, { type CustomModelConfig } from "./CustomModelModal";
-import { chatStream, getModels, type ChatMessage, type ModelInfo } from "@/api/ai";
+import { chatStream, getModels, type ChatMessage, type ChatMode, type ModelInfo } from "@/api/ai";
 import { useModelSelectionStore } from "./modelSelectionStore";
 import {
   CHAT_DIALOG_SEND_EVENT,
@@ -21,6 +21,7 @@ interface DialogProps {
     input: string;
     files: File[];
     fileContext?: string;
+    mode: ChatMode;
     model?: string;
     apiKey?: string;
     baseUrl?: string;
@@ -58,6 +59,7 @@ const Dialog: React.FC<DialogProps> & {
   });
   const [input, setInput] = useState("");
   const [files, setFiles] = useState<File[]>([]);
+  const [chatMode, setChatMode] = useState<ChatMode>("agent");
   const [pending, setPending] = useState(false);
   const [models, setModels] = useState<ModelInfo[]>([]);
   const [showCustomModal, setShowCustomModal] = useState(false);
@@ -284,6 +286,7 @@ const Dialog: React.FC<DialogProps> & {
             input: text,
             files: sentFiles,
             fileContext,
+            mode: chatMode,
             model: activeCustom?.modelId || selectedModel || undefined,
             apiKey: activeCustom?.apiKey || undefined,
             baseUrl: activeCustom?.baseUrl || undefined,
@@ -294,6 +297,7 @@ const Dialog: React.FC<DialogProps> & {
         : chatStream({
             messages: chatHistory,
             file_context: fileContext || undefined,
+            mode: chatMode,
             model: activeCustom?.modelId || selectedModel || undefined,
             api_key: activeCustom?.apiKey || undefined,
             base_url: activeCustom?.baseUrl || undefined,
@@ -303,7 +307,7 @@ const Dialog: React.FC<DialogProps> & {
           });
       outerController.signal.addEventListener("abort", () => streamCtrl.abort(), { once: true });
     });
-  }, [activeCustom, pending, scrollToBottom, selectedModel, transport]);
+  }, [activeCustom, chatMode, pending, scrollToBottom, selectedModel, transport]);
 
   useEffect(() => {
     const handleExternalSend = (event: Event) => {
@@ -461,6 +465,7 @@ const Dialog: React.FC<DialogProps> & {
             input: "",
             files: [],
             fileContext: undefined,
+            mode: chatMode,
             model: activeCustom?.modelId || selectedModel || undefined,
             apiKey: activeCustom?.apiKey || undefined,
             baseUrl: activeCustom?.baseUrl || undefined,
@@ -470,6 +475,7 @@ const Dialog: React.FC<DialogProps> & {
           })
           : chatStream({
             messages: chatHistory,
+            mode: chatMode,
             model: activeCustom?.modelId || selectedModel || undefined,
             api_key: activeCustom?.apiKey || undefined,
             base_url: activeCustom?.baseUrl || undefined,
@@ -482,7 +488,7 @@ const Dialog: React.FC<DialogProps> & {
         return current;
       });
     }, 0);
-  }, [pending, scrollToBottom, selectedModel, customConfigs, transport]);
+  }, [activeCustom, chatMode, pending, scrollToBottom, selectedModel, transport]);
 
   const handleSwitchVersion = useCallback((index: number, vi: number) => {
     setMessages((prev) => {
@@ -525,6 +531,8 @@ const Dialog: React.FC<DialogProps> & {
           onFilesChange={setFiles}
           suggestedFiles={suggestedFiles}
           models={allModels}
+          selectedMode={chatMode}
+          onModeChange={setChatMode}
           selectedModel={selectedModel}
           onSelectModel={handleSelectModel}
           onAddCustom={() => {

@@ -1,6 +1,6 @@
-import React, { useState, useMemo } from "react";
+import React, { useMemo } from "react";
 import { type DropdownItem } from "@/ui/Dropdown";
-import { type ModelInfo } from "@/api/ai";
+import { type ChatMode, type ModelInfo } from "@/api/ai";
 import FileRow from "./FileRow";
 import TextRow from "./TextRow";
 import ControlRow from "./ControlRow";
@@ -16,6 +16,8 @@ interface InputAreaProps {
   onFilesChange: (files: File[]) => void;
   suggestedFiles?: File[];
   models: ModelInfo[];
+  selectedMode: ChatMode;
+  onModeChange: (mode: ChatMode) => void;
   selectedModel: string;
   onSelectModel: (id: string) => void;
   onAddCustom: () => void;
@@ -33,12 +35,13 @@ const InputArea: React.FC<InputAreaProps> = ({
   onFilesChange,
   suggestedFiles,
   models,
+  selectedMode,
+  onModeChange,
   selectedModel,
   onSelectModel,
   onAddCustom,
   onEditCustom,
 }) => {
-  const [selectedMode, setSelectedMode] = useState<string>("Agent");
   const formatModelName = (name: string) =>
     name
       .replace(/\s*\(free\)\s*/gi, "")
@@ -47,10 +50,9 @@ const InputArea: React.FC<InputAreaProps> = ({
 
   // 模式选项
   const modeItems: DropdownItem[] = [
-    { label: "Agent", active: selectedMode === "Agent", onClick: () => setSelectedMode("Agent") },
-    { label: "Ask",   active: selectedMode === "Ask",   onClick: () => setSelectedMode("Ask") },
-    { label: "Edit",  active: selectedMode === "Edit",  onClick: () => setSelectedMode("Edit") },
-    { label: "Plan",  active: selectedMode === "Plan",  onClick: () => setSelectedMode("Plan") },
+    { label: "Agent", active: selectedMode === "agent", onClick: () => onModeChange("agent") },
+    { label: "Ask", active: selectedMode === "ask", onClick: () => onModeChange("ask") },
+    { label: "Plan", active: selectedMode === "plan", onClick: () => onModeChange("plan") },
   ];
 
   // AI模型选项 — 从后端真实模型列表生成

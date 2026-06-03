@@ -5,10 +5,13 @@ export interface ChatMessage {
 	content: string;
 }
 
+export type ChatMode = "agent" | "ask" | "plan";
+
 export interface ChatStreamOptions {
 	messages: ChatMessage[];
 	file_context?: string;
 	language?: string;
+	mode?: ChatMode;
 	model?: string;
 	api_key?: string;
 	base_url?: string;
@@ -150,10 +153,10 @@ function createStreamRequest(
 }
 
 export function chatStream(options: ChatStreamOptions): AbortController {
-	const { messages, file_context, language, model, api_key, base_url, temperature, max_tokens, onDelta, onDone, onError } = options;
+	const { messages, file_context, language, mode, model, api_key, base_url, temperature, max_tokens, onDelta, onDone, onError } = options;
 	return createStreamRequest(
 		"/ai/chat",
-		{ messages, file_context, language, model: model || undefined, api_key: api_key || undefined, base_url: base_url || undefined, temperature, max_tokens },
+		{ messages, file_context, language, mode, model: model || undefined, api_key: api_key || undefined, base_url: base_url || undefined, temperature, max_tokens },
 		onDelta,
 		onDone,
 		onError,
@@ -161,10 +164,10 @@ export function chatStream(options: ChatStreamOptions): AbortController {
 }
 
 export function customChatStream(options: CustomChatStreamOptions): AbortController {
-	const { endpoint, messages, file_context, language, model, api_key, base_url, temperature, max_tokens, extraBody, onDelta, onDone, onError } = options;
+	const { endpoint, messages, file_context, language, mode, model, api_key, base_url, temperature, max_tokens, extraBody, onDelta, onDone, onError } = options;
 	return createStreamRequest(
 		endpoint,
-		{ messages, file_context, language, model: model || undefined, api_key: api_key || undefined, base_url: base_url || undefined, temperature, max_tokens, ...(extraBody ?? {}) },
+		{ messages, file_context, language, mode, model: model || undefined, api_key: api_key || undefined, base_url: base_url || undefined, temperature, max_tokens, ...(extraBody ?? {}) },
 		onDelta,
 		onDone,
 		onError,
