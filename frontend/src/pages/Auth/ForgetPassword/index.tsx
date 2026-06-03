@@ -8,6 +8,7 @@ import createNavAgreeFields from "../NavAgree";
 import AuthPanelActions from "../AuthPanelActions";
 import { resetPasswordWithEmail, sendEmailCode } from "@/api/auth";
 import { useCodeCountdown } from "../useCodeCountdown";
+import { useTranslation } from "@/hooks/useTranslation";
 
 
 
@@ -57,9 +58,10 @@ export default function ForgetPassword() {
   const [showPassword2, setShowPassword2] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const resetCode = useCodeCountdown();
+  const { t } = useTranslation();
 
   const goGuest = () => {
-    showToast("使用“游客模式”进入首页");
+    showToast(t("auth.guestToast"));
     navigate("/");
   };
 
@@ -77,17 +79,18 @@ export default function ForgetPassword() {
     sendButtonClass,
     codeCooldowns: { forget: resetCode.cooldown },
     codeSending: { forget: resetCode.sending },
+    t,
     onSendCode: async (_field, email) => {
       const normalized = email.trim();
       if (!normalized) {
-        showToast("请先输入邮箱");
+        showToast(t("auth.enterEmailFirst"));
         return;
       }
       await resetCode.run(async () => {
         const res = await sendEmailCode(normalized, "reset");
-        showToast(res.dev_code ? `验证码：${res.dev_code}` : "验证码已发送");
+        showToast(res.dev_code ? t("auth.codeToast", { code: res.dev_code }) : t("auth.codeSent"));
       }).catch((err) => {
-        showToast(err instanceof Error ? err.message : "验证码发送失败");
+        showToast(err instanceof Error ? err.message : t("auth.sendCodeFailed"));
       });
     },
   });
@@ -99,11 +102,11 @@ export default function ForgetPassword() {
     const password = String(values.password ?? "");
     const password2 = String(values.password2 ?? "");
     if (!email || !code || !password) {
-      showToast("请填写邮箱、验证码和新密码");
+      showToast(t("auth.fillReset"));
       return;
     }
     if (password !== password2) {
-      showToast("两次输入的密码不一致");
+      showToast(t("auth.passwordMismatch"));
       return;
     }
     setSubmitting(true);
@@ -114,16 +117,16 @@ export default function ForgetPassword() {
         new_password: password,
       });
       window.dispatchEvent(new Event("auth-change"));
-      showToast("密码已重置");
+      showToast(t("auth.resetSuccess"));
       navigate("/");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "重置密码失败");
+      showToast(err instanceof Error ? err.message : t("auth.resetFailed"));
     } finally {
       setSubmitting(false);
     }
   };
 
-  const navAgree = createNavAgreeFields(navigate, goGuest, "修改并登录即代表您已阅读并同意", "forget");
+  const navAgree = createNavAgreeFields(navigate, goGuest, t("auth.resetAgree"), "forget", t);
 
   return (
     <div
@@ -134,14 +137,14 @@ export default function ForgetPassword() {
         <AuthPanelActions />
       </div>
       <div className="px-4 sm:px-[26px] pt-0 pb-[10px]" data-oid="phwgzka">
-        <div className="text-[30px] font-extrabold text-[var(--brand-text)] leading-none text-center mb-6">重置密码</div>
+        <div className="text-[30px] font-extrabold text-[var(--brand-text)] leading-none text-center mb-6">{t("auth.resetTitle")}</div>
         <Form
           fields={fields.concat(navAgree)}
           onSubmit={handleSubmit}
           submitText={
             <>
               <EnterIcon data-oid="zrx_i3j" />
-              <span data-oid="sr9zmqg">重置密码</span>
+              <span data-oid="sr9zmqg">{t("auth.resetSubmit")}</span>
             </>
           }
           submitClassName={primaryButtonClass}

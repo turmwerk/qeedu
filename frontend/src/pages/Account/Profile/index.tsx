@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { updateAccountEmail, updateAccountProfile } from "@/api/account";
+import { uploadAccountAvatar, updateAccountEmail, updateAccountProfile } from "@/api/account";
 import { sendEmailCode } from "@/api/auth";
+import { apiAssetUrl } from "@/api/config";
 import { useAuth } from "@/hooks/useAuth";
 import AccountSection from "../components/Section";
 import Field from "../components/Field";
@@ -22,6 +23,7 @@ const Profile: React.FC = () => {
   });
   const [emailForm, setEmailForm] = useState({ email: "", code: "" });
   const [saving, setSaving] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [message, setMessage] = useState("");
 
   useEffect(() => {
@@ -55,6 +57,37 @@ const Profile: React.FC = () => {
       setMessage(err instanceof Error ? err.message : "保存失败");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const avatarSrc = form.avatar_url
+    ? /^https?:\/\//i.test(form.avatar_url)
+      ? form.avatar_url
+      : apiAssetUrl(form.avatar_url)
+    : "";
+
+  const uploadAvatar = async (file: File | null | undefined) => {
+    if (!file || uploadingAvatar) return;
+    setMessage("");
+    if (!/^image\/(jpeg|png|webp|gif)$/i.test(file.type)) {
+      setMessage("头像仅支持 JPG、PNG、WebP 或 GIF");
+      return;
+    }
+    if (file.size > 3 * 1024 * 1024) {
+      setMessage("头像文件需小于 3MB");
+      return;
+    }
+    setUploadingAvatar(true);
+    try {
+      const res = await uploadAccountAvatar(file);
+      updateField("avatar_url", res.avatar_url);
+      await reload();
+      await auth.refresh();
+      setMessage("头像已更新");
+    } catch (err) {
+      setMessage(err instanceof Error ? err.message : "头像上传失败");
+    } finally {
+      setUploadingAvatar(false);
     }
   };
 
@@ -97,13 +130,44 @@ const Profile: React.FC = () => {
             用户名
             <input className="account-input" value={form.name} onChange={(e) => updateField("name", e.target.value)} />
           </label>
-          <label className="account-label">
-            头像 URL
-            <input className="account-input" value={form.avatar_url} onChange={(e) => updateField("avatar_url", e.target.value)} />
-          </label>
+          <div className="account-label account-form__full">
+            头像
+            <div className="account-avatar-editor">
+              <div className="account-avatar-preview" aria-label="当前头像">
+                {avatarSrc ? <img src={avatarSrc} alt="头像" /> : <span>{form.name ? form.name.slice(0, 1).toUpperCase() : "U"}</span>}
+              </div>
+              <div className="account-avatar-controls">
+                <label className="account-button account-avatar-upload">
+                  {uploadingAvatar ? "上传中..." : "本地上传头像"}
+                  <input
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp,image/gif"
+                    onChange={(e) => {
+                      void uploadAvatar(e.target.files?.[0]);
+                      e.currentTarget.value = "";
+                    }}
+                  />
+                </label>
+                <input
+                  className="account-input"
+                  value={form.avatar_url}
+                  onChange={(e) => updateField("avatar_url", e.target.value)}
+                  placeholder="也可以粘贴头像 URL"
+                />
+              </div>
+            </div>
+          </div>
           <label className="account-label">
             角色
-            <input className="account-input" value={form.role} onChange={(e) => updateField("role", e.target.value)} placeholder="学生 / 教师 / 管理员" />
+            <select className="account-select" value={form.role} onChange={(e) => updateField("role", e.target.value)}>
+              <option value="">未选择</option>
+              <option value="student">学生</option>
+              <option value="teacher">教师</option>
+              <option value="manager">教务管理</option>
+              <option value="researcher">科研人员</option>
+              <option value="international">国际交流</option>
+              <option value="admin">管理员</option>
+            </select>
           </label>
           <label className="account-label">
             学院
@@ -119,7 +183,12 @@ const Profile: React.FC = () => {
           </label>
           <label className="account-label">
             语言标记
-            <input className="account-input" value={form.locale} onChange={(e) => updateField("locale", e.target.value)} placeholder="zh-CN" />
+            <select className="account-select" value={form.locale} onChange={(e) => updateField("locale", e.target.value)}>
+              <option value="">跟随账户偏好</option>
+              <option value="zh-CN">简体中文</option>
+              <option value="zh-TW">繁體中文</option>
+              <option value="en">English</option>
+            </select>
           </label>
           <label className="account-label account-form__full">
             简介

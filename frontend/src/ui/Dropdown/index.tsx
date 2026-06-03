@@ -90,17 +90,19 @@ const Dropdown: React.FC<DropdownProps> = ({
 
     const rect = wrapper.getBoundingClientRect();
     const menuRect = menu.getBoundingClientRect();
+    const measuredWidth = Math.max(menuRect.width, rect.width, 120);
+    const measuredHeight = Math.max(menuRect.height, 1);
     const gap = 4;
     const rawTop = direction === "up"
-      ? rect.top - menuRect.height - gap
+      ? rect.top - measuredHeight - gap
       : rect.bottom + gap;
-    const maxTop = Math.max(8, window.innerHeight - menuRect.height - 8);
+    const maxTop = Math.max(8, window.innerHeight - measuredHeight - 8);
     const top = Math.min(Math.max(8, rawTop), maxTop);
 
-    let left = direction === "up" ? rect.left : rect.right - menuRect.width;
+    let left = direction === "up" ? rect.left : rect.right - measuredWidth;
     if (left < 8) left = 8;
-    if (left + menuRect.width > window.innerWidth - 8) {
-      left = window.innerWidth - menuRect.width - 8;
+    if (left + measuredWidth > window.innerWidth - 8) {
+      left = window.innerWidth - measuredWidth - 8;
     }
 
     setMenuStyle({
@@ -109,6 +111,7 @@ const Dropdown: React.FC<DropdownProps> = ({
       left,
       zIndex: TOP_Z,
       minWidth: rect.width,
+      width: "max-content",
       visibility: "visible",
       transformOrigin: direction === "up" ? "bottom left" : "top right",
     });
@@ -128,8 +131,12 @@ const Dropdown: React.FC<DropdownProps> = ({
       left: -9999,
       zIndex: TOP_Z,
       visibility: "hidden",
+      width: "max-content",
     });
-    const frame = window.requestAnimationFrame(updatePortalPosition);
+    const frame = window.requestAnimationFrame(() => {
+      updatePortalPosition();
+      window.requestAnimationFrame(updatePortalPosition);
+    });
     return () => window.cancelAnimationFrame(frame);
   }, [open, canPortal, updatePortalPosition]);
 

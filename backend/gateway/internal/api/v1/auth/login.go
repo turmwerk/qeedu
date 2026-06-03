@@ -14,7 +14,7 @@ type loginRequest struct {
 	Method string `json:"method" binding:"required,oneof=oauth password email_code"`
 
 	// ── OAuth 登录字段 ──
-	Provider string `json:"provider,omitempty"` // "github" | "google"
+	Provider string `json:"provider,omitempty"` // "github" | "google" | "microsoft"
 
 	// ── 账密登录字段（邮箱或用户名 + 密码）──
 	Account  string `json:"account,omitempty"` // 邮箱或用户名
@@ -56,6 +56,10 @@ func handleOAuthLogin(c *gin.Context, req *loginRequest) {
 	case "google":
 		c.JSON(http.StatusOK, gin.H{
 			"redirect_url": "/api/v1/auth/google",
+		})
+	case "microsoft":
+		c.JSON(http.StatusOK, gin.H{
+			"redirect_url": "/api/v1/auth/microsoft",
 		})
 	default:
 		c.JSON(http.StatusBadRequest, gin.H{"error": "unsupported oauth provider: " + req.Provider})

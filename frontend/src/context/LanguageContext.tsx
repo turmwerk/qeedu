@@ -1,4 +1,4 @@
-import { Component, createContext, useContext, useEffect, useState } from "react";
+import { Component, createContext, startTransition, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import type { ErrorInfo, ReactNode } from "react";
 
 export const SUPPORTED_LANGUAGES = ["zh-CN", "zh-TW", "en"] as const;
@@ -54,16 +54,16 @@ const resolveInitialLanguage = (): Language => {
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>(resolveInitialLanguage);
 
-  const setLanguage = (lang: Language) => {
+  const setLanguage = useCallback((lang: Language) => {
     try {
-      setLanguageState(lang);
+      startTransition(() => setLanguageState(lang));
       localStorage.setItem(STORAGE_KEY, lang);
       document.documentElement.lang = lang;
     } catch (error) {
       console.warn("Failed to save language:", error);
-      setLanguageState(lang);
+      startTransition(() => setLanguageState(lang));
     }
-  };
+  }, []);
 
   useEffect(() => {
     try {
@@ -73,9 +73,11 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     }
   }, [language]);
 
+  const value = useMemo(() => ({ language, setLanguage }), [language, setLanguage]);
+
   return (
     <LanguageErrorBoundary>
-      <LanguageContext.Provider value={{ language, setLanguage }}>
+      <LanguageContext.Provider value={value}>
         {children}
       </LanguageContext.Provider>
     </LanguageErrorBoundary>

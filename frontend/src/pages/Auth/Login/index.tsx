@@ -9,12 +9,14 @@ import createNavAgreeFields from "../NavAgree";
 import AuthPanelActions from "../AuthPanelActions";
 import GitHubIcon from "@/ui/Icon/GitHubIcon";
 import GoogleIcon from "@/ui/Icon/GoogleIcon";
+import MicrosoftIcon from "@/ui/Icon/MicrosoftIcon";
 import MailIcon from "@/ui/Icon/MailIcon";
 import UserIcon from "@/ui/Icon/UserIcon";
 import EnterIcon from "@/ui/Icon/EnterIcon";
 import { apiUrl } from "@/api/config";
 import { loginWithEmailCode, loginWithPassword, sendEmailCode } from "@/api/auth";
 import { useCodeCountdown } from "../useCodeCountdown";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -23,9 +25,10 @@ export default function Login() {
   const [mode, setMode] = useState<"password" | "sms" | "quick">("quick");
   const [submitting, setSubmitting] = useState(false);
   const loginCode = useCodeCountdown();
+  const { t } = useTranslation();
 
   const goGuest = () => {
-    showToast("使用\"游客模式\"进入首页");
+    showToast(t("auth.guestToast"));
     navigate("/");
   };
 
@@ -40,7 +43,7 @@ export default function Login() {
     setSearchParams({}, { replace: true });
 
     if (error) {
-      showToast(`OAuth 登录失败: ${error}`);
+      showToast(`${t("auth.oauthFailed")}: ${error}`);
       return;
     }
 
@@ -48,12 +51,13 @@ export default function Login() {
     fetch(apiUrl("/me"), { credentials: "include" })
       .then((res) => (res.ok ? res.json() : Promise.reject(res)))
       .then(() => {
-        const label = provider === "github" ? "GitHub" : "Google";
-        showToast(`${label} 登录成功，欢迎 ${name || "用户"}`);
+        const label =
+          provider === "github" ? "GitHub" : provider === "microsoft" ? "Microsoft" : "Google";
+        showToast(t("auth.oauthSuccess", { provider: label, name: name || t("common.user") }));
         navigate("/");
       })
       .catch(() => {
-        showToast("OAuth 登录失败：身份验证失败");
+        showToast(t("auth.oauthVerifyFailed"));
       });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -68,6 +72,7 @@ export default function Login() {
     showPassword,
     setShowPassword,
     sendButtonClass,
+    t,
   });
 
   const smsFields: FormField[] = buildFields("login-sms", {
@@ -76,17 +81,18 @@ export default function Login() {
     sendButtonClass,
     codeCooldowns: { login: loginCode.cooldown },
     codeSending: { login: loginCode.sending },
+    t,
     onSendCode: async (_field, email) => {
       const normalized = email.trim();
       if (!normalized) {
-        showToast("请先输入邮箱");
+        showToast(t("auth.enterEmailFirst"));
         return;
       }
       await loginCode.run(async () => {
         const res = await sendEmailCode(normalized, "login");
-        showToast(res.dev_code ? `验证码：${res.dev_code}` : "验证码已发送");
+        showToast(res.dev_code ? t("auth.codeToast", { code: res.dev_code }) : t("auth.codeSent"));
       }).catch((err) => {
-        showToast(err instanceof Error ? err.message : "验证码发送失败");
+        showToast(err instanceof Error ? err.message : t("auth.sendCodeFailed"));
       });
     },
   });
@@ -94,8 +100,9 @@ export default function Login() {
   const navAgree = createNavAgreeFields(
     navigate,
     goGuest,
-    "登录即代表您已阅读并同意",
+    t("auth.loginAgree"),
     "login",
+    t,
   );
 
   const handleSubmit = async (values: Record<string, unknown>) => {
@@ -106,7 +113,7 @@ export default function Login() {
         const account = String(values.account ?? "").trim();
         const password = String(values.password ?? "");
         if (!account || !password) {
-          showToast("请输入账号和密码");
+          showToast(t("auth.fillLogin"));
           return;
         }
         await loginWithPassword(account, password);
@@ -114,16 +121,16 @@ export default function Login() {
         const email = String(values.email ?? "").trim();
         const code = String(values.smsCode ?? "").trim();
         if (!email || !code) {
-          showToast("请输入邮箱和验证码");
+          showToast(t("auth.fillEmailCode"));
           return;
         }
         await loginWithEmailCode(email, code);
       }
       window.dispatchEvent(new Event("auth-change"));
-      showToast("登录成功");
+      showToast(t("auth.loginSuccess"));
       navigate("/");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "登录失败");
+      showToast(err instanceof Error ? err.message : t("auth.loginFailed"));
     } finally {
       setSubmitting(false);
     }
@@ -139,7 +146,7 @@ export default function Login() {
       </div>
       <div className="px-4 sm:px-[26px] pt-0 pb-[10px]">
         <div className="text-[30px] font-extrabold text-[var(--brand-text)] leading-none text-center mb-6">
-          登录
+          {t("auth.loginTitle")}
         </div>
         <style>{`
           @keyframes slideInFromBottom { from { opacity: 0; transform: translateY(8px); } to { opacity:1; transform:translateY(0);} }
@@ -165,7 +172,7 @@ export default function Login() {
               }}
             >
               <GitHubIcon />
-              <span>使用GitHub登录</span>
+              <span>{t("auth.githubLogin")}</span>
             </button>
             <button
               type="button"
@@ -175,13 +182,23 @@ export default function Login() {
               }}
             >
               <GoogleIcon />
-              <span>使用Google登录</span>
+              <span>{t("auth.googleLogin")}</span>
+            </button>
+            <button
+              type="button"
+              className={primaryButtonClass}
+              onClick={() => {
+                window.location.href = apiUrl("/auth/microsoft");
+              }}
+            >
+              <MicrosoftIcon />
+              <span>{t("auth.microsoftLogin")}</span>
             </button>
 
             <div className="flex items-center gap-4 my-1">
               <div className="flex-1 h-px bg-[var(--brand-muted)] opacity-30" />
               <span className="text-[var(--brand-muted)] text-sm whitespace-nowrap">
-                或者
+                {t("auth.or")}
               </span>
               <div className="flex-1 h-px bg-[var(--brand-muted)] opacity-30" />
             </div>
@@ -192,7 +209,7 @@ export default function Login() {
               onClick={() => setMode("password")}
             >
               <MailIcon />
-              <span>邮箱或用户名登录/注册</span>
+              <span>{t("auth.emailLoginEntry")}</span>
             </button>
             <button
               type="button"
@@ -200,7 +217,7 @@ export default function Login() {
               onClick={goGuest}
             >
               <UserIcon />
-              <span>以游客身份登录</span>
+              <span>{t("auth.guestLogin")}</span>
             </button>
           </div>
         ) : (
@@ -215,7 +232,7 @@ export default function Login() {
               submitText={
                 <>
                   <EnterIcon />
-                  <span>登录</span>
+                  <span>{t("auth.loginSubmit")}</span>
                 </>
               }
               submitClassName={primaryButtonClass}

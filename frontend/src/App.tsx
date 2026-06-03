@@ -63,10 +63,40 @@ const AppContent: React.FC = () => {
         }
         .glass-btn:hover {
           background: var(--glass-btn-hover-bg) !important;
-          border-color: var(--glass-btn-hover-border) !important;
+          border-color: #1fc41f !important;
           box-shadow: var(--glass-btn-hover-shadow) !important;
           color: var(--brand-purple) !important;
           transform: translateY(-1px);
+        }
+        [data-theme="dark"] .glass-btn:hover,
+        [data-theme="dark"] .chat-floating-action:hover {
+          border-color: #1fc41f !important;
+          box-shadow:
+            0 0 0 2px #1fc41f,
+            0 0 0 5px rgba(31, 196, 31, 0.28),
+            var(--glass-btn-hover-shadow) !important;
+        }
+        .language-dropdown {
+          opacity: 0;
+          transform: scale(0.96) translateY(-6px);
+          pointer-events: none;
+          transition: opacity 120ms ease-out, transform 120ms ease-out;
+          will-change: opacity, transform;
+        }
+        .language-dropdown.open {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+          pointer-events: auto;
+        }
+        .language-switcher-root .language-item:hover,
+        .language-switcher-root .language-item:focus-visible {
+          color: var(--brand-purple) !important;
+          background: var(--brand-accent-soft) !important;
+          border-color: var(--brand-purple) !important;
+          outline: none;
+        }
+        .checkmark-icon {
+          transition: transform 120ms ease-out;
         }
       `}</style>
       <div className="app-root" data-oid="p4vlg_w">

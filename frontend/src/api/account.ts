@@ -37,7 +37,7 @@ export interface AccountPreference {
 }
 
 export interface AccountIdentity {
-  provider: "email" | "github" | "google" | string;
+  provider: "email" | "github" | "google" | "microsoft" | string;
   provider_email: string;
   provider_name: string;
   avatar_url: string;
@@ -74,6 +74,15 @@ export async function getAccountProfile() {
 
 export async function updateAccountProfile(payload: Partial<AccountProfile>) {
   const { data } = await http.patch<AccountProfile>("/account/profile", payload);
+  return data;
+}
+
+export async function uploadAccountAvatar(file: File) {
+  const body = new FormData();
+  body.append("avatar", file);
+  const { data } = await http.post<{ avatar_url: string }>("/account/avatar", body, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
   return data;
 }
 

@@ -37,6 +37,8 @@ func RegisterRoutes(r *gin.Engine) {
 			authGroup.GET("/github/callback", oauth.GitHubCallback)
 			authGroup.GET("/google", oauth.GoogleLogin)
 			authGroup.GET("/google/callback", oauth.GoogleCallback)
+			authGroup.GET("/microsoft", oauth.MicrosoftLogin)
+			authGroup.GET("/microsoft/callback", oauth.MicrosoftCallback)
 		}
 
 		// 公开 AI 端点（无需登录）
@@ -55,6 +57,7 @@ func RegisterRoutes(r *gin.Engine) {
 				accountGroup.GET("/overview", account.Overview)
 				accountGroup.GET("/profile", account.GetProfile)
 				accountGroup.PATCH("/profile", account.UpdateProfile)
+				accountGroup.POST("/avatar", account.UploadAvatar)
 				accountGroup.PATCH("/email", account.UpdateEmail)
 				accountGroup.PATCH("/password", account.ChangePassword)
 				accountGroup.GET("/preferences", account.GetPreferences)

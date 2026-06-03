@@ -5,6 +5,7 @@ import { deleteAccount } from "@/api/account";
 import { useAuth } from "@/hooks/useAuth";
 import { getEffectsEnabled, toggleEffects } from "@/utils/effects/controller";
 import { getStoredTheme, toggleTheme } from "@/utils/theme/controller";
+import { useTranslation } from "@/hooks/useTranslation";
 import AccountSection from "../components/Section";
 import { useAccountContext } from "..";
 
@@ -12,6 +13,7 @@ const Settings: React.FC = () => {
   const navigate = useNavigate();
   const auth = useAuth();
   const { data } = useAccountContext();
+  const { t } = useTranslation();
   const [theme, setTheme] = useState(getStoredTheme());
   const [effectsEnabled, setEffectsEnabled] = useState(getEffectsEnabled());
   const [danger, setDanger] = useState({ password: "", confirm: "" });
@@ -54,26 +56,26 @@ const Settings: React.FC = () => {
         <div className="account-list">
           <div className="account-list__item">
             <div>
-              <div className="account-list__title">语言</div>
+              <div className="account-list__title">{t("tooltips.languageSwitcher")}</div>
               <div className="account-list__meta">简体中文 / 繁體中文 / English</div>
             </div>
             <LanguageSwitcher />
           </div>
           <button className="account-list__item" type="button" onClick={() => setTheme(toggleTheme())}>
             <span>
-              <span className="account-list__title">主题</span>
-              <span className="account-list__meta">当前：{theme === "dark" ? "暗色" : "亮色"}</span>
+              <span className="account-list__title">{t("common.theme")}</span>
+              <span className="account-list__meta">{t("common.current", { value: theme === "dark" ? t("common.dark") : t("common.light") })}</span>
             </span>
-            <span className="account-empty">{theme === "dark" ? "切换到亮色" : "切换到暗色"}</span>
+            <span className="account-empty">{theme === "dark" ? t("common.switchToLight") : t("common.switchToDark")}</span>
           </button>
           <button className="account-list__item" type="button" onClick={() => setEffectsEnabled(toggleEffects())}>
             <span>
-              <span className="account-list__title">背景特效</span>
-              <span className="account-list__meta">当前：{effectsEnabled ? "开启" : "关闭"}</span>
+              <span className="account-list__title">{t("common.effects")}</span>
+              <span className="account-list__meta">{t("common.current", { value: effectsEnabled ? t("common.enabled") : t("common.disabled") })}</span>
             </span>
-            <span className="account-empty">{effectsEnabled ? "关闭" : "开启"}</span>
+            <span className="account-empty">{effectsEnabled ? t("common.disabled") : t("common.enabled")}</span>
           </button>
-          <button className="account-button" type="button" onClick={logout}>退出登录</button>
+          <button className="account-button" type="button" onClick={logout}>{t("common.logout")}</button>
         </div>
       </AccountSection>
 

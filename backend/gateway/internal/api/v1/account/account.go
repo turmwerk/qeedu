@@ -2,8 +2,13 @@ package account
 
 import (
 	"errors"
+	"fmt"
+	"mime/multipart"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strings"
+	"time"
 	"unicode/utf8"
 
 	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/configs"
@@ -121,6 +126,30 @@ func sanitize(value string, max int) string {
 	return value
 }
 
+func avatarExt(file *multipart.FileHeader) (string, bool) {
+	contentType := strings.ToLower(strings.TrimSpace(file.Header.Get("Content-Type")))
+	switch contentType {
+	case "image/jpeg", "image/jpg":
+		return ".jpg", true
+	case "image/png":
+		return ".png", true
+	case "image/webp":
+		return ".webp", true
+	case "image/gif":
+		return ".gif", true
+	default:
+		ext := strings.ToLower(filepath.Ext(file.Filename))
+		switch ext {
+		case ".jpg", ".jpeg":
+			return ".jpg", true
+		case ".png", ".webp", ".gif":
+			return ext, true
+		default:
+			return "", false
+		}
+	}
+}
+
 func loadUser(uid uint) (*User, error) {
 	var user User
 	if err := db.DB.First(&user, uid).Error; err != nil {
@@ -194,7 +223,7 @@ func listIdentities(uid uint, user *User) []identityResponse {
 		}
 	}
 
-	providers := []string{"email", "github", "google"}
+	providers := []string{"email", "github", "google", "microsoft"}
 	out := make([]identityResponse, 0, len(providers))
 	for _, provider := range providers {
 		item, ok := byProvider[provider]
@@ -313,6 +342,50 @@ func UpdateProfile(c *gin.Context) {
 	}
 	recordEvent(c, uid, "profile.update", "更新个人资料")
 	c.JSON(http.StatusOK, userToProfile(user))
+}
+
+func UploadAvatar(c *gin.Context) {
+	uid := currentUserID(c)
+	file, err := c.FormFile("avatar")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "请选择头像文件"})
+		return
+	}
+	if file.Size <= 0 || file.Size > 3*1024*1024 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "头像文件需小于 3MB"})
+		return
+	}
+	ext, ok := avatarExt(file)
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "头像仅支持 JPG、PNG、WebP 或 GIF"})
+		return
+	}
+
+	dir := filepath.Join("uploads", "avatars")
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to prepare upload directory"})
+		return
+	}
+	filename := fmt.Sprintf("user-%d-%d%s", uid, time.Now().UnixNano(), ext)
+	dst := filepath.Join(dir, filename)
+	if err := c.SaveUploadedFile(file, dst); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to save avatar"})
+		return
+	}
+
+	avatarURL := "/" + filepath.ToSlash(dst)
+	user, err := loadUser(uid)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to load user"})
+		return
+	}
+	user.AvatarURL = avatarURL
+	if err := db.DB.Save(user).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update avatar"})
+		return
+	}
+	recordEvent(c, uid, "profile.avatar", "更新头像")
+	c.JSON(http.StatusOK, gin.H{"avatar_url": avatarURL})
 }
 
 func UpdateEmail(c *gin.Context) {

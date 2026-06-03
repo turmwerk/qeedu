@@ -17,7 +17,7 @@ const Overview: React.FC = () => {
         <div className="account-grid account-grid--three">
           <StatusCard label="用户名" value={data.profile.name || "未设置"} detail={data.profile.email || "未绑定邮箱"} />
           <StatusCard label="账户状态" value={data.profile.status === "deleted" ? "已注销" : "正常"} detail="登录保护已启用" />
-          <StatusCard label="登录方式" value={`${linkedCount} 个已绑定`} detail="支持邮箱、GitHub、Google" />
+          <StatusCard label="登录方式" value={`${linkedCount} 个已绑定`} detail="支持邮箱、GitHub、Google、Microsoft" />
           <StatusCard label="默认模型" value={data.preferences.default_model || "deepseek-v4-flash"} detail="用于 AI 聊天与功能页" />
           <StatusCard label="代码模型" value={data.preferences.code_model || "deepseek-v4-flash"} detail="用于代码助手和运行解释" />
           <StatusCard label="背景特效" value={data.preferences.effects_enabled ? "开启" : "关闭"} detail="可在设置页调整" />

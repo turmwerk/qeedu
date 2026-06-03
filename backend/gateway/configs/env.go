@@ -13,6 +13,7 @@ import (
 var (
 	GitHubOAuth    *oauth2.Config
 	GoogleOAuth    *oauth2.Config
+	MicrosoftOAuth *oauth2.Config
 	FrontendURL    string
 	DatabaseDSN    string
 	JWTSecret      string
@@ -42,6 +43,17 @@ func Load() {
 		RedirectURL:  os.Getenv("GOOGLE_CALLBACK_URL"),
 		Scopes:       []string{"openid", "email", "profile"},
 		Endpoint:     google.Endpoint,
+	}
+
+	MicrosoftOAuth = &oauth2.Config{
+		ClientID:     os.Getenv("MICROSOFT_CLIENT_ID"),
+		ClientSecret: os.Getenv("MICROSOFT_CLIENT_SECRET"),
+		RedirectURL:  os.Getenv("MICROSOFT_CALLBACK_URL"),
+		Scopes:       []string{"openid", "email", "profile", "User.Read"},
+		Endpoint: oauth2.Endpoint{
+			AuthURL:  "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
+			TokenURL: "https://login.microsoftonline.com/common/oauth2/v2.0/token",
+		},
 	}
 
 	FrontendURL = os.Getenv("FRONTEND_URL")

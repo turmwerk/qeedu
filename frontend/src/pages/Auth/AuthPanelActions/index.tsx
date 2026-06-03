@@ -121,7 +121,7 @@ const AuthPanelActions: React.FC = () => {
         }
       `}</style>
       <div className="flex items-center gap-0">
-        <LanguageSwitcher />
+        <LanguageSwitcher iconSize={22} />
 
         <span className="text-gray-300 text-[10px] select-none mx-0.5">|</span>
 

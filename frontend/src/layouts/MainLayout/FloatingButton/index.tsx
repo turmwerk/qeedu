@@ -157,6 +157,10 @@ const FloatingControls: React.FC<{ scrollContainer?: HTMLElement | null }> = ({ 
           z-index: 80;
           width: 42px;
           pointer-events: none;
+          --float-hover-color: var(--brand-accent, #1fc41f);
+          --float-hover-border: #1fc41f;
+          --float-hover-bg: rgba(31, 196, 31, 0.12);
+          --float-hover-ring: rgba(31, 196, 31, 0.30);
         }
 
         .float-controls__button {
@@ -187,12 +191,22 @@ const FloatingControls: React.FC<{ scrollContainer?: HTMLElement | null }> = ({ 
 
         .float-controls__button:hover,
         .float-controls__button:focus-visible {
-          border-color: var(--glass-btn-hover-border);
-          background: var(--glass-btn-hover-bg);
-          box-shadow: var(--glass-btn-hover-shadow);
-          color: var(--brand-purple);
+          border-color: var(--float-hover-border) !important;
+          background: var(--float-hover-bg) !important;
+          box-shadow:
+            0 0 0 2px var(--float-hover-border),
+            0 0 0 5px var(--float-hover-ring),
+            var(--glass-btn-hover-shadow) !important;
+          color: var(--float-hover-color) !important;
           transform: translateY(-1px);
           outline: none;
+        }
+
+        .float-controls__button:hover .anticon,
+        .float-controls__button:focus-visible .anticon,
+        .float-controls__button:hover svg,
+        .float-controls__button:focus-visible svg {
+          color: currentColor;
         }
 
         .float-controls__top {
@@ -260,9 +274,9 @@ const FloatingControls: React.FC<{ scrollContainer?: HTMLElement | null }> = ({ 
         }
 
         .float-controls__button.is-active {
-          color: var(--brand-purple);
-          border-color: var(--glass-btn-hover-border);
-          background: var(--glass-btn-hover-bg);
+          color: var(--float-hover-color);
+          border-color: var(--float-hover-border) !important;
+          background: var(--float-hover-bg) !important;
         }
 
         .float-controls__globe {

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { getAccountOverview, type AccountOverview } from "@/api/account";
 
 export function useAccountData() {
@@ -22,5 +22,5 @@ export function useAccountData() {
     void reload();
   }, [reload]);
 
-  return { data, loading, error, reload };
+  return useMemo(() => ({ data, loading, error, reload }), [data, loading, error, reload]);
 }

@@ -17,6 +17,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { getStoredTheme, toggleTheme } from "@/utils/theme/controller";
 import { getEffectsEnabled, toggleEffects } from "@/utils/effects/controller";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { useTranslation } from "@/hooks/useTranslation";
 import Modal from "@/ui/Modal";
 import { internationalModuleCatalog } from "@/pages/International/moduleCatalog";
 import { managementModuleCatalog, managementIcon } from "@/pages/Management/moduleCatalog";
@@ -104,6 +105,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({ floatActionsVisible = false }) 
   const location = useLocation();
   const navStackRef = useRef<string[]>([]);
   const { isAuthenticated, user, logout } = useAuth();
+  const { t } = useTranslation();
   const isHomePage = location.pathname === "/";
   const isStudy = location.pathname.startsWith("/study");
   const isTeaching = location.pathname.startsWith("/teaching");
@@ -308,7 +310,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({ floatActionsVisible = false }) 
       <SearchModal open={searchVisible} onClose={() => setSearchVisible(false)} />
       <Modal
         visible={settingsVisible}
-        title="全局设置"
+        title={t("common.settings")}
         onClose={() => setSettingsVisible(false)}
         width={420}
         bodyClassName="px-5 py-5"
@@ -316,7 +318,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({ floatActionsVisible = false }) 
         <div className="flex flex-col gap-4 text-[var(--brand-text)]">
           <div className="flex items-center justify-between gap-4 rounded-lg border border-[var(--brand-border)] bg-[var(--surface-container)] px-4 py-3">
             <div>
-              <div className="text-sm font-semibold">语言</div>
+              <div className="text-sm font-semibold">{t("tooltips.languageSwitcher")}</div>
               <div className="text-xs text-[var(--brand-muted)]">简体中文 / 繁體中文 / English</div>
             </div>
             <LanguageSwitcher />
@@ -327,10 +329,10 @@ const MainHeader: React.FC<MainHeaderProps> = ({ floatActionsVisible = false }) 
             onClick={handleToggleTheme}
           >
             <span>
-              <span className="block text-sm font-semibold">主题</span>
-              <span className="block text-xs text-[var(--brand-muted)]">当前：{theme === "dark" ? "暗色" : "亮色"}</span>
+              <span className="block text-sm font-semibold">{t("common.theme")}</span>
+              <span className="block text-xs text-[var(--brand-muted)]">{t("common.current", { value: theme === "dark" ? t("common.dark") : t("common.light") })}</span>
             </span>
-            <span>{theme === "dark" ? "切换到亮色" : "切换到暗色"}</span>
+            <span>{theme === "dark" ? t("common.switchToLight") : t("common.switchToDark")}</span>
           </button>
           <button
             type="button"
@@ -338,10 +340,10 @@ const MainHeader: React.FC<MainHeaderProps> = ({ floatActionsVisible = false }) 
             onClick={handleToggleEffects}
           >
             <span>
-              <span className="block text-sm font-semibold">背景特效</span>
-              <span className="block text-xs text-[var(--brand-muted)]">当前：{effectsEnabled ? "开启" : "关闭"}</span>
+              <span className="block text-sm font-semibold">{t("common.effects")}</span>
+              <span className="block text-xs text-[var(--brand-muted)]">{t("common.current", { value: effectsEnabled ? t("common.enabled") : t("common.disabled") })}</span>
             </span>
-            <span>{effectsEnabled ? "关闭" : "开启"}</span>
+            <span>{effectsEnabled ? t("common.disabled") : t("common.enabled")}</span>
           </button>
         </div>
       </Modal>
@@ -353,7 +355,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({ floatActionsVisible = false }) 
             data-oid="36x2h-h"
           >
             <ArrowLeftOutlinedIcon />
-            <span className="hidden sm:inline">返回</span>
+            <span className="hidden sm:inline">{t("common.back")}</span>
           </Button>
         )}
         {isHomePage && (
@@ -373,7 +375,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({ floatActionsVisible = false }) 
               data-oid="settings-button"
             >
               <SettingOutlinedIcon />
-              <span className="hidden sm:inline">设置</span>
+              <span className="hidden sm:inline">{t("common.settings")}</span>
             </Button>
             <Button
               className={`${menuButtonBase} ${menuButtonUnderline} ${menuButtonIdle}`}
@@ -397,7 +399,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({ floatActionsVisible = false }) 
                   <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               )}
-              <span className="hidden sm:inline">主题</span>
+              <span className="hidden sm:inline">{t("common.theme")}</span>
             </Button>
           </>
         )}
@@ -407,7 +409,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({ floatActionsVisible = false }) 
           data-oid="search-button"
         >
           <SearchOutlinedIcon />
-          <span className="hidden sm:inline">搜索</span>
+          <span className="hidden sm:inline">{t("common.search")}</span>
         </Button>
         {!isHomePage && (
           <Button
@@ -416,7 +418,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({ floatActionsVisible = false }) 
             data-oid="obxmeer"
           >
             <HomeOutlinedIcon />
-            <span className="hidden sm:inline">首页</span>
+            <span className="hidden sm:inline">{t("common.home")}</span>
           </Button>
         )}
 
@@ -521,18 +523,18 @@ const MainHeader: React.FC<MainHeaderProps> = ({ floatActionsVisible = false }) 
             button={
               <span className="inline-flex items-center gap-1.5">
                 <UserOutlinedIcon />
-                <span>{user?.name || "用户"}</span>
+                <span>{user?.name || t("common.user")}</span>
               </span>
             }
             buttonClassName={`${menuButtonBase} ${menuButtonIdle} hidden sm:inline-flex`}
             items={[
               {
-                label: "个人中心",
+                label: t("common.accountCenter"),
                 active: location.pathname.startsWith("/account"),
                 onClick: () => navigate("/account"),
               },
               {
-                label: "退出登录",
+                label: t("common.logout"),
                 active: false,
                 onClick: logout,
               },
@@ -548,7 +550,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({ floatActionsVisible = false }) 
           data-oid="login-button"
         >
           <UserOutlinedIcon />
-          <span className="hidden sm:inline">{isAuthenticated ? "退出" : "登录"}</span>
+          <span className="hidden sm:inline">{isAuthenticated ? t("common.logout") : t("common.login")}</span>
         </Button>
       </div>
     </Header>

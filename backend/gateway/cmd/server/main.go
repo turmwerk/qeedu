@@ -55,6 +55,7 @@ func main() {
 	})
 
 	api.RegisterRoutes(r)
+	r.Static("/uploads", "./uploads")
 
 	log.Println("[gateway] listening on :8080")
 	if err := r.Run(":8080"); err != nil {

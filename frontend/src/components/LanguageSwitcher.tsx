@@ -5,9 +5,10 @@ import { useTranslation } from "@/hooks/useTranslation";
 
 interface LanguageSwitcherProps {
   className?: string;
+  iconSize?: number;
 }
 
-export function LanguageSwitcher({ className = "" }: LanguageSwitcherProps) {
+export function LanguageSwitcher({ className = "", iconSize = 18 }: LanguageSwitcherProps) {
   const { language, setLanguage } = useLanguage();
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
@@ -39,71 +40,6 @@ export function LanguageSwitcher({ className = "" }: LanguageSwitcherProps) {
 
   return (
     <>
-      <style>{`
-        .language-dropdown {
-          opacity: 0;
-          transform: scale(0.95) translateY(-8px);
-          pointer-events: none;
-          transition: opacity 0.15s ease-out, transform 0.15s ease-out;
-        }
-
-        .language-dropdown.open {
-          opacity: 1;
-          transform: scale(1) translateY(0);
-          pointer-events: auto;
-        }
-
-        .language-item {
-          opacity: 0;
-          transform: translateX(-10px);
-        }
-
-        .language-switcher-root .language-item:hover,
-        .language-switcher-root .language-item:focus-visible {
-          color: var(--brand-purple) !important;
-          background: var(--brand-accent-soft) !important;
-          border-color: var(--brand-purple) !important;
-          outline: none;
-        }
-
-        .language-dropdown.open .language-item {
-          animation: slideInItem 0.2s ease-out forwards;
-        }
-
-        @keyframes slideInItem {
-          from {
-            opacity: 0;
-            transform: translateX(-10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-
-        .language-item:nth-child(1) { animation-delay: 0.02s; }
-        .language-item:nth-child(2) { animation-delay: 0.04s; }
-        .language-item:nth-child(3) { animation-delay: 0.06s; }
-
-        @keyframes checkmarkPop {
-          0% {
-            opacity: 0;
-            transform: scale(0.5);
-          }
-          50% {
-            transform: scale(1.1);
-          }
-          100% {
-            opacity: 1;
-            transform: scale(1);
-          }
-        }
-
-        .checkmark-icon {
-          animation: checkmarkPop 0.3s ease-out;
-        }
-      `}</style>
-
       <div className={`language-switcher-root relative ${className}`} ref={dropdownRef}>
         <button
           aria-label={t("tooltips.languageSwitcher")}
@@ -121,7 +57,7 @@ export function LanguageSwitcher({ className = "" }: LanguageSwitcherProps) {
               transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
             }}
           >
-            <GlobeIcon size={18} />
+            <GlobeIcon size={iconSize} />
           </span>
         </button>
 

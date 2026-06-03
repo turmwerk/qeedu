@@ -38,6 +38,9 @@ func GoogleCallback(c *gin.Context) {
 	if !ensureOAuthConfig(c, "Google", configs.GoogleOAuth, "GOOGLE") {
 		return
 	}
+	if !verifyOAuthState(c) {
+		return
+	}
 	code := c.Query("code")
 	if code == "" {
 		oauthError(c, "missing code")

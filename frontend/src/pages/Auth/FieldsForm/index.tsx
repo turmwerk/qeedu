@@ -4,6 +4,7 @@ import IdIcon from "@/ui/Icon/IdIcon";
 import LockIcon from "@/ui/Icon/LockIcon";
 import EyeIcon from "@/ui/Icon/EyeIcon";
 import EyeTooltip from "../EyeTooltip";
+import { translate } from "@/hooks/useTranslation";
 
 // Note: Some projects may not have centralized Icon components; if so, callers can
 // pass icon components. To keep compatibility with the existing pages, this module
@@ -18,10 +19,12 @@ export interface BuildFieldsOptions {
   onSendCode?: (field: "login" | "register" | "forget", email: string) => void;
   codeCooldowns?: Partial<Record<"login" | "register" | "forget", number>>;
   codeSending?: Partial<Record<"login" | "register" | "forget", boolean>>;
+  t?: typeof translate;
 }
 
 export function buildFields(kind: "login-password" | "login-sms" | "register" | "forget", opts: BuildFieldsOptions): FormField[] {
   const { showPassword, setShowPassword, showPassword2, setShowPassword2, sendButtonClass, onSendCode, codeCooldowns, codeSending } = opts;
+  const t = opts.t ?? translate;
   void sendButtonClass;
 
   const hasValue = (value: unknown) => String(value ?? "").trim().length > 0;
@@ -55,7 +58,7 @@ export function buildFields(kind: "login-password" | "login-sms" | "register" | 
         aria-disabled={disabled}
         className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--brand-blue)] hover:text-[var(--brand-purple)] font-bold bg-transparent border-0 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:text-[var(--brand-blue)]"
       >
-        {sending ? "发送中" : cooldown > 0 ? `${cooldown}s 后重新获取` : "获取验证码"}
+        {sending ? t("auth.sending") : cooldown > 0 ? t("auth.retryAfter", { seconds: String(cooldown) }) : t("auth.getCode")}
       </button>
     );
   };
@@ -64,31 +67,31 @@ export function buildFields(kind: "login-password" | "login-sms" | "register" | 
     const fields: FormField[] = [
       {
         name: "account",
-        label: "用户名/邮箱",
-        placeholder: "用户名、邮箱",
+        label: t("auth.account"),
+        placeholder: t("auth.accountPlaceholder"),
         render: (value, onChange) => (
           <div className={shellClass}>
             <div className="absolute left-0 top-0 w-[56px] h-[56px] flex items-center justify-center text-[var(--brand-muted)] pointer-events-none">
               <IdIcon />
             </div>
-            {renderFloatingLabel("用户名/邮箱", value)}
-            <input className={`${inputClass} pl-[56px] pr-4`} id="login-account" name="account" value={value} onChange={(e) => onChange(e.target.value)} placeholder="用户名、邮箱" />
+            {renderFloatingLabel(t("auth.account"), value)}
+            <input className={`${inputClass} pl-[56px] pr-4`} id="login-account" name="account" value={value} onChange={(e) => onChange(e.target.value)} placeholder={t("auth.accountPlaceholder")} />
           </div>
         ),
       },
       {
         name: "password",
-        label: "密码",
-        placeholder: "密码",
+        label: t("auth.password"),
+        placeholder: t("auth.password"),
         render: (value, onChange) => (
           <div className={visibleShellClass}>
             <div className="absolute left-0 top-0 w-[56px] h-[56px] flex items-center justify-center text-[var(--brand-muted)] pointer-events-none">
               <LockIcon />
             </div>
-            {renderFloatingLabel("密码", value)}
-            <input className={`${inputClass} pl-[56px] pr-[56px]`} id="login-password" name="password" type={showPassword ? "text" : "password"} value={value} onChange={(e) => onChange(e.target.value)} placeholder="密码" autoComplete="current-password" />
+            {renderFloatingLabel(t("auth.password"), value)}
+            <input className={`${inputClass} pl-[56px] pr-[56px]`} id="login-password" name="password" type={showPassword ? "text" : "password"} value={value} onChange={(e) => onChange(e.target.value)} placeholder={t("auth.password")} autoComplete="current-password" />
 
-            <EyeTooltip on={showPassword} onToggle={() => setShowPassword(!showPassword)} ariaLabel={showPassword ? "隐藏密码" : "显示密码"}>
+            <EyeTooltip on={showPassword} onToggle={() => setShowPassword(!showPassword)} ariaLabel={showPassword ? t("auth.hidePassword") : t("auth.showPassword")}>
               <EyeIcon on={showPassword} />
             </EyeTooltip>
           </div>
@@ -103,29 +106,29 @@ export function buildFields(kind: "login-password" | "login-sms" | "register" | 
     const fields: FormField[] = [
       {
         name: "email",
-        label: "邮箱",
-        placeholder: "邮箱",
+        label: t("auth.email"),
+        placeholder: t("auth.email"),
         render: (value, onChange) => (
           <div className={shellClass}>
             <div className="absolute left-0 top-0 w-[56px] h-[56px] flex items-center justify-center text-[var(--brand-muted)] pointer-events-none">
               <IdIcon />
             </div>
-            {renderFloatingLabel("  邮箱", value)}
-            <input className={`${inputClass} pl-[56px] pr-4`} id="login-email" name="email" value={value} onChange={(e) => onChange(e.target.value)} placeholder="邮箱" inputMode="email" />
+            {renderFloatingLabel(t("auth.email"), value)}
+            <input className={`${inputClass} pl-[56px] pr-4`} id="login-email" name="email" value={value} onChange={(e) => onChange(e.target.value)} placeholder={t("auth.email")} inputMode="email" />
           </div>
         ),
       },
       {
         name: "smsCode",
-        label: "验证码",
-        placeholder: "验证码",
+        label: t("auth.code"),
+        placeholder: t("auth.code"),
         render: (value, onChange, values) => (
           <div className={shellClass}>
             <div className="absolute left-0 top-0 w-[56px] h-[56px] flex items-center justify-center text-[var(--brand-muted)] pointer-events-none z-10">
               <KeyIcon />
             </div>
-            {renderFloatingLabel("验证码", value)}
-            <input className={`${inputClass} flex-1 pl-[56px] pr-[110px]`} id="login-sms-code" name="smsCode" value={value} onChange={(e) => onChange(e.target.value)} placeholder="验证码" autoComplete="one-time-code" />
+            {renderFloatingLabel(t("auth.code"), value)}
+            <input className={`${inputClass} flex-1 pl-[56px] pr-[110px]`} id="login-sms-code" name="smsCode" value={value} onChange={(e) => onChange(e.target.value)} placeholder={t("auth.code")} autoComplete="one-time-code" />
 
             {renderCodeButton("login", String(values.email ?? ""))}
           </div>
@@ -143,15 +146,15 @@ export function buildFields(kind: "login-password" | "login-sms" | "register" | 
     const fields: FormField[] = [
       {
         name: idName,
-        label: "邮箱",
-        placeholder: "邮箱",
+        label: t("auth.email"),
+        placeholder: t("auth.email"),
         render: (value, onChange) => (
           <div className={shellClass}>
             <div className="absolute left-0 top-0 w-[56px] h-[56px] flex items-center justify-center text-[var(--brand-muted)] pointer-events-none">
               <IdIcon />
             </div>
-            {renderFloatingLabel("邮箱", value)}
-            <input className={`${inputClass} pl-[56px] pr-4`} id={`${kind}-${idName}`} name={idName} value={value} onChange={(e) => onChange(e.target.value)} placeholder="邮箱" />
+            {renderFloatingLabel(t("auth.email"), value)}
+            <input className={`${inputClass} pl-[56px] pr-4`} id={`${kind}-${idName}`} name={idName} value={value} onChange={(e) => onChange(e.target.value)} placeholder={t("auth.email")} />
           </div>
         ),
       },
@@ -159,15 +162,15 @@ export function buildFields(kind: "login-password" | "login-sms" | "register" | 
         ? [
             {
               name: "name",
-              label: "用户名",
-              placeholder: "用户名",
+              label: t("auth.username"),
+              placeholder: t("auth.username"),
               render: (value, onChange) => (
                 <div className={shellClass}>
                   <div className="absolute left-0 top-0 w-[56px] h-[56px] flex items-center justify-center text-[var(--brand-muted)] pointer-events-none">
                     <IdIcon />
                   </div>
-                  {renderFloatingLabel("用户名", value)}
-                  <input className={`${inputClass} pl-[56px] pr-4`} id="register-name" name="name" value={value} onChange={(e) => onChange(e.target.value)} placeholder="用户名" autoComplete="username" maxLength={30} />
+                  {renderFloatingLabel(t("auth.username"), value)}
+                  <input className={`${inputClass} pl-[56px] pr-4`} id="register-name" name="name" value={value} onChange={(e) => onChange(e.target.value)} placeholder={t("auth.username")} autoComplete="username" maxLength={30} />
                 </div>
               ),
             } satisfies FormField,
@@ -175,15 +178,15 @@ export function buildFields(kind: "login-password" | "login-sms" | "register" | 
         : []),
       {
         name: codeName,
-        label: "验证码",
-        placeholder: "验证码",
+        label: t("auth.code"),
+        placeholder: t("auth.code"),
         render: (value, onChange, values) => (
           <div className={shellClass}>
             <div className="absolute left-0 top-0 w-[56px] h-[56px] flex items-center justify-center text-[var(--brand-muted)] pointer-events-none z-10">
               <KeyIcon />
             </div>
-            {renderFloatingLabel("验证码", value)}
-            <input className={`${inputClass} flex-1 pl-[56px] pr-[110px]`} id={`${kind}-${codeName}`} name={codeName} value={value} onChange={(e) => onChange(e.target.value)} placeholder="验证码" autoComplete="one-time-code" />
+            {renderFloatingLabel(t("auth.code"), value)}
+            <input className={`${inputClass} flex-1 pl-[56px] pr-[110px]`} id={`${kind}-${codeName}`} name={codeName} value={value} onChange={(e) => onChange(e.target.value)} placeholder={t("auth.code")} autoComplete="one-time-code" />
 
             {renderCodeButton(kind, String(values.email ?? ""))}
           </div>
@@ -191,17 +194,17 @@ export function buildFields(kind: "login-password" | "login-sms" | "register" | 
       },
       {
         name: "password",
-        label: "密码",
-        placeholder: "密码",
+        label: t("auth.password"),
+        placeholder: t("auth.password"),
         render: (value, onChange) => (
           <div className={visibleShellClass}>
             <div className="absolute left-0 top-0 w-[56px] h-[56px] flex items-center justify-center text-[var(--brand-muted)] pointer-events-none">
               <LockIcon />
             </div>
-            {renderFloatingLabel("密码", value)}
-            <input className={`${inputClass} pl-[56px] pr-[56px]`} id={`${kind}-password`} name="password" type={showPassword ? "text" : "password"} value={value} onChange={(e) => onChange(e.target.value)} placeholder="密码" autoComplete="new-password" />
+            {renderFloatingLabel(t("auth.password"), value)}
+            <input className={`${inputClass} pl-[56px] pr-[56px]`} id={`${kind}-password`} name="password" type={showPassword ? "text" : "password"} value={value} onChange={(e) => onChange(e.target.value)} placeholder={t("auth.password")} autoComplete="new-password" />
 
-            <EyeTooltip on={showPassword} onToggle={() => setShowPassword(!showPassword)} ariaLabel={showPassword ? "隐藏密码" : "显示密码"}>
+            <EyeTooltip on={showPassword} onToggle={() => setShowPassword(!showPassword)} ariaLabel={showPassword ? t("auth.hidePassword") : t("auth.showPassword")}>
               <EyeIcon on={showPassword} />
             </EyeTooltip>
           </div>
@@ -209,17 +212,17 @@ export function buildFields(kind: "login-password" | "login-sms" | "register" | 
       },
       {
         name: "password2",
-        label: "再次输入密码",
-        placeholder: "再次输入密码",
+        label: t("auth.confirmPassword"),
+        placeholder: t("auth.confirmPassword"),
         render: (value, onChange) => (
           <div className={visibleShellClass}>
             <div className="absolute left-0 top-0 w-[56px] h-[56px] flex items-center justify-center text-[var(--brand-muted)] pointer-events-none">
               <LockIcon />
             </div>
-            {renderFloatingLabel("再次输入密码", value)}
-            <input className={`${inputClass} pl-[56px] pr-[56px]`} id={`${kind}-password-confirm`} name="password2" type={showPassword2 ? "text" : "password"} value={value} onChange={(e) => onChange(e.target.value)} placeholder="再次输入密码" autoComplete="new-password" />
+            {renderFloatingLabel(t("auth.confirmPassword"), value)}
+            <input className={`${inputClass} pl-[56px] pr-[56px]`} id={`${kind}-password-confirm`} name="password2" type={showPassword2 ? "text" : "password"} value={value} onChange={(e) => onChange(e.target.value)} placeholder={t("auth.confirmPassword")} autoComplete="new-password" />
 
-            <EyeTooltip on={!!showPassword2} onToggle={() => setShowPassword2 && setShowPassword2(!showPassword2)} ariaLabel={showPassword2 ? "隐藏密码" : "显示密码"}>
+            <EyeTooltip on={!!showPassword2} onToggle={() => setShowPassword2 && setShowPassword2(!showPassword2)} ariaLabel={showPassword2 ? t("auth.hidePassword") : t("auth.showPassword")}>
               <EyeIcon on={!!showPassword2} />
             </EyeTooltip>
           </div>

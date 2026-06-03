@@ -8,6 +8,7 @@ import createNavAgreeFields from "../NavAgree";
 import AuthPanelActions from "../AuthPanelActions";
 import { registerWithEmail, sendEmailCode } from "@/api/auth";
 import { useCodeCountdown } from "../useCodeCountdown";
+import { useTranslation } from "@/hooks/useTranslation";
 
 function EnterIcon() {
   return (
@@ -25,9 +26,10 @@ export default function Resister() {
   const [showPassword2, setShowPassword2] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const registerCode = useCodeCountdown();
+  const { t } = useTranslation();
 
   const goGuest = () => {
-    showToast("使用“游客模式”进入首页");
+    showToast(t("auth.guestToast"));
     navigate("/");
   };
 
@@ -44,17 +46,18 @@ export default function Resister() {
     sendButtonClass,
     codeCooldowns: { register: registerCode.cooldown },
     codeSending: { register: registerCode.sending },
+    t,
     onSendCode: async (_field, email) => {
       const normalized = email.trim();
       if (!normalized) {
-        showToast("请先输入邮箱");
+        showToast(t("auth.enterEmailFirst"));
         return;
       }
       await registerCode.run(async () => {
         const res = await sendEmailCode(normalized, "register");
-        showToast(res.dev_code ? `验证码：${res.dev_code}` : "验证码已发送");
+        showToast(res.dev_code ? t("auth.codeToast", { code: res.dev_code }) : t("auth.codeSent"));
       }).catch((err) => {
-        showToast(err instanceof Error ? err.message : "验证码发送失败");
+        showToast(err instanceof Error ? err.message : t("auth.sendCodeFailed"));
       });
     },
   });
@@ -67,15 +70,15 @@ export default function Resister() {
     const password = String(values.password ?? "");
     const password2 = String(values.password2 ?? "");
     if (!email || !name || !code || !password) {
-      showToast("请填写邮箱、用户名、验证码和密码");
+      showToast(t("auth.fillRegister"));
       return;
     }
     if (name.length < 2 || name.length > 30) {
-      showToast("用户名需为 2-30 个字符");
+      showToast(t("auth.invalidUsername"));
       return;
     }
     if (password !== password2) {
-      showToast("两次输入的密码不一致");
+      showToast(t("auth.passwordMismatch"));
       return;
     }
     setSubmitting(true);
@@ -87,16 +90,16 @@ export default function Resister() {
         password,
       });
       window.dispatchEvent(new Event("auth-change"));
-      showToast("注册成功");
+      showToast(t("auth.registerSuccess"));
       navigate("/");
     } catch (err) {
-      showToast(err instanceof Error ? err.message : "注册失败");
+      showToast(err instanceof Error ? err.message : t("auth.registerFailed"));
     } finally {
       setSubmitting(false);
     }
   };
 
-  const navAgree = createNavAgreeFields(navigate, goGuest, "注册并登录即代表您已阅读并同意", "register");
+  const navAgree = createNavAgreeFields(navigate, goGuest, t("auth.registerAgree"), "register", t);
 
   return (
     <div
@@ -107,14 +110,14 @@ export default function Resister() {
         <AuthPanelActions />
       </div>
       <div className="px-4 sm:px-[26px] pt-0 pb-[10px]" data-oid="sxw10y7">
-        <div className="text-[30px] font-extrabold text-[var(--brand-text)] leading-none text-center mb-6">注册</div>
+        <div className="text-[30px] font-extrabold text-[var(--brand-text)] leading-none text-center mb-6">{t("auth.registerTitle")}</div>
         <Form
           fields={fields.concat(navAgree)}
           onSubmit={handleSubmit}
           submitText={
             <>
                   <EnterIcon data-oid="sojo3:7" />
-                  <span data-oid=".iab:ea">注册并登录</span>
+                  <span data-oid=".iab:ea">{t("auth.registerSubmit")}</span>
             </>
           }
           submitClassName={primaryButtonClass}

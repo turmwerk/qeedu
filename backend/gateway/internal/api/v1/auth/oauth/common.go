@@ -18,6 +18,8 @@ import (
 	"golang.org/x/oauth2"
 )
 
+const oauthStateCookieName = "edu_oauth_state"
+
 func randomState() string {
 	b := make([]byte, 16)
 	rand.Read(b)
@@ -48,14 +50,34 @@ func isBindMode(c *gin.Context) bool {
 
 func oauthState(c *gin.Context) string {
 	state := randomState()
-	if callbackBindMode(c) {
-		return "bind:" + state
+	if isBindMode(c) {
+		state = "bind:" + state
 	}
+	c.SetCookie(
+		oauthStateCookieName,
+		state,
+		int((10 * time.Minute).Seconds()),
+		"/",
+		"",
+		configs.IsProd(),
+		true,
+	)
 	return state
 }
 
 func callbackBindMode(c *gin.Context) bool {
 	return strings.HasPrefix(strings.TrimSpace(c.Query("state")), "bind:")
+}
+
+func verifyOAuthState(c *gin.Context) bool {
+	state := strings.TrimSpace(c.Query("state"))
+	cookieState, err := c.Cookie(oauthStateCookieName)
+	c.SetCookie(oauthStateCookieName, "", -1, "/", "", configs.IsProd(), true)
+	if err != nil || state == "" || cookieState == "" || state != cookieState {
+		oauthError(c, "OAuth state 校验失败")
+		return false
+	}
+	return true
 }
 
 func redirectToFrontend(c *gin.Context, params url.Values) {
@@ -96,7 +118,7 @@ func ensureOAuthConfig(c *gin.Context, providerLabel string, cfg *oauth2.Config,
 // FinishOAuth upserts the user via gRPC, generates a JWT, sets an httpOnly cookie,
 // and redirects to the frontend.
 func FinishOAuth(c *gin.Context, profile *userv1.OAuthProfile) {
-	if isBindMode(c) {
+	if callbackBindMode(c) {
 		uid := currentUserID(c)
 		if uid == 0 {
 			redirectToFrontend(c, url.Values{"oauth_error": {"请先登录后再绑定第三方账号"}})
@@ -112,7 +134,7 @@ func FinishOAuth(c *gin.Context, profile *userv1.OAuthProfile) {
 			redirectToFrontend(c, url.Values{"oauth_error": {"绑定失败: " + err.Error()}})
 			return
 		}
-		c.Redirect(http.StatusTemporaryRedirect, configs.FrontendURL+"/account/oauth?oauth_bound="+url.QueryEscape(profile.Provider))
+		c.Redirect(http.StatusTemporaryRedirect, configs.FrontendURL+"/account/sign-in?oauth_bound="+url.QueryEscape(profile.Provider))
 		return
 	}
 

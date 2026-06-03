@@ -1,10 +1,12 @@
-﻿import type { FormField } from "@/ui/Form";
+import type { FormField } from "@/ui/Form";
+import { translate } from "@/hooks/useTranslation";
 
 export function createNavAgreeFields(
   navigate: (path: string) => void,
   goGuest: () => void,
   agreeText = "登录即代表您已阅读并同意",
   page: "login" | "register" | "forget" = "login",
+  t: typeof translate = translate,
 ) {
   const navField: FormField = {
     name: "nav",
@@ -16,24 +18,22 @@ export function createNavAgreeFields(
           {page === "login" ? (
             <>
               <span onClick={() => navigate("/register")} className="text-[var(--brand-blue)] cursor-pointer hover:underline hover:text-[var(--brand-purple)]">
-                注册
+                {t("auth.register")}
               </span>
               <span className="text-[var(--brand-muted)]">|</span>
               <span onClick={() => navigate("/forget-password")} className="text-[var(--brand-blue)] cursor-pointer hover:underline hover:text-[var(--brand-purple)]">
-                忘记密码
+                {t("auth.forgotPassword")}
               </span>
             </>
           ) : (
-            <>
-              <span onClick={() => navigate("/login")} className="text-[var(--brand-blue)] cursor-pointer hover:underline hover:text-[var(--brand-purple)]">
-                返回登录
-              </span>
-            </>
+            <span onClick={() => navigate("/login")} className="text-[var(--brand-blue)] cursor-pointer hover:underline hover:text-[var(--brand-purple)]">
+              {t("auth.backToLogin")}
+            </span>
           )}
         </div>
         <div className="inline-flex items-center">
           <span onClick={goGuest} className="text-[var(--brand-blue)] cursor-pointer hover:underline hover:text-[var(--brand-purple)]">
-            游客模式
+            {t("auth.guestMode")}
           </span>
         </div>
       </div>
@@ -47,7 +47,9 @@ export function createNavAgreeFields(
     render: () => (
       <div className="text-[13px] text-[var(--brand-muted)] col-span-2 mt-1 mb-0 text-center whitespace-nowrap">
         {agreeText}
-        <span className="ml-1 text-[var(--brand-blue)] cursor-pointer hover:underline hover:text-[var(--brand-purple)]">《服务协议》</span>
+        <span className="ml-1 text-[var(--brand-blue)] cursor-pointer hover:underline hover:text-[var(--brand-purple)]">
+          {t("auth.serviceAgreement")}
+        </span>
       </div>
     ),
   };

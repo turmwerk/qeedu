@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { NavLink, Outlet, useLocation, useNavigate, useOutletContext } from "react-router-dom";
 import {
   ApiOutlined,
@@ -12,7 +12,6 @@ import {
   ExperimentOutlined,
   HistoryOutlined,
   IdcardOutlined,
-  KeyOutlined,
   LeftOutlined,
   LockOutlined,
   LoginOutlined,
@@ -23,58 +22,79 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import { useAuth } from "@/hooks/useAuth";
+import { useTranslation } from "@/hooks/useTranslation";
 import { useAccountData } from "./hooks/useAccountData";
 
 interface AccountNavItem {
   to: string;
-  label: string;
+  labelKey: keyof typeof navLabelKeys;
   icon: React.ReactNode;
   end?: boolean;
 }
 
-const navGroups: Array<{ title: string; items: AccountNavItem[] }> = [
+const navLabelKeys = {
+  overview: "account.nav.overview",
+  profile: "account.nav.profile",
+  preferences: "account.nav.preferences",
+  security: "account.nav.security",
+  identity: "account.nav.identity",
+  signIn: "account.nav.signIn",
+  sessions: "account.nav.sessions",
+  notifications: "account.nav.notifications",
+  aiPreferences: "account.nav.aiPreferences",
+  modelConfig: "account.nav.modelConfig",
+  contextPolicy: "account.nav.contextPolicy",
+  privacy: "account.nav.privacy",
+  billing: "account.nav.billing",
+  dataExport: "account.nav.dataExport",
+  activity: "account.nav.activity",
+  audit: "account.nav.audit",
+  settings: "account.nav.settings",
+  help: "account.nav.help",
+} as const;
+
+const navGroups: Array<{ titleKey: "account.nav.account" | "account.nav.identitySecurity" | "account.nav.aiNotifications" | "account.nav.dataCompliance" | "account.nav.system"; items: AccountNavItem[] }> = [
   {
-    title: "账户",
+    titleKey: "account.nav.account",
     items: [
-      { to: "/account", label: "账户概览", icon: <DashboardOutlined />, end: true },
-      { to: "/account/profile", label: "个人资料", icon: <UserOutlined /> },
-      { to: "/account/preferences", label: "账户偏好", icon: <ControlOutlined /> },
+      { to: "/account", labelKey: "overview", icon: <DashboardOutlined />, end: true },
+      { to: "/account/profile", labelKey: "profile", icon: <UserOutlined /> },
+      { to: "/account/preferences", labelKey: "preferences", icon: <ControlOutlined /> },
     ],
   },
   {
-    title: "身份与安全",
+    titleKey: "account.nav.identitySecurity",
     items: [
-      { to: "/account/security", label: "密码与安全", icon: <LockOutlined /> },
-      { to: "/account/identity", label: "身份信息", icon: <IdcardOutlined /> },
-      { to: "/account/sign-in", label: "登录方式", icon: <LoginOutlined /> },
-      { to: "/account/sessions", label: "活跃会话", icon: <HistoryOutlined /> },
-      { to: "/account/oauth", label: "第三方绑定", icon: <KeyOutlined /> },
+      { to: "/account/security", labelKey: "security", icon: <LockOutlined /> },
+      { to: "/account/identity", labelKey: "identity", icon: <IdcardOutlined /> },
+      { to: "/account/sign-in", labelKey: "signIn", icon: <LoginOutlined /> },
+      { to: "/account/sessions", labelKey: "sessions", icon: <HistoryOutlined /> },
     ],
   },
   {
-    title: "AI 与通知",
+    titleKey: "account.nav.aiNotifications",
     items: [
-      { to: "/account/notifications", label: "通知偏好", icon: <BellOutlined /> },
-      { to: "/account/ai-preferences", label: "AI 偏好", icon: <ApiOutlined /> },
-      { to: "/account/model-config", label: "模型配置", icon: <ExperimentOutlined /> },
-      { to: "/account/context-policy", label: "上下文策略", icon: <DatabaseOutlined /> },
+      { to: "/account/notifications", labelKey: "notifications", icon: <BellOutlined /> },
+      { to: "/account/ai-preferences", labelKey: "aiPreferences", icon: <ApiOutlined /> },
+      { to: "/account/model-config", labelKey: "modelConfig", icon: <ExperimentOutlined /> },
+      { to: "/account/context-policy", labelKey: "contextPolicy", icon: <DatabaseOutlined /> },
     ],
   },
   {
-    title: "数据与合规",
+    titleKey: "account.nav.dataCompliance",
     items: [
-      { to: "/account/privacy", label: "隐私与授权", icon: <SafetyOutlined /> },
-      { to: "/account/billing", label: "额度与账单", icon: <CreditCardOutlined /> },
-      { to: "/account/data", label: "数据导出", icon: <CloudDownloadOutlined /> },
-      { to: "/account/activity", label: "活动日志", icon: <HistoryOutlined /> },
-      { to: "/account/audit", label: "审计记录", icon: <AuditOutlined /> },
+      { to: "/account/privacy", labelKey: "privacy", icon: <SafetyOutlined /> },
+      { to: "/account/billing", labelKey: "billing", icon: <CreditCardOutlined /> },
+      { to: "/account/data", labelKey: "dataExport", icon: <CloudDownloadOutlined /> },
+      { to: "/account/activity", labelKey: "activity", icon: <HistoryOutlined /> },
+      { to: "/account/audit", labelKey: "audit", icon: <AuditOutlined /> },
     ],
   },
   {
-    title: "系统",
+    titleKey: "account.nav.system",
     items: [
-      { to: "/account/settings", label: "设置", icon: <SettingOutlined /> },
-      { to: "/account/help", label: "帮助反馈", icon: <QuestionCircleOutlined /> },
+      { to: "/account/settings", labelKey: "settings", icon: <SettingOutlined /> },
+      { to: "/account/help", labelKey: "help", icon: <QuestionCircleOutlined /> },
     ],
   },
 ];
@@ -87,38 +107,46 @@ export function useAccountContext() {
   return useOutletContext<AccountOutletContext>();
 }
 
-const AccountSidebar: React.FC<{ onNavigate?: () => void }> = ({ onNavigate }) => (
-  <aside className="account-sidebar" aria-label="个人中心导航">
-    <nav className="account-nav" aria-label="账户导航">
-      {navGroups.map((group) => (
-        <div className="account-nav__group" key={group.title}>
-          <div className="account-nav__group-title">{group.title}</div>
-          {group.items.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              end={item.end}
-              onClick={onNavigate}
-              className={({ isActive }) =>
-                `account-nav__item ${isActive ? "account-nav__item--active" : ""}`
-              }
-            >
-              <span className="account-nav__icon">{item.icon}</span>
-              <span>{item.label}</span>
-            </NavLink>
-          ))}
-        </div>
-      ))}
-    </nav>
-  </aside>
-);
+const AccountSidebar: React.FC<{ onNavigate?: () => void }> = React.memo(({ onNavigate }) => {
+  const { t } = useTranslation();
+
+  return (
+    <aside className="account-sidebar" aria-label={t("account.title")}>
+      <nav className="account-nav" aria-label={t("account.title")}>
+        {navGroups.map((group) => (
+          <div className="account-nav__group" key={group.titleKey}>
+            <div className="account-nav__group-title">{t(group.titleKey)}</div>
+            {group.items.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.end}
+                onClick={onNavigate}
+                className={({ isActive }) =>
+                  `account-nav__item ${isActive ? "account-nav__item--active" : ""}`
+                }
+              >
+                <span className="account-nav__icon">{item.icon}</span>
+                <span>{t(navLabelKeys[item.labelKey])}</span>
+              </NavLink>
+            ))}
+          </div>
+        ))}
+      </nav>
+    </aside>
+  );
+});
+
+AccountSidebar.displayName = "AccountSidebar";
 
 const Account: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const auth = useAuth();
   const accountData = useAccountData();
+  const { t } = useTranslation();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const outletContext = useMemo(() => accountData, [accountData]);
 
   useEffect(() => {
     setDrawerOpen(false);
@@ -160,20 +188,22 @@ const Account: React.FC = () => {
 
         .account-desktop {
           position: relative;
-          min-height: calc(100vh - var(--main-header-height, 46px));
         }
 
         .account-sidebar {
           display: flex;
           flex-direction: column;
           width: var(--account-sidebar-width);
-          min-height: calc(100vh - var(--main-header-height, 46px));
+          height: calc(100vh - var(--main-header-height, 46px));
+          min-height: 0;
           padding: 14px 14px 22px;
           color: var(--brand-text);
           background: var(--surface-container);
           border-right: 1px solid var(--brand-border);
           overflow-x: hidden;
           overflow-y: auto;
+          overscroll-behavior: contain;
+          scrollbar-gutter: stable;
           backdrop-filter: blur(14px);
         }
 
@@ -183,7 +213,7 @@ const Account: React.FC = () => {
           z-index: 10;
         }
 
-        .account-desktop__content {
+        .account-content {
           min-width: 0;
           margin-left: var(--account-sidebar-width);
           min-height: calc(100vh - var(--main-header-height, 46px));
@@ -191,7 +221,7 @@ const Account: React.FC = () => {
           flex-direction: column;
         }
 
-        .account-desktop__main {
+        .account-main {
           flex: 1;
           width: min(1120px, calc(100vw - var(--account-sidebar-width) - 72px));
           margin: 0 auto;
@@ -353,6 +383,57 @@ const Account: React.FC = () => {
           box-shadow: 0 0 0 3px rgba(31, 196, 31, 0.13);
         }
 
+        .account-avatar-editor {
+          display: grid;
+          grid-template-columns: auto minmax(0, 1fr);
+          align-items: center;
+          gap: 14px;
+          border: 1px solid var(--brand-border);
+          border-radius: 8px;
+          background: var(--surface-container-low);
+          padding: 14px;
+        }
+
+        .account-avatar-preview {
+          width: 72px;
+          height: 72px;
+          display: inline-grid;
+          place-items: center;
+          overflow: hidden;
+          border: 1px solid var(--brand-border);
+          border-radius: 50%;
+          background: rgba(31, 196, 31, 0.10);
+          color: var(--brand-purple);
+          font-size: 24px;
+          font-weight: 900;
+        }
+
+        .account-avatar-preview img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .account-avatar-controls {
+          min-width: 0;
+          display: grid;
+          grid-template-columns: auto minmax(0, 1fr);
+          gap: 10px;
+          align-items: center;
+        }
+
+        .account-avatar-upload {
+          position: relative;
+          overflow: hidden;
+        }
+
+        .account-avatar-upload input {
+          position: absolute;
+          inset: 0;
+          opacity: 0;
+          cursor: pointer;
+        }
+
         .account-button {
           display: inline-flex;
           align-items: center;
@@ -477,7 +558,6 @@ const Account: React.FC = () => {
 
         .account-mobile {
           display: none;
-          min-height: calc(100vh - var(--main-header-height, 46px));
         }
 
         .account-mobile__header {
@@ -546,11 +626,6 @@ const Account: React.FC = () => {
           transform: translateX(0);
         }
 
-        .account-mobile__main {
-          min-height: calc(100vh - var(--account-mobile-header-height));
-          padding: 20px 14px 42px;
-        }
-
         .account-empty {
           color: var(--brand-muted);
           font-size: 14px;
@@ -570,9 +645,20 @@ const Account: React.FC = () => {
             display: block;
           }
 
+          .account-content {
+            margin-left: 0;
+            min-height: calc(100vh - var(--account-mobile-header-height));
+          }
+
+          .account-main {
+            width: 100%;
+            padding: 20px 14px 42px;
+          }
+
           .account-sidebar {
             width: var(--account-sidebar-width);
-            min-height: 100%;
+            height: 100dvh;
+            max-height: 100dvh;
             padding: 16px 14px 22px;
           }
 
@@ -600,6 +686,16 @@ const Account: React.FC = () => {
             flex-direction: column;
           }
 
+          .account-avatar-editor,
+          .account-avatar-controls {
+            grid-template-columns: 1fr;
+            justify-items: stretch;
+          }
+
+          .account-avatar-preview {
+            justify-self: start;
+          }
+
           .account-actions {
             justify-content: stretch;
             flex-direction: column;
@@ -614,11 +710,6 @@ const Account: React.FC = () => {
       <div className="account-desktop">
         <div className="account-desktop__sidebar">
           <AccountSidebar />
-        </div>
-        <div className="account-desktop__content">
-          <main className="account-desktop__main">
-            <Outlet context={accountData} />
-          </main>
         </div>
       </div>
 
@@ -635,7 +726,7 @@ const Account: React.FC = () => {
           >
             <MenuOutlined />
           </button>
-          <span className="account-mobile__title">个人中心</span>
+          <span className="account-mobile__title">{t("account.title")}</span>
           <button
             className="account-mobile__button account-mobile__account"
             type="button"
@@ -659,8 +750,11 @@ const Account: React.FC = () => {
           <AccountSidebar onNavigate={() => setDrawerOpen(false)} />
         </aside>
 
-        <main className="account-mobile__main">
-          <Outlet context={accountData} />
+      </div>
+
+      <div className="account-content">
+        <main className="account-main">
+          <Outlet context={outletContext} />
         </main>
       </div>
     </div>
