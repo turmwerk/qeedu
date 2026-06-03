@@ -72,8 +72,7 @@ const AppContent: React.FC = () => {
         [data-theme="dark"] .chat-floating-action:hover {
           border-color: #1fc41f !important;
           box-shadow:
-            0 0 0 2px #1fc41f,
-            0 0 0 5px rgba(31, 196, 31, 0.28),
+            0 0 0 1px rgba(31, 196, 31, 0.12),
             var(--glass-btn-hover-shadow) !important;
         }
         .language-dropdown {

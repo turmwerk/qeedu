@@ -139,6 +139,11 @@ const FloatingControls: React.FC<{ scrollContainer?: HTMLElement | null }> = ({ 
     setEffectsEnabled(toggleEffects());
   };
 
+  const handleSelectLanguage = (nextLanguage: Language) => {
+    setLanguageOpen(false);
+    window.requestAnimationFrame(() => setLanguage(nextLanguage));
+  };
+
   const scrollToTop = () => {
     if (scrollContainer) {
       scrollContainer.scrollTo({ top: 0, behavior: "smooth" });
@@ -160,7 +165,7 @@ const FloatingControls: React.FC<{ scrollContainer?: HTMLElement | null }> = ({ 
           --float-hover-color: var(--brand-accent, #1fc41f);
           --float-hover-border: #1fc41f;
           --float-hover-bg: rgba(31, 196, 31, 0.12);
-          --float-hover-ring: rgba(31, 196, 31, 0.30);
+          --float-hover-ring: rgba(31, 196, 31, 0.12);
         }
 
         .float-controls__button {
@@ -194,8 +199,7 @@ const FloatingControls: React.FC<{ scrollContainer?: HTMLElement | null }> = ({ 
           border-color: var(--float-hover-border) !important;
           background: var(--float-hover-bg) !important;
           box-shadow:
-            0 0 0 2px var(--float-hover-border),
-            0 0 0 5px var(--float-hover-ring),
+            0 0 0 1px var(--float-hover-ring),
             var(--glass-btn-hover-shadow) !important;
           color: var(--float-hover-color) !important;
           transform: translateY(-1px);
@@ -349,7 +353,7 @@ const FloatingControls: React.FC<{ scrollContainer?: HTMLElement | null }> = ({ 
             type="button"
             title={item.name}
             aria-label={item.name}
-            onClick={() => setLanguage(item.code)}
+            onClick={() => handleSelectLanguage(item.code)}
           >
             {item.label}
           </button>

@@ -370,6 +370,40 @@ const Account: React.FC = () => {
           padding: 0 11px;
         }
 
+        .account-select {
+          appearance: none;
+          cursor: pointer;
+          padding-right: 38px;
+          background-color: var(--surface-container-low);
+          background-image:
+            linear-gradient(45deg, transparent 50%, var(--brand-muted) 50%),
+            linear-gradient(135deg, var(--brand-muted) 50%, transparent 50%),
+            linear-gradient(to right, var(--brand-border), var(--brand-border));
+          background-position:
+            calc(100% - 18px) 52%,
+            calc(100% - 13px) 52%,
+            calc(100% - 34px) 50%;
+          background-repeat: no-repeat;
+          background-size: 5px 5px, 5px 5px, 1px 18px;
+        }
+
+        .account-select:hover {
+          border-color: rgba(31, 196, 31, 0.62);
+          box-shadow: 0 0 0 1px rgba(31, 196, 31, 0.08);
+        }
+
+        .account-select:focus {
+          background-image:
+            linear-gradient(45deg, transparent 50%, #1fc41f 50%),
+            linear-gradient(135deg, #1fc41f 50%, transparent 50%),
+            linear-gradient(to right, rgba(31, 196, 31, 0.45), rgba(31, 196, 31, 0.45));
+        }
+
+        .account-select option {
+          background: var(--surface-container);
+          color: var(--brand-text);
+        }
+
         .account-textarea {
           min-height: 96px;
           resize: vertical;
@@ -381,6 +415,22 @@ const Account: React.FC = () => {
         .account-textarea:focus {
           border-color: var(--brand-purple);
           box-shadow: 0 0 0 3px rgba(31, 196, 31, 0.13);
+        }
+
+        [data-theme="dark"] .account-select {
+          background-color: #050805;
+          border-color: rgba(255, 255, 255, 0.16);
+          color: rgba(255, 255, 255, 0.9);
+        }
+
+        [data-theme="dark"] .account-select:hover,
+        [data-theme="dark"] .account-select:focus {
+          border-color: rgba(31, 196, 31, 0.72);
+        }
+
+        [data-theme="dark"] .account-select option {
+          background: #050805;
+          color: rgba(255, 255, 255, 0.9);
         }
 
         .account-avatar-editor {

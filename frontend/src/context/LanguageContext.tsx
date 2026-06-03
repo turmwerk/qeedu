@@ -1,5 +1,6 @@
 import { Component, createContext, startTransition, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import type { ErrorInfo, ReactNode } from "react";
+import RuntimeTranslationLayer from "@/components/RuntimeTranslationLayer";
 
 export const SUPPORTED_LANGUAGES = ["zh-CN", "zh-TW", "en"] as const;
 
@@ -78,6 +79,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   return (
     <LanguageErrorBoundary>
       <LanguageContext.Provider value={value}>
+        <RuntimeTranslationLayer language={language} />
         {children}
       </LanguageContext.Provider>
     </LanguageErrorBoundary>
