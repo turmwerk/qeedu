@@ -88,6 +88,18 @@ function jsonHeaders(): Record<string, string> {
 	return { "Content-Type": "application/json" };
 }
 
+function formatHttpError(status: number): string {
+	if (status === 401) {
+		if (typeof window !== "undefined") {
+			window.dispatchEvent(new Event("auth-change"));
+		}
+		return "登录状态已失效，请先登录后再使用 AI 对话。";
+	}
+	if (status === 403) return "当前账号没有权限使用此 AI 功能。";
+	if (status === 429) return "AI 请求过于频繁，请稍后再试。";
+	return `HTTP ${status}`;
+}
+
 function createStreamRequest(
 	endpoint: string,
 	body: Record<string, unknown>,
@@ -114,7 +126,7 @@ function createStreamRequest(
 						await new Promise((r) => setTimeout(r, 1000 * (attempt + 1)));
 						continue;
 					}
-					onError(`HTTP ${res.status}`);
+					onError(formatHttpError(res.status));
 					return;
 				}
 

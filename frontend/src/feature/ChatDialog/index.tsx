@@ -265,7 +265,7 @@ const Dialog: React.FC<DialogProps> & {
           const updated = [...m];
           const last = updated[updated.length - 1];
           if (last && last.from === "bot") {
-            updated[updated.length - 1] = { ...last, text: last.text || `Error: ${err}` };
+            updated[updated.length - 1] = { ...last, text: last.text || err };
           }
           return updated;
         });
@@ -450,7 +450,7 @@ const Dialog: React.FC<DialogProps> & {
               const updated = [...m];
               const last = updated[updated.length - 1];
               if (last && last.from === "bot") {
-                updated[updated.length - 1] = { ...last, text: last.text || `Error: ${err}` };
+                updated[updated.length - 1] = { ...last, text: last.text || err };
               }
               return updated;
             });
