@@ -1,14 +1,15 @@
 import {
   createElement,
-  lazy,
   Suspense,
   type ComponentType,
   type LazyExoticComponent,
 } from "react";
 import type { RouteObject } from "react-router-dom";
 import Loader from "@/effects/Loader";
+import { lazyWithReload } from "./lazyWithReload";
+import RouteErrorElement from "./RouteErrorElement";
 
-const ProjectPage = lazy(() => import("@/pages/Project"));
+const ProjectPage = lazyWithReload(() => import("@/pages/Project"));
 
 const lazyElement = (Component: LazyExoticComponent<ComponentType<any>>) =>
   createElement(
@@ -27,6 +28,7 @@ const projectRoutes: RouteObject[] = [
   {
     path: "study/code-tutor/ProjectPage",
     element: lazyElement(ProjectPage),
+    errorElement: createElement(RouteErrorElement),
   },
 ];
 

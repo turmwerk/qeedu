@@ -1,20 +1,20 @@
 import {
   createElement,
-  lazy,
   Suspense,
   type ComponentType,
   type LazyExoticComponent,
 } from "react";
 import { Navigate, type RouteObject } from "react-router-dom";
 import Loader from "@/effects/Loader";
+import { lazyWithReload } from "./lazyWithReload";
 
-const ManagementHub = lazy(() => import("@/pages/Management"));
-const ProcessAssistant = lazy(() => import("@/pages/Management/ProcessAssistant"));
-const AnnouncementGenerator = lazy(() => import("@/pages/Management/AnnouncementGenerator"));
-const MaterialsCenter = lazy(() => import("@/pages/Management/MaterialsCenter"));
-const StudentQA = lazy(() => import("@/pages/Management/StudentQA"));
-const Dashboard = lazy(() => import("@/pages/Management/Dashboard"));
-const Timeline = lazy(() => import("@/pages/Management/Timeline"));
+const ManagementHub = lazyWithReload(() => import("@/pages/Management"));
+const ProcessAssistant = lazyWithReload(() => import("@/pages/Management/ProcessAssistant"));
+const AnnouncementGenerator = lazyWithReload(() => import("@/pages/Management/AnnouncementGenerator"));
+const MaterialsCenter = lazyWithReload(() => import("@/pages/Management/MaterialsCenter"));
+const StudentQA = lazyWithReload(() => import("@/pages/Management/StudentQA"));
+const Dashboard = lazyWithReload(() => import("@/pages/Management/Dashboard"));
+const Timeline = lazyWithReload(() => import("@/pages/Management/Timeline"));
 
 const lazyElement = (Component: LazyExoticComponent<ComponentType<any>>) =>
   createElement(

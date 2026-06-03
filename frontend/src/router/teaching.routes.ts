@@ -1,36 +1,36 @@
 import {
   createElement,
-  lazy,
   Suspense,
   type ComponentType,
   type LazyExoticComponent,
 } from "react";
 import { Navigate, type RouteObject } from "react-router-dom";
 import Loader from "@/effects/Loader";
+import { lazyWithReload } from "./lazyWithReload";
 
-const TeachingHub = lazy(() => import("@/pages/Teaching"));
-const AssignmentReview = lazy(() => import("@/pages/Teaching/AssignmentReview"));
-const AssignmentReviewDetail = lazy(() =>
+const TeachingHub = lazyWithReload(() => import("@/pages/Teaching"));
+const AssignmentReview = lazyWithReload(() => import("@/pages/Teaching/AssignmentReview"));
+const AssignmentReviewDetail = lazyWithReload(() =>
   import("@/pages/Teaching/AssignmentReview/router").then((module) => ({
     default: module.DetailRoute,
   })),
 );
-const SyllabusList = lazy(() =>
+const SyllabusList = lazyWithReload(() =>
   import("@/pages/Teaching/Syllabus/router").then((module) => ({
     default: module.ListRoute,
   })),
 );
-const SyllabusDetail = lazy(() =>
+const SyllabusDetail = lazyWithReload(() =>
   import("@/pages/Teaching/Syllabus/router").then((module) => ({
     default: module.DetailRoute,
   })),
 );
-const ExamDesignList = lazy(() =>
+const ExamDesignList = lazyWithReload(() =>
   import("@/pages/Teaching/ExamDesign/router").then((module) => ({
     default: module.ListRoute,
   })),
 );
-const ExamDesignDetail = lazy(() =>
+const ExamDesignDetail = lazyWithReload(() =>
   import("@/pages/Teaching/ExamDesign/router").then((module) => ({
     default: module.DetailRoute,
   })),

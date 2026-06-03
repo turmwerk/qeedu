@@ -10,11 +10,13 @@ import researchRoutes from "./research.routes";
 import managementRoutes from "./management.routes";
 import projectRoutes from "./project.routes";
 import accountRoutes from "./account.routes";
+import RouteErrorElement from "./RouteErrorElement";
 
 const mainRoutes: RouteObject[] = [
   {
     path: "/",
     element: createElement(MainLayout),
+    errorElement: createElement(RouteErrorElement),
     children: [
       {
         path: "/",
@@ -34,6 +36,11 @@ const mainRoutes: RouteObject[] = [
   },
 ];
 
-const router = createBrowserRouter([...mainRoutes, ...authRoutes, ...projectRoutes]);
+const router = createBrowserRouter(
+  [...mainRoutes, ...authRoutes, ...projectRoutes].map((route) => ({
+    errorElement: createElement(RouteErrorElement),
+    ...route,
+  })),
+);
 
 export default router;

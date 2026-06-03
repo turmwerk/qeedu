@@ -1,26 +1,26 @@
 import {
   createElement,
-  lazy,
   Suspense,
   type ComponentType,
   type LazyExoticComponent,
 } from "react";
 import type { RouteObject } from "react-router-dom";
 import Loader from "@/effects/Loader";
+import { lazyWithReload } from "./lazyWithReload";
 
-const StudyHub = lazy(() => import("@/pages/Study"));
-const ResourcePackHub = lazy(() => import("@/pages/Study/ResourcePack"));
-const NJUSchoolsPage = lazy(() => import("@/pages/Study/ResourcePack/NJUSchoolsPage"));
-const NJUSchoolDetailPage = lazy(() => import("@/pages/Study/ResourcePack/NJUSchoolDetailPage"));
-const DisciplinesPage = lazy(() => import("@/pages/Study/ResourcePack/DisciplinesPage"));
-const DisciplineDetailPage = lazy(() => import("@/pages/Study/ResourcePack/DisciplineDetailPage"));
-const MajorDetailPage = lazy(() => import("@/pages/Study/ResourcePack/MajorDetailPage"));
-const AdmissionsCategoriesPage = lazy(() => import("@/pages/Study/ResourcePack/AdmissionsCategoriesPage"));
-const AdmissionsCategoryDetailPage = lazy(() => import("@/pages/Study/ResourcePack/AdmissionsCategoryDetailPage"));
-const ProgressRadar = lazy(() => import("@/pages/Study/ProgressRadar"));
-const CareerPlanner = lazy(() => import("@/pages/Study/CareerPlanner"));
-const CodeTutor = lazy(() => import("@/pages/Study/CodeTutor"));
-const CodeTutorListPage = lazy(() => import("@/pages/Study/CodeTutor/ListPage"));
+const StudyHub = lazyWithReload(() => import("@/pages/Study"));
+const ResourcePackHub = lazyWithReload(() => import("@/pages/Study/ResourcePack"));
+const NJUSchoolsPage = lazyWithReload(() => import("@/pages/Study/ResourcePack/NJUSchoolsPage"));
+const NJUSchoolDetailPage = lazyWithReload(() => import("@/pages/Study/ResourcePack/NJUSchoolDetailPage"));
+const DisciplinesPage = lazyWithReload(() => import("@/pages/Study/ResourcePack/DisciplinesPage"));
+const DisciplineDetailPage = lazyWithReload(() => import("@/pages/Study/ResourcePack/DisciplineDetailPage"));
+const MajorDetailPage = lazyWithReload(() => import("@/pages/Study/ResourcePack/MajorDetailPage"));
+const AdmissionsCategoriesPage = lazyWithReload(() => import("@/pages/Study/ResourcePack/AdmissionsCategoriesPage"));
+const AdmissionsCategoryDetailPage = lazyWithReload(() => import("@/pages/Study/ResourcePack/AdmissionsCategoryDetailPage"));
+const ProgressRadar = lazyWithReload(() => import("@/pages/Study/ProgressRadar"));
+const CareerPlanner = lazyWithReload(() => import("@/pages/Study/CareerPlanner"));
+const CodeTutor = lazyWithReload(() => import("@/pages/Study/CodeTutor"));
+const CodeTutorListPage = lazyWithReload(() => import("@/pages/Study/CodeTutor/ListPage"));
 
 const lazyElement = (Component: LazyExoticComponent<ComponentType<any>>) =>
   createElement(
