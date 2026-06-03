@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import OverviewMetrics from "@/feature/RecordWorkspace/OverviewMetrics";
 import { ModuleCard } from "@/feature/ModuleHub";
 import { RecordList, ShowcasePanel, showcasePanelClass } from "@/feature/ScenarioShowcase";
@@ -6,6 +7,8 @@ import { conferenceCountdownMetrics } from "./ConferenceList/data";
 import { researchHubFeatures, researchModuleCatalog } from "./moduleCatalog";
 
 const ResearchHub: React.FC = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="flex w-full min-w-0 flex-col gap-8 px-4 py-6 md:px-6 xl:px-8">
       <section className="workbench-surface rounded-[28px] border border-[#dbe1f3] bg-white/80 p-5 shadow-[0_18px_45px_rgba(15,23,42,0.08)] backdrop-blur-[24px] dark:border-white/10 dark:bg-white/8">
@@ -60,9 +63,9 @@ const ResearchHub: React.FC = () => {
         />
 
         <ShowcasePanel
-          eyebrow="Quick Access"
+          eyebrow="Research Workbench"
           title="快捷入口"
-          description="每个功能都已切到语义化页面，入口不再指向旧的 ListPage/detail。"
+          description="从检索、精读到写作保持同一条研究链路，按当前任务直接进入对应工作台。"
         >
           <div className="grid gap-4">
             {researchModuleCatalog.map((module) => (
@@ -71,9 +74,23 @@ const ResearchHub: React.FC = () => {
                 <div className="mt-3 text-[15px] leading-7 text-[#67748a] dark:text-[#dbe5f3] whitespace-pre-line">
                   {module.desc}
                 </div>
-                <div className="mt-4 flex flex-wrap gap-3 text-[14px] font-semibold text-[#5672ff]">
-                  <span>入口：{module.to}</span>
-                  {module.workspaceTo ? <span>新建 / 深入：{module.workspaceTo}</span> : null}
+                <div className="mt-4 flex flex-wrap gap-3">
+                  <button
+                    className="rounded-full border border-[#dbe4ff] bg-white/75 px-4 py-2 text-[13px] font-black text-[#3f5fe8] transition hover:-translate-y-0.5 hover:border-[var(--brand-purple)] hover:text-[var(--brand-purple)] dark:border-[rgba(31,196,31,0.34)] dark:bg-white/10 dark:text-[var(--brand-text)]"
+                    type="button"
+                    onClick={() => navigate(module.to)}
+                  >
+                    打开工作台
+                  </button>
+                  {module.workspaceTo ? (
+                    <button
+                      className="rounded-full border border-[#dbe4ff] bg-white/75 px-4 py-2 text-[13px] font-black text-[#3f5fe8] transition hover:-translate-y-0.5 hover:border-[var(--brand-purple)] hover:text-[var(--brand-purple)] dark:border-[rgba(31,196,31,0.34)] dark:bg-white/10 dark:text-[var(--brand-text)]"
+                      type="button"
+                      onClick={() => navigate(module.workspaceTo as string)}
+                    >
+                      新建 / 继续
+                    </button>
+                  ) : null}
                 </div>
               </div>
             ))}

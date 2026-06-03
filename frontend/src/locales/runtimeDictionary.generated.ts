@@ -2,6 +2,7 @@
 // Regenerate with the local extraction script used by Codex when new hardcoded copy is added.
 
 export const runtimeDictionary: Record<string, { en: string; "zh-TW": string }> = {
+  "从检索、精读到写作保持同一条研究链路，按当前任务直接进入对应工作台。": { en: "Keep retrieval, close reading, and writing on one research workflow, then jump into the workspace for the current task.", "zh-TW": "從檢索、精讀到寫作保持同一條研究鏈路，按目前任務直接進入對應工作台。" },
   "- 1 引言：问题动机与贡献 - 2 相关工作：研究脉络与不足 - 3 方法：核心设计与实现 - 4 实验：设置、结果与分析 - 5 结论：总结与未来工作": { en: "- 1 Introduction: Problem motivation and contribution - 2 Related work: Research context and deficiencies - 3 Methods: Core design and implementation - 4 Experiments: Settings, results and analysis - 5 Conclusion: Summary and future work", "zh-TW": "- 1 引言：問題動機與貢獻 - 2 相關工作：研究脈絡與不足 - 3 方法：核心設計與實現 - 4 實驗：設定、結果與分析 - 5 結論：總結與未來工作" },
   "- 保存学校国际处与当地紧急联系方式 - 重要材料保留电子版与纸质版 - 到达首周安排熟悉校园与周边环境": { en: "- Save the school's International Office and local emergency contact information - Keep important materials in electronic and paper versions - Arrange to familiarize yourself with the campus and surrounding environment during the first week of arrival", "zh-TW": "- 保存學校國際處與當地緊急聯繫方式 - 重要材料保留電子版與紙質版 - 到達首周安排熟悉校園與週邊環境" },
   "- 避免只准备中文材料，重要事项保留双语版本 - 宿舍、报到和校园卡开通要明确线下地点与联系人 - 提前确认医疗、保险和紧急联系机制": { en: "- Avoid preparing only Chinese materials and keep bilingual versions of important matters - Clear offline locations and contacts for dormitories, registration and campus card activation - Confirm medical, insurance and emergency contact mechanisms in advance", "zh-TW": "- 避免只準備中文資料，重要事項保留雙語版本 - 宿舍、報到和校園卡開通要明確線下地點與聯絡人 - 提前確認醫療、保險和緊急聯繫機制" },
@@ -5242,4 +5243,6 @@ export const runtimeDictionary: Record<string, { en: string; "zh-TW": string }> 
   "Web 开发：HTML/CSS/JS": { en: "Web development: HTML/CSS/JS", "zh-TW": "Web 開發：HTML/CSS/JS" },
   "Web of Science · 21 篇候选样本": { en: "Web of Science · 21 candidate samples", "zh-TW": "Web of Science · 21 篇候選樣本" },
   "Xiaomei在跨文化沟通模块表现很好，对美国直接沟通文化的理解很到位。建议多练习实际场景对话。": { en: "Xiaomei performed very well in the cross-cultural communication module and had a good understanding of American direct communication culture. It is recommended to practice more dialogue in actual scenarios.", "zh-TW": "Xiaomei在跨文化溝通模組表現很好，對美國直接溝通文化的理解很到位。建議多練習實際場景對話。" },
+  "打开工作台": { en: "Open Workspace", "zh-TW": "開啟工作台" },
+  "新建 / 继续": { en: "New / Continue", "zh-TW": "新建 / 繼續" },
 };
