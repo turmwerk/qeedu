@@ -166,11 +166,16 @@ function scheduleScan(language: Language, root: Node = document.body, immediate 
   requestAnimationFrame(run);
 }
 
+export function applyRuntimeTranslations(language: Language) {
+  if (typeof window === "undefined" || !document.body) return;
+  scanNode(document.body, language);
+}
+
 export function RuntimeTranslationLayer({ language }: { language: Language }) {
   useEffect(() => {
     if (typeof window === "undefined" || !document.body) return undefined;
 
-    scheduleScan(language, document.body, true);
+    applyRuntimeTranslations(language);
 
     let queued = false;
     const queueFullScan = () => {
