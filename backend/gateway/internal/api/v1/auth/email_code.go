@@ -35,6 +35,11 @@ type emailCodeEntry struct {
 	expiresAt time.Time
 }
 
+type emailSendResult struct {
+	provider string
+	id       string
+}
+
 var emailCodes = struct {
 	sync.Mutex
 	values map[string]emailCodeEntry
@@ -108,17 +113,44 @@ func VerifyEmailChangeCode(email string, code string) bool {
 	return verifyEmailCode(email, purposeChangeEmail, code)
 }
 
-func sendEmailWithResend(to, subject, body string) error {
+func normalizeResendFrom(from string) string {
+	trimmed := strings.TrimSpace(from)
+	left := strings.Index(trimmed, "<")
+	right := strings.Index(trimmed, ">")
+	if left > 0 && right > left {
+		name := strings.TrimSpace(trimmed[:left])
+		email := strings.TrimSpace(trimmed[left+1 : right])
+		if name != "" && email != "" {
+			return fmt.Sprintf("%s <%s>", name, email)
+		}
+	}
+	if !strings.Contains(trimmed, "<") && strings.Contains(trimmed, "@") {
+		return fmt.Sprintf("QeEdu <%s>", trimmed)
+	}
+	return trimmed
+}
+
+func maskEmailForLog(email string) string {
+	normalized := normalizeEmail(email)
+	parts := strings.SplitN(normalized, "@", 2)
+	if len(parts) != 2 {
+		return "***"
+	}
+	local := parts[0]
+	if len(local) <= 2 {
+		return local[:1] + "***@" + parts[1]
+	}
+	return local[:2] + "***@" + parts[1]
+}
+
+func sendEmailWithResend(to, subject, body string) (emailSendResult, error) {
 	apiKey := strings.TrimSpace(os.Getenv("RESEND_API_KEY"))
 	from := strings.TrimSpace(os.Getenv("RESEND_EMAIL_FROM"))
 	if apiKey == "" || from == "" {
-		return fmt.Errorf("resend not configured")
+		return emailSendResult{}, fmt.Errorf("resend not configured")
 	}
 
-	displayFrom := from
-	if !strings.Contains(displayFrom, "<") && strings.Contains(displayFrom, "@") {
-		displayFrom = fmt.Sprintf("QeEdu <%s>", displayFrom)
-	}
+	displayFrom := normalizeResendFrom(from)
 
 	htmlBody := fmt.Sprintf(
 		`<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.7;color:#111827"><p>%s</p><pre style="font-size:24px;font-weight:700;letter-spacing:4px">%s</pre><p style="color:#64748b">10 分钟内有效。</p></div>`,
@@ -134,12 +166,12 @@ func sendEmailWithResend(to, subject, body string) error {
 		"html":    htmlBody,
 	})
 	if err != nil {
-		return err
+		return emailSendResult{}, err
 	}
 
 	req, err := http.NewRequest(http.MethodPost, "https://api.resend.com/emails", bytes.NewReader(payload))
 	if err != nil {
-		return err
+		return emailSendResult{}, err
 	}
 	req.Header.Set("Authorization", "Bearer "+apiKey)
 	req.Header.Set("User-Agent", "QeEdu/1.0")
@@ -148,16 +180,20 @@ func sendEmailWithResend(to, subject, body string) error {
 	client := &http.Client{Timeout: 10 * time.Second}
 	resp, err := client.Do(req)
 	if err != nil {
-		return err
+		return emailSendResult{}, err
 	}
 	defer resp.Body.Close()
 
+	raw, _ := io.ReadAll(io.LimitReader(resp.Body, 4096))
 	if resp.StatusCode >= http.StatusOK && resp.StatusCode < http.StatusMultipleChoices {
-		return nil
+		var parsed struct {
+			ID string `json:"id"`
+		}
+		_ = json.Unmarshal(raw, &parsed)
+		return emailSendResult{provider: "resend", id: parsed.ID}, nil
 	}
 
-	raw, _ := io.ReadAll(io.LimitReader(resp.Body, 2048))
-	return fmt.Errorf("resend returned %s: %s", resp.Status, strings.TrimSpace(string(raw)))
+	return emailSendResult{}, fmt.Errorf("resend returned %s: %s", resp.Status, strings.TrimSpace(string(raw)))
 }
 
 func extractEmailCode(body string) string {
@@ -175,7 +211,7 @@ func extractEmailCode(body string) string {
 	return ""
 }
 
-func sendEmailWithSMTP(to, subject, body string) error {
+func sendEmailWithSMTP(to, subject, body string) (emailSendResult, error) {
 	host := strings.TrimSpace(os.Getenv("SMTP_HOST"))
 	port := strings.TrimSpace(os.Getenv("SMTP_PORT"))
 	user := strings.TrimSpace(os.Getenv("SMTP_USER"))
@@ -183,10 +219,10 @@ func sendEmailWithSMTP(to, subject, body string) error {
 	from := strings.TrimSpace(os.Getenv("SMTP_FROM"))
 
 	if host == "" || port == "" || from == "" {
-		return fmt.Errorf("smtp not configured")
+		return emailSendResult{}, fmt.Errorf("smtp not configured")
 	}
 	if _, err := strconv.Atoi(port); err != nil {
-		return fmt.Errorf("invalid smtp port")
+		return emailSendResult{}, fmt.Errorf("invalid smtp port")
 	}
 
 	var auth smtp.Auth
@@ -203,15 +239,18 @@ func sendEmailWithSMTP(to, subject, body string) error {
 		body,
 	}, "\r\n")
 
-	return smtp.SendMail(host+":"+port, auth, from, []string{to}, []byte(msg))
+	if err := smtp.SendMail(host+":"+port, auth, from, []string{to}, []byte(msg)); err != nil {
+		return emailSendResult{}, err
+	}
+	return emailSendResult{provider: "smtp"}, nil
 }
 
-func sendEmail(to, subject, body string) error {
+func sendEmail(to, subject, body string) (emailSendResult, error) {
 	var failures []string
 	if strings.TrimSpace(os.Getenv("RESEND_API_KEY")) != "" ||
 		strings.TrimSpace(os.Getenv("RESEND_EMAIL_FROM")) != "" {
-		if err := sendEmailWithResend(to, subject, body); err == nil {
-			return nil
+		if result, err := sendEmailWithResend(to, subject, body); err == nil {
+			return result, nil
 		} else {
 			failures = append(failures, "resend: "+err.Error())
 		}
@@ -220,17 +259,17 @@ func sendEmail(to, subject, body string) error {
 	if strings.TrimSpace(os.Getenv("SMTP_HOST")) != "" ||
 		strings.TrimSpace(os.Getenv("SMTP_PORT")) != "" ||
 		strings.TrimSpace(os.Getenv("SMTP_FROM")) != "" {
-		if err := sendEmailWithSMTP(to, subject, body); err == nil {
-			return nil
+		if result, err := sendEmailWithSMTP(to, subject, body); err == nil {
+			return result, nil
 		} else {
 			failures = append(failures, "smtp: "+err.Error())
 		}
 	}
 
 	if len(failures) > 0 {
-		return fmt.Errorf("%s", strings.Join(failures, "; "))
+		return emailSendResult{}, fmt.Errorf("%s", strings.Join(failures, "; "))
 	}
-	return fmt.Errorf("email provider not configured")
+	return emailSendResult{}, fmt.Errorf("email provider not configured")
 }
 
 // SendCode sends or returns a development email verification code.
@@ -255,7 +294,8 @@ func SendCode(c *gin.Context) {
 
 	subject := "QeEdu 邮箱验证码"
 	body := fmt.Sprintf("你的验证码是：%s\n\n用途：%s\n10 分钟内有效。", code, purpose)
-	if err := sendEmail(email, subject, body); err != nil {
+	result, err := sendEmail(email, subject, body)
+	if err != nil {
 		if configs.IsProd() {
 			log.Printf("[auth] email code for %s (%s) send failed: %v", email, purpose, err)
 		} else {
@@ -270,6 +310,8 @@ func SendCode(c *gin.Context) {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "邮箱服务未配置或发送失败，请稍后重试"})
 		return
 	}
+
+	log.Printf("[auth] email code accepted for %s (%s) via %s id=%s", maskEmailForLog(email), purpose, result.provider, result.id)
 
 	c.JSON(http.StatusOK, gin.H{"ok": true, "message": "verification code sent"})
 }
