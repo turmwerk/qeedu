@@ -227,7 +227,7 @@ const Card: React.FC<CardProps> = ({
       // eslint-disable-next-line react/forbid-dom-props
       <div
         style={cardBgStyle}
-        className={`group relative flex flex-col gap-3 rounded-2xl p-3 sm:p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg overflow-hidden backdrop-blur-[40px] backdrop-saturate-[210%] min-w-0 ${defaultBgClass} ${className}`}
+        className={`ui-card ui-card--inline group relative flex flex-col gap-3 rounded-2xl p-3 sm:p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg overflow-hidden backdrop-blur-[40px] backdrop-saturate-[210%] min-w-0 ${defaultBgClass} ${className}`}
         onClick={onClick}
         role={onClick ? "button" : undefined}
         tabIndex={onClick ? 0 : undefined}
@@ -321,7 +321,7 @@ const Card: React.FC<CardProps> = ({
     // eslint-disable-next-line react/forbid-dom-props
     <div
       style={cardBgStyle}
-      className={`group relative flex flex-col gap-0 rounded-2xl p-3 sm:p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg overflow-hidden backdrop-blur-[40px] backdrop-saturate-[210%] min-w-0 ${defaultBgClass} ${className}`}
+      className={`ui-card ui-card--stacked group relative flex flex-col gap-0 rounded-2xl p-3 sm:p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg overflow-hidden backdrop-blur-[40px] backdrop-saturate-[210%] min-w-0 ${defaultBgClass} ${className}`}
       onClick={onClick}
       role={onClick ? "button" : undefined}
       tabIndex={onClick ? 0 : undefined}
