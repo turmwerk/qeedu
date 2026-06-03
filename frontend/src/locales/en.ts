@@ -58,6 +58,7 @@ export const en: LocaleKeys = {
     sending: "Sending",
     retryAfter: "Retry in {{seconds}}s",
     codeSent: "Verification code sent",
+    codeAccepted: "The code was submitted to the email service. Delivery may be delayed; also check spam.",
     codeToast: "Code: {{code}}",
     enterEmailFirst: "Enter your email first",
     sendCodeFailed: "Failed to send code",

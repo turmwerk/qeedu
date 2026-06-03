@@ -313,5 +313,10 @@ func SendCode(c *gin.Context) {
 
 	log.Printf("[auth] email code accepted for %s (%s) via %s id=%s", maskEmailForLog(email), purpose, result.provider, result.id)
 
-	c.JSON(http.StatusOK, gin.H{"ok": true, "message": "verification code sent"})
+	c.JSON(http.StatusOK, gin.H{
+		"ok":          true,
+		"message":     "verification code accepted",
+		"provider":    result.provider,
+		"accepted_at": time.Now().UTC().Format(time.RFC3339),
+	})
 }

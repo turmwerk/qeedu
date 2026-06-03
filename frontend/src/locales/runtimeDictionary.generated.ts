@@ -5244,6 +5244,8 @@ export const runtimeDictionary: Record<string, { en: string; "zh-TW": string }> 
   "Web of Science · 21 篇候选样本": { en: "Web of Science · 21 candidate samples", "zh-TW": "Web of Science · 21 篇候選樣本" },
   "Xiaomei在跨文化沟通模块表现很好，对美国直接沟通文化的理解很到位。建议多练习实际场景对话。": { en: "Xiaomei performed very well in the cross-cultural communication module and had a good understanding of American direct communication culture. It is recommended to practice more dialogue in actual scenarios.", "zh-TW": "Xiaomei在跨文化溝通模組表現很好，對美國直接溝通文化的理解很到位。建議多練習實際場景對話。" },
   "打开工作台": { en: "Open Workspace", "zh-TW": "開啟工作台" },
+  "验证码已提交邮件服务，收信可能有延迟，请同时检查垃圾邮件。": { en: "The code was submitted to the email service. Delivery may be delayed; also check spam.", "zh-TW": "驗證碼已提交至郵件服務，收信可能有延遲，請同時檢查垃圾郵件。" },
+  "驗證碼已提交至郵件服務，收信可能有延遲，請同時檢查垃圾郵件。": { en: "The code was submitted to the email service. Delivery may be delayed; also check spam.", "zh-TW": "驗證碼已提交至郵件服務，收信可能有延遲，請同時檢查垃圾郵件。" },
   "登录状态已失效，请先登录后再使用 AI 对话。": { en: "Your session has expired. Please sign in before using AI chat.", "zh-TW": "登入狀態已失效，請先登入後再使用 AI 對話。" },
   "当前账号没有权限使用此 AI 功能。": { en: "This account does not have permission to use this AI feature.", "zh-TW": "目前帳號沒有權限使用此 AI 功能。" },
   "AI 请求过于频繁，请稍后再试。": { en: "AI requests are too frequent. Please try again later.", "zh-TW": "AI 請求過於頻繁，請稍後再試。" },

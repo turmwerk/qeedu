@@ -56,6 +56,7 @@ export const zhCN = {
     sending: "发送中",
     retryAfter: "{{seconds}}s 后重新获取",
     codeSent: "验证码已发送",
+    codeAccepted: "验证码已提交邮件服务，收信可能有延迟，请同时检查垃圾邮件。",
     codeToast: "验证码：{{code}}",
     enterEmailFirst: "请先输入邮箱",
     sendCodeFailed: "验证码发送失败",

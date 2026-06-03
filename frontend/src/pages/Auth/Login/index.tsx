@@ -90,7 +90,7 @@ export default function Login() {
       }
       await loginCode.run(async () => {
         const res = await sendEmailCode(normalized, "login");
-        showToast(res.dev_code ? t("auth.codeToast", { code: res.dev_code }) : t("auth.codeSent"));
+        showToast(res.dev_code ? t("auth.codeToast", { code: res.dev_code }) : t("auth.codeAccepted"));
       }).catch((err) => {
         showToast(err instanceof Error ? err.message : t("auth.sendCodeFailed"));
       });

@@ -12,6 +12,8 @@ export interface SendCodeResponse {
   ok: boolean;
   message?: string;
   dev_code?: string;
+  provider?: string;
+  accepted_at?: string;
 }
 
 export async function sendEmailCode(email: string, purpose: "login" | "register" | "reset" | "change_email") {

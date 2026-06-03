@@ -58,6 +58,7 @@ export const zhTW: LocaleKeys = {
     sending: "傳送中",
     retryAfter: "{{seconds}}s 後重新取得",
     codeSent: "驗證碼已傳送",
+    codeAccepted: "驗證碼已提交至郵件服務，收信可能有延遲，請同時檢查垃圾郵件。",
     codeToast: "驗證碼：{{code}}",
     enterEmailFirst: "請先輸入電子郵件",
     sendCodeFailed: "驗證碼傳送失敗",
