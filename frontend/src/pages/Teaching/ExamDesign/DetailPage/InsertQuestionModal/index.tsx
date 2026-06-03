@@ -64,7 +64,7 @@ const InsertQuestionModal: React.FC<InsertQuestionModalProps> = ({
       title={editingQuestionId ? "修改题目" : "生成插入题目"}
       width={920}
       opaque
-      panelClassName="!backdrop-blur-0"
+      panelClassName="exam-detail-modal !backdrop-blur-0"
       onClose={onClose}
     >
       <div className="flex gap-3">

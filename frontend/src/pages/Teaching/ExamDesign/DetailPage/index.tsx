@@ -378,7 +378,7 @@ const DetailPage: React.FC<{
 
   return (
     <>
-      <div className="h-full min-h-0 w-full overflow-hidden" data-oid="vqmja1r">
+      <div className="exam-detail-page h-full min-h-0 w-full overflow-hidden" data-oid="vqmja1r">
         <ToastContainer data-oid="d_rl_f6" />
         <style data-oid="ykkejm8">{`
         @keyframes analysisReveal {
