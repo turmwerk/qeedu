@@ -104,11 +104,13 @@ const Dropdown: React.FC<DropdownProps> = ({
     if (left + measuredWidth > window.innerWidth - 8) {
       left = window.innerWidth - measuredWidth - 8;
     }
+    const right = Math.max(8, window.innerWidth - rect.right);
 
     setMenuStyle({
       position: "fixed",
       top,
-      left,
+      left: direction === "down" ? "auto" : left,
+      right: direction === "down" ? right : "auto",
       zIndex: TOP_Z,
       minWidth: rect.width,
       width: "max-content",

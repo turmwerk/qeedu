@@ -47,13 +47,13 @@
   /* Auth panel */
   --auth-panel-bg: rgba(10, 10, 10, 0.82);
   --auth-panel-shadow: 0 12px 38px rgba(0, 0, 0, 0.62), inset 0 1px 0 rgba(31, 196, 31, 0.16), inset 0 -1px 0 rgba(255, 255, 255, 0.05);
-  --auth-control-bg: rgba(3, 7, 3, 0.96);
-  --auth-control-hover-bg: rgba(7, 16, 7, 0.98);
-  --auth-control-border: rgba(148, 163, 184, 0.16);
-  --auth-control-hover-border: rgba(31, 196, 31, 0.52);
+  --auth-control-bg: rgba(255, 255, 255, 0.16);
+  --auth-control-hover-bg: rgba(255, 255, 255, 0.16);
+  --auth-control-border: rgba(31, 196, 31, 0.28);
+  --auth-control-hover-border: #1fc41f;
   --auth-control-text: var(--brand-text);
   --auth-control-hover-text: var(--brand-text);
-  --auth-control-shadow: none;
+  --auth-control-shadow: 0 18px 44px rgba(0, 0, 0, 0.60), inset 0 1px 0 rgba(255, 255, 255, 0.18), inset 0 -1px 0 rgba(255, 255, 255, 0.10);
   --auth-field-bg: rgba(255, 255, 255, 0.16);
   --auth-field-border: rgba(31, 196, 31, 0.28);
   --auth-field-hover-border: rgba(31, 196, 31, 0.46);
@@ -260,6 +260,28 @@
     0 18px 44px rgba(0, 0, 0, 0.60),
     inset 0 1px 0 rgba(255, 255, 255, 0.18),
     inset 0 -1px 0 rgba(255, 255, 255, 0.10) !important;
+}
+
+[data-theme="dark"] .auth-panel .auth-primary-action {
+  background-color: rgba(255, 255, 255, 0.16) !important;
+  border-color: rgba(31, 196, 31, 0.28) !important;
+  box-shadow:
+    0 18px 44px rgba(0, 0, 0, 0.60),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.10) !important;
+  color: var(--brand-text) !important;
+}
+
+[data-theme="dark"] .auth-panel .auth-primary-action:hover,
+[data-theme="dark"] .auth-panel .auth-primary-action:focus-visible {
+  background-color: rgba(255, 255, 255, 0.16) !important;
+  border-color: #1fc41f !important;
+  box-shadow:
+    0 0 0 1px rgba(31, 196, 31, 0.18),
+    0 18px 44px rgba(0, 0, 0, 0.60),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.10) !important;
+  color: var(--brand-text) !important;
 }
 
 [data-theme="dark"] .auth-panel .auth-field-shell:hover,
@@ -546,6 +568,71 @@ html.theme-switching *::after {
     0 18px 44px rgba(0, 0, 0, 0.60),
     inset 0 1px 0 rgba(255, 255, 255, 0.18),
     inset 0 -1px 0 rgba(255, 255, 255, 0.10) !important;
+}
+
+[data-theme="dark"] :where(
+  .account-sidebar,
+  .account-mobile__header,
+  .account-section,
+  .account-status-card,
+  .account-field,
+  .account-list__item,
+  .account-switch-row,
+  .account-avatar-editor,
+  .account-input,
+  .account-select,
+  .account-textarea,
+  .account-button
+) {
+  background-color: rgba(255, 255, 255, 0.16) !important;
+  border-color: rgba(31, 196, 31, 0.28) !important;
+  box-shadow:
+    0 18px 44px rgba(0, 0, 0, 0.60),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.10) !important;
+}
+
+[data-theme="dark"] :where(
+  .account-section,
+  .account-status-card,
+  .account-field,
+  .account-list__item,
+  .account-switch-row,
+  .account-avatar-editor,
+  .account-input,
+  .account-select,
+  .account-textarea,
+  .account-button
+):hover,
+[data-theme="dark"] :where(
+  .account-input,
+  .account-select,
+  .account-textarea,
+  .account-button
+):focus-visible,
+[data-theme="dark"] :where(
+  .account-input,
+  .account-select,
+  .account-textarea
+):focus {
+  background-color: rgba(255, 255, 255, 0.16) !important;
+  border-color: #1fc41f !important;
+  box-shadow:
+    0 0 0 1px rgba(31, 196, 31, 0.18),
+    0 18px 44px rgba(0, 0, 0, 0.60),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.10) !important;
+}
+
+[data-theme="dark"] .account-button--danger {
+  border-color: rgba(239, 68, 68, 0.48) !important;
+  color: #f87171 !important;
+}
+
+[data-theme="dark"] .account-button--danger:hover,
+[data-theme="dark"] .account-button--danger:focus-visible {
+  border-color: #ef4444 !important;
+  color: #fca5a5 !important;
 }
 
 [data-theme="dark"] .ui-list-item:hover {
