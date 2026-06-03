@@ -39,10 +39,10 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
   // 菜单项样式（使用 showBorder 区分有/无边框两种风格）
   // 面板已有毛玻璃背景，菜单项不再额外加背景/边框
   const itemActiveClass = showBorder
-    ? "bg-white dark:bg-white/10 !text-[var(--brand-purple)] hover:bg-[var(--brand-accent-soft)] dark:hover:bg-white/18"
+    ? "bg-white text-[var(--brand-purple)] hover:bg-[var(--brand-accent-soft)]"
     : "!text-[var(--brand-purple)] border-0 after:!w-full";
   const itemIdleClass = showBorder
-    ? "bg-white dark:bg-white/10 text-[var(--brand-blue)] border-0 hover:bg-[var(--brand-accent-soft)] dark:hover:bg-white/18 hover:text-[var(--brand-purple)]"
+    ? "bg-white text-[var(--brand-blue)] border-0 hover:bg-[var(--brand-accent-soft)] hover:text-[var(--brand-purple)]"
     : "text-[var(--brand-blue)] border-0 hover:text-[var(--brand-purple)]";
 
   const portalPanelClass = `dropdown-menu-panel bg-transparent border-none shadow-none pl-1 pt-1 pb-1 pr-0 min-w-[120px] flex flex-col gap-0.5 transition-[opacity] duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] ${

@@ -54,8 +54,8 @@
   --auth-control-text: var(--brand-text);
   --auth-control-hover-text: var(--brand-text);
   --auth-control-shadow: none;
-  --auth-field-bg: rgba(0, 0, 0, 0.92);
-  --auth-field-border: rgba(148, 163, 184, 0.16);
+  --auth-field-bg: rgba(255, 255, 255, 0.16);
+  --auth-field-border: rgba(31, 196, 31, 0.28);
   --auth-field-hover-border: rgba(31, 196, 31, 0.46);
   --auth-field-focus-border: rgba(31, 196, 31, 0.68);
   --auth-field-text: var(--brand-text);
@@ -65,7 +65,7 @@
   --auth-submit-hover: var(--auth-control-hover-bg);
   --auth-submit-shadow: none;
   --github-icon-fill: currentColor;
-  --auth-autofill-shadow: 0 0 0 1000px rgba(31, 196, 31, 0.10) inset;
+  --auth-autofill-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.16) inset;
   --auth-autofill-text: var(--brand-text);
 }
 
@@ -206,7 +206,6 @@
 }
 
 [data-theme="dark"] .dropdown-menu-item,
-[data-theme="dark"] .dropdown-trigger-btn,
 [data-theme="dark"] .auth-panel,
 [data-theme="dark"] .glass-modal-panel,
 [data-theme="dark"] .search-modal-panel {
@@ -233,7 +232,6 @@
 [data-theme="dark"] .difficulty-track,
 [data-theme="dark"] .difficulty-knob,
 [data-theme="dark"] .dropdown-menu-item,
-[data-theme="dark"] .dropdown-trigger-btn,
 [data-theme="dark"] .toast-item,
 [data-theme="dark"] .auto-resize-textarea {
   background: rgba(0, 0, 0, 0.88) !important;
@@ -242,12 +240,37 @@
   border-color: rgba(31, 196, 31, 0.20) !important;
 }
 
-[data-theme="dark"] .dropdown-menu-item,
-[data-theme="dark"] .dropdown-trigger-btn,
+[data-theme="dark"] .dropdown-menu-item {
+  background-color: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  color: var(--brand-text) !important;
+}
+
 [data-theme="dark"] .language-switcher-root .language-item {
   background-color: rgba(255, 255, 255, 0.16) !important;
   border-color: rgba(31, 196, 31, 0.28) !important;
   color: var(--brand-text) !important;
+}
+
+[data-theme="dark"] .auth-panel .auth-field-shell {
+  background-color: rgba(255, 255, 255, 0.16) !important;
+  border-color: rgba(31, 196, 31, 0.28) !important;
+  box-shadow:
+    0 18px 44px rgba(0, 0, 0, 0.60),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.10) !important;
+}
+
+[data-theme="dark"] .auth-panel .auth-field-shell:hover,
+[data-theme="dark"] .auth-panel .auth-field-shell:focus-within {
+  background-color: rgba(255, 255, 255, 0.16) !important;
+  border-color: #1fc41f !important;
+  box-shadow:
+    0 0 0 1px rgba(31, 196, 31, 0.18),
+    0 18px 44px rgba(0, 0, 0, 0.60),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.10) !important;
 }
 
 [data-theme="dark"] .glass-modal-panel form input,
@@ -263,22 +286,19 @@
 }
 
 [data-theme="dark"] .dropdown-menu-item:hover,
-[data-theme="dark"] .dropdown-trigger-btn:hover,
 [data-theme="dark"] .language-switcher-root .language-item:hover,
 [data-theme="dark"] .language-switcher-root .language-item:focus-visible {
-  background-color: rgba(255, 255, 255, 0.16) !important;
+  background-color: rgba(31, 196, 31, 0.08) !important;
   color: var(--brand-text) !important;
   border-color: #1fc41f !important;
   box-shadow: 0 0 0 1px rgba(31, 196, 31, 0.18) !important;
 }
 
-[data-theme="dark"] .dropdown-menu-item:hover :where(span, p, div, label, strong, em, svg),
-[data-theme="dark"] .dropdown-trigger-btn:hover :where(span, svg) {
+[data-theme="dark"] .dropdown-menu-item:hover :where(span, p, div, label, strong, em, svg) {
   color: var(--brand-text) !important;
 }
 
 [data-theme="dark"] .dropdown-menu-item.item-active,
-[data-theme="dark"] .dropdown-trigger-btn.trigger-active,
 [data-theme="dark"] .ant-menu-item-selected,
 [data-theme="dark"] .ant-tabs-tab-active,
 [data-theme="dark"] .ant-segmented-item-selected {
@@ -312,7 +332,6 @@
 }
 
 [data-theme="dark"] .dropdown-menu-item.item-active :where(span, svg),
-[data-theme="dark"] .dropdown-trigger-btn.trigger-active :where(span, svg),
 [data-theme="dark"] .ant-menu-item-selected :where(span, svg),
 [data-theme="dark"] .ant-tabs-tab-active :where(span, svg),
 [data-theme="dark"] .ant-segmented-item-selected :where(span, svg) {
