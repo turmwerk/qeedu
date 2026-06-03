@@ -1,6 +1,7 @@
 package api
 
 import (
+	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/api/v1/account"
 	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/api/v1/ai"
 	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/api/v1/auth"
 	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/api/v1/auth/oauth"
@@ -48,6 +49,22 @@ func RegisterRoutes(r *gin.Engine) {
 			protected.GET("/me", auth.Me)
 			protected.POST("/auth/refresh", auth.Refresh)
 			protected.POST("/auth/logout", auth.Logout)
+
+			accountGroup := protected.Group("/account")
+			{
+				accountGroup.GET("/overview", account.Overview)
+				accountGroup.GET("/profile", account.GetProfile)
+				accountGroup.PATCH("/profile", account.UpdateProfile)
+				accountGroup.PATCH("/email", account.UpdateEmail)
+				accountGroup.PATCH("/password", account.ChangePassword)
+				accountGroup.GET("/preferences", account.GetPreferences)
+				accountGroup.PATCH("/preferences", account.UpdatePreferences)
+				accountGroup.GET("/identities", account.GetIdentities)
+				accountGroup.DELETE("/identities/:provider", account.UnlinkIdentity)
+				accountGroup.GET("/events", account.Events)
+				accountGroup.POST("/feedback", account.Feedback)
+				accountGroup.DELETE("", account.DeleteAccount)
+			}
 
 			// Sandbox
 			protected.POST("/sandbox/run", sandbox.RunCode)

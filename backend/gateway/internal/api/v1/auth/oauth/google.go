@@ -26,7 +26,7 @@ func GoogleLogin(c *gin.Context) {
 	if !ensureOAuthConfig(c, "Google", configs.GoogleOAuth, "GOOGLE") {
 		return
 	}
-	state := randomState()
+	state := oauthState(c)
 	u := configs.GoogleOAuth.AuthCodeURL(state, oauth2.AccessTypeOffline, oauth2.ApprovalForce)
 	c.Redirect(http.StatusTemporaryRedirect, u)
 }

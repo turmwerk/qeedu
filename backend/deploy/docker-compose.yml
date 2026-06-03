@@ -105,6 +105,7 @@ services:
     env_file:
       - ../.env
     environment:
+      DATABASE_DSN: "root:123456@tcp(mysql:3306)/nju_edu_ai?charset=utf8mb4&parseTime=True&loc=Local"
       USER_SERVICE_ADDR: "user-services:50051"
       SANDBOX_SERVICE_ADDR: "sandbox:50052"
       AI_COPILOT_SERVICE_ADDR: "ai-copilot:50053"

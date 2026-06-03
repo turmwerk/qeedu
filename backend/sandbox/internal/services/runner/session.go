@@ -104,7 +104,7 @@ func buildRunCommands(cfg LangConfig, req RunRequest) ([]string, []string) {
 		}
 	case "java":
 		if hasRunFilePrefix(req, "src/") {
-			return []string{"sh", "-lc", "mkdir -p out && javac src/*.java -d out"}, []string{"java", "-cp", "out", "Main"}
+			return []string{"sh", "-c", "mkdir -p out && javac src/*.java -d out"}, []string{"java", "-cp", "out", "Main"}
 		}
 	}
 	return cfg.CompileCmd, cfg.RunCmd
@@ -122,7 +122,7 @@ func buildExecCommand(cfg LangConfig, runDir string) []string {
 		shellQuote(runDir),
 		runCmd,
 	)
-	return []string{"sh", "-lc", script}
+	return []string{"sh", "-c", script}
 }
 
 func buildRequestExecCommand(cfg LangConfig, req RunRequest, runDir string) []string {
@@ -138,7 +138,7 @@ func buildRequestExecCommand(cfg LangConfig, req RunRequest, runDir string) []st
 		shellQuote(runDir),
 		runCmd,
 	)
-	return []string{"sh", "-lc", script}
+	return []string{"sh", "-c", script}
 }
 
 func shellJoin(args []string) string {

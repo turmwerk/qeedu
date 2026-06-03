@@ -8,36 +8,11 @@ import { runCode } from "@/api/sandbox";
 import TabBar, { type TabBarProps } from "@/ui/TabBar";
 import { useContextMenu, type ContextMenuItem } from "@/ui/ContextMenu";
 import { getFileIcon } from "../../utils/filePresentation";
+import { collectRunFiles, resolveRunRootPath } from "../../utils/runFiles";
 import { useWorkspace } from "../../context";
 import { isRunnableLanguage } from "../../data/languageSupport";
 import { useTerminalPanelViewStore } from "../../TerminalPanel/viewStore";
-import { type FileTreeNode, type TabItem } from "../types";
-
-const collectFiles = (node: FileTreeNode, basePath = node.path) => {
-  const files: { path: string; content: string; language?: string }[] = [];
-
-  const walk = (current: FileTreeNode) => {
-    if (current.type === "file") {
-      files.push({
-        path: current.path.slice(basePath.length).replace(/^\//, "") || current.name,
-        content: current.content ?? "",
-        language: current.language,
-      });
-      return;
-    }
-    current.children?.forEach(walk);
-  };
-
-  walk(node);
-  return files;
-};
-
-const resolveRunRootPath = (filePath: string, language?: string | null): string | null => {
-  if (language === "go" && filePath.startsWith("/test/go-hello/")) return "/test/go-hello";
-  if (language === "rust" && filePath.startsWith("/test/rust-hello/")) return "/test/rust-hello";
-  if (language === "java" && filePath.startsWith("/test/java-hello/")) return "/test/java-hello";
-  return null;
-};
+import { type TabItem } from "../types";
 
 const FileTabBar: React.FC = () => {
   const {
@@ -129,7 +104,7 @@ const FileTabBar: React.FC = () => {
           if (!runRootPath) return undefined;
           const runRoot = getNodeByPath(runRootPath);
           if (!runRoot) return undefined;
-          return collectFiles(runRoot).map((file) =>
+          return collectRunFiles(runRoot).map((file) =>
             file.path === activeTab.id.slice(runRootPath.length).replace(/^\//, "")
               ? { ...file, content: activeTab.content ?? "" }
               : file,

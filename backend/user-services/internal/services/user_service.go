@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"time"
 	"unicode/utf8"
 
 	"github.com/dieWehmut/nju-edu-ai-system/backend/user-services/internal/entity"
@@ -75,6 +76,24 @@ func hashPassword(password string) (string, error) {
 // FindOrCreateOAuthUser finds an existing user by provider+ID or creates a new one.
 // On subsequent logins it also refreshes name / email / avatar.
 func (s *UserService) FindOrCreateOAuthUser(p OAuthProfile) (*entity.User, error) {
+	provider := strings.TrimSpace(p.Provider)
+	providerID := strings.TrimSpace(p.ProviderID)
+	if identity, err := s.repo.FindIdentityByProvider(provider, providerID); err == nil {
+		u, getErr := s.repo.FindByID(identity.UserID)
+		if getErr != nil {
+			return nil, getErr
+		}
+		now := time.Now()
+		identity.ProviderEmail = normalizeEmail(p.Email)
+		identity.ProviderName = strings.TrimSpace(p.Name)
+		identity.AvatarURL = strings.TrimSpace(p.AvatarURL)
+		identity.LastUsedAt = &now
+		_ = s.repo.UpsertIdentity(identity)
+		return u, nil
+	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, err
+	}
+
 	u, err := s.repo.FindByProvider(p.Provider, p.ProviderID)
 	if err == nil {
 		// Update profile fields that may have changed upstream
@@ -88,6 +107,16 @@ func (s *UserService) FindOrCreateOAuthUser(p OAuthProfile) (*entity.User, error
 			u.AvatarURL = strings.TrimSpace(p.AvatarURL)
 		}
 		_ = s.repo.Update(u)
+		now := time.Now()
+		_ = s.repo.UpsertIdentity(&entity.UserIdentity{
+			UserID:         u.ID,
+			Provider:       provider,
+			ProviderUserID: providerID,
+			ProviderEmail:  normalizeEmail(p.Email),
+			ProviderName:   strings.TrimSpace(p.Name),
+			AvatarURL:      strings.TrimSpace(p.AvatarURL),
+			LastUsedAt:     &now,
+		})
 		return u, nil
 	}
 
@@ -106,6 +135,16 @@ func (s *UserService) FindOrCreateOAuthUser(p OAuthProfile) (*entity.User, error
 	if err := s.repo.Create(u); err != nil {
 		return nil, err
 	}
+	now := time.Now()
+	_ = s.repo.UpsertIdentity(&entity.UserIdentity{
+		UserID:         u.ID,
+		Provider:       provider,
+		ProviderUserID: providerID,
+		ProviderEmail:  normalizeEmail(p.Email),
+		ProviderName:   strings.TrimSpace(p.Name),
+		AvatarURL:      strings.TrimSpace(p.AvatarURL),
+		LastUsedAt:     &now,
+	})
 	return u, nil
 }
 
@@ -133,6 +172,15 @@ func (s *UserService) FindOrCreateEmailUser(email, name string) (*entity.User, e
 	if err := s.repo.Create(u); err != nil {
 		return nil, err
 	}
+	now := time.Now()
+	_ = s.repo.UpsertIdentity(&entity.UserIdentity{
+		UserID:         u.ID,
+		Provider:       "email",
+		ProviderUserID: email,
+		ProviderEmail:  email,
+		ProviderName:   u.Name,
+		LastUsedAt:     &now,
+	})
 	return u, nil
 }
 
@@ -170,6 +218,15 @@ func (s *UserService) CreatePasswordUser(email, name, password string) (*entity.
 		if err := s.repo.Update(existing); err != nil {
 			return nil, err
 		}
+		now := time.Now()
+		_ = s.repo.UpsertIdentity(&entity.UserIdentity{
+			UserID:         existing.ID,
+			Provider:       "email",
+			ProviderUserID: email,
+			ProviderEmail:  email,
+			ProviderName:   existing.Name,
+			LastUsedAt:     &now,
+		})
 		return existing, nil
 	}
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
@@ -190,6 +247,15 @@ func (s *UserService) CreatePasswordUser(email, name, password string) (*entity.
 	if err := s.repo.Create(u); err != nil {
 		return nil, err
 	}
+	now := time.Now()
+	_ = s.repo.UpsertIdentity(&entity.UserIdentity{
+		UserID:         u.ID,
+		Provider:       "email",
+		ProviderUserID: email,
+		ProviderEmail:  email,
+		ProviderName:   u.Name,
+		LastUsedAt:     &now,
+	})
 	return u, nil
 }
 
@@ -239,6 +305,15 @@ func (s *UserService) UpdatePassword(email, password string) (*entity.User, erro
 	if err := s.repo.Update(u); err != nil {
 		return nil, err
 	}
+	now := time.Now()
+	_ = s.repo.UpsertIdentity(&entity.UserIdentity{
+		UserID:         u.ID,
+		Provider:       "email",
+		ProviderUserID: email,
+		ProviderEmail:  email,
+		ProviderName:   u.Name,
+		LastUsedAt:     &now,
+	})
 	return u, nil
 }
 

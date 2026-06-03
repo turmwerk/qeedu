@@ -4,6 +4,7 @@ import { showToast } from "@/ui/Toast";
 import { useWorkspace } from "../context";
 import { inferLanguage, isRunnableLanguage } from "../data/languageSupport";
 import { ViewType, type FileTreeNode } from "../EditorArea/types";
+import { collectRunFiles, resolveRunRootPath } from "../utils/runFiles";
 import { useTerminalSessionStore } from "../TerminalPanel/Views/TerminalView/sessionStore";
 import { useTerminalPanelViewStore } from "../TerminalPanel/viewStore";
 import { SidebarView } from "../Sidebar/constants";
@@ -364,6 +365,7 @@ export const useProjectCommands = (
     addFileWithContent,
     addFolder,
     loadFileTree,
+    getNodeByPath,
   } = useWorkspace();
   const { toggleView } = useSidebarView();
   const addTerminalSession = useTerminalSessionStore((state) => state.addSession);
@@ -528,6 +530,17 @@ export const useProjectCommands = (
         code: activeTab.content,
         timeout_seconds: 15,
         workspace_key: workspaceKey,
+        files: (() => {
+          const runRootPath = resolveRunRootPath(activeTab.id, activeTab.language);
+          if (!runRootPath) return undefined;
+          const runRoot = getNodeByPath(runRootPath);
+          if (!runRoot) return undefined;
+          return collectRunFiles(runRoot).map((file) =>
+            file.path === activeTab.id.slice(runRootPath.length).replace(/^\//, "")
+              ? { ...file, content: activeTab.content ?? "" }
+              : file,
+          );
+        })(),
       });
       setRunOutput({
         stdout: resp.stdout,
@@ -558,7 +571,7 @@ export const useProjectCommands = (
     } finally {
       setRunning(false);
     }
-  }, [activeTab, isRunnable, running, setRunOutput, workspaceKey]);
+  }, [activeTab, getNodeByPath, isRunnable, running, setRunOutput, workspaceKey]);
 
   const toggleTerminalPanel =
     options.toggleTerminalPanel ?? soon("终端面板");

@@ -105,6 +105,10 @@ func (m *Manager) runWithSession(ctx context.Context, req RunRequest, cfg LangCo
 
 		result, err := m.executeInSession(ctx, sess, cfg, req, timeout)
 		if err == nil {
+			if result != nil && shouldRecreateSessionForMissingTool(result, cfg) && attempt == 0 {
+				m.discardSession(key, sess)
+				continue
+			}
 			return result, nil
 		}
 
@@ -115,6 +119,24 @@ func (m *Manager) runWithSession(ctx context.Context, req RunRequest, cfg LangCo
 	}
 
 	return nil, ErrContainerFailed
+}
+
+func shouldRecreateSessionForMissingTool(result *container.RunResult, cfg LangConfig) bool {
+	if result.ExitCode != 127 {
+		return false
+	}
+	output := strings.ToLower(result.Stderr + "\n" + result.Stdout)
+	for _, cmd := range append(cfg.CompileCmd, cfg.RunCmd...) {
+		if cmd == "" || strings.Contains(cmd, "/") || strings.HasPrefix(cmd, ".") {
+			continue
+		}
+		if strings.Contains(output, cmd+": not found") ||
+			strings.Contains(output, cmd+": command not found") ||
+			strings.Contains(output, cmd+" not found") {
+			return true
+		}
+	}
+	return false
 }
 
 func (m *Manager) ensureSession(

@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"errors"
+
 	"github.com/dieWehmut/nju-edu-ai-system/backend/user-services/internal/entity"
 	"gorm.io/gorm"
 )
@@ -81,4 +83,32 @@ func (r *UserRepo) FindLocalByAccount(account string) (*entity.User, error) {
 		return nil, err
 	}
 	return &u, nil
+}
+
+func (r *UserRepo) FindIdentityByProvider(provider, providerUserID string) (*entity.UserIdentity, error) {
+	var identity entity.UserIdentity
+	if err := r.db.Where("provider = ? AND provider_user_id = ?", provider, providerUserID).First(&identity).Error; err != nil {
+		return nil, err
+	}
+	return &identity, nil
+}
+
+func (r *UserRepo) UpsertIdentity(identity *entity.UserIdentity) error {
+	if identity == nil {
+		return errors.New("identity is nil")
+	}
+	var existing entity.UserIdentity
+	err := r.db.Where("user_id = ? AND provider = ?", identity.UserID, identity.Provider).First(&existing).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return r.db.Create(identity).Error
+		}
+		return err
+	}
+	existing.ProviderUserID = identity.ProviderUserID
+	existing.ProviderEmail = identity.ProviderEmail
+	existing.ProviderName = identity.ProviderName
+	existing.AvatarURL = identity.AvatarURL
+	existing.LastUsedAt = identity.LastUsedAt
+	return r.db.Save(&existing).Error
 }

@@ -1,0 +1,102 @@
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { deleteAccount } from "@/api/account";
+import { useAuth } from "@/hooks/useAuth";
+import { getEffectsEnabled, toggleEffects } from "@/utils/effects/controller";
+import { getStoredTheme, toggleTheme } from "@/utils/theme/controller";
+import AccountSection from "../components/Section";
+import { useAccountContext } from "..";
+
+const Settings: React.FC = () => {
+  const navigate = useNavigate();
+  const auth = useAuth();
+  const { data } = useAccountContext();
+  const [theme, setTheme] = useState(getStoredTheme());
+  const [effectsEnabled, setEffectsEnabled] = useState(getEffectsEnabled());
+  const [danger, setDanger] = useState({ password: "", confirm: "" });
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    const syncTheme = () => setTheme(getStoredTheme());
+    const syncEffects = () => setEffectsEnabled(getEffectsEnabled());
+    window.addEventListener("theme-change", syncTheme);
+    window.addEventListener("effects-change", syncEffects);
+    window.addEventListener("storage", syncTheme);
+    window.addEventListener("storage", syncEffects);
+    return () => {
+      window.removeEventListener("theme-change", syncTheme);
+      window.removeEventListener("effects-change", syncEffects);
+      window.removeEventListener("storage", syncTheme);
+      window.removeEventListener("storage", syncEffects);
+    };
+  }, []);
+
+  const logout = async () => {
+    await auth.logout();
+    navigate("/login");
+  };
+
+  const removeAccount = async () => {
+    setMessage("");
+    try {
+      await deleteAccount(danger);
+      await auth.logout();
+      navigate("/login");
+    } catch (err) {
+      setMessage(err instanceof Error ? err.message : "注销失败");
+    }
+  };
+
+  return (
+    <>
+      <AccountSection title="设置" subtitle="管理个人中心里的语言、主题、背景特效和账户操作。">
+        <div className="account-list">
+          <div className="account-list__item">
+            <div>
+              <div className="account-list__title">语言</div>
+              <div className="account-list__meta">简体中文 / 繁體中文 / English</div>
+            </div>
+            <LanguageSwitcher />
+          </div>
+          <button className="account-list__item" type="button" onClick={() => setTheme(toggleTheme())}>
+            <span>
+              <span className="account-list__title">主题</span>
+              <span className="account-list__meta">当前：{theme === "dark" ? "暗色" : "亮色"}</span>
+            </span>
+            <span className="account-empty">{theme === "dark" ? "切换到亮色" : "切换到暗色"}</span>
+          </button>
+          <button className="account-list__item" type="button" onClick={() => setEffectsEnabled(toggleEffects())}>
+            <span>
+              <span className="account-list__title">背景特效</span>
+              <span className="account-list__meta">当前：{effectsEnabled ? "开启" : "关闭"}</span>
+            </span>
+            <span className="account-empty">{effectsEnabled ? "关闭" : "开启"}</span>
+          </button>
+          <button className="account-button" type="button" onClick={logout}>退出登录</button>
+        </div>
+      </AccountSection>
+
+      <AccountSection title="危险操作" subtitle="注销账户会清除登录方式和敏感资料，请谨慎操作。">
+        <div className="account-form">
+          {data?.has_password && (
+            <label className="account-label">
+              当前密码
+              <input className="account-input" type="password" value={danger.password} onChange={(e) => setDanger((prev) => ({ ...prev, password: e.target.value }))} />
+            </label>
+          )}
+          <label className="account-label">
+            输入 DELETE 确认
+            <input className="account-input" value={danger.confirm} onChange={(e) => setDanger((prev) => ({ ...prev, confirm: e.target.value }))} />
+          </label>
+        </div>
+        <div className="account-actions">
+          {message && <span className="account-empty">{message}</span>}
+          <button className="account-button account-button--danger" type="button" onClick={removeAccount}>注销账户</button>
+        </div>
+      </AccountSection>
+    </>
+  );
+};
+
+export default Settings;

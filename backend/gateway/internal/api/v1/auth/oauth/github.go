@@ -27,7 +27,7 @@ func GitHubLogin(c *gin.Context) {
 	if !ensureOAuthConfig(c, "GitHub", configs.GitHubOAuth, "GITHUB") {
 		return
 	}
-	state := randomState()
+	state := oauthState(c)
 	u := configs.GitHubOAuth.AuthCodeURL(state, oauth2.AccessTypeOnline)
 	c.Redirect(http.StatusTemporaryRedirect, u)
 }

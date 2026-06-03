@@ -82,6 +82,13 @@ const LegacyFloatingButton: React.FC<FloatingButtonProps> = ({
   );
 };
 
+const SettingsIcon = (
+  <SettingOutlined
+    style={{ fontSize: 20 }}
+    className="animate-[spin_2s_linear_infinite] group-hover:animate-none"
+  />
+);
+
 const FloatingControls: React.FC<{ scrollContainer?: HTMLElement | null }> = ({ scrollContainer }) => {
   const { language, setLanguage } = useLanguage();
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -148,25 +155,27 @@ const FloatingControls: React.FC<{ scrollContainer?: HTMLElement | null }> = ({ 
           right: 20px;
           bottom: 20px;
           z-index: 80;
-          width: 48px;
+          width: 42px;
           pointer-events: none;
         }
 
         .float-controls__button {
           position: absolute;
           right: 0;
-          width: 44px;
-          height: 44px;
+          width: 40px;
+          height: 40px;
           display: inline-grid;
           place-items: center;
-          border: 1px solid var(--brand-border);
+          border: 1px solid var(--glass-btn-border);
           border-radius: 10px;
-          color: var(--brand-text);
-          background: var(--surface-container);
-          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+          color: var(--brand-blue);
+          background: var(--glass-btn-bg);
+          box-shadow: var(--glass-btn-shadow);
           cursor: pointer;
           pointer-events: auto;
           font-size: 20px;
+          -webkit-backdrop-filter: blur(16px) saturate(180%);
+          backdrop-filter: blur(16px) saturate(180%);
           transition:
             bottom 200ms ease,
             transform 180ms ease,
@@ -176,16 +185,11 @@ const FloatingControls: React.FC<{ scrollContainer?: HTMLElement | null }> = ({ 
             color 180ms ease;
         }
 
-        :root[data-theme="light"] .float-controls__button {
-          border-color: rgba(17, 24, 39, 0.15);
-          background: rgba(255, 255, 255, 0.9);
-          box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-          color: #111827;
-        }
-
         .float-controls__button:hover,
         .float-controls__button:focus-visible {
-          border-color: rgba(31, 196, 31, 0.58);
+          border-color: var(--glass-btn-hover-border);
+          background: var(--glass-btn-hover-bg);
+          box-shadow: var(--glass-btn-hover-shadow);
           color: var(--brand-purple);
           transform: translateY(-1px);
           outline: none;
@@ -203,7 +207,7 @@ const FloatingControls: React.FC<{ scrollContainer?: HTMLElement | null }> = ({ 
         }
 
         .float-controls__settings {
-          bottom: 54px;
+          bottom: 46px;
           transition: bottom 200ms ease;
         }
 
@@ -224,27 +228,27 @@ const FloatingControls: React.FC<{ scrollContainer?: HTMLElement | null }> = ({ 
         }
 
         .float-controls__opt-theme {
-          bottom: 108px;
+          bottom: 92px;
         }
 
         .float-controls.is-top-hidden .float-controls__opt-theme {
-          bottom: 54px;
+          bottom: 46px;
         }
 
         .float-controls__opt-language {
-          bottom: 162px;
+          bottom: 138px;
         }
 
         .float-controls.is-top-hidden .float-controls__opt-language {
-          bottom: 108px;
+          bottom: 92px;
         }
 
         .float-controls__opt-dynamic {
-          bottom: 216px;
+          bottom: 184px;
         }
 
         .float-controls.is-top-hidden .float-controls__opt-dynamic {
-          bottom: 162px;
+          bottom: 138px;
         }
 
         .float-controls__opt-dynamic.is-visible,
@@ -257,8 +261,8 @@ const FloatingControls: React.FC<{ scrollContainer?: HTMLElement | null }> = ({ 
 
         .float-controls__button.is-active {
           color: var(--brand-purple);
-          border-color: rgba(31, 196, 31, 0.58);
-          background: rgba(31, 196, 31, 0.14);
+          border-color: var(--glass-btn-hover-border);
+          background: var(--glass-btn-hover-bg);
         }
 
         .float-controls__globe {
@@ -268,10 +272,10 @@ const FloatingControls: React.FC<{ scrollContainer?: HTMLElement | null }> = ({ 
 
         .float-controls__langs {
           position: absolute;
-          right: 54px;
-          bottom: 162px;
+          right: 48px;
+          bottom: 138px;
           display: flex;
-          gap: 10px;
+          gap: 7px;
           opacity: 0;
           transform: translateX(8px);
           pointer-events: none;
@@ -279,7 +283,7 @@ const FloatingControls: React.FC<{ scrollContainer?: HTMLElement | null }> = ({ 
         }
 
         .float-controls.is-top-hidden .float-controls__langs {
-          bottom: 108px;
+          bottom: 92px;
         }
 
         .float-controls__langs.is-open {
@@ -290,8 +294,8 @@ const FloatingControls: React.FC<{ scrollContainer?: HTMLElement | null }> = ({ 
 
         .float-controls__lang {
           position: static;
-          width: 44px;
-          height: 44px;
+          width: 40px;
+          height: 40px;
           font-size: 12px;
           font-weight: 900;
         }
@@ -303,15 +307,15 @@ const FloatingControls: React.FC<{ scrollContainer?: HTMLElement | null }> = ({ 
           }
 
           .float-controls__langs {
-            right: 54px;
-            bottom: 162px;
-            width: 152px;
+            right: 48px;
+            bottom: 138px;
+            width: 136px;
             flex-wrap: wrap;
             justify-content: flex-end;
           }
 
           .float-controls.is-top-hidden .float-controls__langs {
-            bottom: 108px;
+            bottom: 92px;
           }
         }
 
@@ -375,7 +379,7 @@ const FloatingControls: React.FC<{ scrollContainer?: HTMLElement | null }> = ({ 
         aria-label="设置"
         onClick={handleToggleSettings}
       >
-        <SettingOutlined />
+        <span className="group inline-flex items-center justify-center">{SettingsIcon}</span>
       </button>
 
       <button

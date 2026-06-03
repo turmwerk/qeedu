@@ -24,9 +24,10 @@ import (
 type emailCodePurpose string
 
 const (
-	purposeLogin    emailCodePurpose = "login"
-	purposeRegister emailCodePurpose = "register"
-	purposeReset    emailCodePurpose = "reset"
+	purposeLogin       emailCodePurpose = "login"
+	purposeRegister    emailCodePurpose = "register"
+	purposeReset       emailCodePurpose = "reset"
+	purposeChangeEmail emailCodePurpose = "change_email"
 )
 
 type emailCodeEntry struct {
@@ -50,6 +51,8 @@ func normalizePurpose(value string) emailCodePurpose {
 		return purposeRegister
 	case purposeReset:
 		return purposeReset
+	case purposeChangeEmail:
+		return purposeChangeEmail
 	default:
 		return purposeLogin
 	}
@@ -99,6 +102,10 @@ func verifyEmailCode(email string, purpose emailCodePurpose, code string) bool {
 	}
 	delete(emailCodes.values, key)
 	return true
+}
+
+func VerifyEmailChangeCode(email string, code string) bool {
+	return verifyEmailCode(email, purposeChangeEmail, code)
 }
 
 func sendEmailWithResend(to, subject, body string) error {

@@ -21,7 +21,13 @@ func main() {
 	}
 
 	db.Init(dsn)
-	if err := db.DB.AutoMigrate(&entity.User{}); err != nil {
+	if err := db.DB.AutoMigrate(
+		&entity.User{},
+		&entity.UserIdentity{},
+		&entity.UserPreference{},
+		&entity.AccountEvent{},
+		&entity.AccountFeedback{},
+	); err != nil {
 		log.Fatalf("[user-services] auto-migrate: %v", err)
 	}
 

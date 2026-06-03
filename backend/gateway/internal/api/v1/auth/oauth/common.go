@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/configs"
+	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/api/v1/account"
 	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/middleware"
 	userRPC "github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/rpc/user"
 	userv1 "github.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/user/v1"
@@ -21,6 +22,40 @@ func randomState() string {
 	b := make([]byte, 16)
 	rand.Read(b)
 	return base64.URLEncoding.EncodeToString(b)
+}
+
+func currentUserID(c *gin.Context) uint {
+	token := ""
+	if tok, err := c.Cookie("edu_token"); err == nil && tok != "" {
+		token = tok
+	}
+	if token == "" {
+		return 0
+	}
+	claims, err := middleware.ParseToken(token)
+	if err != nil {
+		return 0
+	}
+	if uid, ok := claims["user_id"].(float64); ok && uid > 0 {
+		return uint(uid)
+	}
+	return 0
+}
+
+func isBindMode(c *gin.Context) bool {
+	return strings.EqualFold(strings.TrimSpace(c.Query("mode")), "bind")
+}
+
+func oauthState(c *gin.Context) string {
+	state := randomState()
+	if callbackBindMode(c) {
+		return "bind:" + state
+	}
+	return state
+}
+
+func callbackBindMode(c *gin.Context) bool {
+	return strings.HasPrefix(strings.TrimSpace(c.Query("state")), "bind:")
 }
 
 func redirectToFrontend(c *gin.Context, params url.Values) {
@@ -61,6 +96,26 @@ func ensureOAuthConfig(c *gin.Context, providerLabel string, cfg *oauth2.Config,
 // FinishOAuth upserts the user via gRPC, generates a JWT, sets an httpOnly cookie,
 // and redirects to the frontend.
 func FinishOAuth(c *gin.Context, profile *userv1.OAuthProfile) {
+	if isBindMode(c) {
+		uid := currentUserID(c)
+		if uid == 0 {
+			redirectToFrontend(c, url.Values{"oauth_error": {"请先登录后再绑定第三方账号"}})
+			return
+		}
+		if err := account.LinkOAuthIdentity(uid, account.OAuthIdentityInput{
+			Provider:       profile.Provider,
+			ProviderUserID: profile.ProviderId,
+			ProviderEmail:  profile.Email,
+			ProviderName:   profile.Name,
+			AvatarURL:      profile.AvatarUrl,
+		}); err != nil {
+			redirectToFrontend(c, url.Values{"oauth_error": {"绑定失败: " + err.Error()}})
+			return
+		}
+		c.Redirect(http.StatusTemporaryRedirect, configs.FrontendURL+"/account/oauth?oauth_bound="+url.QueryEscape(profile.Provider))
+		return
+	}
+
 	u, err := userRPC.FindOrCreateOAuthUser(c.Request.Context(), profile)
 	if err != nil {
 		oauthError(c, "failed to save user: "+err.Error())
@@ -75,13 +130,13 @@ func FinishOAuth(c *gin.Context, profile *userv1.OAuthProfile) {
 
 	// Set httpOnly cookie on the API domain (works cross-origin with credentials:include).
 	c.SetCookie(
-		"edu_token",                     // name
-		token,                           // value
-		int((7*24*time.Hour).Seconds()), // max age (7 days)
-		"/",                             // path
-		"",                              // domain (current host only: api.qeedu.tech)
-		configs.IsProd(),                // secure (HTTPS only in production)
-		true,                            // httpOnly
+		"edu_token",                         // name
+		token,                               // value
+		int((7 * 24 * time.Hour).Seconds()), // max age (7 days)
+		"/",                                 // path
+		"",                                  // domain (current host only: api.qeedu.tech)
+		configs.IsProd(),                    // secure (HTTPS only in production)
+		true,                                // httpOnly
 	)
 
 	redirectToFrontend(c, url.Values{

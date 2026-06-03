@@ -14,7 +14,7 @@ export interface SendCodeResponse {
   dev_code?: string;
 }
 
-export async function sendEmailCode(email: string, purpose: "login" | "register" | "reset") {
+export async function sendEmailCode(email: string, purpose: "login" | "register" | "reset" | "change_email") {
   const res = await http.post<SendCodeResponse>("/auth/send-code", { email, purpose });
   return res.data;
 }

@@ -7,10 +7,11 @@ import (
 	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/configs"
 	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/api"
 	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/middleware"
-	sandboxRPC "github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/rpc/sandbox"
-	userRPC "github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/rpc/user"
 	aiChatRPC "github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/rpc/ai-chat"
 	aiCopilotRPC "github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/rpc/ai-copilot"
+	sandboxRPC "github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/rpc/sandbox"
+	userRPC "github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/rpc/user"
+	db "github.com/dieWehmut/nju-edu-ai-system/backend/pkg/mysql"
 	"github.com/gin-gonic/gin"
 )
 
@@ -19,6 +20,11 @@ func main() {
 
 	// JWT
 	middleware.InitJWT(configs.JWTSecret)
+
+	if configs.DatabaseDSN == "" {
+		log.Fatal("[gateway] DATABASE_DSN is required")
+	}
+	db.Init(configs.DatabaseDSN)
 
 	// User-services gRPC client
 	userRPC.Init(configs.UserServiceAddr)
@@ -38,7 +44,7 @@ func main() {
 		if origin != "" {
 			c.Header("Access-Control-Allow-Origin", origin)
 		}
-		c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
 		c.Header("Access-Control-Allow-Headers", "Content-Type, Authorization")
 		c.Header("Access-Control-Allow-Credentials", "true")
 		if c.Request.Method == http.MethodOptions {

@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import DropdownButton from "@/ui/Dropdown/DropdownButton";
 import DropdownMenu from "@/ui/Dropdown/DropdownMenu";
@@ -60,6 +60,7 @@ const Dropdown: React.FC<DropdownProps> = ({
     position: "fixed",
     top: -9999,
     left: -9999,
+    visibility: "hidden",
   });
   const [open, setOpen] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -81,6 +82,38 @@ const Dropdown: React.FC<DropdownProps> = ({
     [canPortal]
   );
 
+  const updatePortalPosition = useCallback(() => {
+    if (!canPortal) return;
+    const wrapper = wrapperRef.current;
+    const menu = menuRef.current;
+    if (!wrapper || !menu) return;
+
+    const rect = wrapper.getBoundingClientRect();
+    const menuRect = menu.getBoundingClientRect();
+    const gap = 4;
+    const rawTop = direction === "up"
+      ? rect.top - menuRect.height - gap
+      : rect.bottom + gap;
+    const maxTop = Math.max(8, window.innerHeight - menuRect.height - 8);
+    const top = Math.min(Math.max(8, rawTop), maxTop);
+
+    let left = direction === "up" ? rect.left : rect.right - menuRect.width;
+    if (left < 8) left = 8;
+    if (left + menuRect.width > window.innerWidth - 8) {
+      left = window.innerWidth - menuRect.width - 8;
+    }
+
+    setMenuStyle({
+      position: "fixed",
+      top,
+      left,
+      zIndex: TOP_Z,
+      minWidth: rect.width,
+      visibility: "visible",
+      transformOrigin: direction === "up" ? "bottom left" : "top right",
+    });
+  }, [canPortal, direction]);
+
   useEffect(() => {
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -89,71 +122,27 @@ const Dropdown: React.FC<DropdownProps> = ({
 
   useLayoutEffect(() => {
     if (!open || !canPortal) return;
-    const wrapper = wrapperRef.current;
-    const menu = menuRef.current;
-    if (!wrapper || !menu) return;
-
-    const rect = wrapper.getBoundingClientRect();
-    const menuRect = menu.getBoundingClientRect();
-
-    const top = direction === "up"
-      ? rect.top - menuRect.height
-      : rect.bottom;
-    
-    // 确保菜单不会超出屏幕边界
-    let left = direction === "up" ? rect.left : rect.right - menuRect.width;
-      
-    if (left < 0) left = 8;
-    if (left + menuRect.width > window.innerWidth) {
-      left = window.innerWidth - menuRect.width - 8;
-    }
-
     setMenuStyle({
       position: "fixed",
-      top: Math.max(8, top),
-      left: left,
+      top: -9999,
+      left: -9999,
       zIndex: TOP_Z,
-      minWidth: rect.width,
-      transformOrigin: direction === "up" ? "bottom left" : "top right",
+      visibility: "hidden",
     });
-  }, [open, canPortal, direction]);
+    const frame = window.requestAnimationFrame(updatePortalPosition);
+    return () => window.cancelAnimationFrame(frame);
+  }, [open, canPortal, updatePortalPosition]);
 
   useEffect(() => {
     if (!open || !canPortal) return;
-    const handle = () => {
-      const wrapper = wrapperRef.current;
-      const menu = menuRef.current;
-      if (!wrapper || !menu) return;
-      const rect = wrapper.getBoundingClientRect();
-      const menuRect = menu.getBoundingClientRect();
-      const top = direction === "up"
-        ? rect.top - menuRect.height
-        : rect.bottom;
-      
-      // 确保菜单不会超出屏幕边界
-      let left = direction === "up" ? rect.left : rect.right - menuRect.width;
-        
-      if (left < 0) left = 8;
-      if (left + menuRect.width > window.innerWidth) {
-        left = window.innerWidth - menuRect.width - 8;
-      }
-      
-      setMenuStyle({
-        position: "fixed",
-        top: Math.max(8, top),
-        left: left,
-        zIndex: TOP_Z,
-        minWidth: rect.width,
-        transformOrigin: direction === "up" ? "bottom left" : "top right",
-      });
-    };
+    const handle = () => updatePortalPosition();
     window.addEventListener("resize", handle);
     window.addEventListener("scroll", handle, true);
     return () => {
       window.removeEventListener("resize", handle);
       window.removeEventListener("scroll", handle, true);
     };
-  }, [open, canPortal, direction]);
+  }, [open, canPortal, updatePortalPosition]);
 
   return (
     <div
