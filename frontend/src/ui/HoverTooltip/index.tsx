@@ -23,10 +23,10 @@ const HoverTooltip: React.FC<HoverTooltipProps> = ({
     >
       {children}
       <div
-        className={`${hover ? "block" : "hidden"} absolute bottom-full mb-0.5 left-1/2 -translate-x-1/2 z-50 bg-black/90 text-white rounded-lg shadow-lg whitespace-nowrap ${tooltipClassName}`}
+        className={`hover-tooltip-panel ${hover ? "block" : "hidden"} absolute bottom-full mb-0.5 left-1/2 -translate-x-1/2 z-50 bg-black/90 text-white rounded-lg shadow-lg whitespace-nowrap ${tooltipClassName}`}
       >
         {content}
-        <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-[6px] border-transparent border-t-black/90" />
+        <div className="hover-tooltip-arrow absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-[6px] border-transparent border-t-black/90" />
       </div>
     </div>
   );

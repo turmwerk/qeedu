@@ -132,7 +132,7 @@ export const ContextMenuProvider: React.FC<{ children: React.ReactNode }> = ({
             >
               <div
                 ref={menuRef}
-                className="min-w-[200px] rounded border border-[#3c3c3c] bg-[#252526] py-1 text-xs text-[#cccccc] shadow-lg"
+                className="context-menu-panel min-w-[200px] rounded border border-[#3c3c3c] bg-[#252526] py-1 text-xs text-[#cccccc] shadow-lg"
                 onMouseDown={(e) => e.stopPropagation()}
               >
                 {state.items.map((item, index) => {
@@ -149,7 +149,7 @@ export const ContextMenuProvider: React.FC<{ children: React.ReactNode }> = ({
                     <button
                       key={item.id ?? item.label}
                       disabled={disabled}
-                      className={`flex w-full items-center gap-2 px-3 py-1.5 text-left transition-colors ${
+                      className={`context-menu-item flex w-full items-center gap-2 px-3 py-1.5 text-left transition-colors ${
                         disabled
                           ? "cursor-not-allowed text-[#666666]"
                           : item.danger

@@ -87,7 +87,7 @@ const CustomModelModal: React.FC<Props> = ({ initial, onSave, onClose }) => {
 
   const modal = (
     <div
-      className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/40 backdrop-blur-sm"
+      className="chat-custom-model-overlay fixed inset-0 z-[99999] flex items-center justify-center bg-black/40 backdrop-blur-sm"
       onMouseDown={onClose}
     >
       <div
