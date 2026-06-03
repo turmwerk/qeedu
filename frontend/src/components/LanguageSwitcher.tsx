@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import GlobeIcon from "@/ui/Icon/GlobeIcon";
 import { useLanguage, type Language } from "@/context/LanguageContext";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -34,7 +35,9 @@ export function LanguageSwitcher({ className = "", iconSize = 18 }: LanguageSwit
   }, [isOpen]);
 
   const handleLanguageChange = (lang: Language) => {
-    setIsOpen(false);
+    flushSync(() => {
+      setIsOpen(false);
+    });
     setLanguage(lang);
   };
 
@@ -43,7 +46,7 @@ export function LanguageSwitcher({ className = "", iconSize = 18 }: LanguageSwit
       <div className={`language-switcher-root relative ${className}`} ref={dropdownRef}>
         <button
           aria-label={t("tooltips.languageSwitcher")}
-          className={`inline-flex h-9 w-9 items-center justify-center text-[var(--brand-text)] transition-all duration-300 hover:scale-110 hover:text-[var(--brand-purple)] active:scale-95 ${
+          className={`inline-flex h-9 w-9 items-center justify-center text-[var(--brand-text)] transition-all duration-100 hover:scale-105 hover:text-[var(--brand-purple)] active:scale-95 ${
             isOpen ? "scale-110 text-[var(--brand-purple)]" : ""
           }`}
           onClick={() => setIsOpen((open) => !open)}
@@ -53,7 +56,7 @@ export function LanguageSwitcher({ className = "", iconSize = 18 }: LanguageSwit
           <span
             className="inline-flex items-center justify-center"
             style={{
-              transition: "transform 0.25s ease-out",
+              transition: "transform 0.1s ease-out",
               transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
             }}
           >

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { flushSync } from "react-dom";
 import {
   ArrowUpOutlined,
   BgColorsOutlined,
@@ -140,7 +141,9 @@ const FloatingControls: React.FC<{ scrollContainer?: HTMLElement | null }> = ({ 
   };
 
   const handleSelectLanguage = (nextLanguage: Language) => {
-    setLanguageOpen(false);
+    flushSync(() => {
+      setLanguageOpen(false);
+    });
     setLanguage(nextLanguage);
   };
 

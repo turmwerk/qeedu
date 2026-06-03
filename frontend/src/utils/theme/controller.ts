@@ -1,6 +1,7 @@
 export type Theme = 'light' | 'dark';
 const THEME_KEY = 'app_theme';
 let themeSwitchingTimer: number | null = null;
+let themeEventTimer: number | null = null;
 
 export function getStoredTheme(): Theme {
   const t = localStorage.getItem(THEME_KEY) as Theme | null;
@@ -22,12 +23,17 @@ export function applyTheme(t: Theme) {
   if (t === 'light') {
     clearStarsCanvases();
   }
-  // Broadcast change for same-window listeners
-  try {
-    window.dispatchEvent(new CustomEvent('theme-change', { detail: { theme: t } }));
-  } catch (e) {
-    // ignore
+  if (themeEventTimer !== null) {
+    window.clearTimeout(themeEventTimer);
   }
+  themeEventTimer = window.setTimeout(() => {
+    themeEventTimer = null;
+    try {
+      window.dispatchEvent(new CustomEvent('theme-change', { detail: { theme: t } }));
+    } catch (e) {
+      // ignore
+    }
+  }, 0);
   if (themeSwitchingTimer !== null) {
     window.clearTimeout(themeSwitchingTimer);
   }

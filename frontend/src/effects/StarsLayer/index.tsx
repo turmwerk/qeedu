@@ -5,26 +5,41 @@ import { clearStarsCanvases, getStoredTheme } from "@/utils/theme/controller";
 
 const StarsLayer: React.FC = () => {
   const animRef = useRef<StarsAnimation | null>(null);
+  const createTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
+    const cancelPendingCreate = () => {
+      if (createTimerRef.current === null) return;
+      window.clearTimeout(createTimerRef.current);
+      createTimerRef.current = null;
+    };
+
     const destroyStars = () => {
+      cancelPendingCreate();
       animRef.current?.destroy();
       animRef.current = null;
       clearStarsCanvases();
     };
 
     const createStars = () => {
-      destroyStars();
-      animRef.current = createStarsAnimation({
-        count: 760,
-        maxRadius: 3.4,
-        color: "#6ef06e",
-        speed: 0.06,
-        linkDistance: 96,
-        lineOpacity: 0.2,
-        lineWidth: 0.85,
-        maxLinksPerStar: 2,
-      });
+      cancelPendingCreate();
+      animRef.current?.destroy();
+      animRef.current = null;
+      clearStarsCanvases();
+      createTimerRef.current = window.setTimeout(() => {
+        createTimerRef.current = null;
+        if (getStoredTheme() !== "dark") return;
+        animRef.current = createStarsAnimation({
+          count: 760,
+          maxRadius: 3.4,
+          color: "#6ef06e",
+          speed: 0.06,
+          linkDistance: 96,
+          lineOpacity: 0.2,
+          lineWidth: 0.85,
+          maxLinksPerStar: 2,
+        });
+      }, 0);
     };
 
     if (getStoredTheme() === "dark") {
