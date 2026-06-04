@@ -7,6 +7,8 @@ persistent data in named volumes.
 
 ## Quick Start
 
+For local validation or development, build images from the checked-out source:
+
 ```bash
 cd docker
 cp .env.example .env
@@ -18,10 +20,41 @@ Open:
 - Web: http://localhost:3000
 - API health: http://localhost:8080/health
 
+## Release Image Deployment
+
+For a Dify-like CE release, use the prebuilt images published to GHCR:
+
+```bash
+git fetch --tags
+git checkout v0.1.0
+cd docker
+cp .env.example .env
+# Edit QEEDU_VERSION to the same released tag, for example v0.1.0.
+docker compose -f docker-compose.release.yaml pull
+docker compose -f docker-compose.release.yaml up -d
+```
+
+`docker-compose.release.yaml` pulls:
+
+- `ghcr.io/turmwerk/qeedu-web:${QEEDU_VERSION}`
+- `ghcr.io/turmwerk/qeedu-gateway:${QEEDU_VERSION}`
+- `ghcr.io/turmwerk/qeedu-user-services:${QEEDU_VERSION}`
+- `ghcr.io/turmwerk/qeedu-sandbox:${QEEDU_VERSION}`
+- `ghcr.io/turmwerk/qeedu-ai-chat:${QEEDU_VERSION}`
+- `ghcr.io/turmwerk/qeedu-ai-copilot:${QEEDU_VERSION}`
+
+GitHub Release assets should stay as source archives and release notes. Docker
+images are not uploaded as release attachments; they are published to the
+container registry by `.github/workflows/ce-docker-images.yml` when a `v*` tag
+is pushed. If anonymous CE deployment is expected, make the generated GHCR
+packages public after the first successful publish.
+
 ## Required Configuration
 
 Edit `docker/.env` before production use:
 
+- `QEEDU_VERSION`: set the release tag to deploy, for example `v0.1.0`.
+- `QEEDU_IMAGE_PREFIX`: keep `ghcr.io/turmwerk` unless using a private mirror.
 - `JWT_SECRET`: set a long random string.
 - `MYSQL_ROOT_PASSWORD`: replace the default password.
 - `DATABASE_DSN`: keep it aligned with `MYSQL_ROOT_PASSWORD` and `MYSQL_DATABASE`.
@@ -39,6 +72,21 @@ Edit `docker/.env` before production use:
 - `ai-copilot`: code completion gRPC service.
 - `mysql`: default CE database.
 
+## Release Publishing
+
+To publish a CE release:
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+The tag triggers the CE image workflow and publishes versioned images to GHCR.
+Then create a GitHub Release from the same tag with release notes and upgrade
+instructions. This mirrors Dify's approach: release notes live on GitHub,
+deployable images live in a registry, and users deploy by selecting a version
+tag in `.env`.
+
 ## Upgrade Pattern
 
 Before upgrading:
@@ -48,8 +96,15 @@ cd docker
 docker compose down
 docker compose config > compose.backup.yaml
 docker run --rm -v qeedu-ce_qeedu-mysql-data:/data -v "$PWD":/backup alpine tar czf /backup/mysql-data.tgz /data
-docker compose up -d --build
+docker compose -f docker-compose.release.yaml pull
+docker compose -f docker-compose.release.yaml up -d
 ```
 
 Keep `.env` local. When `.env.example` changes, review new variables and copy
 only the needed values into `.env`.
+
+For source-build deployments, replace the last two commands with:
+
+```bash
+docker compose up -d --build
+```
