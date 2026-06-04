@@ -269,11 +269,12 @@ const MainLayout: React.FC = () => {
     isAssignmentReviewDetail ||
     isScopedWorkbenchDetail;
   const isHomePage = location.pathname === "/";
+  const isAccountPage = location.pathname === "/account" || location.pathname.startsWith("/account/");
   const isSyllabusDetail =
     location.pathname.startsWith("/teaching/syllabus") &&
     location.pathname !== "/teaching/syllabus/ListPage";
   const isExamDetail = location.pathname.startsWith("/teaching/exam/detail");
-  const shouldRenderFooterInScrollFlow = !isDetailPage && !isHomePage;
+  const shouldRenderFooterInScrollFlow = !isDetailPage && !isHomePage && !isAccountPage;
 
   useEffect(() => {
     if (location.pathname === "/teaching/syllabus/ListPage") {
@@ -327,7 +328,7 @@ const MainLayout: React.FC = () => {
       {/* 全局 Header */}
       <div className="flex-shrink-0 relative z-[100]">
         <Header
-          floatActionsVisible={!isDetailPage}
+          floatActionsVisible={!isDetailPage && !isAccountPage}
           data-oid="d8-wqm."
         />
       </div>
@@ -423,7 +424,7 @@ const MainLayout: React.FC = () => {
               </div>
             )}
             {/* 除了 detail 页面，所有页面都显示 FloatActions */}
-            {!isDetailPage && <FloatActions scrollContainer={scrollContainerEl} />}
+            {!isDetailPage && !isAccountPage && <FloatActions scrollContainer={scrollContainerEl} />}
           </Content>
         </Layout>
       </div>
