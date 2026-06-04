@@ -378,7 +378,7 @@ const file_ai_chat_v1_ai_chat_proto_rawDesc = "" +
 	"\x05model\x18\x03 \x01(\tR\x05model2\x8f\x01\n" +
 	"\rAIChatService\x12;\n" +
 	"\x04Chat\x12\x17.ai_chat.v1.ChatRequest\x1a\x18.ai_chat.v1.ChatResponse0\x01\x12A\n" +
-	"\x06FixBug\x12\x19.ai_chat.v1.FixBugRequest\x1a\x1a.ai_chat.v1.FixBugResponse0\x01BKZIgithub.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/ai-chat/v1;aichatv1b\x06proto3"
+	"\x06FixBug\x12\x19.ai_chat.v1.FixBugRequest\x1a\x1a.ai_chat.v1.FixBugResponse0\x01B>Z<github.com/turmwerk/qeedu/backend/pkg/pb/ai-chat/v1;aichatv1b\x06proto3"
 
 var (
 	file_ai_chat_v1_ai_chat_proto_rawDescOnce sync.Once

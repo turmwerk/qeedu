@@ -5,8 +5,8 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	userRPC "github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/rpc/user"
 	"github.com/gin-gonic/gin"
+	userRPC "github.com/turmwerk/qeedu/backend/gateway/internal/rpc/user"
 )
 
 type registerRequest struct {

@@ -7,13 +7,13 @@ import (
 
 	"github.com/joho/godotenv"
 
-	"github.com/dieWehmut/nju-edu-ai-system/backend/sandbox/internal/rpc"
-	"github.com/dieWehmut/nju-edu-ai-system/backend/sandbox/internal/services/container"
-	"github.com/dieWehmut/nju-edu-ai-system/backend/sandbox/internal/services/lsp"
-	"github.com/dieWehmut/nju-edu-ai-system/backend/sandbox/internal/services/runner"
-	"github.com/dieWehmut/nju-edu-ai-system/backend/sandbox/internal/services/runner/langs"
-	"github.com/dieWehmut/nju-edu-ai-system/backend/sandbox/internal/services/runtimeimages"
-	"github.com/dieWehmut/nju-edu-ai-system/backend/sandbox/internal/services/terminal"
+	"github.com/turmwerk/qeedu/backend/sandbox/internal/rpc"
+	"github.com/turmwerk/qeedu/backend/sandbox/internal/services/container"
+	"github.com/turmwerk/qeedu/backend/sandbox/internal/services/lsp"
+	"github.com/turmwerk/qeedu/backend/sandbox/internal/services/runner"
+	"github.com/turmwerk/qeedu/backend/sandbox/internal/services/runner/langs"
+	"github.com/turmwerk/qeedu/backend/sandbox/internal/services/runtimeimages"
+	"github.com/turmwerk/qeedu/backend/sandbox/internal/services/terminal"
 )
 
 func main() {

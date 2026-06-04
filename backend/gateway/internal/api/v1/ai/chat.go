@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"strings"
 
-	aiChatRPC "github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/rpc/ai-chat"
-	aichatv1 "github.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/ai-chat/v1"
 	"github.com/gin-gonic/gin"
+	aiChatRPC "github.com/turmwerk/qeedu/backend/gateway/internal/rpc/ai-chat"
+	aichatv1 "github.com/turmwerk/qeedu/backend/pkg/pb/ai-chat/v1"
 )
 
 type chatReqBody struct {

@@ -9,12 +9,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/configs"
-	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/api/v1/account"
-	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/middleware"
-	userRPC "github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/rpc/user"
-	userv1 "github.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/user/v1"
 	"github.com/gin-gonic/gin"
+	"github.com/turmwerk/qeedu/backend/gateway/configs"
+	"github.com/turmwerk/qeedu/backend/gateway/internal/api/v1/account"
+	"github.com/turmwerk/qeedu/backend/gateway/internal/middleware"
+	userRPC "github.com/turmwerk/qeedu/backend/gateway/internal/rpc/user"
+	userv1 "github.com/turmwerk/qeedu/backend/pkg/pb/user/v1"
 	"golang.org/x/oauth2"
 )
 

@@ -24,14 +24,14 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rai-chat.proto\x12\nai_chat.v1\",\n\x0b\x43hatMessage\x12\x0c\n\x04role\x18\x01 \x01(\t\x12\x0f\n\x07\x63ontent\x18\x02 \x01(\t\"\x89\x01\n\x0b\x43hatRequest\x12)\n\x08messages\x18\x01 \x03(\x0b\x32\x17.ai_chat.v1.ChatMessage\x12\x14\n\x0c\x66ile_context\x18\x02 \x01(\t\x12\x10\n\x08language\x18\x03 \x01(\t\x12\x13\n\x0btemperature\x18\x04 \x01(\x01\x12\x12\n\nmax_tokens\x18\x05 \x01(\x05\":\n\x0c\x43hatResponse\x12\r\n\x05\x64\x65lta\x18\x01 \x01(\t\x12\x0c\n\x04\x64one\x18\x02 \x01(\x08\x12\r\n\x05model\x18\x03 \x01(\t\"o\n\rFixBugRequest\x12\x0c\n\x04\x63ode\x18\x01 \x01(\t\x12\x15\n\rerror_message\x18\x02 \x01(\t\x12\x10\n\x08language\x18\x03 \x01(\t\x12\x13\n\x0btemperature\x18\x04 \x01(\x01\x12\x12\n\nmax_tokens\x18\x05 \x01(\x05\"<\n\x0e\x46ixBugResponse\x12\r\n\x05\x64\x65lta\x18\x01 \x01(\t\x12\x0c\n\x04\x64one\x18\x02 \x01(\x08\x12\r\n\x05model\x18\x03 \x01(\t2\x8f\x01\n\rAIChatService\x12;\n\x04\x43hat\x12\x17.ai_chat.v1.ChatRequest\x1a\x18.ai_chat.v1.ChatResponse0\x01\x12\x41\n\x06\x46ixBug\x12\x19.ai_chat.v1.FixBugRequest\x1a\x1a.ai_chat.v1.FixBugResponse0\x01\x42KZIgithub.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/ai-chat/v1;aichatv1b\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rai-chat.proto\x12\nai_chat.v1\",\n\x0b\x43hatMessage\x12\x0c\n\x04role\x18\x01 \x01(\t\x12\x0f\n\x07\x63ontent\x18\x02 \x01(\t\"\x89\x01\n\x0b\x43hatRequest\x12)\n\x08messages\x18\x01 \x03(\x0b\x32\x17.ai_chat.v1.ChatMessage\x12\x14\n\x0c\x66ile_context\x18\x02 \x01(\t\x12\x10\n\x08language\x18\x03 \x01(\t\x12\x13\n\x0btemperature\x18\x04 \x01(\x01\x12\x12\n\nmax_tokens\x18\x05 \x01(\x05\":\n\x0c\x43hatResponse\x12\r\n\x05\x64\x65lta\x18\x01 \x01(\t\x12\x0c\n\x04\x64one\x18\x02 \x01(\x08\x12\r\n\x05model\x18\x03 \x01(\t\"o\n\rFixBugRequest\x12\x0c\n\x04\x63ode\x18\x01 \x01(\t\x12\x15\n\rerror_message\x18\x02 \x01(\t\x12\x10\n\x08language\x18\x03 \x01(\t\x12\x13\n\x0btemperature\x18\x04 \x01(\x01\x12\x12\n\nmax_tokens\x18\x05 \x01(\x05\"<\n\x0e\x46ixBugResponse\x12\r\n\x05\x64\x65lta\x18\x01 \x01(\t\x12\x0c\n\x04\x64one\x18\x02 \x01(\x08\x12\r\n\x05model\x18\x03 \x01(\t2\x8f\x01\n\rAIChatService\x12;\n\x04\x43hat\x12\x17.ai_chat.v1.ChatRequest\x1a\x18.ai_chat.v1.ChatResponse0\x01\x12\x41\n\x06\x46ixBug\x12\x19.ai_chat.v1.FixBugRequest\x1a\x1a.ai_chat.v1.FixBugResponse0\x01\x42>Z<github.com/turmwerk/qeedu/backend/pkg/pb/ai-chat/v1;aichatv1b\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'ai_chat_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._loaded_options = None
-  _globals['DESCRIPTOR']._serialized_options = b'ZIgithub.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/ai-chat/v1;aichatv1'
+  _globals['DESCRIPTOR']._serialized_options = b'Z<github.com/turmwerk/qeedu/backend/pkg/pb/ai-chat/v1;aichatv1'
   _globals['_CHATMESSAGE']._serialized_start=29
   _globals['_CHATMESSAGE']._serialized_end=73
   _globals['_CHATREQUEST']._serialized_start=76

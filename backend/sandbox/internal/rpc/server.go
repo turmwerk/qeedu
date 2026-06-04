@@ -4,11 +4,11 @@ import (
 	"log"
 	"net"
 
-	sandboxv1 "github.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/sandbox/v1"
-	"github.com/dieWehmut/nju-edu-ai-system/backend/sandbox/internal/rpc/handler"
-	"github.com/dieWehmut/nju-edu-ai-system/backend/sandbox/internal/services/lsp"
-	"github.com/dieWehmut/nju-edu-ai-system/backend/sandbox/internal/services/runner"
-	"github.com/dieWehmut/nju-edu-ai-system/backend/sandbox/internal/services/terminal"
+	sandboxv1 "github.com/turmwerk/qeedu/backend/pkg/pb/sandbox/v1"
+	"github.com/turmwerk/qeedu/backend/sandbox/internal/rpc/handler"
+	"github.com/turmwerk/qeedu/backend/sandbox/internal/services/lsp"
+	"github.com/turmwerk/qeedu/backend/sandbox/internal/services/runner"
+	"github.com/turmwerk/qeedu/backend/sandbox/internal/services/terminal"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )

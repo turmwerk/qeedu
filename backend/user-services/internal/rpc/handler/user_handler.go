@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 
-	userv1 "github.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/user/v1"
-	"github.com/dieWehmut/nju-edu-ai-system/backend/user-services/internal/entity"
-	"github.com/dieWehmut/nju-edu-ai-system/backend/user-services/internal/services"
+	userv1 "github.com/turmwerk/qeedu/backend/pkg/pb/user/v1"
+	"github.com/turmwerk/qeedu/backend/user-services/internal/entity"
+	"github.com/turmwerk/qeedu/backend/user-services/internal/services"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"gorm.io/gorm"

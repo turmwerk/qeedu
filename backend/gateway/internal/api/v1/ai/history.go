@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	db "github.com/dieWehmut/nju-edu-ai-system/backend/pkg/mysql"
 	"github.com/gin-gonic/gin"
+	db "github.com/turmwerk/qeedu/backend/pkg/mysql"
 	"gorm.io/gorm"
 )
 

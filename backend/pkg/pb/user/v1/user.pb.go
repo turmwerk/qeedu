@@ -919,7 +919,7 @@ const file_user_v1_user_proto_rawDesc = "" +
 	"\x0eVerifyPassword\x12\x1e.user.v1.VerifyPasswordRequest\x1a\x1f.user.v1.VerifyPasswordResponse\x12Q\n" +
 	"\x0eUpdatePassword\x12\x1e.user.v1.UpdatePasswordRequest\x1a\x1f.user.v1.UpdatePasswordResponse\x12H\n" +
 	"\vGetUserByID\x12\x1b.user.v1.GetUserByIDRequest\x1a\x1c.user.v1.GetUserByIDResponse\x12Q\n" +
-	"\x0eGetUserByEmail\x12\x1e.user.v1.GetUserByEmailRequest\x1a\x1f.user.v1.GetUserByEmailResponseBFZDgithub.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/user/v1;userv1b\x06proto3"
+	"\x0eGetUserByEmail\x12\x1e.user.v1.GetUserByEmailRequest\x1a\x1f.user.v1.GetUserByEmailResponseB9Z7github.com/turmwerk/qeedu/backend/pkg/pb/user/v1;userv1b\x06proto3"
 
 var (
 	file_user_v1_user_proto_rawDescOnce sync.Once

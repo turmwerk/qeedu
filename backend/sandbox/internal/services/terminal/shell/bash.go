@@ -1,6 +1,6 @@
 package shell
 
-import "github.com/dieWehmut/nju-edu-ai-system/backend/sandbox/internal/services/runtimeimages"
+import "github.com/turmwerk/qeedu/backend/sandbox/internal/services/runtimeimages"
 
 const (
 	Bash      = "bash"

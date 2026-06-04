@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	aicopilotv1 "github.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/ai-copilot/v1"
+	aicopilotv1 "github.com/turmwerk/qeedu/backend/pkg/pb/ai-copilot/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )

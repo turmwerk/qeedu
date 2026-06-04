@@ -11,10 +11,10 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/configs"
-	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/api/v1/auth"
-	db "github.com/dieWehmut/nju-edu-ai-system/backend/pkg/mysql"
 	"github.com/gin-gonic/gin"
+	"github.com/turmwerk/qeedu/backend/gateway/configs"
+	"github.com/turmwerk/qeedu/backend/gateway/internal/api/v1/auth"
+	db "github.com/turmwerk/qeedu/backend/pkg/mysql"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )

@@ -8,8 +8,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/dieWehmut/nju-edu-ai-system/backend/sandbox/internal/services/container"
-	terminalshell "github.com/dieWehmut/nju-edu-ai-system/backend/sandbox/internal/services/terminal/shell"
+	"github.com/turmwerk/qeedu/backend/sandbox/internal/services/container"
+	terminalshell "github.com/turmwerk/qeedu/backend/sandbox/internal/services/terminal/shell"
 )
 
 const (

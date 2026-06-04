@@ -4,16 +4,16 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/configs"
-	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/api"
-	aiAPI "github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/api/v1/ai"
-	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/middleware"
-	aiChatRPC "github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/rpc/ai-chat"
-	aiCopilotRPC "github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/rpc/ai-copilot"
-	sandboxRPC "github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/rpc/sandbox"
-	userRPC "github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/rpc/user"
-	db "github.com/dieWehmut/nju-edu-ai-system/backend/pkg/mysql"
 	"github.com/gin-gonic/gin"
+	"github.com/turmwerk/qeedu/backend/gateway/configs"
+	"github.com/turmwerk/qeedu/backend/gateway/internal/api"
+	aiAPI "github.com/turmwerk/qeedu/backend/gateway/internal/api/v1/ai"
+	"github.com/turmwerk/qeedu/backend/gateway/internal/middleware"
+	aiChatRPC "github.com/turmwerk/qeedu/backend/gateway/internal/rpc/ai-chat"
+	aiCopilotRPC "github.com/turmwerk/qeedu/backend/gateway/internal/rpc/ai-copilot"
+	sandboxRPC "github.com/turmwerk/qeedu/backend/gateway/internal/rpc/sandbox"
+	userRPC "github.com/turmwerk/qeedu/backend/gateway/internal/rpc/user"
+	db "github.com/turmwerk/qeedu/backend/pkg/mysql"
 )
 
 func main() {

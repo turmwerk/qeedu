@@ -10,10 +10,10 @@ import (
 	"sync"
 	"time"
 
-	sandboxRPC "github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/rpc/sandbox"
-	sandboxv1 "github.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/sandbox/v1"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	sandboxRPC "github.com/turmwerk/qeedu/backend/gateway/internal/rpc/sandbox"
+	sandboxv1 "github.com/turmwerk/qeedu/backend/pkg/pb/sandbox/v1"
 )
 
 var upgrader = websocket.Upgrader{

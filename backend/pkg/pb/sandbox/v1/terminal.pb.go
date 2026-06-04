@@ -549,7 +549,7 @@ const file_sandbox_v1_terminal_proto_rawDesc = "" +
 	"\x0eExecuteCommand\x12!.sandbox.v1.ExecuteCommandRequest\x1a\".sandbox.v1.ExecuteCommandResponse\x12T\n" +
 	"\rCreateSession\x12 .sandbox.v1.CreateSessionRequest\x1a!.sandbox.v1.CreateSessionResponse\x12W\n" +
 	"\x0eDestroySession\x12!.sandbox.v1.DestroySessionRequest\x1a\".sandbox.v1.DestroySessionResponse\x12O\n" +
-	"\x12InteractiveSession\x12\x19.sandbox.v1.TerminalInput\x1a\x1a.sandbox.v1.TerminalOutput(\x010\x01BLZJgithub.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/sandbox/v1;sandboxv1b\x06proto3"
+	"\x12InteractiveSession\x12\x19.sandbox.v1.TerminalInput\x1a\x1a.sandbox.v1.TerminalOutput(\x010\x01B?Z=github.com/turmwerk/qeedu/backend/pkg/pb/sandbox/v1;sandboxv1b\x06proto3"
 
 var (
 	file_sandbox_v1_terminal_proto_rawDescOnce sync.Once

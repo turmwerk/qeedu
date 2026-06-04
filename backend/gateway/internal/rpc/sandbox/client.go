@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	sandboxv1 "github.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/sandbox/v1"
+	sandboxv1 "github.com/turmwerk/qeedu/backend/pkg/pb/sandbox/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"

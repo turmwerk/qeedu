@@ -899,7 +899,7 @@ const file_sandbox_v1_lsp_proto_rawDesc = "" +
 	"\bSyncFile\x12\x1b.sandbox.v1.SyncFileRequest\x1a\x1c.sandbox.v1.SyncFileResponse\x12W\n" +
 	"\x0eGetDiagnostics\x12!.sandbox.v1.GetDiagnosticsRequest\x1a\".sandbox.v1.GetDiagnosticsResponse\x12W\n" +
 	"\x0eGetCompletions\x12!.sandbox.v1.GetCompletionsRequest\x1a\".sandbox.v1.GetCompletionsResponse\x12]\n" +
-	"\x0eDestroySession\x12$.sandbox.v1.DestroyLSPSessionRequest\x1a%.sandbox.v1.DestroyLSPSessionResponseBLZJgithub.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/sandbox/v1;sandboxv1b\x06proto3"
+	"\x0eDestroySession\x12$.sandbox.v1.DestroyLSPSessionRequest\x1a%.sandbox.v1.DestroyLSPSessionResponseB?Z=github.com/turmwerk/qeedu/backend/pkg/pb/sandbox/v1;sandboxv1b\x06proto3"
 
 var (
 	file_sandbox_v1_lsp_proto_rawDescOnce sync.Once

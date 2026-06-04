@@ -3,9 +3,9 @@ package ai
 import (
 	"net/http"
 
-	aiCopilotRPC "github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/rpc/ai-copilot"
-	aicopilotv1 "github.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/ai-copilot/v1"
 	"github.com/gin-gonic/gin"
+	aiCopilotRPC "github.com/turmwerk/qeedu/backend/gateway/internal/rpc/ai-copilot"
+	aicopilotv1 "github.com/turmwerk/qeedu/backend/pkg/pb/ai-copilot/v1"
 )
 
 type completeReqBody struct {

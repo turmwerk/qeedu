@@ -3,8 +3,8 @@ package sandbox
 import (
 	"net/http"
 
-	sandboxRPC "github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/rpc/sandbox"
 	"github.com/gin-gonic/gin"
+	sandboxRPC "github.com/turmwerk/qeedu/backend/gateway/internal/rpc/sandbox"
 )
 
 type execCommandRequest struct {

@@ -10,7 +10,7 @@ import (
 
 const (
 	sessionTTL      = 30 * time.Minute
-	runnerRootDir   = "/tmp/nju-runner"
+	runnerRootDir   = "/tmp/qeedu-runner"
 	runnerBaseDir   = "/tmp"
 	defaultCPUQuota = 100000
 )
@@ -36,7 +36,7 @@ func sessionKey(ownerID uint64, workspaceKey string, language string) string {
 }
 
 func buildRunRoot(language string, runID string) string {
-	return path.Join("nju-runner", strings.ToLower(language), runID)
+	return path.Join("qeedu-runner", strings.ToLower(language), runID)
 }
 
 func buildRunDir(language string, runID string) string {

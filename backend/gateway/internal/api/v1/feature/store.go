@@ -7,9 +7,9 @@ import (
 	"sync"
 	"time"
 
-	ai "github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/api/v1/ai"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	ai "github.com/turmwerk/qeedu/backend/gateway/internal/api/v1/ai"
 )
 
 type record = map[string]any

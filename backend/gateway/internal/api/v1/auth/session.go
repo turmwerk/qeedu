@@ -4,10 +4,10 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/configs"
-	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/middleware"
-	userv1 "github.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/user/v1"
 	"github.com/gin-gonic/gin"
+	"github.com/turmwerk/qeedu/backend/gateway/configs"
+	"github.com/turmwerk/qeedu/backend/gateway/internal/middleware"
+	userv1 "github.com/turmwerk/qeedu/backend/pkg/pb/user/v1"
 )
 
 const authCookieName = "edu_token"

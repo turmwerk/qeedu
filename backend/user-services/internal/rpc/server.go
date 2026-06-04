@@ -4,9 +4,9 @@ import (
 	"log"
 	"net"
 
-	userv1 "github.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/user/v1"
-	"github.com/dieWehmut/nju-edu-ai-system/backend/user-services/internal/rpc/handler"
-	"github.com/dieWehmut/nju-edu-ai-system/backend/user-services/internal/services"
+	userv1 "github.com/turmwerk/qeedu/backend/pkg/pb/user/v1"
+	"github.com/turmwerk/qeedu/backend/user-services/internal/rpc/handler"
+	"github.com/turmwerk/qeedu/backend/user-services/internal/services"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )

@@ -5,7 +5,7 @@ import (
 	"io"
 	"log"
 
-	aichatv1 "github.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/ai-chat/v1"
+	aichatv1 "github.com/turmwerk/qeedu/backend/pkg/pb/ai-chat/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"

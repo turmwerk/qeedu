@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strings"
 
-	userRPC "github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/rpc/user"
 	"github.com/gin-gonic/gin"
+	userRPC "github.com/turmwerk/qeedu/backend/gateway/internal/rpc/user"
 )
 
 // loginRequest 统一登录请求体

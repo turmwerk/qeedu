@@ -24,14 +24,14 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x10\x61i-copilot.proto\x12\rai_copilot.v1\"\xbe\x01\n\x0f\x43ompleteRequest\x12\x10\n\x08language\x18\x01 \x01(\t\x12\x14\n\x0c\x66ile_content\x18\x02 \x01(\t\x12\x15\n\rcursor_offset\x18\x03 \x01(\x05\x12\x11\n\tfile_path\x18\x04 \x01(\t\x12\x13\n\x0btemperature\x18\x05 \x01(\x01\x12\x12\n\nmax_tokens\x18\x06 \x01(\x05\x12\r\n\x05model\x18\x07 \x01(\t\x12\x0f\n\x07\x61pi_key\x18\x08 \x01(\t\x12\x10\n\x08\x62\x61se_url\x18\t \x01(\t\"&\n\x10\x43ompleteResponse\x12\x12\n\nsuggestion\x18\x01 \x01(\t2_\n\x10\x41ICopilotService\x12K\n\x08\x43omplete\x12\x1e.ai_copilot.v1.CompleteRequest\x1a\x1f.ai_copilot.v1.CompleteResponseBQZOgithub.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/ai-copilot/v1;aicopilotv1b\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x10\x61i-copilot.proto\x12\rai_copilot.v1\"\xbe\x01\n\x0f\x43ompleteRequest\x12\x10\n\x08language\x18\x01 \x01(\t\x12\x14\n\x0c\x66ile_content\x18\x02 \x01(\t\x12\x15\n\rcursor_offset\x18\x03 \x01(\x05\x12\x11\n\tfile_path\x18\x04 \x01(\t\x12\x13\n\x0btemperature\x18\x05 \x01(\x01\x12\x12\n\nmax_tokens\x18\x06 \x01(\x05\x12\r\n\x05model\x18\x07 \x01(\t\x12\x0f\n\x07\x61pi_key\x18\x08 \x01(\t\x12\x10\n\x08\x62\x61se_url\x18\t \x01(\t\"&\n\x10\x43ompleteResponse\x12\x12\n\nsuggestion\x18\x01 \x01(\t2_\n\x10\x41ICopilotService\x12K\n\x08\x43omplete\x12\x1e.ai_copilot.v1.CompleteRequest\x1a\x1f.ai_copilot.v1.CompleteResponseBDZBgithub.com/turmwerk/qeedu/backend/pkg/pb/ai-copilot/v1;aicopilotv1b\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'ai_copilot_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._loaded_options = None
-  _globals['DESCRIPTOR']._serialized_options = b'ZOgithub.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/ai-copilot/v1;aicopilotv1'
+  _globals['DESCRIPTOR']._serialized_options = b'ZBgithub.com/turmwerk/qeedu/backend/pkg/pb/ai-copilot/v1;aicopilotv1'
   _globals['_COMPLETEREQUEST']._serialized_start=36
   _globals['_COMPLETEREQUEST']._serialized_end=226
   _globals['_COMPLETERESPONSE']._serialized_start=228

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package ai_copilot.v1;
 
-option go_package = "github.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/ai-copilot/v1;aicopilotv1";
+option go_package = "github.com/turmwerk/qeedu/backend/pkg/pb/ai-copilot/v1;aicopilotv1";
 
 service AICopilotService {
   rpc Complete(CompleteRequest) returns (CompleteResponse);

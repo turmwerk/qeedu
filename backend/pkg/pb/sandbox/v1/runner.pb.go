@@ -247,7 +247,7 @@ const file_sandbox_v1_runner_proto_rawDesc = "" +
 	"\fexecution_ms\x18\x04 \x01(\x03R\vexecutionMs\x12\x14\n" +
 	"\x05error\x18\x05 \x01(\tR\x05error2S\n" +
 	"\rRunnerService\x12B\n" +
-	"\aRunCode\x12\x1a.sandbox.v1.RunCodeRequest\x1a\x1b.sandbox.v1.RunCodeResponseBLZJgithub.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/sandbox/v1;sandboxv1b\x06proto3"
+	"\aRunCode\x12\x1a.sandbox.v1.RunCodeRequest\x1a\x1b.sandbox.v1.RunCodeResponseB?Z=github.com/turmwerk/qeedu/backend/pkg/pb/sandbox/v1;sandboxv1b\x06proto3"
 
 var (
 	file_sandbox_v1_runner_proto_rawDescOnce sync.Once

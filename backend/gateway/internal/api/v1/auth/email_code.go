@@ -17,8 +17,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/configs"
 	"github.com/gin-gonic/gin"
+	"github.com/turmwerk/qeedu/backend/gateway/configs"
 )
 
 type emailCodePurpose string

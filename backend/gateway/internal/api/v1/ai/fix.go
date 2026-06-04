@@ -4,18 +4,18 @@ import (
 	"io"
 	"net/http"
 
-	aiChatRPC "github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/rpc/ai-chat"
-	aichatv1 "github.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/ai-chat/v1"
 	"github.com/gin-gonic/gin"
+	aiChatRPC "github.com/turmwerk/qeedu/backend/gateway/internal/rpc/ai-chat"
+	aichatv1 "github.com/turmwerk/qeedu/backend/pkg/pb/ai-chat/v1"
 )
 
 type fixBugReqBody struct {
-	Code         string `json:"code"`
-	ErrorMessage string `json:"error_message"`
-	Language     string `json:"language"`
-	Model        string `json:"model"`
-	APIKey       string `json:"api_key"`
-	BaseURL      string `json:"base_url"`
+	Code         string  `json:"code"`
+	ErrorMessage string  `json:"error_message"`
+	Language     string  `json:"language"`
+	Model        string  `json:"model"`
+	APIKey       string  `json:"api_key"`
+	BaseURL      string  `json:"base_url"`
 	Temperature  float64 `json:"temperature"`
 	MaxTokens    int32   `json:"max_tokens"`
 }

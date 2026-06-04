@@ -194,7 +194,7 @@ const file_ai_copilot_v1_ai_copilot_proto_rawDesc = "" +
 	"suggestion\x18\x01 \x01(\tR\n" +
 	"suggestion2_\n" +
 	"\x10AICopilotService\x12K\n" +
-	"\bComplete\x12\x1e.ai_copilot.v1.CompleteRequest\x1a\x1f.ai_copilot.v1.CompleteResponseBQZOgithub.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/ai-copilot/v1;aicopilotv1b\x06proto3"
+	"\bComplete\x12\x1e.ai_copilot.v1.CompleteRequest\x1a\x1f.ai_copilot.v1.CompleteResponseBDZBgithub.com/turmwerk/qeedu/backend/pkg/pb/ai-copilot/v1;aicopilotv1b\x06proto3"
 
 var (
 	file_ai_copilot_v1_ai_copilot_proto_rawDescOnce sync.Once

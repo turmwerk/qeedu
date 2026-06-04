@@ -3,8 +3,8 @@ package langs
 import (
 	"time"
 
-	"github.com/dieWehmut/nju-edu-ai-system/backend/sandbox/internal/services/runner"
-	"github.com/dieWehmut/nju-edu-ai-system/backend/sandbox/internal/services/runtimeimages"
+	"github.com/turmwerk/qeedu/backend/sandbox/internal/services/runner"
+	"github.com/turmwerk/qeedu/backend/sandbox/internal/services/runtimeimages"
 )
 
 type Go struct{}

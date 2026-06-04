@@ -9,7 +9,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/dieWehmut/nju-edu-ai-system/backend/sandbox/internal/services/container"
+	"github.com/turmwerk/qeedu/backend/sandbox/internal/services/container"
 )
 
 // Manager orchestrates code execution using the container client.

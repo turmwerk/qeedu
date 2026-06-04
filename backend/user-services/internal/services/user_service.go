@@ -7,8 +7,8 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/dieWehmut/nju-edu-ai-system/backend/user-services/internal/entity"
-	"github.com/dieWehmut/nju-edu-ai-system/backend/user-services/internal/repository"
+	"github.com/turmwerk/qeedu/backend/user-services/internal/entity"
+	"github.com/turmwerk/qeedu/backend/user-services/internal/repository"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )

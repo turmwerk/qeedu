@@ -3,7 +3,7 @@ package repository
 import (
 	"errors"
 
-	"github.com/dieWehmut/nju-edu-ai-system/backend/user-services/internal/entity"
+	"github.com/turmwerk/qeedu/backend/user-services/internal/entity"
 	"gorm.io/gorm"
 )
 

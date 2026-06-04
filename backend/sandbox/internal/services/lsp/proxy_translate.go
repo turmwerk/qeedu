@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	sandboxv1 "github.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/sandbox/v1"
+	sandboxv1 "github.com/turmwerk/qeedu/backend/pkg/pb/sandbox/v1"
 )
 
 func translateDiagnostics(params publishDiagnosticsParams) (string, []diagnosticRecord) {

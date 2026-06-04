@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: "123456"
-      MYSQL_DATABASE: nju_edu_ai
+      MYSQL_DATABASE: qeedu
     ports:
       - "3306:3306"
     volumes:
@@ -30,7 +30,7 @@ services:
       mysql:
         condition: service_healthy
     environment:
-      DATABASE_DSN: "root:123456@tcp(mysql:3306)/nju_edu_ai?charset=utf8mb4&parseTime=True&loc=Local"
+      DATABASE_DSN: "root:123456@tcp(mysql:3306)/qeedu?charset=utf8mb4&parseTime=True&loc=Local"
       GRPC_ADDR: ":50051"
 
   sandbox:
@@ -107,7 +107,7 @@ services:
     volumes:
       - gateway-uploads:/app/uploads
     environment:
-      DATABASE_DSN: "root:123456@tcp(mysql:3306)/nju_edu_ai?charset=utf8mb4&parseTime=True&loc=Local"
+      DATABASE_DSN: "root:123456@tcp(mysql:3306)/qeedu?charset=utf8mb4&parseTime=True&loc=Local"
       USER_SERVICE_ADDR: "user-services:50051"
       SANDBOX_SERVICE_ADDR: "sandbox:50052"
       AI_COPILOT_SERVICE_ADDR: "ai-copilot:50053"

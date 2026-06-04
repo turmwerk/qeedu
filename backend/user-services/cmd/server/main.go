@@ -4,12 +4,12 @@ import (
 	"log"
 	"os"
 
-	db "github.com/dieWehmut/nju-edu-ai-system/backend/pkg/mysql"
-	"github.com/dieWehmut/nju-edu-ai-system/backend/user-services/internal/entity"
-	"github.com/dieWehmut/nju-edu-ai-system/backend/user-services/internal/repository"
-	"github.com/dieWehmut/nju-edu-ai-system/backend/user-services/internal/rpc"
-	"github.com/dieWehmut/nju-edu-ai-system/backend/user-services/internal/services"
 	"github.com/joho/godotenv"
+	db "github.com/turmwerk/qeedu/backend/pkg/mysql"
+	"github.com/turmwerk/qeedu/backend/user-services/internal/entity"
+	"github.com/turmwerk/qeedu/backend/user-services/internal/repository"
+	"github.com/turmwerk/qeedu/backend/user-services/internal/rpc"
+	"github.com/turmwerk/qeedu/backend/user-services/internal/services"
 )
 
 func main() {

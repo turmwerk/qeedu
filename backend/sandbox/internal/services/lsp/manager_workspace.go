@@ -6,8 +6,8 @@ import (
 	"path"
 	"strings"
 
-	sandboxv1 "github.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/sandbox/v1"
-	"github.com/dieWehmut/nju-edu-ai-system/backend/sandbox/internal/services/runtimeimages"
+	sandboxv1 "github.com/turmwerk/qeedu/backend/pkg/pb/sandbox/v1"
+	"github.com/turmwerk/qeedu/backend/sandbox/internal/services/runtimeimages"
 )
 
 func (m *Manager) syncWorkspace(ctx context.Context, sess *session, files []*sandboxv1.WorkspaceFile) error {

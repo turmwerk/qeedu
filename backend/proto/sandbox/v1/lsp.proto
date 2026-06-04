@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package sandbox.v1;
 
-option go_package = "github.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/sandbox/v1;sandboxv1";
+option go_package = "github.com/turmwerk/qeedu/backend/pkg/pb/sandbox/v1;sandboxv1";
 
 service LSPService {
   rpc EnsureSession(EnsureSessionRequest) returns (EnsureSessionResponse);

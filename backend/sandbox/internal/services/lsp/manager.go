@@ -8,8 +8,8 @@ import (
 
 	"github.com/google/uuid"
 
-	sandboxv1 "github.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/sandbox/v1"
-	"github.com/dieWehmut/nju-edu-ai-system/backend/sandbox/internal/services/container"
+	sandboxv1 "github.com/turmwerk/qeedu/backend/pkg/pb/sandbox/v1"
+	"github.com/turmwerk/qeedu/backend/sandbox/internal/services/container"
 )
 
 // Manager manages language-server-backed diagnostics and completions.

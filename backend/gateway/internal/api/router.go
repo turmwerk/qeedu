@@ -1,14 +1,14 @@
 package api
 
 import (
-	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/api/v1/account"
-	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/api/v1/ai"
-	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/api/v1/auth"
-	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/api/v1/auth/oauth"
-	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/api/v1/feature"
-	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/api/v1/sandbox"
-	"github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/middleware"
 	"github.com/gin-gonic/gin"
+	"github.com/turmwerk/qeedu/backend/gateway/internal/api/v1/account"
+	"github.com/turmwerk/qeedu/backend/gateway/internal/api/v1/ai"
+	"github.com/turmwerk/qeedu/backend/gateway/internal/api/v1/auth"
+	"github.com/turmwerk/qeedu/backend/gateway/internal/api/v1/auth/oauth"
+	"github.com/turmwerk/qeedu/backend/gateway/internal/api/v1/feature"
+	"github.com/turmwerk/qeedu/backend/gateway/internal/api/v1/sandbox"
+	"github.com/turmwerk/qeedu/backend/gateway/internal/middleware"
 )
 
 func RegisterRoutes(r *gin.Engine) {
