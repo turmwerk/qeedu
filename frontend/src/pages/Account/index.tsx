@@ -182,7 +182,9 @@ const Account: React.FC = () => {
           --account-mobile-header-height: 58px;
           position: relative;
           z-index: 2;
-          min-height: calc(100vh - var(--main-header-height, 46px));
+          min-height: 100%;
+          display: flex;
+          flex-direction: column;
           color: var(--brand-text);
         }
 
@@ -216,7 +218,8 @@ const Account: React.FC = () => {
         .account-content {
           min-width: 0;
           margin-left: var(--account-sidebar-width);
-          min-height: calc(100vh - var(--main-header-height, 46px));
+          flex: 1 1 auto;
+          min-height: 0;
           display: flex;
           flex-direction: column;
         }
@@ -697,7 +700,7 @@ const Account: React.FC = () => {
 
           .account-content {
             margin-left: 0;
-            min-height: calc(100vh - var(--account-mobile-header-height));
+            min-height: 0;
           }
 
           .account-main {
