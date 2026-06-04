@@ -22,7 +22,10 @@ Open:
 
 ## Release Image Deployment
 
-For a Dify-like CE release, use the prebuilt images published to GHCR:
+For a Dify-like CE release, use the prebuilt images published to GHCR.
+GHCR is GitHub Packages' container registry, so the images stay under the same
+GitHub account as the source repository and do not require a separate Docker Hub
+organization:
 
 ```bash
 git fetch --tags
@@ -44,10 +47,18 @@ docker compose -f docker-compose.release.yaml up -d
 - `ghcr.io/turmwerk/qeedu-ai-copilot:${QEEDU_VERSION}`
 
 GitHub Release assets should stay as source archives and release notes. Docker
-images are not uploaded as release attachments; they are published to the
-container registry by `.github/workflows/ce-docker-images.yml` when a `v*` tag
-is pushed. If anonymous CE deployment is expected, make the generated GHCR
-packages public after the first successful publish.
+images are not uploaded as release attachments; they are published to GHCR by
+`.github/workflows/ce-docker-images.yml` when a `v*` tag is pushed.
+
+After the first successful publish, make the six generated container packages
+public in GitHub Packages so CE users can pull images without authentication.
+For private pilots, keep packages private and ask deployers to run:
+
+```bash
+echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GITHUB_USERNAME" --password-stdin
+```
+
+The token only needs `read:packages` for pulling private images.
 
 ## Required Configuration
 
@@ -87,17 +98,8 @@ instructions. This mirrors Dify's approach: release notes live on GitHub,
 deployable images live in a registry, and users deploy by selecting a version
 tag in `.env`.
 
-The workflow template is stored at `docker/ce-docker-images.workflow.example.yml`.
-Activate it when the GitHub credential used to push this repository has the
-`workflow` scope:
-
-```bash
-mkdir -p .github/workflows
-cp docker/ce-docker-images.workflow.example.yml .github/workflows/ce-docker-images.yml
-git add .github/workflows/ce-docker-images.yml
-git commit -m "ci: publish ce docker images"
-git push origin main
-```
+The active workflow is `.github/workflows/ce-docker-images.yml`. A copy is kept
+at `docker/ce-docker-images.workflow.example.yml` for documentation and recovery.
 
 ## Upgrade Pattern
 
