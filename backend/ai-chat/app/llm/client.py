@@ -37,6 +37,19 @@ logger = logging.getLogger(__name__)
 CLI_PROVIDERS = {"codex", "claude"}
 
 
+def _delta_text(delta: object) -> str:
+    for field in ("content", "reasoning_content", "text"):
+        value = getattr(delta, field, None)
+        if isinstance(value, str) and value:
+            return value
+    if isinstance(delta, dict):
+        for field in ("content", "reasoning_content", "text"):
+            value = delta.get(field)
+            if isinstance(value, str) and value:
+                return value
+    return ""
+
+
 def _is_rate_limit(exc: Exception) -> bool:
     """Return True if the exception is an HTTP 429 (rate limit)."""
     if hasattr(exc, "status_code"):
@@ -113,12 +126,18 @@ def _stream_openai(
         temperature=temperature,
         stream=True,
     )
+    emitted = False
     for chunk in stream:
         if not chunk.choices:
             continue
         delta = chunk.choices[0].delta
-        if delta.content:
-            yield delta.content
+        text = _delta_text(delta)
+        if text:
+            emitted = True
+            yield text
+
+    if not emitted:
+        raise RuntimeError("LLM provider returned an empty streaming response.")
 
 
 def _stream_cli(provider: str, messages: list[dict[str, str]]) -> Generator[str, None, None]:
