@@ -55,6 +55,13 @@ func main() {
 		runtimeimages.Rust,
 		runtimeimages.CSharp,
 		runtimeimages.TerminalBash,
+		runtimeimages.LSPGo,
+		runtimeimages.LSPPython,
+		runtimeimages.LSPTypeScript,
+		runtimeimages.LSPJava,
+		runtimeimages.LSPCpp,
+		runtimeimages.LSPRust,
+		runtimeimages.LSPCSharp,
 	}); err != nil {
 		log.Fatalf("[sandbox] prepare runtime images: %v", err)
 	}

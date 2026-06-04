@@ -57,7 +57,10 @@ func (h *LSPHandler) SyncFile(ctx context.Context, req *sandboxv1.SyncFileReques
 	defer cancel()
 
 	if err := h.mgr.SyncFile(timeoutCtx, req.GetSessionId(), req.GetFilePath(), req.GetContent(), req.GetVersion()); err != nil {
-		if errors.Is(err, lsp.ErrSessionNotFound) || errors.Is(err, lsp.ErrUnsupportedLanguage) {
+		if errors.Is(err, lsp.ErrSessionNotFound) {
+			return nil, status.Error(codes.NotFound, err.Error())
+		}
+		if errors.Is(err, lsp.ErrUnsupportedLanguage) {
 			return nil, status.Error(codes.InvalidArgument, err.Error())
 		}
 		return nil, status.Errorf(codes.Internal, "sync lsp file: %v", err)
@@ -72,7 +75,7 @@ func (h *LSPHandler) GetDiagnostics(
 	records, err := h.mgr.GetDiagnostics(req.GetSessionId())
 	if err != nil {
 		if errors.Is(err, lsp.ErrSessionNotFound) {
-			return nil, status.Error(codes.InvalidArgument, err.Error())
+			return nil, status.Error(codes.NotFound, err.Error())
 		}
 		return nil, status.Errorf(codes.Internal, "get diagnostics: %v", err)
 	}
@@ -112,7 +115,7 @@ func (h *LSPHandler) GetCompletions(
 	)
 	if err != nil {
 		if errors.Is(err, lsp.ErrSessionNotFound) {
-			return nil, status.Error(codes.InvalidArgument, err.Error())
+			return nil, status.Error(codes.NotFound, err.Error())
 		}
 		return nil, status.Errorf(codes.Internal, "get completions: %v", err)
 	}

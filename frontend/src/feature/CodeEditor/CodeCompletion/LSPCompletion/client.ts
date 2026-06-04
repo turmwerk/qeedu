@@ -8,6 +8,7 @@ import {
   type LspDiagnostic,
   type WorkspaceFilePayload,
 } from "@/api/sandbox";
+import axios from "axios";
 import type { FileTreeNode, TabItem } from "@/pages/Project/EditorArea/types";
 
 export type LspLanguageGroup =
@@ -28,6 +29,16 @@ const sessionCache = new Map<string, CachedSession>();
 
 const buildSessionKey = (workspaceKey: string, languageGroup: LspLanguageGroup) =>
   `${workspaceKey}:${languageGroup}`;
+
+const isRecoverableLspSessionError = (error: unknown): boolean => {
+  if (!axios.isAxiosError(error)) return false;
+  const status = error.response?.status;
+  return status === 400 || status === 404 || status === 500;
+};
+
+const resetLspSession = (workspaceKey: string, languageGroup: LspLanguageGroup) => {
+  sessionCache.delete(buildSessionKey(workspaceKey, languageGroup));
+};
 
 export const normalizeWorkspacePath = (filePath: string): string => {
   const clean = (filePath || "/")
@@ -143,11 +154,27 @@ export const syncWorkspaceLspFile = async (input: {
     files: input.files,
   });
 
-  await syncLspFile(sessionId, {
-    file_path: normalizeWorkspacePath(input.filePath),
-    content: input.content,
-    version: input.version,
-  });
+  try {
+    await syncLspFile(sessionId, {
+      file_path: normalizeWorkspacePath(input.filePath),
+      content: input.content,
+      version: input.version,
+    });
+  } catch (error) {
+    if (!isRecoverableLspSessionError(error)) throw error;
+    resetLspSession(input.workspaceKey, languageGroup);
+    const refreshedSessionId = await getOrCreateLspSession({
+      workspaceKey: input.workspaceKey,
+      languageGroup,
+      files: input.files,
+    });
+    await syncLspFile(refreshedSessionId, {
+      file_path: normalizeWorkspacePath(input.filePath),
+      content: input.content,
+      version: input.version,
+    });
+    return refreshedSessionId;
+  }
 
   return sessionId;
 };
@@ -166,7 +193,19 @@ export const requestWorkspaceDiagnostics = async (input: {
     languageGroup,
     files: input.files,
   });
-  const response = await getLspDiagnostics(sessionId);
+  let response: Awaited<ReturnType<typeof getLspDiagnostics>>;
+  try {
+    response = await getLspDiagnostics(sessionId);
+  } catch (error) {
+    if (!isRecoverableLspSessionError(error)) throw error;
+    resetLspSession(input.workspaceKey, languageGroup);
+    const refreshedSessionId = await getOrCreateLspSession({
+      workspaceKey: input.workspaceKey,
+      languageGroup,
+      files: input.files,
+    });
+    response = await getLspDiagnostics(refreshedSessionId);
+  }
   return { languageGroup, diagnostics: response.diagnostics };
 };
 
@@ -187,12 +226,29 @@ export const requestWorkspaceCompletions = async (input: {
     languageGroup,
     files: input.files,
   });
-  const response = await getLspCompletions(sessionId, {
-    file_path: normalizeWorkspacePath(input.filePath),
-    line: input.line,
-    column: input.column,
-    version: input.version,
-  });
+  let response: Awaited<ReturnType<typeof getLspCompletions>>;
+  try {
+    response = await getLspCompletions(sessionId, {
+      file_path: normalizeWorkspacePath(input.filePath),
+      line: input.line,
+      column: input.column,
+      version: input.version,
+    });
+  } catch (error) {
+    if (!isRecoverableLspSessionError(error)) throw error;
+    resetLspSession(input.workspaceKey, languageGroup);
+    const refreshedSessionId = await getOrCreateLspSession({
+      workspaceKey: input.workspaceKey,
+      languageGroup,
+      files: input.files,
+    });
+    response = await getLspCompletions(refreshedSessionId, {
+      file_path: normalizeWorkspacePath(input.filePath),
+      line: input.line,
+      column: input.column,
+      version: input.version,
+    });
+  }
   return response.items;
 };
 

@@ -6,6 +6,8 @@ import (
 	sandboxRPC "github.com/dieWehmut/nju-edu-ai-system/backend/gateway/internal/rpc/sandbox"
 	sandboxv1 "github.com/dieWehmut/nju-edu-ai-system/backend/pkg/pb/sandbox/v1"
 	"github.com/gin-gonic/gin"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type workspaceFilePayload struct {
@@ -33,6 +35,23 @@ type completionRequest struct {
 	Version  int32  `json:"version"`
 }
 
+func abortSandboxRPCError(c *gin.Context, err error) {
+	code := http.StatusInternalServerError
+	if st, ok := status.FromError(err); ok {
+		switch st.Code() {
+		case codes.InvalidArgument:
+			code = http.StatusBadRequest
+		case codes.NotFound:
+			code = http.StatusNotFound
+		case codes.DeadlineExceeded:
+			code = http.StatusGatewayTimeout
+		case codes.Unavailable:
+			code = http.StatusBadGateway
+		}
+	}
+	c.JSON(code, gin.H{"error": err.Error()})
+}
+
 func EnsureLSPSession(c *gin.Context) {
 	var body ensureSessionRequest
 	if err := c.ShouldBindJSON(&body); err != nil {
@@ -56,7 +75,7 @@ func EnsureLSPSession(c *gin.Context) {
 		Files:         files,
 	})
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		abortSandboxRPCError(c, err)
 		return
 	}
 
@@ -77,7 +96,7 @@ func SyncLSPFile(c *gin.Context) {
 		Version:   body.Version,
 	})
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		abortSandboxRPCError(c, err)
 		return
 	}
 
@@ -89,7 +108,7 @@ func GetLSPDiagnostics(c *gin.Context) {
 		SessionId: c.Param("sessionId"),
 	})
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		abortSandboxRPCError(c, err)
 		return
 	}
 
@@ -111,7 +130,7 @@ func GetLSPCompletions(c *gin.Context) {
 		Version:   body.Version,
 	})
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		abortSandboxRPCError(c, err)
 		return
 	}
 
@@ -120,7 +139,7 @@ func GetLSPCompletions(c *gin.Context) {
 
 func DestroyLSPSession(c *gin.Context) {
 	if err := sandboxRPC.DestroyLSPSession(c.Request.Context(), c.Param("sessionId")); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		abortSandboxRPCError(c, err)
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"ok": true})
