@@ -80,6 +80,7 @@ const Introduction: React.FC<IntroductionProps> = ({ onScrollToNext }) => {
                 desc={item.desc}
                 subLinks={item.subLinks}
                 to={item.to}
+                href={item.href}
                 icon={item.icon}
                 onClick={item.onClick}
               />
