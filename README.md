@@ -107,9 +107,127 @@ qeedu/
 │   ├── ai-copilot/        # Copilot 服务
 │   ├── sandbox/           # 沙箱运行服务
 │   ├── proto/             # Protobuf 定义
-│   └── deploy/            # Docker Compose 部署
+│   └── deploy/            # 旧版后端 compose 配置
+├── docker/                # Community Edition 一键部署配置
 └── docs/                  # 仓库说明与补充文档
 ```
+
+## Community Edition 自部署
+
+QeEdu Community Edition 提供 Dify 风格的 Docker Compose 自部署入口。GitHub Release 只放源码和版本说明，Docker 镜像发布到 GHCR：
+
+```text
+ghcr.io/turmwerk/qeedu-web
+ghcr.io/turmwerk/qeedu-gateway
+ghcr.io/turmwerk/qeedu-user-services
+ghcr.io/turmwerk/qeedu-sandbox
+ghcr.io/turmwerk/qeedu-ai-chat
+ghcr.io/turmwerk/qeedu-ai-copilot
+```
+
+这些 GHCR container packages 已设置为 Public，可匿名拉取。当前已验证的公共测试标签是：
+
+```text
+test-ce-20260604
+```
+
+### 快速部署
+
+```bash
+git clone https://github.com/turmwerk/qeedu.git
+cd qeedu/docker
+cp .env.example .env
+```
+
+编辑 `docker/.env`，至少修改：
+
+```env
+QEEDU_VERSION=test-ce-20260604
+QEEDU_IMAGE_PREFIX=ghcr.io/turmwerk
+FRONTEND_URL=http://localhost:3000
+JWT_SECRET=replace-with-a-long-random-string
+MYSQL_ROOT_PASSWORD=replace-with-a-strong-password
+DATABASE_DSN=root:replace-with-a-strong-password@tcp(mysql:3306)/qeedu?charset=utf8mb4&parseTime=True&loc=Local
+```
+
+启动：
+
+```bash
+docker compose -f docker-compose.release.yaml pull
+docker compose -f docker-compose.release.yaml up -d
+```
+
+打开：
+
+```text
+http://localhost:3000
+```
+
+健康检查：
+
+```bash
+curl http://localhost:8080/health
+curl http://localhost:3000/health
+curl http://localhost:3000/api/v1/ai/models
+```
+
+### 端口冲突时
+
+如果本机已有服务占用 `3000` 或 `8080`，可以用环境变量临时覆盖：
+
+```bash
+EXPOSE_WEB_PORT=13001 \
+EXPOSE_API_PORT=18081 \
+FRONTEND_URL=http://localhost:13001 \
+docker compose -f docker-compose.release.yaml up -d
+```
+
+对应检查：
+
+```bash
+curl http://localhost:18081/health
+curl http://localhost:13001/health
+```
+
+### 已验证内容
+
+`test-ce-20260604` 标签已完成以下验证：
+
+- 匿名拉取 6 个 GHCR 镜像。
+- `docker-compose.release.yaml` 启动完整栈。
+- `gateway` 和 `web` healthcheck 正常。
+- 前端静态资源可访问。
+- `web` 代理 `/api/v1/ai/models` 正常。
+- 邮箱验证码注册链路正常。
+- 登录态 cookie 使用 `qeedu_token`，`GET /api/v1/me` 正常返回用户信息。
+
+### 发布正式版本
+
+正式发布时使用 `v*` tag：
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+`.github/workflows/ce-docker-images.yml` 会构建并推送同名 GHCR 镜像标签。用户部署时把 `.env` 中的 `QEEDU_VERSION` 改成相同版本，例如：
+
+```env
+QEEDU_VERSION=v0.1.0
+```
+
+升级前建议备份数据库卷：
+
+```bash
+cd docker
+docker compose -f docker-compose.release.yaml down
+docker compose -f docker-compose.release.yaml config > compose.backup.yaml
+docker run --rm -v qeedu-ce_qeedu-mysql-data:/data -v "$PWD":/backup alpine tar czf /backup/mysql-data.tgz /data
+docker compose -f docker-compose.release.yaml pull
+docker compose -f docker-compose.release.yaml up -d
+```
+
+更完整的部署说明见 [docker/README.md](docker/README.md) 和 [QeEdu Docs](https://docs.qeedu.tech/zh/deployment/community-self-hosting)。
 
 ## 前端开发
 
@@ -125,19 +243,20 @@ pnpm dev
 VITE_API_BASE_URL=https://api.qeedu.tech/api/v1
 ```
 
-## 后端部署
+## 源码构建部署
 
-后端部署入口位于：
+如果需要在本地从源码构建所有服务，可以使用：
+
+```bash
+cd docker
+cp .env.example .env
+docker compose up -d --build
+```
+
+旧版后端单独部署入口仍保留在：
 
 ```bash
 backend/deploy/docker-compose.yml
-```
-
-常用命令：
-
-```bash
-cd backend/deploy
-docker compose up -d
 ```
 
 OAuth 登录相关生产配置应保持一致：
@@ -168,4 +287,3 @@ AI 输出应作为草稿、建议和辅助材料，正式业务结论仍需人�
 ## 许可证
 
 本仓库基于 [MIT License](LICENSE) 开源。
-
