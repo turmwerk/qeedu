@@ -33,35 +33,14 @@ type ChatTransportArgs = {
   onError: (err: string) => void;
 };
 
-const MAX_CONTEXT_CHARS = 24000;
-const MAX_FILE_CHARS = 8000;
-
-const readFileContext = async (
+const buildWorkspaceContext = (
   botName: string,
   contextLabel: string | undefined,
-  files: File[],
 ) => {
-  const lines = [
+  return [
     `AI assistant: ${botName}`,
     contextLabel ? `Current workspace: ${contextLabel}` : "",
   ].filter(Boolean);
-
-  if (files.length === 0) return lines.join("\n");
-
-  const chunks = await Promise.all(
-    files.map(async (file) => {
-      const text = await file.text();
-      return [
-        `Attached file: ${file.name}`,
-        "```",
-        text.slice(0, MAX_FILE_CHARS),
-        text.length > MAX_FILE_CHARS ? "\n[File truncated]" : "",
-        "```",
-      ].join("\n");
-    }),
-  );
-
-  return [...lines, ...chunks].join("\n\n").slice(0, MAX_CONTEXT_CHARS);
 };
 
 export const createMockAdapter = <T extends FeatureRecordBase>(
@@ -129,7 +108,6 @@ export const createMockAdapter = <T extends FeatureRecordBase>(
       (contextLabel?: string) =>
       ({
         messages,
-        files,
         fileContext,
         mode,
         model,
@@ -152,29 +130,23 @@ export const createMockAdapter = <T extends FeatureRecordBase>(
           { once: true },
         );
 
-        void readFileContext(config.botName, contextLabel, files)
-          .then((generatedContext) => {
-            if (controller.signal.aborted) return;
-            const combinedContext = [fileContext, generatedContext].filter(Boolean).join("\n\n");
-            streamController = chatStream({
-              messages,
-              file_context: combinedContext || undefined,
-              language: "text",
-              mode,
-              model,
-              api_key: apiKey,
-              base_url: baseUrl,
-              temperature,
-              max_tokens: maxTokens,
-              onDelta,
-              onDone,
-              onError,
-            });
-            if (controller.signal.aborted) streamController.abort();
-          })
-          .catch((err: unknown) => {
-            if (!controller.signal.aborted) onError(String(err));
-          });
+        const generatedContext = buildWorkspaceContext(config.botName, contextLabel);
+        const combinedContext = [generatedContext, fileContext].filter(Boolean).join("\n\n");
+        streamController = chatStream({
+          messages,
+          file_context: combinedContext || undefined,
+          language: "text",
+          mode,
+          model,
+          api_key: apiKey,
+          base_url: baseUrl,
+          temperature,
+          max_tokens: maxTokens,
+          onDelta,
+          onDone,
+          onError,
+        });
+        if (controller.signal.aborted) streamController.abort();
 
         return controller;
       },
