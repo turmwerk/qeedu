@@ -14,6 +14,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/turmwerk/qeedu/backend/gateway/configs"
 	"github.com/turmwerk/qeedu/backend/gateway/internal/api/v1/auth"
+	"github.com/turmwerk/qeedu/backend/gateway/internal/middleware"
 	db "github.com/turmwerk/qeedu/backend/pkg/mysql"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -606,6 +607,6 @@ func DeleteAccount(c *gin.Context) {
 	}
 	_ = db.DB.Where("user_id = ?", uid).Delete(&UserIdentity{}).Error
 	recordEvent(c, uid, "account.delete", "注销账户")
-	c.SetCookie("edu_token", "", -1, "/", "", configs.IsProd(), true)
+	middleware.ClearAuthCookies(c, configs.IsProd())
 	c.JSON(http.StatusOK, gin.H{"ok": true})
 }

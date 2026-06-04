@@ -10,11 +10,9 @@ import (
 	userv1 "github.com/turmwerk/qeedu/backend/pkg/pb/user/v1"
 )
 
-const authCookieName = "qeedu_token"
-
 func setAuthCookie(c *gin.Context, token string) {
 	c.SetCookie(
-		authCookieName,
+		middleware.AuthCookieName,
 		token,
 		int((7 * 24 * time.Hour).Seconds()),
 		"/",
@@ -25,7 +23,7 @@ func setAuthCookie(c *gin.Context, token string) {
 }
 
 func clearAuthCookie(c *gin.Context) {
-	c.SetCookie(authCookieName, "", -1, "/", "", configs.IsProd(), true)
+	middleware.ClearAuthCookies(c, configs.IsProd())
 }
 
 func loginUser(c *gin.Context, u *userv1.User) {

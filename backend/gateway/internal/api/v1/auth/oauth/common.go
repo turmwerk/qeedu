@@ -27,10 +27,7 @@ func randomState() string {
 }
 
 func currentUserID(c *gin.Context) uint {
-	token := ""
-	if tok, err := c.Cookie("edu_token"); err == nil && tok != "" {
-		token = tok
-	}
+	token := middleware.ReadAuthCookie(c)
 	if token == "" {
 		return 0
 	}
@@ -152,7 +149,7 @@ func FinishOAuth(c *gin.Context, profile *userv1.OAuthProfile) {
 
 	// Set httpOnly cookie on the API domain (works cross-origin with credentials:include).
 	c.SetCookie(
-		"edu_token",                         // name
+		middleware.AuthCookieName,           // name
 		token,                               // value
 		int((7 * 24 * time.Hour).Seconds()), // max age (7 days)
 		"/",                                 // path

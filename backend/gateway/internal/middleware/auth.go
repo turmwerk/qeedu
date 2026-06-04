@@ -12,10 +12,8 @@ func AuthRequired() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token := ""
 
-		// 1) httpOnly cookie (set during OAuth login).
-		if tok, err := c.Cookie("edu_token"); err == nil && tok != "" {
-			token = tok
-		}
+		// 1) httpOnly cookie.
+		token = ReadAuthCookie(c)
 
 		// 2) Authorization: Bearer <token> header (legacy / dev).
 		if token == "" {
