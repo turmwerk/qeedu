@@ -182,6 +182,11 @@ const Settings: React.FC = () => {
     navigate("/login");
   };
 
+  const switchAccount = async () => {
+    await auth.logout();
+    navigate("/login", { replace: true });
+  };
+
   const removeAccount = async () => {
     setMessage("");
     try {
@@ -396,6 +401,7 @@ const Settings: React.FC = () => {
         <button className="account-button" type="button" onClick={saveWorkspaceSettings} disabled={saving}>
           {saving ? "保存中..." : "保存个人设置"}
         </button>
+        <button className="account-button" type="button" onClick={switchAccount}>切换账号</button>
         <button className="account-button" type="button" onClick={logout}>{t("common.logout")}</button>
       </div>
 

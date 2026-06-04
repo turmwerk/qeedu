@@ -3,13 +3,13 @@ import Button from "@/ui/Button";
 import HoverTooltip from "@/ui/HoverTooltip";
 import SunIcon from "@/ui/Icon/SunIcon";
 import MoonIcon from "@/ui/Icon/MoonIcon";
-import SettingsIcon from "@/ui/Icon/SettingsIcon";
+import GitHubIcon from "@/ui/Icon/GitHubIcon";
 import { getStoredTheme, toggleTheme } from "@/utils/theme/controller";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 /**
  * Auth 面板右上角操作栏
- * 桌面端 / 移动端：语言 | 主题 | 设置
+ * 桌面端 / 移动端：语言 | 主题 | GitHub 仓库
  */
 const AuthPanelActions: React.FC = () => {
   const [theme, setTheme] = useState(getStoredTheme());
@@ -65,22 +65,22 @@ const AuthPanelActions: React.FC = () => {
     );
   };
 
-  /* Settings button: continuous spin when idle, stops + bounce on hover */
-  const SettingsButton: React.FC = () => {
+  const GitHubRepoButton: React.FC = () => {
     const [hovered, setHovered] = useState(false);
     const [isJumping, setIsJumping] = useState(false);
     const jumpTimer = useRef<number | null>(null);
 
     return (
       <HoverTooltip
-        content="设置"
+        content="GitHub 仓库"
         tooltipClassName="text-xs leading-4 px-2.5 py-1.5"
       >
-        <Button
-          type="button"
+        <a
+          href="https://github.com/turmwerk/qeedu"
+          target="_blank"
+          rel="noreferrer"
           className={btnClass}
-          aria-label="设置"
-          onClick={() => {}}
+          aria-label="GitHub 仓库"
           onMouseEnter={() => {
             setHovered(true);
             setIsJumping(true);
@@ -100,26 +100,17 @@ const AuthPanelActions: React.FC = () => {
           }}
         >
           <span
-            className={`inline-flex items-center justify-center transition-transform duration-100 ease-linear ${isJumping ? '-translate-y-1' : ''}`}
-            style={{
-              animation: hovered ? 'none' : 'authSettingsSpin 3s linear infinite',
-            }}
+            className={`inline-flex items-center justify-center transition-transform duration-100 ease-linear ${isJumping ? '-translate-y-1' : ''} ${hovered ? 'scale-[1.04]' : ''}`}
           >
-            <SettingsIcon />
+            <GitHubIcon />
           </span>
-        </Button>
+        </a>
       </HoverTooltip>
     );
   };
 
   return (
     <>
-      <style>{`
-        @keyframes authSettingsSpin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
       <div className="flex items-center gap-0">
         <LanguageSwitcher iconSize={22} />
 
@@ -132,8 +123,7 @@ const AuthPanelActions: React.FC = () => {
 
         <span className="text-gray-300 text-[10px] select-none mx-0.5">|</span>
 
-        {/* 设置按钮 — 持续旋转，悬浮停止 */}
-        <SettingsButton />
+        <GitHubRepoButton />
       </div>
     </>
   );
