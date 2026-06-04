@@ -10,7 +10,7 @@ import (
 	userv1 "github.com/turmwerk/qeedu/backend/pkg/pb/user/v1"
 )
 
-const authCookieName = "edu_token"
+const authCookieName = "qeedu_token"
 
 func setAuthCookie(c *gin.Context, token string) {
 	c.SetCookie(
