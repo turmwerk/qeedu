@@ -27,6 +27,16 @@ export const zhCN = {
     accountCenter: "个人中心",
     user: "用户",
   },
+  home: {
+    introduction: {
+      learnMore: {
+        title: "了解更多",
+        desc: "打开启育官网，查看平台介绍、产品入口与服务信息。",
+        docs: "查看文档",
+        account: "个人中心",
+      },
+    },
+  },
   auth: {
     loginTitle: "登录",
     registerTitle: "注册",

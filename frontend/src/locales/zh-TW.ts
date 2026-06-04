@@ -29,6 +29,16 @@ export const zhTW: LocaleKeys = {
     accountCenter: "個人中心",
     user: "使用者",
   },
+  home: {
+    introduction: {
+      learnMore: {
+        title: "了解更多",
+        desc: "開啟啟育官網，查看平台介紹、產品入口與服務資訊。",
+        docs: "查看文件",
+        account: "個人中心",
+      },
+    },
+  },
   auth: {
     loginTitle: "登入",
     registerTitle: "註冊",

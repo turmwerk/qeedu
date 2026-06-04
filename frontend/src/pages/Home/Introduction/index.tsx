@@ -7,12 +7,14 @@ import {
   InfoCircleOutlinedIcon,
   RocketOutlinedIcon,
 } from "@/ui/Icon";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface IntroductionProps {
   onScrollToNext?: () => void;
 }
 
 const Introduction: React.FC<IntroductionProps> = ({ onScrollToNext }) => {
+  const { t } = useTranslation();
   const quickActions = [
     {
       title: "立即开始",
@@ -26,13 +28,13 @@ const Introduction: React.FC<IntroductionProps> = ({ onScrollToNext }) => {
       onClick: () => onScrollToNext?.(),
     },
     {
-      title: "了解更多",
-      desc: "进入账号入口，继续登录、注册或开始体验平台。",
-      to: "/login",
+      title: t("home.introduction.learnMore.title"),
+      desc: t("home.introduction.learnMore.desc"),
+      href: "https://qeedu.tech/",
       icon: <InfoCircleOutlinedIcon />,
       subLinks: [
-        { label: "登录", to: "/login" },
-        { label: "注册", to: "/register" },
+        { label: t("home.introduction.learnMore.docs"), href: "https://docs.qeedu.tech/" },
+        { label: t("home.introduction.learnMore.account"), href: "https://cloud.qeedu.tech/account" },
       ],
     },
     {

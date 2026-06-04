@@ -29,6 +29,16 @@ export const en: LocaleKeys = {
     accountCenter: "Account center",
     user: "User",
   },
+  home: {
+    introduction: {
+      learnMore: {
+        title: "Learn more",
+        desc: "Open the QeEdu website for product details, platform entry points, and service information.",
+        docs: "Docs",
+        account: "Account center",
+      },
+    },
+  },
   auth: {
     loginTitle: "Log in",
     registerTitle: "Register",
