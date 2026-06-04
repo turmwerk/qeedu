@@ -9,6 +9,8 @@ from configs.llm import DEFAULT_CHAT_MODEL, LLM_TEMPERATURE, LLM_MAX_TOKENS
 
 logger = logging.getLogger(__name__)
 
+MAX_FILE_CONTEXT_CHARS = 60000
+
 
 def chat_stream(
     messages: list[dict[str, str]],
@@ -24,7 +26,14 @@ def chat_stream(
     llm_messages: list[dict[str, str]] = [{"role": "system", "content": CHAT_SYSTEM}]
 
     if file_context:
-        ctx = f"Current file ({language or 'unknown'}):\n```\n{file_context[:3000]}\n```"
+        limited_context = file_context[:MAX_FILE_CONTEXT_CHARS]
+        if len(file_context) > MAX_FILE_CONTEXT_CHARS:
+            limited_context += "\n\n[File context truncated by server limit]"
+        ctx = (
+            "Attached file context for the current request"
+            f"{f' ({language})' if language else ''}:\n"
+            f"{limited_context}"
+        )
         llm_messages.append({"role": "system", "content": ctx})
 
     llm_messages.extend(messages)

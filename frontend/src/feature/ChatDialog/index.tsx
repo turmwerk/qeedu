@@ -16,6 +16,7 @@ import {
   isChatDialogSendEvent,
   takePendingChatDialogPrompts,
 } from "./events";
+import { buildChatFileContext } from "./fileContext";
 
 interface DialogProps {
   dialogId: string;
@@ -361,24 +362,6 @@ const Dialog: React.FC<DialogProps> & {
     // Add empty bot message that will be filled by streaming
     setMessages((m) => [...m, { from: "bot", text: "" }]);
 
-    // Read file contents for context
-    const readFiles = async (): Promise<string> => {
-      if (sentFiles.length === 0) return "";
-      const chunks = await Promise.all(
-        sentFiles.map(async (file) => {
-          let content = "";
-          try {
-            content = await file.text();
-          } catch {}
-          if (!content) {
-            return `File: ${file.name}\n[Unable to read text content]`;
-          }
-          return `File: ${file.name}\n\`\`\`\n${content.slice(0, 8000)}\n\`\`\``;
-        }),
-      );
-      return chunks.join("\n\n").slice(0, 24000);
-    };
-
     const handlers = {
       onDelta: (delta: string) => {
         pendingDeltaRef.current += delta;
@@ -435,7 +418,7 @@ const Dialog: React.FC<DialogProps> & {
     const outerController = new AbortController();
     abortRef.current = outerController;
 
-    readFiles().then((fileContext) => {
+    buildChatFileContext(sentFiles).then((fileContext) => {
       if (outerController.signal.aborted) return;
       const streamCtrl = transport
         ? transport({
@@ -463,6 +446,9 @@ const Dialog: React.FC<DialogProps> & {
             ...handlers,
           });
       outerController.signal.addEventListener("abort", () => streamCtrl.abort(), { once: true });
+    }).catch((error: unknown) => {
+      if (outerController.signal.aborted) return;
+      handlers.onError(`读取附件失败：${String(error)}`);
     });
   }, [activeCustom, chatMode, pending, scrollToBottom, selectedModel, transport]);
 
