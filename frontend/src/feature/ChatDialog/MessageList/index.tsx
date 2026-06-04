@@ -194,7 +194,6 @@ const MessageList: React.FC<MessageListProps> = ({
           onMarkerClick={handleMarkerClick}
           hoveredIndex={hoveredIndex}
           setHoveredIndex={setHoveredIndex}
-          messages={messages}
         />
         <ScrollToBottomButton
           isAtBottom={isAtBottom}
