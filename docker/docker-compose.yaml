@@ -1,0 +1,209 @@
+name: qeedu-ce
+
+x-backend-env: &backend-env
+  env_file:
+    - ./.env
+  restart: unless-stopped
+  networks:
+    - qeedu
+
+x-python-ai-env: &python-ai-env
+  <<: *backend-env
+  environment:
+    LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    LLM_API_KEY: ${LLM_API_KEY:-}
+    OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+    LLM_BASE_URL: ${LLM_BASE_URL:-https://openrouter.ai/api/v1}
+    OPENAI_BASE_URL: ${OPENAI_BASE_URL:-}
+    DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+    DEEPSEEK_BASE_URL: ${DEEPSEEK_BASE_URL:-https://api.deepseek.com}
+    LLM_CHAT_MODEL: ${LLM_CHAT_MODEL:-liquid/lfm-2.5-1.2b-instruct:free}
+    LLM_FIX_MODEL: ${LLM_FIX_MODEL:-liquid/lfm-2.5-1.2b-instruct:free}
+    LLM_COPILOT_MODEL: ${LLM_COPILOT_MODEL:-liquid/lfm-2.5-1.2b-instruct:free}
+    LLM_TEMPERATURE: ${LLM_TEMPERATURE:-0.7}
+    LLM_MAX_TOKENS: ${LLM_MAX_TOKENS:-4096}
+
+services:
+  mysql:
+    image: mysql:8
+    container_name: qeedu-ce-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-qeedu-change-me}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-qeedu}
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - qeedu-mysql-data:/var/lib/mysql
+      - ../backend/deploy/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "127.0.0.1",
+          "-u",
+          "root",
+          "-p${MYSQL_ROOT_PASSWORD:-qeedu-change-me}"
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    networks:
+      - qeedu
+
+  user-services:
+    <<: *backend-env
+    container_name: qeedu-ce-user-services
+    build:
+      context: ../backend
+      dockerfile: user-services/Dockerfile
+    environment:
+      DATABASE_DSN: ${DATABASE_DSN:-root:qeedu-change-me@tcp(mysql:3306)/qeedu?charset=utf8mb4&parseTime=True&loc=Local}
+      GRPC_ADDR: :50051
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  sandbox:
+    <<: *backend-env
+    container_name: qeedu-ce-sandbox
+    build:
+      context: ../backend
+      dockerfile: sandbox/Dockerfile
+    environment:
+      GRPC_ADDR: :50052
+      DOCKER_HOST: unix:///var/run/docker.sock
+      SANDBOX_RUNTIME_ROOT: /sandbox-runtime
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  ai-copilot:
+    <<: *python-ai-env
+    container_name: qeedu-ce-ai-copilot
+    build:
+      context: ../backend
+      dockerfile: ai-copilot/Dockerfile
+    environment:
+      GRPC_PORT: 50053
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      LLM_BASE_URL: ${LLM_BASE_URL:-https://openrouter.ai/api/v1}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-}
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+      DEEPSEEK_BASE_URL: ${DEEPSEEK_BASE_URL:-https://api.deepseek.com}
+      LLM_COPILOT_MODEL: ${LLM_COPILOT_MODEL:-liquid/lfm-2.5-1.2b-instruct:free}
+      LLM_TEMPERATURE: ${LLM_TEMPERATURE:-0.2}
+      LLM_MAX_TOKENS: ${LLM_MAX_TOKENS:-512}
+
+  ai-chat:
+    <<: *python-ai-env
+    container_name: qeedu-ce-ai-chat
+    build:
+      context: ../backend
+      dockerfile: ai-chat/Dockerfile
+    environment:
+      GRPC_PORT: 50054
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      LLM_BASE_URL: ${LLM_BASE_URL:-https://openrouter.ai/api/v1}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-}
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+      DEEPSEEK_BASE_URL: ${DEEPSEEK_BASE_URL:-https://api.deepseek.com}
+      LLM_CHAT_MODEL: ${LLM_CHAT_MODEL:-liquid/lfm-2.5-1.2b-instruct:free}
+      LLM_FIX_MODEL: ${LLM_FIX_MODEL:-liquid/lfm-2.5-1.2b-instruct:free}
+      LLM_TEMPERATURE: ${LLM_TEMPERATURE:-0.7}
+      LLM_MAX_TOKENS: ${LLM_MAX_TOKENS:-4096}
+      LLM_FALLBACK_PROVIDER: ${LLM_FALLBACK_PROVIDER:-auto}
+      CODEX_BIN: ${CODEX_BIN:-codex}
+      CODEX_HOME: ${CODEX_HOME:-}
+      CODEX_WORKDIR: ${CODEX_WORKDIR:-/tmp}
+      CODEX_SANDBOX: ${CODEX_SANDBOX:-read-only}
+      CODEX_REASONING_EFFORT: ${CODEX_REASONING_EFFORT:-low}
+      CODEX_REASONING_SUMMARY: ${CODEX_REASONING_SUMMARY:-none}
+      CODEX_VERBOSITY: ${CODEX_VERBOSITY:-low}
+      LLM_CLI_TIMEOUT_SECONDS: ${LLM_CLI_TIMEOUT_SECONDS:-240}
+
+  gateway:
+    <<: *backend-env
+    container_name: qeedu-ce-gateway
+    build:
+      context: ../backend
+      dockerfile: gateway/Dockerfile
+    ports:
+      - "${EXPOSE_API_PORT:-8080}:8080"
+    volumes:
+      - qeedu-gateway-uploads:/app/uploads
+    environment:
+      GIN_MODE: ${GIN_MODE:-release}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
+      DATABASE_DSN: ${DATABASE_DSN:-root:qeedu-change-me@tcp(mysql:3306)/qeedu?charset=utf8mb4&parseTime=True&loc=Local}
+      JWT_SECRET: ${JWT_SECRET:-change-this-to-a-long-random-string}
+      USER_SERVICE_ADDR: ${USER_SERVICE_ADDR:-user-services:50051}
+      SANDBOX_SERVICE_ADDR: ${SANDBOX_SERVICE_ADDR:-sandbox:50052}
+      AI_COPILOT_SERVICE_ADDR: ${AI_COPILOT_SERVICE_ADDR:-ai-copilot:50053}
+      AI_CHAT_SERVICE_ADDR: ${AI_CHAT_SERVICE_ADDR:-ai-chat:50054}
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:-}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET:-}
+      GITHUB_CALLBACK_URL: ${GITHUB_CALLBACK_URL:-http://localhost:8080/api/v1/auth/github/callback}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      GOOGLE_CALLBACK_URL: ${GOOGLE_CALLBACK_URL:-http://localhost:8080/api/v1/auth/google/callback}
+      MICROSOFT_CLIENT_ID: ${MICROSOFT_CLIENT_ID:-}
+      MICROSOFT_CLIENT_SECRET: ${MICROSOFT_CLIENT_SECRET:-}
+      MICROSOFT_CALLBACK_URL: ${MICROSOFT_CALLBACK_URL:-http://localhost:8080/api/v1/auth/microsoft/callback}
+      RESEND_EMAIL_FROM: ${RESEND_EMAIL_FROM:-}
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_FROM: ${SMTP_FROM:-}
+      LLM_CHAT_MODEL: ${LLM_CHAT_MODEL:-liquid/lfm-2.5-1.2b-instruct:free}
+      LLM_FIX_MODEL: ${LLM_FIX_MODEL:-liquid/lfm-2.5-1.2b-instruct:free}
+      LLM_COPILOT_MODEL: ${LLM_COPILOT_MODEL:-liquid/lfm-2.5-1.2b-instruct:free}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      user-services:
+        condition: service_started
+      sandbox:
+        condition: service_started
+      ai-copilot:
+        condition: service_started
+      ai-chat:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 12
+
+  web:
+    container_name: qeedu-ce-web
+    build:
+      context: ..
+      dockerfile: frontend/Dockerfile
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-/api/v1}
+    restart: unless-stopped
+    ports:
+      - "${EXPOSE_WEB_PORT:-3000}:80"
+    depends_on:
+      gateway:
+        condition: service_healthy
+    networks:
+      - qeedu
+
+networks:
+  qeedu:
+    name: qeedu-ce
+
+volumes:
+  qeedu-mysql-data:
+  qeedu-gateway-uploads:

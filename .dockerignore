@@ -1,0 +1,17 @@
+.git
+.cache
+.claude
+.remember
+sample
+**/node_modules
+**/dist
+**/.venv
+**/__pycache__
+**/*.pyc
+**/.pytest_cache
+**/.mypy_cache
+**/.env
+**/*.local
+backend/configs/llm.json
+docker/volumes
+docker/env-backup
